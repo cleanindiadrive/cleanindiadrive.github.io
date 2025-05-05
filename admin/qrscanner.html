@@ -9,7 +9,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
-    <!-- Adjust path if needed -->
     <style>
       body {
         font-family: "Poppins", sans-serif;
@@ -91,17 +90,15 @@
     <!-- QR Scanner Library -->
     <script src="https://unpkg.com/qr-scanner@1.4.2/qr-scanner.legacy.min.js"></script>
 
-    <!-- Firebase SDKs (compat version like your config) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
-      // Your Firebase project configuration
       const firebaseConfig = {
         apiKey: "AIzaSyCRlRwkZrXwIY6b7MgXJe-gvt-tS5-VnjA",
         authDomain: "clean-up-india.firebaseapp.com",
-        databaseURL:
-          "https://clean-up-india-default-rtdb.asia-southeast1.firebasedatabase.app",
+        databaseURL: "https://clean-up-india-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "clean-up-india",
         storageBucket: "clean-up-india.firebasestorage.app",
         messagingSenderId: "38976459666",
@@ -109,7 +106,6 @@
         measurementId: "G-WJZC0WXY2F",
       };
 
-      // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       const database = firebase.database();
 
@@ -117,7 +113,7 @@
       const resultDisplay = document.getElementById("scan-result");
 
       const scanner = new QrScanner(video, async (result) => {
-        scanner.stop(); // Pause scanner to handle data
+        scanner.stop();
         console.log("QR Code Detected:", result);
 
         resultDisplay.textContent = "🔍 Searching participant...";
@@ -125,60 +121,79 @@
 
         try {
           const userId = result.trim();
-          const snapshot = await database
-            .ref("enrollments/" + userId)
-            .once("value");
+          const today = new Date().toLocaleDateString("en-CA");
+          const ref = database.ref("enrollments/" + userId);
+          const snapshot = await ref.once("value");
           const data = snapshot.val();
 
           if (data) {
-            await database
-              .ref("enrollments/" + userId)
-              .update({ attendance: true });
+            const attendanceLog = data.attendanceLog || [];
 
-            resultDisplay.innerHTML = `✅ Attendance Marked! <br><br>
-                    <strong>Name:</strong> ${data.fullName}<br>
-                    <strong>Institution:</strong> ${data.institution}<br>
-                    <strong>Phone:</strong> ${data.phone}
-                    `;
-            resultDisplay.classList.add("success");
+            if (attendanceLog.includes(today)) {
+              // Already marked today
+              resultDisplay.innerHTML = `📅 Attendance already marked today.<br><br>
+                <strong>Name:</strong> ${data.fullName}<br>
+                <strong>Institution:</strong> ${data.institution}<br>
+                <strong>Phone:</strong> ${data.phone}`;
+              resultDisplay.classList.add("error");
+            } else {
+              // Mark attendance
+              attendanceLog.push(today);
+              const daysAttended = attendanceLog.length;
+
+              await ref.update({
+                attendance: true,
+                attendanceLog: attendanceLog,
+                daysAttended: daysAttended,
+              });
+
+              let message = `✅ Attendance Marked! <br><br>
+                <strong>Name:</strong> ${data.fullName}<br>
+                <strong>Institution:</strong> ${data.institution}<br>
+                <strong>Phone:</strong> ${data.phone}<br>
+                <strong>Days Attended:</strong> ${daysAttended}`;
+
+              if (daysAttended >= 28) {
+                message += `<br><strong>🎉 Congratulations! 4 weeks completed!</strong>`;
+              }
+
+              resultDisplay.innerHTML = message;
+              resultDisplay.classList.add("success");
+            }
           } else {
             resultDisplay.innerHTML = "❌ Invalid QR: No participant found.";
             resultDisplay.classList.add("error");
           }
         } catch (error) {
           console.error("Error checking Firebase:", error);
-          resultDisplay.textContent =
-            "❌ Error occurred while checking participant.";
+          resultDisplay.textContent = "❌ Error occurred while checking participant.";
           resultDisplay.classList.add("error");
         }
 
         setTimeout(() => {
           resultDisplay.textContent = "Ready for next scan...";
           resultDisplay.className = "result";
-          scanner.start(); // Restart scanner for next scan
-        }, 2000); // Wait for 2 seconds before the next scan attempt
+          scanner.start();
+        }, 2000);
       });
 
-      // Start scanning with optimized settings
       scanner
         .start({
           video: {
-            facingMode: "environment", // Use back camera for faster scanning
-            width: { ideal: 1280 }, // Set resolution to 1280px wide
-            height: { ideal: 720 }, // Set resolution to 720px tall
+            facingMode: "environment",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
           },
-          frameRate: 60, // Increase frame rate for faster detection
+          frameRate: 60,
         })
         .catch((err) => {
           console.error("Camera access error:", err);
-          resultDisplay.textContent =
-            "❌ Camera not accessible or permission denied.";
+          resultDisplay.textContent = "❌ Camera not accessible or permission denied.";
           resultDisplay.classList.add("error");
         });
 
-      // Back button function
       function goBack() {
-        window.history.back(); // You can change to window.location.href = "dashboard.html" if you prefer.
+        window.history.back();
       }
     </script>
   </body>

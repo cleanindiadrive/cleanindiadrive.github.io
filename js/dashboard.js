@@ -51,6 +51,8 @@ function renderCards(dataArray, highlight = "") {
     const email = data.email || "";
     const phone = data.phone || "";
     const institution = data.institution || "";
+    const daysAttended = data.daysAttended || 0;  // Access daysAttended here
+    const attendanceLog = data.attendanceLog || [];  // Access attendance log
 
     const highlightedFullName = highlight
       ? fullName.replace(regex, "<mark>$1</mark>")
@@ -84,6 +86,7 @@ function renderCards(dataArray, highlight = "") {
                     ${data.attendance ? "Present" : "Absent"}
                 </span>
             </p>
+            <p><strong>Days Attended:</strong> ${daysAttended}</p>
             <div class="card-actions">
                 <button onclick="updateParticipant('${
                   data.id
@@ -96,11 +99,36 @@ function renderCards(dataArray, highlight = "") {
                 }')">Toggle Attendance</button>
             </div>
         `;
+    
+    // Make the card clickable to open the attendance log
+    card.addEventListener("click", () => showAttendanceLog(data.fullName, attendanceLog));
+
     container.appendChild(card);
   });
 
   updateParticipantCount(dataArray.length);
 }
+
+// Function to show attendance log in the modal
+function showAttendanceLog(fullName, attendanceLog) {
+  const attendanceLogList = document.getElementById("attendanceLogList");
+  attendanceLogList.innerHTML = "";  // Clear existing list
+  
+  attendanceLog.forEach((attendanceDate) => {
+    const li = document.createElement("li");
+    li.textContent = attendanceDate;
+    attendanceLogList.appendChild(li);
+  });
+
+  // Display the modal
+  document.getElementById("attendanceModal").style.display = "block";
+}
+
+// Function to close the attendance log modal
+function closeAttendanceModal() {
+  document.getElementById("attendanceModal").style.display = "none";
+}
+
 
 // Real-time search
 searchInput.addEventListener("input", function () {
