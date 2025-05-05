@@ -1,0 +1,552 @@
+/* Admin Panel Styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f4f7fa;
+}
+
+/* Login & Dashboard Shared Container */
+.login-container,
+.dashboard-wrapper {
+    max-width: 450px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form Inputs */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #0044cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0033aa;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+thead {
+    background-color: #0044cc;
+    color: white;
+}
+
+th,
+td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #eaeaea;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    thead tr {
+        display: none;
+    }
+
+    td {
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+    }
+
+    td:before {
+        position: absolute;
+        top: 14px;
+        left: 12px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    td:nth-of-type(1):before {
+        content: "Name";
+    }
+
+    td:nth-of-type(2):before {
+        content: "Email";
+    }
+
+    td:nth-of-type(3):before {
+        content: "Phone";
+    }
+
+    td:nth-of-type(4):before {
+        content: "Age";
+    }
+
+    td:nth-of-type(5):before {
+        content: "Blood Group";
+    }
+
+    td:nth-of-type(6):before {
+        content: "Event";
+    }
+
+    td:nth-of-type(7):before {
+        content: "Cost";
+    }
+}
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0044cc;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+    font-size: 1.3rem;
+}
+
+.dashboard-header button {
+    background: white;
+    color: #0044cc;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.dashboard-header button:hover {
+    background: #0033aa;
+    color: white;
+}
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px;
+    gap: 20px;
+}
+
+.participant-card {
+    background: white;
+    padding: 20px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.participant-card h3 {
+    margin: 0 0 10px;
+    color: #0044cc;
+}
+
+.participant-card p {
+    margin: 6px 0;
+}
+
+.participant-card .card-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.participant-card button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    background: #0044cc;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.participant-card button:hover {
+    background: #0033aa;
+}
+/* General Reset & Base */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f4f7fa;
+    color: #333;
+}
+
+/* Header Styling */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0044cc;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+}
+
+.dashboard-header h1 {
+    font-size: 1.3rem;
+    margin: 10px 0;
+    flex: 1;
+}
+
+.dashboard-header button {
+    background: white;
+    color: #0044cc;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.dashboard-header button:hover {
+    background: #0033aa;
+    color: white;
+}
+
+/* Cards Grid Layout */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Card Styling */
+.participant-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.participant-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.participant-card h3 {
+    margin: 0 0 10px;
+    color: #0044cc;
+    font-size: 1.1rem;
+    text-transform: capitalize;
+}
+
+.participant-card p {
+    margin: 6px 0;
+    line-height: 1.4;
+}
+
+/* Action Buttons */
+.card-actions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-actions button {
+    flex: 1;
+    padding: 10px;
+    margin: 0 4px;
+    border: none;
+    border-radius: 6px;
+    background: #0044cc;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.card-actions button:hover {
+    background: #0033aa;
+}
+
+/* Mobile Fixes */
+@media (max-width: 480px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .dashboard-header button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .card-actions button {
+        margin: 4px 0;
+    }
+}
+/* Modal Background */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 30px 20px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    max-width: 400px;
+    position: relative;
+    animation: fadeIn 0.4s;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #0044cc;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 12px;
+    background-color: #0044cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #0033aa;
+}
+
+.close-button {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.qr-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #0a58ca;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(10, 88, 202, 0.4);
+}
+
+.qr-button:hover {
+    background: #084298;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(10, 88, 202, 0.5);
+}
+.card {
+    width: 100%;
+    max-width: 360px;
+    /* ⬅️ adjust as needed */
+    word-break: break-word;
+    /* handles long words/emails */
+    overflow-wrap: anywhere;
+    /* newer and better for long strings */
+    box-sizing: border-box;
+}
+.email {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
+}
+.card {
+    max-width: 360px;
+    /* or whatever you want */
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.email {
+    display: block;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+/* Ensure the email text wraps properly */
+.email-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    display: inline-block;
+    max-width: 100%;
+}
+
+/* Ensure the card has a fixed width and wraps content nicely */
+.participant-card {
+    max-width: 340px;
+    /* You can adjust this as needed */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    word-break: break-word;
+}
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin: 20px 0;
+}
+
+.filter-container label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.filter-container select {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    min-width: 150px;
+    background: #fafafa;
+    transition: border-color 0.2s;
+}
+
+.filter-container select:focus {
+    border-color: #008800;
+    outline: none;
+}
+
+.filter-container button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.filter-container button:first-of-type {
+    background-color: #008800;
+    color: white;
+}
+
+.filter-container button:first-of-type:hover {
+    background-color: #006600;
+}
+
+.filter-container button:last-of-type {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.filter-container button:last-of-type:hover {
+    background-color: #c0c0c0;
+}
+

@@ -1,0 +1,290 @@
+/* Global reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+    color: #222;
+}
+
+/* Header */
+header {
+    background: linear-gradient(to right, #0044cc, #0066ff);
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.logo h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+}
+
+.logo p {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: #ffffff;
+}
+
+.hero h2 {
+    text-align: center;
+    font-size: 2.8rem;
+    color: #0044cc;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #444;
+    margin-bottom: 25px;
+}
+
+.cta-btn {
+    background: #0044cc;
+    color: white;
+    padding: 14px 32px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: 0.3s ease;
+}
+
+.cta-btn:hover {
+    background: #002c88;
+}
+
+/* Event Cards */
+.event-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    padding: 40px 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+}
+
+.card h3 {
+    font-size: 1.6rem;
+    color: #0044cc;
+}
+
+.card p {
+    margin: 10px 0;
+    color: #555;
+}
+
+.price-tag {
+    display: inline-block;
+    margin: 12px 0;
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.2rem;
+}
+
+.event-btn {
+    background: #0044cc;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.event-btn:hover {
+    background: #003199;
+}
+
+/* Form Page */
+.form-page {
+    padding: 50px 20px;
+}
+
+.enroll-form {
+    background: white;
+    max-width: 600px;
+    margin: 50px auto;
+    /* Center the form */
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+}
+
+.enroll-form h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #0044cc;
+}
+
+form label {
+    margin-top: 20px;
+    font-weight: 600;
+    display: block;
+}
+
+form input,
+form select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    font-size: 1rem;
+}
+
+form button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 30px;
+    background: #0044cc;
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+form button:hover {
+    background: #002c88;
+}
+
+.cost-display {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+#message {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.back-btn {
+    display: block;
+    margin-top: 25px;
+    text-align: center;
+    color: #0044cc;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.back-btn:hover {
+    color: #002c88;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #f1f1f1;
+    color: #666;
+    font-size: 0.9rem;
+}
+.admin-body {
+    background: #f4f6f8;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-container,
+.dashboard-container {
+    max-width: 450px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2,
+.dashboard-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #0044cc;
+    color: white;
+}
+
+th,
+td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #0a58ca;
+    color: white;
+}
+
+.admin-login .admin-btn {
+    background-color: white;
+    color: #0a58ca;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.admin-login .admin-btn:hover {
+    background-color: #e2e6ea;
+}
+/* Center the header in form.html */
+.centered-header {
+    text-align: center;
+    /* Align the text to center */
+    padding: 40px 20px;
+    background: linear-gradient(to right, #0044cc, #0066ff);
+    color: #fff;
+}
+
+.centered-header .logo h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.centered-header .logo p {
+    font-size: 1.1rem;
+    font-weight: 300;
+}

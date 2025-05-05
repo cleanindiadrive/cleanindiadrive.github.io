@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marathon 2025 | QR Attendance Scanner</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Adjust path if needed -->
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        background: #f4f6fa;
+      }
+
+      header {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      header h1 {
+        color: #0a58ca;
+      }
+
+      video {
+        width: 100%;
+        max-width: 400px;
+        border: 8px solid #0a58ca;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .result {
+        margin-top: 20px;
+        padding: 15px 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+
+      .result.success {
+        border: 2px solid #28a745;
+        color: #28a745;
+      }
+
+      .result.error {
+        border: 2px solid #dc3545;
+        color: #dc3545;
+      }
+
+      .back-button {
+        margin-top: 10px;
+        background-color: #0a58ca;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s ease;
+      }
+
+      .back-button:hover {
+        background-color: #084298;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Marathon 2025</h1>
+      <p>QR Code Attendance Scanner</p>
+      <button onclick="goBack()" class="back-button">
+        ⬅️ Back to Dashboard
+      </button>
+    </header>
+
+    <video id="qr-video" autoplay muted></video>
+    <div id="scan-result" class="result">Waiting for QR code...</div>
+
+    <!-- QR Scanner Library -->
+    <script src="https://unpkg.com/qr-scanner@1.4.2/qr-scanner.legacy.min.js"></script>
+
+    <!-- Firebase SDKs (compat version like your config) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+      // Your Firebase project configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCRlRwkZrXwIY6b7MgXJe-gvt-tS5-VnjA",
+        authDomain: "clean-up-india.firebaseapp.com",
+        databaseURL:
+          "https://clean-up-india-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "clean-up-india",
+        storageBucket: "clean-up-india.firebasestorage.app",
+        messagingSenderId: "38976459666",
+        appId: "1:38976459666:web:ef0c96c351fb5c4b2e274b",
+        measurementId: "G-WJZC0WXY2F",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      const video = document.getElementById("qr-video");
+      const resultDisplay = document.getElementById("scan-result");
+
+      const scanner = new QrScanner(video, async (result) => {
+        scanner.stop(); // Pause scanner to handle data
+        console.log("QR Code Detected:", result);
+
+        resultDisplay.textContent = "🔍 Searching participant...";
+        resultDisplay.className = "result";
+
+        try {
+          const userId = result.trim();
+          const snapshot = await database
+            .ref("enrollments/" + userId)
+            .once("value");
+          const data = snapshot.val();
+
+          if (data) {
+            await database
+              .ref("enrollments/" + userId)
+              .update({ attendance: true });
+
+            resultDisplay.innerHTML = `✅ Attendance Marked! <br><br>
+                    <strong>Name:</strong> ${data.fullName}<br>
+                    <strong>Institution:</strong> ${data.institution}<br>
+                    <strong>Phone:</strong> ${data.phone}
+                    `;
+            resultDisplay.classList.add("success");
+          } else {
+            resultDisplay.innerHTML = "❌ Invalid QR: No participant found.";
+            resultDisplay.classList.add("error");
+          }
+        } catch (error) {
+          console.error("Error checking Firebase:", error);
+          resultDisplay.textContent =
+            "❌ Error occurred while checking participant.";
+          resultDisplay.classList.add("error");
+        }
+
+        setTimeout(() => {
+          resultDisplay.textContent = "Ready for next scan...";
+          resultDisplay.className = "result";
+          scanner.start(); // Restart scanner for next scan
+        }, 2000); // Wait for 2 seconds before the next scan attempt
+      });
+
+      // Start scanning with optimized settings
+      scanner
+        .start({
+          video: {
+            facingMode: "environment", // Use back camera for faster scanning
+            width: { ideal: 1280 }, // Set resolution to 1280px wide
+            height: { ideal: 720 }, // Set resolution to 720px tall
+          },
+          frameRate: 60, // Increase frame rate for faster detection
+        })
+        .catch((err) => {
+          console.error("Camera access error:", err);
+          resultDisplay.textContent =
+            "❌ Camera not accessible or permission denied.";
+          resultDisplay.classList.add("error");
+        });
+
+      // Back button function
+      function goBack() {
+        window.history.back(); // You can change to window.location.href = "dashboard.html" if you prefer.
+      }
+    </script>
+  </body>
+</html>

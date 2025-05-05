@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Silly Marathon 2025 - Enrollment Form</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #f0f4f8;
+        color: #222;
+      }
+
+      header {
+        background: linear-gradient(to right, #0044cc, #0066ff);
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .logo h1 {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+      }
+
+      .logo p {
+        font-size: 1.1rem;
+        font-weight: 300;
+      }
+
+      .form-page {
+        padding: 50px 20px;
+      }
+
+      .enroll-form {
+        background: white;
+        max-width: 600px;
+        margin: auto;
+        padding: 35px;
+        border-radius: 15px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+      }
+
+      .enroll-form h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #0044cc;
+      }
+
+      form label {
+        margin-top: 20px;
+        font-weight: 600;
+        display: block;
+      }
+
+      form input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 8px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        font-size: 1rem;
+      }
+
+      form button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 30px;
+        background: #0044cc;
+        color: #fff;
+        border: none;
+        border-radius: 40px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      form button:hover {
+        background: #002c88;
+      }
+
+      #message {
+        text-align: center;
+        margin-top: 20px;
+        font-weight: 600;
+      }
+
+      .back-btn {
+        display: block;
+        margin-top: 25px;
+        text-align: center;
+        color: #0044cc;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .back-btn:hover {
+        color: #002c88;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px;
+        background: #f1f1f1;
+        color: #666;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">
+        <h1>Silly Marathon 2025</h1>
+        <p>Race for glory, race for life</p>
+      </div>
+    </header>
+
+    <main class="form-page">
+      <section class="enroll-form">
+        <h2>Register Now</h2>
+        <form id="form">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" required />
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" required />
+
+          <label for="age">Age</label>
+          <input type="number" id="age" name="age" min="12" required />
+
+          <label for="institution">Institution / School Name</label>
+          <input type="text" id="institution" name="institution" required />
+
+          <div style="display: flex; align-items: center; margin-top: 20px">
+            <input
+              type="checkbox"
+              id="agree"
+              required
+              style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer;"
+            />
+            <label for="agree" style="font-size: 14px; line-height: 1.5">
+              I agree to the
+              <a
+                href="privacy.html"
+                target="_blank"
+                style="color: #004aad; text-decoration: underline"
+                >Privacy Policy</a
+              >
+              and
+              <a
+                href="terms.html"
+                target="_blank"
+                style="color: #004aad; text-decoration: underline"
+                >Terms of Use</a
+              >
+            </label>
+          </div>
+
+          <button type="submit">Submit</button>
+        </form>
+
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        <p id="message"></p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Silly Marathon | Powered by Natural Hege</p>
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="terms.html">Terms & Conditions</a>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCRlRwkZrXwIY6b7MgXJe-gvt-tS5-VnjA",
+        authDomain: "clean-up-india.firebaseapp.com",
+        databaseURL: "https://clean-up-india-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "clean-up-india",
+        storageBucket: "clean-up-india.firebasestorage.app",
+        messagingSenderId: "38976459666",
+        appId: "1:38976459666:web:ef0c96c351fb5c4b2e274b",
+        measurementId: "G-WJZC0WXY2F",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <script>
+      const form = document.getElementById("form");
+      const message = document.getElementById("message");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const fullName = form.fullName.value.trim();
+        const email = form.email.value.trim();
+        const phone = form.phone.value.trim();
+        const age = parseInt(form.age.value);
+        const institution = form.institution.value.trim();
+        const compliance = form.querySelector("#agree").checked;
+
+        if (!fullName || !email || !phone || !age || !institution || !compliance) {
+          message.textContent =
+            "❌ Please fill all fields and agree to the Terms and Policy.";
+          return;
+        }
+
+        const userId = Math.floor(10000 + Math.random() * 90000);
+        const newRef = firebase.database().ref("enrollments").push();
+
+        const userData = {
+          userId,
+          fullName,
+          email,
+          phone,
+          age,
+          institution,
+          attendance: false,
+          timestamp: new Date().toISOString(),
+        };
+
+        try {
+          await newRef.set(userData);
+          message.innerHTML = `✅ Registered successfully!<br>Your data has been saved.`;
+          form.reset();
+        } catch (error) {
+          console.error(error);
+          message.textContent = "❌ Error submitting your form.";
+        }
+      });
+    </script>
+  </body>
+</html>
