@@ -17,7 +17,7 @@ const totalCountElement = document.getElementById("totalCount");
 let allData = [];
 
 // Load data from Firebase
-database.ref("enrollments").on("value", (snapshot) => {
+database.ref("volunteer_registrations").on("value", (snapshot) => {
   allData = [];
   container.innerHTML = "";
 
@@ -46,7 +46,7 @@ function renderCards(dataArray, highlight = "") {
   const regex = highlight ? new RegExp(`(${highlight})`, "gi") : null;
 
   dataArray.forEach((data) => {
-    const fullName = data.fullName || "";
+    const fullName = data.fullname || "";
     const userId = data.userId || "";
     const email = data.email || "";
     const phone = data.phone || "";
