@@ -19,83 +19,6 @@
       background: #f6f6f6;
     }
 
-header {
-  position: relative;
-  background-color: #2ecc71; /* Green background */
-  padding: 25px; /* Added units for padding */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.menu {
-  font-size: 30px;
-  cursor: pointer;
-  display: block; /* Ensure it's visible on smaller screens */
-  color: #fff; /* White color for the hamburger */
-  position: absolute; /* Added position absolute */
-  top: 5px; /* Adjusted position */
-  right: 20px; /* This moves the hamburger to the right */
-}
-
-    
-    nav {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    nav ul {
-      list-style-type: none;
-      padding: 0;
-      display: flex;
-    }
-
-    nav ul li {
-      margin: 0 15px;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: #333;
-      font-size: 1rem;
-    }
-
-    nav ul li a:hover {
-      color: #2ecc71;
-    }
-
-    /* Mobile Styles */
-    @media screen and (max-width: 768px) {
-      .menu {
-        display: block; /* Show the hamburger icon on smaller screens */
-      }
-
-      nav {
-        display: none; /* Hide the menu by default */
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: white;
-        text-align: center;
-        padding: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      nav.active {
-        display: block; /* Show the menu when it's active */
-      }
-
-      nav ul {
-        flex-direction: column;
-      }
-
-      nav ul li {
-        margin: 10px 0;
-      }
-    }
-
     .form-container {
       width: 90%;
       max-width: 400px;
@@ -186,15 +109,6 @@ header {
   <header>
     <div class="menu">&#9776;</div>
   </header>
-
-  <nav>
-    <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Services</a></li>
-      <li><a href="#">Contact</a></li>
-    </ul>
-  </nav>
 
   <section class="hero">
     <h1><span class="green">Cleaning Delhi</span></h1>
@@ -320,14 +234,6 @@ header {
         message.textContent = "❌ Error submitting your form.";
       }
     });
-
-    const menu = document.querySelector('.menu');
-    const nav = document.querySelector('nav');
-
-    menu.addEventListener('click', () => {
-      nav.classList.toggle('active');
-    });
   </script>
-
 </body>
 </html>
