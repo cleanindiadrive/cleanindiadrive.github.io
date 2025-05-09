@@ -29,6 +29,71 @@ header {
     color: #fff;
 }
 
+/* Menu and Hamburger Styles */
+.menu {
+    display: flex;
+    justify-content: space-around;
+    font-size: 18px;
+    align-items: center;
+}
+
+.menu a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    font-weight: 600;
+}
+
+.menu-toggle {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    width: 25px;
+    height: 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-toggle .line {
+    width: 100%;
+    height: 4px;
+    background-color: #fff;
+    border-radius: 2px;
+}
+
+/* Default behavior (hamburger on all devices) */
+nav.menu {
+    display: none;
+    /* Hidden by default */
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 100;
+}
+
+nav.menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav.menu ul li {
+    margin-bottom: 15px;
+}
+
+nav.menu ul li a {
+    font-size: 18px;
+    color: #fff;
+}
+
+/* When the menu is active */
+nav.menu.active {
+    display: block;
+}
+
 /* Hero Section */
 .hero {
     padding: 50px 20px 20px;
@@ -93,10 +158,10 @@ header {
     overflow-x: hidden;
 }
 
-/* Keep horizontal layout at all sizes */
 .card {
     display: flex;
     flex-direction: row;
+    /* Horizontal layout by default */
     justify-content: space-between;
     align-items: flex-start;
     background: white;
@@ -142,14 +207,35 @@ header {
     white-space: nowrap;
 }
 
-/* Keep image fixed on right */
+/* Image stays fixed on the right in large screens */
 .bottle-img {
     width: 160px;
     margin-top: 60px;
     flex-shrink: 0;
     align-self: flex-start;
+    object-fit: contain;
 }
 
+/* Mobile view: Stack the bottle image below the text */
+@media screen and (max-width: 768px) {
+    .card {
+        flex-direction: column;
+        /* Change to column layout on mobile */
+        padding: 30px 40px;
+        /* Reduced padding for mobile */
+        gap: 20px;
+        /* Reduced gap for mobile */
+    }
+
+    .bottle-img {
+        width: 140px;
+        /* Slightly smaller image on mobile */
+        margin-top: 20px;
+        /* Adjusted margin for better alignment */
+        align-self: center;
+        /* Center the image below the text */
+    }
+}
 /* What You Get Section */
 .what-you-get {
     background-color: rgba(48, 186, 105, 0.97);
@@ -303,94 +389,4 @@ ul.get-list {
     .get-heading {
         font-size: 22px;
     }
-}
-/* Form Section */
-.form-section {
-    display: flex;
-    justify-content: center;
-    padding: 60px 20px;
-    background: url('assets/bg.png') no-repeat center center fixed;
-}
-
-.form-container {
-    width: 100%;
-    max-width: 400px;
-    background: #fff;
-    padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-}
-
-.form-container h2 {
-    text-align: center;
-    font-size: 1.4rem;
-    color: #333;
-    font-weight: 600;
-}
-
-.form-container p {
-    text-align: center;
-    color: #aaa;
-    font-size: 0.9rem;
-    margin-bottom: 25px;
-}
-
-label {
-    font-size: 0.9rem;
-    color: #444;
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="number"] {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 20px;
-    border: 1.5px solid #ddd;
-    border-radius: 6px;
-    font-size: 0.95rem;
-}
-
-input[type="checkbox"] {
-    margin-right: 10px;
-    transform: scale(1.2);
-    vertical-align: middle;
-}
-
-.terms {
-    font-size: 0.85rem;
-    color: #555;
-    margin-bottom: 20px;
-}
-
-.terms a {
-    color: #2ecc71;
-    text-decoration: none;
-}
-
-button {
-    width: 100%;
-    background-color: #2ecc71;
-    border: none;
-    padding: 14px;
-    border-radius: 999px;
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-button:hover {
-    background-color: #27ae60;
-}
-
-#message {
-    text-align: center;
-    margin-top: 15px;
-    font-size: 0.9rem;
 }
