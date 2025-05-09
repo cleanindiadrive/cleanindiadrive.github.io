@@ -17,7 +17,75 @@
     body {
       font-family: "Poppins", sans-serif;
       background: #f6f6f6;
+      background: url('assets/bg.png') no-repeat center center fixed;
     }
+
+    header {
+      position: relative;
+      background-color: #2ecc71;
+      padding: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu {
+      font-size: 30px;
+      cursor: pointer;
+      color: #fff;
+      position: absolute;
+      top: 5px;
+      right: 20px;
+      display: block;
+    }
+
+    /* Hide nav by default */
+    nav {
+      display: none;
+    }
+
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    nav ul li a:hover {
+      color: #2ecc71;
+    }
+
+    @media screen and (max-width: 768px) {
+      nav.active {
+        display: block;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: white;
+        text-align: center;
+        padding: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      nav ul {
+        flex-direction: column;
+      }
+
+      nav ul li {
+        margin: 10px 0;
+      }
+    }
+
 
     .form-container {
       width: 90%;
@@ -110,6 +178,15 @@
     <div class="menu">&#9776;</div>
   </header>
 
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
   <section class="hero">
     <h1><span class="green">Cleaning Delhi</span></h1>
     <p class="subtitle">The world's most unique internship</p>
@@ -119,16 +196,17 @@
     <p class="link-sm">In association with Pehli Aasha Foundation</p>
   </section>
 
-  <section class="why-hege">
-    <div class="card">
-      <div class="text">
-        <h2>Why is Hege doing this?</h2>
-        <p class="card-desc">is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an</p>
-        <a href="#" class="cta-button">naturalhege.com</a>
-      </div>
-      <img src="assets/bottle.png" alt="Hege Bottle" class="bottle-img">
+<section class="why-hege">
+  <div class="card">
+    <div class="text">
+      <h2>Why is Hege doing this?</h2>
+      <p class="card-desc">is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an</p>
+      <a href="https://naturalhege.com/" class="cta-button" target="_blank">naturalhege.com</a>
     </div>
-  </section>
+    <img src="assets/bottle.png" alt="Hege Bottle" class="bottle-img">
+  </div>
+</section>
+
 
   <section class="what-you-get">
     <div class="get-container">
@@ -143,7 +221,6 @@
     </div>
   </section>
 
-  <!-- Form Section Starts Here -->
   <div class="form-container">
     <h2>Register To Volunteer</h2>
     <p>We Need You To Join The Movement!</p>
@@ -234,6 +311,14 @@
         message.textContent = "❌ Error submitting your form.";
       }
     });
+
+    const menu = document.querySelector('.menu');
+    const nav = document.querySelector('nav');
+
+    menu.addEventListener('click', () => {
+      nav.classList.toggle('active');
+    });
   </script>
+
 </body>
 </html>

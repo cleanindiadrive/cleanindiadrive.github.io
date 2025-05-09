@@ -1,333 +1,362 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cleaning Delhi Internship</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cleaning Delhi Internship</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #f6f6f6;
-    }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #f6f6f6;
+        background: url("assets/bg.png") no-repeat center center fixed;
+      }
 
-header {
-  position: relative;
-  background-color: #2ecc71; /* Green background */
-  padding: 25px; /* Added units for padding */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+      header {
+        position: relative;
+        background-color: #2ecc71;
+        padding: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-.menu {
-  font-size: 30px;
-  cursor: pointer;
-  display: block; /* Ensure it's visible on smaller screens */
-  color: #fff; /* White color for the hamburger */
-  position: absolute; /* Added position absolute */
-  top: 5px; /* Adjusted position */
-  right: 20px; /* This moves the hamburger to the right */
-}
-
-    
-    nav {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    nav ul {
-      list-style-type: none;
-      padding: 0;
-      display: flex;
-    }
-
-    nav ul li {
-      margin: 0 15px;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: #333;
-      font-size: 1rem;
-    }
-
-    nav ul li a:hover {
-      color: #2ecc71;
-    }
-
-    /* Mobile Styles */
-    @media screen and (max-width: 768px) {
       .menu {
-        display: block; /* Show the hamburger icon on smaller screens */
-      }
-
-      nav {
-        display: none; /* Hide the menu by default */
+        font-size: 30px;
+        cursor: pointer;
+        color: #fff;
         position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: white;
-        text-align: center;
-        padding: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        top: 5px;
+        right: 20px;
+        display: block;
       }
 
-      nav.active {
-        display: block; /* Show the menu when it's active */
+      /* Hide nav by default */
+      nav {
+        display: none;
       }
 
       nav ul {
-        flex-direction: column;
+        list-style-type: none;
+        padding: 0;
+        display: flex;
       }
 
       nav ul li {
-        margin: 10px 0;
+        margin: 0 15px;
       }
-    }
 
-    .form-container {
-      width: 90%;
-      max-width: 400px;
-      background: #fff;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-      margin: 50px auto;
-    }
+      nav ul li a {
+        text-decoration: none;
+        color: #333;
+        font-size: 1rem;
+      }
 
-    .form-container h2 {
-      text-align: center;
-      font-size: 1.4rem;
-      color: #333;
-      font-weight: 600;
-    }
+      nav ul li a:hover {
+        color: #2ecc71;
+      }
 
-    .form-container p {
-      text-align: center;
-      color: #aaa;
-      font-size: 0.9rem;
-      margin-bottom: 25px;
-    }
+      @media screen and (max-width: 768px) {
+        nav.active {
+          display: block;
+          position: absolute;
+          top: 60px;
+          left: 0;
+          right: 0;
+          background: white;
+          text-align: center;
+          padding: 10px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-    label {
-      font-size: 0.9rem;
-      color: #444;
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
+        nav ul {
+          flex-direction: column;
+        }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px 12px;
-      margin-bottom: 20px;
-      border: 1.5px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
+        nav ul li {
+          margin: 10px 0;
+        }
+      }
 
-    input[type="checkbox"] {
-      margin-right: 10px;
-      transform: scale(1.2);
-      vertical-align: middle;
-    }
+      .form-container {
+        width: 90%;
+        max-width: 400px;
+        background: #fff;
+        padding: 40px 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        margin: 50px auto;
+      }
 
-    .terms {
-      font-size: 0.85rem;
-      color: #555;
-      margin-bottom: 20px;
-    }
+      .form-container h2 {
+        text-align: center;
+        font-size: 1.4rem;
+        color: #333;
+        font-weight: 600;
+      }
 
-    .terms a {
-      color: #2ecc71;
-      text-decoration: none;
-    }
+      .form-container p {
+        text-align: center;
+        color: #aaa;
+        font-size: 0.9rem;
+        margin-bottom: 25px;
+      }
 
-    button {
-      width: 100%;
-      background-color: #2ecc71;
-      border: none;
-      padding: 14px;
-      border-radius: 999px;
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
+      label {
+        font-size: 0.9rem;
+        color: #444;
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
 
-    button:hover {
-      background-color: #27ae60;
-    }
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="number"] {
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 20px;
+        border: 1.5px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
 
-    #message {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
+      input[type="checkbox"] {
+        margin-right: 10px;
+        transform: scale(1.2);
+        vertical-align: middle;
+      }
 
-  <header>
-    <div class="menu">&#9776;</div>
-  </header>
+      .terms {
+        font-size: 0.85rem;
+        color: #555;
+        margin-bottom: 20px;
+      }
 
-  <nav>
-    <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Services</a></li>
-      <li><a href="#">Contact</a></li>
-    </ul>
-  </nav>
+      .terms a {
+        color: #2ecc71;
+        text-decoration: none;
+      }
 
-  <section class="hero">
-    <h1><span class="green">Cleaning Delhi</span></h1>
-    <p class="subtitle">The world's most unique internship</p>
-    <img src="assets/logo.png" alt="Hege logo" class="logo">
-    <p class="site-link">naturalhege.com</p>
-    <p class="link">Also, what does <span class="highlight">Silly Sensei</span> have to do with this?</p>
-    <p class="link-sm">In association with Pehli Aasha Foundation</p>
-  </section>
+      button {
+        width: 100%;
+        background-color: #2ecc71;
+        border: none;
+        padding: 14px;
+        border-radius: 999px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
 
-  <section class="why-hege">
-    <div class="card">
-      <div class="text">
-        <h2>Why is Hege doing this?</h2>
-        <p class="card-desc">is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an</p>
-        <a href="#" class="cta-button">naturalhege.com</a>
-      </div>
-      <img src="assets/bottle.png" alt="Hege Bottle" class="bottle-img">
-    </div>
-  </section>
+      button:hover {
+        background-color: #27ae60;
+      }
 
-  <section class="what-you-get">
-    <div class="get-container">
-      <h2 class="get-heading">What You Get?</h2>
-      <p class="get-sub">A cleaner city &amp; a resume boost!</p>
-      <ul class="get-list">
-        <li><span>30 day internship</span></li>
-        <li><span>A certificate of experience from Natural Hege</span></li>
-        <li><span>The event will attract millions of views and you get to be a part of it</span></li>
+      #message {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="menu">&#9776;</div>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
       </ul>
-      <div class="cta-oval"></div>
-    </div>
-  </section>
+    </nav>
 
-  <!-- Form Section Starts Here -->
-  <div class="form-container">
-    <h2>Register To Volunteer</h2>
-    <p>We Need You To Join The Movement!</p>
-    <form id="form">
-      <label>Full Name</label>
-      <input type="text" name="fullname" required />
+    <section class="hero">
+      <h1><span class="green">Cleaning Delhi</span></h1>
+      <p class="subtitle">The world's most unique internship</p>
+      <img src="assets/logo.png" alt="Hege logo" class="logo" />
+      <!--<p class="site-link">naturalhege.com</p>-->
+      <p class="link">
+        Also, what does
+        <a
+          href="https://www.instagram.com/silly.sensei/?hl=en"
+          target="_blank"
+          class="highlight"
+          >Silly Sensei</a
+        >
+        have to do with this?
+      </p>
 
-      <label>Email</label>
-      <input type="email" name="email" required />
+      <p class="link-sm">In association with         <a
+          href="https://www.instagram.com/pehliaashango/"
+            target="_blank"
+            class="highlight"
+            style="color: #2ecc71;"
+          >Pehli Aasha Foundation</a
+        ></p>
+    </section>
 
-      <label>Phone</label>
-      <input type="tel" name="phone" required />
-
-      <label>Age</label>
-      <input type="number" name="age" min="12" required />
-
-      <label>Institution / School Name</label>
-      <input type="text" name="institution" required />
-
-      <div class="terms">
-        <input type="checkbox" id="agree" required />
-        I agree to the
-        <a href="privacy.html" target="_blank">Privacy Policy</a> and
-        <a href="terms.html" target="_blank">Terms of Use</a>
+    <section class="why-hege">
+      <div class="card">
+        <div class="text">
+          <h2>Why is Hege doing this?</h2>
+          <p class="card-desc">
+            is simply dummy text of the printing and typesetting industry. Lorem
+            Ipsum has been the industry's standard dummy text ever since the
+            1500s, when an
+          </p>
+          <a href="https://naturalhege.com/" class="cta-button" target="_blank"
+            >naturalhege.com</a
+          >
+        </div>
+        <img src="assets/bottle.png" alt="Hege Bottle" class="bottle-img" />
       </div>
+    </section>
 
-      <button type="submit">Submit</button>
-      <p id="message"></p>
-    </form>
-  </div>
+    <section class="what-you-get">
+      <div class="get-container">
+        <h2 class="get-heading">What You Get?</h2>
+        <p class="get-sub">A cleaner city &amp; a resume boost!</p>
+        <ul class="get-list">
+          <li><span>30 day internship</span></li>
+          <li><span>A certificate of experience from Natural Hege</span></li>
+          <li>
+            <span
+              >The event will attract millions of views and you get to be a part
+              of it</span
+            >
+          </li>
+        </ul>
+        <div class="cta-oval"></div>
+      </div>
+    </section>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <div class="form-container">
+      <h2>Register To Volunteer</h2>
+      <p>We Need You To Join The Movement!</p>
+      <form id="form">
+        <label>Full Name</label>
+        <input type="text" name="fullname" required />
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCRlRwkZrXwIY6b7MgXJe-gvt-tS5-VnjA",
-      authDomain: "clean-up-india.firebaseapp.com",
-      databaseURL: "https://clean-up-india-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "clean-up-india",
-      storageBucket: "clean-up-india.appspot.com",
-      messagingSenderId: "38976459666",
-      appId: "1:38976459666:web:ef0c96c351fb5c4b2e274b",
-      measurementId: "G-WJZC0WXY2F",
-    };
+        <label>Email</label>
+        <input type="email" name="email" required />
 
-    firebase.initializeApp(firebaseConfig);
+        <label>Phone</label>
+        <input type="tel" name="phone" required />
 
-    const form = document.getElementById("form");
-    const message = document.getElementById("message");
+        <label>Age</label>
+        <input type="number" name="age" min="12" required />
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+        <label>Institution / School Name</label>
+        <input type="text" name="institution" required />
 
-      const fullname = form.fullname.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const age = parseInt(form.age.value);
-      const institution = form.institution.value.trim();
-      const compliance = form.querySelector("#agree").checked;
+        <div class="terms">
+          <input type="checkbox" id="agree" required />
+          I agree to the
+          <a href="privacy.html" target="_blank">Privacy Policy</a> and
+          <a href="terms.html" target="_blank">Terms of Use</a>
+        </div>
 
-      if (!fullname || !email || !phone || !age || !institution || !compliance) {
-        message.textContent = "❌ Please complete all fields and accept the terms.";
-        return;
-      }
+        <button type="submit">Submit</button>
+        <p id="message"></p>
+      </form>
+    </div>
 
-      const userId = Math.floor(10000 + Math.random() * 90000);
-      const newRef = firebase.database().ref("volunteer_registrations").push();
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-      const userData = {
-        userId,
-        fullname,
-        email,
-        phone,
-        age,
-        institution,
-        attendance: false,
-        timestamp: new Date().toISOString(),
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCRlRwkZrXwIY6b7MgXJe-gvt-tS5-VnjA",
+        authDomain: "clean-up-india.firebaseapp.com",
+        databaseURL:
+          "https://clean-up-india-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "clean-up-india",
+        storageBucket: "clean-up-india.appspot.com",
+        messagingSenderId: "38976459666",
+        appId: "1:38976459666:web:ef0c96c351fb5c4b2e274b",
+        measurementId: "G-WJZC0WXY2F",
       };
 
-      try {
-        await newRef.set(userData);
-        message.textContent = "✅ Registered successfully!";
-        form.reset();
-      } catch (error) {
-        console.error(error);
-        message.textContent = "❌ Error submitting your form.";
-      }
-    });
+      firebase.initializeApp(firebaseConfig);
 
-    const menu = document.querySelector('.menu');
-    const nav = document.querySelector('nav');
+      const form = document.getElementById("form");
+      const message = document.getElementById("message");
 
-    menu.addEventListener('click', () => {
-      nav.classList.toggle('active');
-    });
-  </script>
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-</body>
+        const fullname = form.fullname.value.trim();
+        const email = form.email.value.trim();
+        const phone = form.phone.value.trim();
+        const age = parseInt(form.age.value);
+        const institution = form.institution.value.trim();
+        const compliance = form.querySelector("#agree").checked;
+
+        if (
+          !fullname ||
+          !email ||
+          !phone ||
+          !age ||
+          !institution ||
+          !compliance
+        ) {
+          message.textContent =
+            "❌ Please complete all fields and accept the terms.";
+          return;
+        }
+
+        const userId = Math.floor(10000 + Math.random() * 90000);
+        const newRef = firebase
+          .database()
+          .ref("volunteer_registrations")
+          .push();
+
+        const userData = {
+          userId,
+          fullname,
+          email,
+          phone,
+          age,
+          institution,
+          attendance: false,
+          timestamp: new Date().toISOString(),
+        };
+
+        try {
+          await newRef.set(userData);
+          message.textContent = "✅ Registered successfully!";
+          form.reset();
+        } catch (error) {
+          console.error(error);
+          message.textContent = "❌ Error submitting your form.";
+        }
+      });
+
+      const menu = document.querySelector(".menu");
+      const nav = document.querySelector("nav");
+
+      menu.addEventListener("click", () => {
+        nav.classList.toggle("active");
+      });
+    </script>
+  </body>
 </html>
