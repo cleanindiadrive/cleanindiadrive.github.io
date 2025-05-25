@@ -1,324 +1,114 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cleaning Delhi Internship</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
 
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #f6f6f6;
-      background: url('assets/bg.png') no-repeat center center fixed;
-    }
+.animated-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 36px;
+  border: 4px solid;
+  border-color: transparent;
+  font-size: 16px;
+  background-color: inherit;
+  border-radius: 100px;
+  font-weight: 600;
+  color: greenyellow;
+  box-shadow: 0 0 0 2px greenyellow;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
-    header {
-      position: relative;
-      background-color: #2ecc71;
-      padding: 25px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.animated-button svg {
+  position: absolute;
+  width: 24px;
+  fill: greenyellow;
+  z-index: 9;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
-    .menu {
-      font-size: 30px;
-      cursor: pointer;
-      color: #fff;
-      position: absolute;
-      top: 5px;
-      right: 20px;
-      display: block;
-    }
+.animated-button .arr-1 {
+  right: 16px;
+}
 
-    /* Hide nav by default */
-    nav {
-      display: none;
-    }
+.animated-button .arr-2 {
+  left: -25%;
+}
 
-    nav ul {
-      list-style-type: none;
-      padding: 0;
-      display: flex;
-    }
+.animated-button .circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background-color: greenyellow;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
-    nav ul li {
-      margin: 0 15px;
-    }
+.animated-button .text {
+  position: relative;
+  z-index: 1;
+  transform: translateX(-12px);
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
-    nav ul li a {
-      text-decoration: none;
-      color: #333;
-      font-size: 1rem;
-    }
+.animated-button:hover {
+  box-shadow: 0 0 0 12px transparent;
+  color: #212121;
+  border-radius: 12px;
+}
 
-    nav ul li a:hover {
-      color: #2ecc71;
-    }
+.animated-button:hover .arr-1 {
+  right: -25%;
+}
 
-    @media screen and (max-width: 768px) {
-      nav.active {
-        display: block;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: white;
-        text-align: center;
-        padding: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+.animated-button:hover .arr-2 {
+  left: 16px;
+}
 
-      nav ul {
-        flex-direction: column;
-      }
+.animated-button:hover .text {
+  transform: translateX(12px);
+}
 
-      nav ul li {
-        margin: 10px 0;
-      }
-    }
+.animated-button:hover svg {
+  fill: #212121;
+}
+
+.animated-button:active {
+  scale: 0.95;
+  box-shadow: 0 0 0 4px greenyellow;
+}
+
+.animated-button:hover .circle {
+  width: 220px;
+  height: 220px;
+  opacity: 1;
+}
 
 
-    .form-container {
-      width: 90%;
-      max-width: 400px;
-      background: #fff;
-      padding: 40px 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-      margin: 50px auto;
-    }
-
-    .form-container h2 {
-      text-align: center;
-      font-size: 1.4rem;
-      color: #333;
-      font-weight: 600;
-    }
-
-    .form-container p {
-      text-align: center;
-      color: #aaa;
-      font-size: 0.9rem;
-      margin-bottom: 25px;
-    }
-
-    label {
-      font-size: 0.9rem;
-      color: #444;
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px 12px;
-      margin-bottom: 20px;
-      border: 1.5px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-
-    input[type="checkbox"] {
-      margin-right: 10px;
-      transform: scale(1.2);
-      vertical-align: middle;
-    }
-
-    .terms {
-      font-size: 0.85rem;
-      color: #555;
-      margin-bottom: 20px;
-    }
-
-    .terms a {
-      color: #2ecc71;
-      text-decoration: none;
-    }
-
-    button {
-      width: 100%;
-      background-color: #2ecc71;
-      border: none;
-      padding: 14px;
-      border-radius: 999px;
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #27ae60;
-    }
-
-    #message {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 0.9rem;
-    }
-  </style>
+</style>
 </head>
 <body>
-
-  <header>
-    <div class="menu">&#9776;</div>
-  </header>
-
-  <nav>
-    <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Services</a></li>
-      <li><a href="#">Contact</a></li>
-    </ul>
-  </nav>
-
-  <section class="hero">
-    <h1><span class="green">Cleaning Delhi</span></h1>
-    <p class="subtitle">The world's most unique internship</p>
-    <img src="assets/logo.png" alt="Hege logo" class="logo">
-    <p class="site-link">naturalhege.com</p>
-    <p class="link">Also, what does <span class="highlight">Silly Sensei</span> have to do with this?</p>
-    <p class="link-sm">In association with Pehli Aasha Foundation</p>
-  </section>
-
-<section class="why-hege">
-  <div class="card">
-    <div class="text">
-      <h2>Why is Hege doing this?</h2>
-      <p class="card-desc">is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an</p>
-      <a href="https://naturalhege.com/" class="cta-button" target="_blank">naturalhege.com</a>
-    </div>
-    <img src="assets/bottle.png" alt="Hege Bottle" class="bottle-img">
-  </div>
-</section>
-
-
-  <section class="what-you-get">
-    <div class="get-container">
-      <h2 class="get-heading">What You Get?</h2>
-      <p class="get-sub">A cleaner city &amp; a resume boost!</p>
-      <ul class="get-list">
-        <li><span>30 day internship</span></li>
-        <li><span>A certificate of experience from Natural Hege</span></li>
-        <li><span>The event will attract millions of views and you get to be a part of it</span></li>
-      </ul>
-      <div class="cta-oval"></div>
-    </div>
-  </section>
-
-  <div class="form-container">
-    <h2>Register To Volunteer</h2>
-    <p>We Need You To Join The Movement!</p>
-    <form id="form">
-      <label>Full Name</label>
-      <input type="text" name="fullname" required />
-
-      <label>Email</label>
-      <input type="email" name="email" required />
-
-      <label>Phone</label>
-      <input type="tel" name="phone" required />
-
-      <label>Age</label>
-      <input type="number" name="age" min="12" required />
-
-      <label>Institution / School Name</label>
-      <input type="text" name="institution" required />
-
-      <div class="terms">
-        <input type="checkbox" id="agree" required />
-        I agree to the
-        <a href="privacy.html" target="_blank">Privacy Policy</a> and
-        <a href="terms.html" target="_blank">Terms of Use</a>
-      </div>
-
-      <button type="submit">Submit</button>
-      <p id="message"></p>
-    </form>
-  </div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCRlRwkZrXwIY6b7MgXJe-gvt-tS5-VnjA",
-      authDomain: "clean-up-india.firebaseapp.com",
-      databaseURL: "https://clean-up-india-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "clean-up-india",
-      storageBucket: "clean-up-india.appspot.com",
-      messagingSenderId: "38976459666",
-      appId: "1:38976459666:web:ef0c96c351fb5c4b2e274b",
-      measurementId: "G-WJZC0WXY2F",
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    const form = document.getElementById("form");
-    const message = document.getElementById("message");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const fullname = form.fullname.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const age = parseInt(form.age.value);
-      const institution = form.institution.value.trim();
-      const compliance = form.querySelector("#agree").checked;
-
-      if (!fullname || !email || !phone || !age || !institution || !compliance) {
-        message.textContent = "❌ Please complete all fields and accept the terms.";
-        return;
-      }
-
-      const userId = Math.floor(10000 + Math.random() * 90000);
-      const newRef = firebase.database().ref("volunteer_registrations").push();
-
-      const userData = {
-        userId,
-        fullname,
-        email,
-        phone,
-        age,
-        institution,
-        attendance: false,
-        timestamp: new Date().toISOString(),
-      };
-
-      try {
-        await newRef.set(userData);
-        message.textContent = "✅ Registered successfully!";
-        form.reset();
-      } catch (error) {
-        console.error(error);
-        message.textContent = "❌ Error submitting your form.";
-      }
-    });
-
-    const menu = document.querySelector('.menu');
-    const nav = document.querySelector('nav');
-
-    menu.addEventListener('click', () => {
-      nav.classList.toggle('active');
-    });
-  </script>
-
+  <button class="animated-button">
+    <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+      ></path>
+    </svg>
+    <span class="text">Modern Button</span>
+    <span class="circle"></span>
+    <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+      ></path>
+    </svg>
+  </button>
+  
 </body>
 </html>
