@@ -693,12 +693,11 @@ input[type="checkbox"] {
     font-weight: 600;
 }
 
-/* Enhanced Mobile styles - KEY FIXES HERE */
+/* Enhanced Mobile styles - NO HORIZONTAL SCROLL */
 @media screen and (max-width: 768px) {
     header {
         padding: 20px;
         position: relative;
-        /* Fixed: Ensure header has proper positioning context */
     }
 
     .logo-area h1 {
@@ -708,11 +707,8 @@ input[type="checkbox"] {
     /* Fixed mobile navigation */
     nav {
         display: none;
-        /* Hidden by default */
         position: absolute;
-        /* Fixed: Use absolute positioning */
         top: 100%;
-        /* Fixed: Position below header */
         left: 0;
         right: 0;
         background: white;
@@ -722,14 +718,12 @@ input[type="checkbox"] {
         z-index: 1000;
         border-radius: 0 0 20px 20px;
         backdrop-filter: blur(20px);
-        /* Fixed: Add smooth transition */
         opacity: 0;
         transform: translateY(-20px);
         transition: all 0.3s ease;
         pointer-events: none;
     }
 
-    /* Fixed active state */
     nav.active {
         display: block;
         opacity: 1;
@@ -755,7 +749,6 @@ input[type="checkbox"] {
         transform: none;
     }
 
-    /* Removed mobile hover background effects too */
     nav ul li a:hover {
         color: #2ecc71;
         transform: none;
@@ -786,38 +779,32 @@ input[type="checkbox"] {
         margin: 15px 0;
     }
 
-    /* Enhanced mobile cards with half-screen bottle layout */
+    /* FIXED: Mobile cards - NO horizontal scroll, bottle outside card */
     .why-hege {
         padding: 50px 20px;
+        /* Add overflow hidden to the container to prevent horizontal scroll */
+        overflow: hidden;
     }
 
     .card {
-        /* Keep flexbox but change to row layout on mobile */
         flex-direction: row;
         text-align: left;
-        padding: 40px 30px;
-        /* Increased horizontal padding for wider cards */
+        padding: 30px 25px;
         margin-bottom: 30px;
-        gap: 25px;
-        /* Slightly more gap */
+        gap: 20px;
         position: relative;
-        /* Enable bottle positioning */
+        /* Remove overflow hidden from card so bottle can extend outside */
         overflow: visible;
-        /* Allow bottle to extend outside */
-        width: calc(100% + 40px);
-        /* Make cards wider than container */
-        margin-left: -20px;
-        /* Center the wider cards */
-        margin-right: -20px;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .card .text {
         flex: 1;
-        /* Text takes available space */
-        padding-right: 30px;
-        /* More space for bottle overlap */
+        min-width: 0;
+        padding-right: 20px;
         z-index: 2;
-        /* Text above bottle */
         position: relative;
     }
 
@@ -832,28 +819,25 @@ input[type="checkbox"] {
         margin-bottom: 25px;
     }
 
-    /* Mobile bottle positioning - half off-screen */
+    /* Mobile bottle positioning - OUTSIDE the card but contained by parent */
     .bottle-img {
-        max-width: 220px;
-        /* Larger bottle for more visual impact */
+        max-width: 180px;
         position: absolute;
-        right: -110px;
-        /* More off-screen positioning */
-        top: 50%;
+        /* Position bottle outside the card to the right */
+        right: -95px;
+        top: 30%;
         transform: translateY(-50%);
-        /* Center vertically */
         z-index: 1;
-        /* Behind text */
-        opacity: 0.9;
-        /* Slightly transparent to not overpower text */
+        opacity: 0.8;
         transition: all 0.4s ease;
+        max-height: 220px;
+        object-fit: contain;
     }
 
-    /* Hover effect for mobile bottle */
+    /* Hover effect - bottle slides in slightly */
     .card:hover .bottle-img {
-        right: -100px;
-        /* Slide in slightly on hover */
-        opacity: 1;
+        right: -75px;
+        opacity: 0.95;
         transform: translateY(-50%) scale(1.05);
     }
 
@@ -862,12 +846,12 @@ input[type="checkbox"] {
         font-size: 1rem;
         position: relative;
         z-index: 3;
-        /* Above everything */
     }
 
     /* Enhanced mobile what you get section */
     .what-you-get {
-        padding: 60px 20px;
+        padding: 60px 15px;
+        /* Consistent padding */
     }
 
     .get-heading {
@@ -899,9 +883,14 @@ input[type="checkbox"] {
 
     /* Enhanced mobile form */
     .form-container {
-        padding: 40px 30px;
-        margin: 50px auto;
-        max-width: 95%;
+        padding: 40px 25px;
+        /* Consistent padding */
+        margin: 50px 15px;
+        /* Side margins to prevent edge touching */
+        max-width: calc(100% - 30px);
+        /* Ensure it fits with margins */
+        width: auto;
+        /* Let it size naturally */
     }
 
     .form-container h2 {
@@ -979,28 +968,21 @@ input[type="checkbox"] {
         flex-direction: row;
         text-align: left;
         overflow: hidden;
-        /* Restore overflow hidden for desktop */
     }
 
     .card .text {
         padding: 0;
-        /* Remove mobile padding */
     }
 
     .bottle-img {
         position: static;
-        /* Reset positioning for desktop */
         opacity: 1;
-        /* Full opacity on desktop */
         max-width: 220px;
-        /* Original desktop size */
         transform: none;
-        /* Reset transform */
     }
 
     .bottle-img:hover {
         transform: scale(1.05) rotate(-5deg);
-        /* Restore desktop hover */
     }
 
     /* Enhanced two-column layout for large screens */
