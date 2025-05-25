@@ -4,396 +4,349 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Cleaning Delhi Internship</title>
-    <link rel="stylesheet" href="style.css" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-
+    <link rel="stylesheet" href="style.css" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Poppins", sans-serif;
-        background: #f6f6f6;
-        background: url("assets/bg.png") no-repeat center center fixed;
-      }
-
-      header {
-        position: relative;
-        background-color: #2ecc71;
-        padding: 25px;
+      /* Navigation Styles */
+ /*     header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        padding: 1rem 2rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo-area h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .green {
+        color: #2ecc71;
       }
 
       .menu {
-        font-size: 30px;
+        display: none;
+        font-size: 1.5rem;
         cursor: pointer;
-        color: #fff;
-        position: absolute;
-        top: 5px;
-        right: 20px;
-        display: block;
+        padding: 0.5rem;
+        user-select: none;
+        transition: transform 0.3s ease;
+        color: #000000;
       }
 
-      /* Hide nav by default */
-      nav {
-        display: none;
+      .menu:hover {
+        transform: scale(1.1);
+      }
+
+      .menu.active {
+        transform: rotate(90deg);
       }
 
       nav ul {
-        list-style-type: none;
-        padding: 0;
         display: flex;
-      }
-
-      nav ul li {
-        margin: 0 15px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 2rem;
       }
 
       nav ul li a {
         text-decoration: none;
-        color: #333;
-        font-size: 1rem;
+        color: #000000;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
       }
 
       nav ul li a:hover {
         color: #2ecc71;
+        background: rgba(46, 204, 113, 0.1);
       }
+      */
 
-      @media screen and (max-width: 768px) {
-        nav.active {
+      /* Mobile Navigation Styles */
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+        }
+
+        .menu {
           display: block;
-          position: absolute;
-          top: 60px;
-          left: 0;
+          z-index: 1001;
+        }
+
+        nav {
+          position: fixed;
+          top: 0;
+          right: -100%;
+          width: 80%;
+          max-width: 300px;
+          height: 100vh;
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(20px);
+          transition: right 0.3s ease;
+          box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+        }
+
+        nav.active {
           right: 0;
-          background: white;
-          text-align: center;
-          padding: 10px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         nav ul {
           flex-direction: column;
+          padding: 6rem 2rem 2rem;
+          gap: 0;
+          height: 100%;
         }
 
         nav ul li {
-          margin: 10px 0;
+          width: 100%;
         }
-      }
 
-      .form-container {
-        width: 90%;
-        max-width: 400px;
-        background: #fff;
-        padding: 40px 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-        margin: 50px auto;
-      }
+        nav ul li a {
+          display: block;
+          padding: 1rem;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          font-size: 1.1rem;
+        }
 
-      .form-container h2 {
-        text-align: center;
-        font-size: 1.4rem;
-        color: #333;
-        font-weight: 600;
-      }
-
-      .form-container p {
-        text-align: center;
-        color: #aaa;
-        font-size: 0.9rem;
-        margin-bottom: 25px;
-      }
-
-      label {
-        font-size: 0.9rem;
-        color: #444;
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 500;
-      }
-
-      input[type="text"],
-      input[type="email"],
-      input[type="tel"],
-      input[type="number"] {
-        width: 100%;
-        padding: 10px 12px;
-        margin-bottom: 20px;
-        border: 1.5px solid #ddd;
-        border-radius: 6px;
-        font-size: 0.95rem;
-      }
-
-      input[type="checkbox"] {
-        margin-right: 10px;
-        transform: scale(1.2);
-        vertical-align: middle;
-      }
-
-      .terms {
-        font-size: 0.85rem;
-        color: #555;
-        margin-bottom: 20px;
-      }
-
-      .terms a {
-        color: #2ecc71;
-        text-decoration: none;
-      }
-
-      button {
-        width: 100%;
-        background-color: #2ecc71;
-        border: none;
-        padding: 14px;
-        border-radius: 999px;
-        color: white;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.3s ease;
-      }
-
-      button:hover {
-        background-color: #27ae60;
-      }
-
-      #message {
-        text-align: center;
-        margin-top: 15px;
-        font-size: 0.9rem;
-      }
-      .animated-button {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 16px 36px;
-        border: 4px solid;
-        border-color: transparent;
-        font-size: 16px;
-        background-color: inherit;
-        border-radius: 100px;
-        font-weight: 600;
-        color: rgb(8, 8, 8);
-        box-shadow: 0 0 0 2px rgb(153, 255, 0);
-        cursor: pointer;
-        overflow: hidden;
-        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-      }
-
-      .animated-button svg {
-        position: absolute;
-        width: 24px;
-        fill: rgb(155, 255, 6);
-        z-index: 9;
-        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-      }
-
-      .animated-button .arr-1 {
-        right: 16px;
-      }
-
-      .animated-button .arr-2 {
-        left: -25%;
-      }
-
-      .animated-button .circle {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 20px;
-        height: 20px;
-        background-color: rgb(153, 255, 0);
-        border-radius: 50%;
-        opacity: 0;
-        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-      }
-
-      .animated-button .text {
-        position: relative;
-        z-index: 1;
-        transform: translateX(-12px);
-        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-      }
-
-      .animated-button:hover {
-        box-shadow: 0 0 0 12px transparent;
-        color: #212121;
-        border-radius: 12px;
-      }
-
-      .animated-button:hover .arr-1 {
-        right: -25%;
-      }
-
-      .animated-button:hover .arr-2 {
-        left: 16px;
-      }
-
-      .animated-button:hover .text {
-        transform: translateX(12px);
-      }
-
-      .animated-button:hover svg {
-        fill: #212121;
-      }
-
-      .animated-button:active {
-        scale: 0.95;
-        box-shadow: 0 0 0 4px rgb(153, 255, 0);
-      }
-
-      .animated-button:hover .circle {
-        width: 220px;
-        height: 220px;
-        opacity: 1;
+        nav ul li:last-child a {
+          border-bottom: none;
+        }
       }
     </style>
   </head>
   <body>
     <header>
+      <div class="logo-area">
+        <h1><span class="green">Cleaning Delhi</span></h1>
+      </div>
       <div class="menu">&#9776;</div>
+      <nav id="nav">
+        <ul>
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#why-hege">About</a></li>
+          <li><a href="#what-you-get">Services</a></li>
+          <li><a href="#form-container">Contact</a></li>
+        </ul>
+      </nav>
     </header>
 
-    <nav>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-    </nav>
-
-    <section class="hero">
-      <h1><span class="green">Cleaning Delhi</span></h1>
-      <p class="subtitle">The world's most unique internship</p>
-      <img src="assets/logo.png" alt="Hege logo" class="logo" />
-      <!--<p class="site-link">naturalhege.com</p>-->
-      <p class="link">
-        Also, what does
-        <a
-          href="https://www.instagram.com/silly.sensei/?hl=en"
-          target="_blank"
-          class="highlight"
-          >Silly Sensei</a
-        >
-        have to do with this?
-      </p>
-
-      <p class="link-sm">
-        In association with
-        <a
-          href="https://www.instagram.com/pehliaashango/"
-          target="_blank"
-          class="highlight"
-          style="color: #2ecc71"
-          >Pehli Aasha Foundation</a
-        >
-      </p>
-    </section>
-
-    <section class="why-hege">
-      <div class="card">
-        <div class="text">
-          <h2>Why is Hege doing this?</h2>
-          <p class="card-desc">
-            is simply dummy text of the printing and typesetting industry. Lorem
-            Ipsum has been the industry's standard dummy text ever since the
-            1500s, when an
-          </p>
-          <a href="https://naturalhege.com/" class="cta-button" target="_blank"
-            >naturalhege.com</a
+    <div class="main-content">
+      <section class="hero" id="hero">
+        <h1><span class="green">Transform Delhi</span> Together</h1>
+        <p class="subtitle">Join India's Most Impactful Environmental Internship</p>
+        <img src="assets/logo.png" alt="Hege logo" class="logo" />
+        <p class="link">
+          Powered by
+          <a
+            href="https://www.instagram.com/silly.sensei/?hl=en"
+            target="_blank"
+            class="highlight"
+            >Silly Sensei's</a
           >
-        </div>
-        <img src="assets/bottle.png" alt="Hege Bottle" class="bottle-img" />
-      </div>
-    </section>
+          viral environmental movement
+        </p>
 
-    <section class="what-you-get">
-      <div class="get-container">
-        <h2 class="get-heading">What You Get?</h2>
-        <p class="get-sub">A cleaner city &amp; a resume boost!</p>
-        <ul class="get-list">
-          <li><span>30 day internship</span></li>
-          <li><span>A certificate of experience from Natural Hege</span></li>
-          <li>
-            <span
-              >The event will attract millions of views and you get to be a part
-              of it</span
-            >
-          </li>
-        </ul>
-        <!--<div class="cta-oval"></div>-->
-      </div>
-    </section>
+        <p class="link-sm">
+          In collaboration with
+          <a
+            href="https://www.instagram.com/pehliaashango/"
+            target="_blank"
+            class="highlight"
+            style="color: #2ecc71"
+            >Pehli Aasha Foundation</a
+          >
+        </p>
+      </section>
 
-    <div class="form-container">
-      <h2>Register To Volunteer</h2>
-      <p>We Need You To Join The Movement!</p>
-      <form id="form">
-        <label>Full Name</label>
-        <input type="text" name="fullname" required />
+      <div class="content-wrapper">
+        <div class="main-sections">
+          <section class="why-hege" id="why-hege">
+            <div class="card">
+              <div class="text">
+                <h2>Why This Revolutionary Internship?</h2>
+                <p class="card-desc">
+                  Be part of Delhi's largest environmental transformation! This isn't just an internship—it's your chance to create viral impact while building an incredible resume. Join thousands of changemakers who are literally cleaning up India's capital and going viral doing it.
+                </p>
+                <a href="https://naturalhege.com/" class="cta-button" target="_blank"
+                  >Discover Natural Hege</a
+                >
+              </div>
+              <img src="assets/bottle.png" alt="Hege Bottle" class="bottle-img" />
+            </div>
+          </section>
 
-        <label>Email</label>
-        <input type="email" name="email" required />
-
-        <label>Phone</label>
-        <input type="tel" name="phone" required />
-
-        <label>Age</label>
-        <input type="number" name="age" min="12" required />
-
-        <label>Institution / School Name</label>
-        <input type="text" name="institution" required />
-
-        <div class="terms">
-          <input type="checkbox" id="agree" required />
-          I agree to the
-          <a href="privacy.html" target="_blank">Privacy Policy</a> and
-          <a href="terms.html" target="_blank">Terms of Use</a>
+          <section class="what-you-get" id="what-you-get">
+            <div class="get-container">
+              <h2 class="get-heading">What You'll Gain</h2>
+              <p class="get-sub">Beyond cleaning—building your future!</p>
+              <ul class="get-list">
+                <li><span>Comprehensive 30-day professional internship program with daily challenges</span></li>
+                <li><span>Official certification from Natural Hege recognized by top companies</span></li>
+                <li>
+                  <span
+                    >Become part of a viral social movement reaching millions—perfect for your portfolio</span
+                  >
+                </li>
+              </ul>
+            </div>
+          </section>
         </div>
 
-        <button class="animated-button">
-          <svg
-            viewBox="0 0 24 24"
-            class="arr-2"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-            ></path>
-          </svg>
-          <span class="text">Submit</span>
-          <span class="circle"></span>
-          <svg
-            viewBox="0 0 24 24"
-            class="arr-1"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-            ></path>
-          </svg>
-        </button>
-        <p id="message"></p>
-      </form>
+        <div class="form-container" id="form-container">
+          <h2>Join The Revolution</h2>
+          <p>Ready to make Delhi cleaner and your resume stronger?</p>
+          <form id="form">
+            <label>Full Name</label>
+            <input type="text" name="fullname" required />
+
+            <label>Email Address</label>
+            <input type="email" name="email" required />
+
+            <label>Phone Number</label>
+            <input type="tel" name="phone" required />
+
+            <label>Age</label>
+            <input type="number" name="age" min="12" required />
+
+            <label>School / College / Institution</label>
+            <input type="text" name="institution" required />
+
+            <div class="terms">
+              <input type="checkbox" id="agree" required />
+              I agree to the
+              <a href="privacy.html" target="_blank">Privacy Policy</a> and
+              <a href="terms.html" target="_blank">Terms of Service</a>
+            </div>
+
+            <button class="animated-button" type="submit">
+              <svg
+                viewBox="0 0 24 24"
+                class="arr-2"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M16.1716 10.9999L10.8076 16.3638L9.39355 14.9497L12.7441 11.5991L3 11.5991L3 9.40088L12.7441 9.40088L9.39355 6.05025L10.8076 4.63604L16.1716 10.9999Z"
+                />
+              </svg>
+              <span class="text">Start Your Journey</span>
+            </button>
+          </form>
+          <div id="message"></div>
+        </div>
+      </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="index.js"></script>
+    <!-- JavaScript for form handling and mobile menu -->
+    <script>
+      // Mobile menu toggle - Fixed to work with your CSS
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuButton = document.querySelector('.menu');
+        const nav = document.querySelector('nav');
+        
+        console.log('Menu button:', menuButton);
+        console.log('Nav element:', nav);
+        
+        if (menuButton && nav) {
+          menuButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Menu clicked');
+            console.log('Nav classes before:', nav.classList.toString());
+            
+            nav.classList.toggle('active');
+            menuButton.classList.toggle('active');
+            
+            console.log('Nav classes after:', nav.classList.toString());
+          });
+        }
 
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (nav && nav.classList.contains('active')) {
+            if (!nav.contains(e.target) && !menuButton.contains(e.target)) {
+              nav.classList.remove('active');
+              menuButton.classList.remove('active');
+            }
+          }
+        });
+
+        // Close menu when clicking nav links (for mobile)
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            console.log('Nav link clicked:', this.getAttribute('href'));
+            
+            // Handle smooth scrolling
+            const href = this.getAttribute('href');
+            if (href.startsWith('#')) {
+              e.preventDefault();
+              const target = document.querySelector(href);
+              if (target) {
+                // Close mobile menu first
+                if (nav.classList.contains('active')) {
+                  nav.classList.remove('active');
+                  menuButton.classList.remove('active');
+                }
+                
+                // Then scroll with offset for fixed header
+                const headerHeight = document.querySelector('header').offsetHeight;
+                const targetPosition = target.offsetTop - headerHeight - 20;
+                
+                window.scrollTo({
+                  top: targetPosition,
+                  behavior: 'smooth'
+                });
+              }
+            }
+          });
+        });
+
+        // Form submission handling
+        const form = document.getElementById('form');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const button = document.querySelector('.animated-button');
+            const message = document.getElementById('message');
+            
+            if (button && message) {
+              // Add loading state
+              button.classList.add('loading');
+              const textSpan = button.querySelector('.text');
+              if (textSpan) {
+                textSpan.textContent = 'Submitting...';
+              }
+              
+              // Simulate form submission
+              setTimeout(() => {
+                button.classList.remove('loading');
+                if (textSpan) {
+                  textSpan.textContent = 'Start Your Journey';
+                }
+                message.innerHTML = '<p style="color: #2ecc71; font-weight: bold;">Registration successful! Check your email for next steps.</p>';
+                form.reset();
+              }, 2000);
+            }
+          });
+        }
+      });
+    </script>
   </body>
 </html>
