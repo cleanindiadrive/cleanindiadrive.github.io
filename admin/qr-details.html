@@ -148,7 +148,7 @@
     const video = document.getElementById('qr-video');
     const resultDisplay = document.getElementById('scan-result');
     const participantDetails = document.getElementById('participant-details');
-    const fullName = document.getElementById('full-name');
+    const fullname = document.getElementById('full-name');
     const institution = document.getElementById('institution');
     const age = document.getElementById('age');
     const email = document.getElementById('email');
@@ -169,7 +169,7 @@
 
         try {
           const firebaseKey = result.trim();
-          const snapshot = await database.ref('enrollments/' + firebaseKey).once('value');
+          const snapshot = await database.ref('volunteer_registrations/' + firebaseKey).once('value');
           const data = snapshot.val();
 
           if (data) {
@@ -177,7 +177,7 @@
             resultDisplay.classList.add('success');
 
             userIdSpan.textContent = data.userId || "N/A";
-            fullName.textContent = data.fullName || "N/A";
+            fullname.textContent = data.fullname || "N/A";
             institution.textContent = data.institution || "N/A";
             age.textContent = data.age || "N/A";
             email.textContent = data.email || "N/A";

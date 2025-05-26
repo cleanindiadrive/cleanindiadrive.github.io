@@ -122,7 +122,7 @@
         try {
           const userId = result.trim();
           const today = new Date().toLocaleDateString("en-CA");
-          const ref = database.ref("enrollments/" + userId);
+          const ref = database.ref("volunteer_registrations/" + userId);
           const snapshot = await ref.once("value");
           const data = snapshot.val();
 
@@ -132,7 +132,7 @@
             if (attendanceLog.includes(today)) {
               // Already marked today
               resultDisplay.innerHTML = `📅 Attendance already marked today.<br><br>
-                <strong>Name:</strong> ${data.fullName}<br>
+                <strong>Name:</strong> ${data.fullname}<br>
                 <strong>Institution:</strong> ${data.institution}<br>
                 <strong>Phone:</strong> ${data.phone}`;
               resultDisplay.classList.add("error");
@@ -148,7 +148,7 @@
               });
 
               let message = `✅ Attendance Marked! <br><br>
-                <strong>Name:</strong> ${data.fullName}<br>
+                <strong>Name:</strong> ${data.fullname}<br>
                 <strong>Institution:</strong> ${data.institution}<br>
                 <strong>Phone:</strong> ${data.phone}<br>
                 <strong>Days Attended:</strong> ${daysAttended}`;
