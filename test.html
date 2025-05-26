@@ -1,114 +1,471 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootstrap Converted UI</title>
 
-.animated-button {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 16px 36px;
-  border: 4px solid;
-  border-color: transparent;
-  font-size: 16px;
-  background-color: inherit;
-  border-radius: 100px;
-  font-weight: 600;
-  color: greenyellow;
-  box-shadow: 0 0 0 2px greenyellow;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-}
+    <!-- Bootstrap CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-.animated-button svg {
-  position: absolute;
-  width: 24px;
-  fill: greenyellow;
-  z-index: 9;
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
+    <!-- Google Fonts Poppins -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-.animated-button .arr-1 {
-  right: 16px;
-}
+    <style>
+          /* Custom CSS mostly from your original, with tweaks */
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
 
-.animated-button .arr-2 {
-  left: -25%;
-}
+          body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #f6f6f6 0%, #ffffff 100%);
+            line-height: 1.6;
+            overflow-x: hidden;
+          }
 
-.animated-button .circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  background-color: greenyellow;
-  border-radius: 50%;
-  opacity: 0;
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
+          /* Header */
+          header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1030; /* Bootstrap navbar z-index */
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+          }
 
-.animated-button .text {
-  position: relative;
-  z-index: 1;
-  transform: translateX(-12px);
-  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
+          .logo-area h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+          }
 
-.animated-button:hover {
-  box-shadow: 0 0 0 12px transparent;
-  color: #212121;
-  border-radius: 12px;
-}
+          .green {
+            color: #2ecc71 !important;
+          }
 
-.animated-button:hover .arr-1 {
-  right: -25%;
-}
+          /* Navbar links styling */
+          .nav-link {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2ecc71 !important;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+          }
 
-.animated-button:hover .arr-2 {
-  left: 16px;
-}
+          .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: #27ae60 !important;
+          }
 
-.animated-button:hover .text {
-  transform: translateX(12px);
-}
+          /* Hero Section */
+          .hero {
+            text-align: center;
+            padding: 7rem 1rem 5rem;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+          }
 
-.animated-button:hover svg {
-  fill: #212121;
-}
+          .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            border-radius: 2px;
+          }
 
-.animated-button:active {
-  scale: 0.95;
-  box-shadow: 0 0 0 4px greenyellow;
-}
+          .hero h1 {
+            font-size: 3.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            animation: fadeInUp 1s ease-out;
+          }
 
-.animated-button:hover .circle {
-  width: 220px;
-  height: 220px;
-  opacity: 1;
-}
+          .hero .green {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
 
+          .hero .subtitle {
+            font-size: 1.4rem;
+            color: #666;
+            margin-bottom: 40px;
+            font-weight: 500;
+            animation: fadeInUp 1s ease-out 0.2s both;
+          }
 
-</style>
-</head>
-<body>
-  <button class="animated-button">
-    <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-      ></path>
-    </svg>
-    <span class="text">Modern Button</span>
-    <span class="circle"></span>
-    <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-      ></path>
-    </svg>
-  </button>
-  
-</body>
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          /* Cards Section */
+          .card-custom {
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.1);
+            transition: all 0.4s ease;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+          }
+
+          .card-custom:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+          }
+
+          .card-custom h2 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+          }
+
+          .card-custom p {
+            color: #666;
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+          }
+
+          .cta-button {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+            border: none;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(46, 204, 113, 0.4);
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+          }
+
+          /* Form Styles */
+          .form-container {
+            max-width: 550px;
+            background: white;
+            padding: 4rem 3rem;
+            border-radius: 25px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.1);
+            margin: 5rem auto;
+            border: 1px solid rgba(46, 204, 113, 0.1);
+            position: relative;
+          }
+
+          .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+          }
+
+          .form-container h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #333;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+          }
+
+          .form-container p {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            font-weight: 500;
+          }
+
+          label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #444;
+          }
+
+          input.form-control {
+            border-radius: 12px;
+            border: 2px solid #e8e8e8;
+            background: #fafafa;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 1.1rem 1.3rem;
+            font-size: 1rem;
+          }
+
+          input.form-control:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
+            background: white;
+            transform: translateY(-2px);
+          }
+
+          .terms {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 2rem;
+            font-weight: 500;
+          }
+
+          .terms a {
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+          }
+
+          .terms a:hover {
+            text-decoration: underline;
+            color: #27ae60;
+          }
+
+          /* Submit Button */
+          .animated-button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 1.3rem 2.8rem;
+            font-size: 1.2rem;
+            background: linear-gradient(145deg, #2ecc71, #27ae60);
+            border-radius: 16px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            overflow: hidden;
+        transition: all 0.4s ease;
+        border: none;
+        box-shadow: 0 12px 30px rgba(46, 204, 113, 0.3);
+        user-select: none;
+      }
+
+      .animated-button:hover {
+        box-shadow: 0 18px 45px rgba(46, 204, 113, 0.5);
+        transform: translateY(-3px);
+        background: linear-gradient(145deg, #27ae60, #2ecc71);
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 575.98px) {
+        .hero h1 {
+          font-size: 2.8rem;
+        }
+
+        .card-custom {
+          padding: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header / Navbar -->
+    <header>
+      <nav class="navbar navbar-expand-md container">
+        <div
+          class="container-fluid p-0 d-flex align-items-center justify-content-between"
+        >
+          <a href="#" class="navbar-brand logo-area">
+            <h1>Logo<span class="green">Name</span></h1>
+          </a>
+          php-template Copy Edit
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div
+            class="collapse navbar-collapse justify-content-center"
+            id="navbarNav"
+          >
+            <ul class="navbar-nav gap-3 fw-semibold">
+              <li class="nav-item">
+                <a class="nav-link" href="#">Overview</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Explore</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Market</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Signup</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <!-- Hero Section -->
+    <section class="hero mt-5 pt-5">
+      <h1>Explore the <span class="green">Future</span> of Web Design</h1>
+      <p class="subtitle">
+        Join us in creating stunning, responsive, and modern websites
+      </p>
+    </section>
+    <!-- Cards Section -->
+    <section class="container my-5">
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card-custom h-100">
+            <h2>Card Title 1</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <a href="#" class="cta-button">Learn More</a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card-custom h-100">
+            <h2>Card Title 2</h2>
+            <p>
+              Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+            <a href="#" class="cta-button">Learn More</a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card-custom h-100">
+            <h2>Card Title 3</h2>
+            <p>
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris.
+            </p>
+            <a href="#" class="cta-button">Learn More</a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card-custom h-100">
+            <h2>Card Title 4</h2>
+            <p>
+              Duis aute irure dolor in reprehenderit in voluptate velit esse
+              cillum.
+            </p>
+            <a href="#" class="cta-button">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Form Section -->
+    <section class="form-container">
+      <h2>Sign Up Now</h2>
+      <p>Join us and get access to exclusive content</p>
+      php-template Copy Edit
+      <form>
+        <div class="mb-3">
+          <label for="fullName" class="form-label">Full Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="fullName"
+            placeholder="Enter your full name"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="emailAddress" class="form-label">Email Address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="emailAddress"
+            placeholder="name@example.com"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="phoneNumber" class="form-label">Phone Number</label>
+          <input
+            type="tel"
+            class="form-control"
+            id="phoneNumber"
+            placeholder="+1234567890"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Create a password"
+            required
+          />
+        </div>
+
+        <div class="mb-3 form-check terms">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="termsCheck"
+            required
+          />
+          <label class="form-check-label" for="termsCheck">
+            I agree to the <a href="#">Terms & Conditions</a>
+          </label>
+        </div>
+
+        <button type="submit" class="animated-button w-100">Submit</button>
+      </form>
+    </section>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
