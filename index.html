@@ -92,6 +92,22 @@
         }
       }
 
+      /* Overlay for click outside */
+      .menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+      }
+
+      .menu-overlay.active {
+        display: block;
+      }
+
       /* Student Fields Styling */
       .student-fields {
         display: none;
@@ -227,6 +243,9 @@
     </style>
   </head>
   <body>
+    <!-- Overlay for click outside -->
+    <div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
+    
     <header>
       <div class="logo-area">
         <h1><span class="green">Cleaning Delhi</span></h1>
@@ -414,14 +433,25 @@
       // Simple menu toggle
       function toggleMenu() {
         const nav = document.getElementById('nav');
+        const overlay = document.getElementById('menu-overlay');
+        
         nav.classList.toggle('open');
+        overlay.classList.toggle('active');
+      }
+
+      // Simple close menu function
+      function closeMenu() {
+        const nav = document.getElementById('nav');
+        const overlay = document.getElementById('menu-overlay');
+        
+        nav.classList.remove('open');
+        overlay.classList.remove('active');
       }
 
       // Simple scroll function
       function scrollToSection(sectionId) {
         // Close menu first
-        const nav = document.getElementById('nav');
-        nav.classList.remove('open');
+        closeMenu();
         
         // Scroll to section
         const target = document.getElementById(sectionId);
