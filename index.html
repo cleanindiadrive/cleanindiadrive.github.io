@@ -10,19 +10,36 @@
     />
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* Navigation Styles */
-      /* Mobile Navigation Styles */
-      @media (max-width: 768px) {
-        header {
-          padding: 1rem;
-        }
+      /* Simple Navigation Styles */
+      .menu {
+        display: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        padding: 0.8rem;
+        color: #333;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(46, 204, 113, 0.2);
+      }
 
+      /* Desktop Navigation */
+      @media (min-width: 769px) {
+        nav {
+          display: block !important;
+        }
+        .menu {
+          display: none !important;
+        }
+      }
+
+      /* Mobile Navigation */
+      @media (max-width: 768px) {
         .menu {
           display: block;
-          z-index: 1001;
         }
 
         nav {
+          display: none;
           position: fixed;
           top: 0;
           right: -100%;
@@ -33,10 +50,11 @@
           backdrop-filter: blur(20px);
           transition: right 0.3s ease;
           box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
+          z-index: 10000;
         }
 
-        nav.active {
+        nav.open {
+          display: block;
           right: 0;
         }
 
@@ -45,10 +63,13 @@
           padding: 6rem 2rem 2rem;
           gap: 0;
           height: 100%;
+          list-style: none;
+          margin: 0;
         }
 
         nav ul li {
           width: 100%;
+          margin: 0;
         }
 
         nav ul li a {
@@ -56,10 +77,18 @@
           padding: 1rem;
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
           font-size: 1.1rem;
+          text-decoration: none;
+          color: #333;
+          font-weight: 600;
         }
 
         nav ul li:last-child a {
           border-bottom: none;
+        }
+
+        nav ul li a:hover {
+          color: #2ecc71;
+          background: rgba(46, 204, 113, 0.1);
         }
       }
 
@@ -149,8 +178,8 @@
         font-weight: 500;
       }
 
-      /* Course dropdown styling */
-      select {
+      /* Form styling */
+      select, input[type="number"], input[type="text"], input[type="email"], input[type="tel"] {
         width: 100%;
         padding: 18px 22px;
         margin-bottom: 25px;
@@ -161,6 +190,9 @@
         background: #fafafa;
         font-weight: 500;
         font-family: inherit;
+      }
+
+      select {
         appearance: none;
         background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
         background-repeat: no-repeat;
@@ -169,29 +201,7 @@
         padding-right: 50px;
       }
 
-      select:focus {
-        outline: none;
-        border-color: #2ecc71;
-        box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
-        background: #ffffff;
-        transform: translateY(-2px);
-      }
-
-      /* Year input styling */
-      input[type="number"] {
-        width: 100%;
-        padding: 18px 22px;
-        margin-bottom: 25px;
-        border: 2px solid #e8e8e8;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: #fafafa;
-        font-weight: 500;
-        font-family: inherit;
-      }
-
-      input[type="number"]:focus {
+      select:focus, input:focus {
         outline: none;
         border-color: #2ecc71;
         box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
@@ -221,13 +231,13 @@
       <div class="logo-area">
         <h1><span class="green">Cleaning Delhi</span></h1>
       </div>
-      <div class="menu">&#9776;</div>
+      <div class="menu" onclick="toggleMenu()">&#9776;</div>
       <nav id="nav">
         <ul>
-          <li><a href="#hero">Home</a></li>
-          <li><a href="#why-hege">About</a></li>
-          <li><a href="#what-you-get">Services</a></li>
-          <li><a href="#form-container">Contact</a></li>
+          <li><a href="#hero" onclick="scrollToSection('hero')">Home</a></li>
+          <li><a href="#why-hege" onclick="scrollToSection('why-hege')">About</a></li>
+          <li><a href="#what-you-get" onclick="scrollToSection('what-you-get')">Services</a></li>
+          <li><a href="#form-container" onclick="scrollToSection('form-container')">Contact</a></li>
         </ul>
       </nav>
     </header>
@@ -399,79 +409,35 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="/js/index.js"></script>
-    <!-- JavaScript for form handling and mobile menu -->
+    
     <script>
-      // Mobile menu toggle - Fixed to work with your CSS
-      document.addEventListener('DOMContentLoaded', function() {
-        const menuButton = document.querySelector('.menu');
-        const nav = document.querySelector('nav');
+      // Simple menu toggle
+      function toggleMenu() {
+        const nav = document.getElementById('nav');
+        nav.classList.toggle('open');
+      }
+
+      // Simple scroll function
+      function scrollToSection(sectionId) {
+        // Close menu first
+        const nav = document.getElementById('nav');
+        nav.classList.remove('open');
         
-        console.log('Menu button:', menuButton);
-        console.log('Nav element:', nav);
-        
-        if (menuButton && nav) {
-          menuButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            console.log('Menu clicked');
-            console.log('Nav classes before:', nav.classList.toString());
-            
-            nav.classList.toggle('active');
-            menuButton.classList.toggle('active');
-            
-            console.log('Nav classes after:', nav.classList.toString());
+        // Scroll to section
+        const target = document.getElementById(sectionId);
+        if (target) {
+          const headerHeight = 80;
+          const targetPosition = target.offsetTop - headerHeight - 20;
+          
+          window.scrollTo({
+            top: Math.max(0, targetPosition),
+            behavior: 'smooth'
           });
         }
+      }
 
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-          if (nav && nav.classList.contains('active')) {
-            if (!nav.contains(e.target) && !menuButton.contains(e.target)) {
-              nav.classList.remove('active');
-              menuButton.classList.remove('active');
-            }
-          }
-        });
-
-        // Close menu when clicking nav links (for mobile)
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach(link => {
-          link.addEventListener('click', function(e) {
-            console.log('Nav link clicked:', this.getAttribute('href'));
-            
-            // Handle smooth scrolling
-            const href = this.getAttribute('href');
-            if (href.startsWith('#')) {
-              e.preventDefault();
-              const target = document.querySelector(href);
-              if (target) {
-                // Close mobile menu first
-                if (nav.classList.contains('active')) {
-                  nav.classList.remove('active');
-                  menuButton.classList.remove('active');
-                }
-                
-                // Then scroll with offset for fixed header
-                const headerHeight = document.querySelector('header').offsetHeight;
-                const targetPosition = target.offsetTop - headerHeight - 20;
-                
-                window.scrollTo({
-                  top: targetPosition,
-                  behavior: 'smooth'
-                });
-              }
-            }
-          });
-        });
-
-        // Student status conditional fields
-        const studentRadios = document.querySelectorAll('input[name="is_student"]');
-        const studentFields = document.getElementById('student-fields');
-        const institutionField = document.getElementById('institution');
-        const courseField = document.getElementById('course');
-        const passingYearField = document.getElementById('passing_year');
-
+      // Student form logic
+      document.addEventListener('DOMContentLoaded', function() {
         // Radio button styling
         const radioOptions = document.querySelectorAll('.radio-option');
         radioOptions.forEach(option => {
@@ -479,45 +445,32 @@
             const radio = this.querySelector('input[type="radio"]');
             if (radio) {
               radio.checked = true;
-              
-              // Remove selected class from all options
               radioOptions.forEach(opt => opt.classList.remove('selected'));
-              // Add selected class to clicked option
               this.classList.add('selected');
-              
-              // Trigger change event
               radio.dispatchEvent(new Event('change'));
             }
           });
         });
 
-        // Handle student status change
+        // Student fields toggle
+        const studentRadios = document.querySelectorAll('input[name="is_student"]');
+        const studentFields = document.getElementById('student-fields');
+        const institutionField = document.getElementById('institution');
+        const courseField = document.getElementById('course');
+        const passingYearField = document.getElementById('passing_year');
+
         studentRadios.forEach(radio => {
           radio.addEventListener('change', function() {
             if (this.value === 'yes') {
-              // Show student fields with animation
               studentFields.classList.add('show');
-              
-              // Make fields required
               institutionField.required = true;
               courseField.required = true;
               passingYearField.required = true;
-              
-              // Focus on first field after animation
-              setTimeout(() => {
-                institutionField.focus();
-              }, 200);
-              
             } else {
-              // Hide student fields
               studentFields.classList.remove('show');
-              
-              // Remove required attribute
               institutionField.required = false;
               courseField.required = false;
               passingYearField.required = false;
-              
-              // Clear values
               institutionField.value = '';
               courseField.value = '';
               passingYearField.value = '';
@@ -525,7 +478,7 @@
           });
         });
 
-        // Form submission handling
+        // Form submission
         const form = document.getElementById('form');
         if (form) {
           form.addEventListener('submit', function(e) {
@@ -533,7 +486,7 @@
             const button = document.querySelector('.animated-button');
             const message = document.getElementById('message');
             
-            // Validate student fields if student is selected
+            // Validate student fields
             const isStudent = document.querySelector('input[name="is_student"]:checked');
             if (isStudent && isStudent.value === 'yes') {
               const institution = institutionField.value.trim();
@@ -544,59 +497,20 @@
                 message.innerHTML = '<p style="color: #e74c3c; font-weight: bold;">Please fill in all student information fields.</p>';
                 return;
               }
-              
-              // Validate passing year
-              const currentYear = new Date().getFullYear();
-              if (passingYear < currentYear || passingYear > currentYear + 10) {
-                message.innerHTML = '<p style="color: #e74c3c; font-weight: bold;">Please enter a valid passing out year.</p>';
-                return;
-              }
             }
             
-            if (button && message) {
-              // Add loading state
-              button.classList.add('loading');
-              const textSpan = button.querySelector('.text');
-              if (textSpan) {
-                textSpan.textContent = 'Submitting...';
-              }
-              
-              // Collect form data
-              const formData = new FormData(form);
-              const data = Object.fromEntries(formData);
-              
-              console.log('Form data:', data);
-              
-              // Simulate form submission
-              setTimeout(() => {
-                button.classList.remove('loading');
-                if (textSpan) {
-                  textSpan.textContent = 'Start Your Journey';
-                }
-                
-                let successMessage = '<p style="color: #2ecc71; font-weight: bold;">🎉 Registration successful! Check your email for next steps.</p>';
-                
-                if (data.is_student === 'yes') {
-                  successMessage += `<p style="color: #2ecc71; margin-top: 10px;">Student details recorded: ${data.course} at ${data.institution}, graduating in ${data.passing_year}</p>`;
-                }
-                
-                message.innerHTML = successMessage;
-                form.reset();
-                
-                // Reset radio button styling
-                radioOptions.forEach(opt => opt.classList.remove('selected'));
-                studentFields.classList.remove('show');
-                
-              }, 2000);
-            }
+            // Simulate submission
+            const textSpan = button.querySelector('.text');
+            if (textSpan) textSpan.textContent = 'Submitting...';
+            
+            setTimeout(() => {
+              if (textSpan) textSpan.textContent = 'Start Your Journey';
+              message.innerHTML = '<p style="color: #2ecc71; font-weight: bold;">🎉 Registration successful!</p>';
+              form.reset();
+              radioOptions.forEach(opt => opt.classList.remove('selected'));
+              studentFields.classList.remove('show');
+            }, 2000);
           });
-        }
-
-        // Auto-generate current year options for passing year
-        const currentYear = new Date().getFullYear();
-        const passingYearInput = document.getElementById('passing_year');
-        if (passingYearInput) {
-          passingYearInput.placeholder = `e.g., ${currentYear + 1}`;
         }
       });
     </script>
