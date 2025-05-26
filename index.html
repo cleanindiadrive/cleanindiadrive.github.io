@@ -10,104 +10,175 @@
     />
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* Simple Navigation Styles */
+      /* Reset any conflicting styles */
+      * {
+        box-sizing: border-box;
+      }
+
+      /* Navigation Styles - Complete override */
       .menu {
         display: none;
         font-size: 1.8rem;
         cursor: pointer;
         padding: 0.8rem;
+        user-select: none;
+        transition: all 0.3s ease;
         color: #333;
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.1);
+        z-index: 10001;
+        position: relative;
         border: 2px solid rgba(46, 204, 113, 0.2);
+        line-height: 1;
       }
 
-      /* Desktop Navigation */
+      .menu:hover {
+        transform: scale(1.1);
+        background: rgba(46, 204, 113, 0.1);
+        border-color: #2ecc71;
+      }
+
+      .menu.active {
+        transform: rotate(90deg) scale(1.1);
+        background: #2ecc71;
+        color: white;
+      }
+
+      /* Desktop Navigation - Force visibility */
       @media (min-width: 769px) {
-        nav {
-          display: block !important;
-        }
         .menu {
           display: none !important;
         }
-      }
-
-      /* Mobile Navigation */
-      @media (max-width: 768px) {
-        .menu {
-          display: block;
-        }
 
         nav {
-          display: none;
-          position: fixed;
-          top: 0;
-          right: -100%;
-          width: 80%;
-          max-width: 300px;
-          height: 100vh;
-          background: rgba(255, 255, 255, 0.98);
-          backdrop-filter: blur(20px);
-          transition: right 0.3s ease;
-          box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
-          z-index: 10000;
-        }
-
-        nav.open {
-          display: block;
-          right: 0;
+          display: block !important;
+          position: static !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          width: auto !important;
+          height: auto !important;
+          right: auto !important;
+          backdrop-filter: none !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          transform: none !important;
         }
 
         nav ul {
-          flex-direction: column;
-          padding: 6rem 2rem 2rem;
-          gap: 0;
-          height: 100%;
-          list-style: none;
-          margin: 0;
+          display: flex !important;
+          flex-direction: row !important;
+          padding: 0 !important;
+          gap: 2rem !important;
+          height: auto !important;
+          list-style: none !important;
+          margin: 0 !important;
         }
 
         nav ul li {
-          width: 100%;
-          margin: 0;
+          width: auto !important;
+          margin: 0 !important;
         }
 
         nav ul li a {
-          display: block;
-          padding: 1rem;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-          font-size: 1.1rem;
-          text-decoration: none;
-          color: #333;
-          font-weight: 600;
-        }
-
-        nav ul li:last-child a {
-          border-bottom: none;
+          display: inline-block !important;
+          padding: 0.75rem 1.5rem !important;
+          border-bottom: none !important;
+          font-size: 1rem !important;
+          border-radius: 25px !important;
+          text-decoration: none !important;
+          color: #333 !important;
+          font-weight: 600 !important;
+          transition: all 0.3s ease !important;
         }
 
         nav ul li a:hover {
-          color: #2ecc71;
-          background: rgba(46, 204, 113, 0.1);
+          color: #2ecc71 !important;
+          background: rgba(46, 204, 113, 0.1) !important;
+          transform: translateY(-2px) !important;
         }
       }
 
-      /* Overlay for click outside */
-      .menu-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-      }
+      /* Mobile Navigation Styles - Complete override */
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem !important;
+          position: relative;
+        }
 
-      .menu-overlay.active {
-        display: block;
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        .menu {
+          display: block !important;
+          z-index: 10001 !important;
+        }
+
+        /* Hide nav by default on mobile */
+        nav {
+          display: none !important;
+          position: fixed !important;
+          top: 0 !important;
+          right: -100% !important;
+          width: 80% !important;
+          max-width: 300px !important;
+          height: 100vh !important;
+          background: rgba(255, 255, 255, 0.98) !important;
+          backdrop-filter: blur(20px) !important;
+          transition: right 0.3s ease !important;
+          box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1) !important;
+          z-index: 10000 !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+        }
+
+        /* Show nav when active */
+        nav.mobile-active {
+          display: block !important;
+          right: 0 !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
+        nav ul {
+          flex-direction: column !important;
+          padding: 6rem 2rem 2rem !important;
+          gap: 0 !important;
+          height: 100% !important;
+          list-style: none !important;
+          margin: 0 !important;
+        }
+
+        nav ul li {
+          width: 100% !important;
+          margin: 0 !important;
+        }
+
+        nav ul li a {
+          display: block !important;
+          padding: 1rem !important;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+          font-size: 1.1rem !important;
+          text-decoration: none !important;
+          color: #333 !important;
+          transition: all 0.3s ease !important;
+          font-weight: 600 !important;
+        }
+
+        nav ul li:last-child a {
+          border-bottom: none !important;
+        }
+
+        nav ul li a:hover {
+          color: #2ecc71 !important;
+          background: rgba(46, 204, 113, 0.1) !important;
+        }
+
+        /* Blur background content when menu is open */
+        body.menu-open .main-content {
+          filter: blur(3px);
+          transition: filter 0.3s ease;
+        }
+
+        body.menu-open {
+          overflow: hidden;
+        }
       }
 
       /* Student Fields Styling */
@@ -245,20 +316,17 @@
     </style>
   </head>
   <body>
-    <!-- Overlay for click outside -->
-    <div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
-    
     <header>
       <div class="logo-area">
         <h1><span class="green">Cleaning Delhi</span></h1>
       </div>
-      <div class="menu" onclick="toggleMenu()">&#9776;</div>
+      <div class="menu" id="menu-toggle">&#9776;</div>
       <nav id="nav">
         <ul>
-          <li><a href="#hero" onclick="scrollToSection('hero')">Home</a></li>
-          <li><a href="#why-hege" onclick="scrollToSection('why-hege')">About</a></li>
-          <li><a href="#what-you-get" onclick="scrollToSection('what-you-get')">Services</a></li>
-          <li><a href="#form-container" onclick="scrollToSection('form-container')">Contact</a></li>
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#why-hege">About</a></li>
+          <li><a href="#what-you-get">Services</a></li>
+          <li><a href="#form-container">Contact</a></li>
         </ul>
       </nav>
     </header>
@@ -432,44 +500,98 @@
     <script src="/js/index.js"></script>
     
     <script>
-      // Simple menu toggle
-      function toggleMenu() {
+      // Simplified mobile menu navigation without overlay
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuButton = document.getElementById('menu-toggle');
         const nav = document.getElementById('nav');
-        const overlay = document.getElementById('menu-overlay');
         
-        nav.classList.toggle('open');
-        overlay.classList.toggle('active');
-      }
-
-      // Simple close menu function
-      function closeMenu() {
-        const nav = document.getElementById('nav');
-        const overlay = document.getElementById('menu-overlay');
+        let isMenuOpen = false;
         
-        nav.classList.remove('open');
-        overlay.classList.remove('active');
-      }
-
-      // Simple scroll function
-      function scrollToSection(sectionId) {
-        // Close menu first
-        closeMenu();
-        
-        // Scroll to section
-        const target = document.getElementById(sectionId);
-        if (target) {
-          const headerHeight = 80;
-          const targetPosition = target.offsetTop - headerHeight - 20;
+        if (menuButton && nav) {
           
-          window.scrollTo({
-            top: Math.max(0, targetPosition),
-            behavior: 'smooth'
+          // Function to handle menu state
+          function setMenuState(open) {
+            isMenuOpen = open;
+            
+            if (open) {
+              nav.classList.add('mobile-active');
+              menuButton.classList.add('active');
+              document.body.classList.add('menu-open');
+            } else {
+              nav.classList.remove('mobile-active');
+              menuButton.classList.remove('active');
+              document.body.classList.remove('menu-open');
+            }
+          }
+          
+          // Menu button click handler
+          menuButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            setMenuState(!isMenuOpen);
+          });
+          
+          // Close menu when clicking outside
+          document.addEventListener('click', function(e) {
+            if (isMenuOpen && !nav.contains(e.target) && !menuButton.contains(e.target)) {
+              setMenuState(false);
+            }
+          });
+          
+          // Navigation link click handler
+          const navLinks = nav.querySelectorAll('a');
+          navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+              const href = this.getAttribute('href');
+              
+              // Close mobile menu immediately
+              setMenuState(false);
+              
+              // Handle smooth scrolling for anchor links
+              if (href && href.startsWith('#')) {
+                e.preventDefault();
+                
+                // Small delay to allow menu to close
+                setTimeout(() => {
+                  const target = document.querySelector(href);
+                  
+                  if (target) {
+                    const header = document.querySelector('header');
+                    const headerHeight = header ? header.offsetHeight : 80;
+                    const targetPosition = target.offsetTop - headerHeight - 20;
+                    
+                    window.scrollTo({
+                      top: Math.max(0, targetPosition),
+                      behavior: 'smooth'
+                    });
+                  }
+                }, 100);
+              }
+            });
+          });
+          
+          // Escape key handler
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isMenuOpen) {
+              setMenuState(false);
+            }
+          });
+          
+          // Window resize handler
+          window.addEventListener('resize', function() {
+            if (window.innerWidth > 768 && isMenuOpen) {
+              setMenuState(false);
+            }
           });
         }
-      }
 
-      // Student form logic
-      document.addEventListener('DOMContentLoaded', function() {
+        // Student status conditional fields (unchanged)
+        const studentRadios = document.querySelectorAll('input[name="is_student"]');
+        const studentFields = document.getElementById('student-fields');
+        const institutionField = document.getElementById('institution');
+        const courseField = document.getElementById('course');
+        const passingYearField = document.getElementById('passing_year');
+
         // Radio button styling
         const radioOptions = document.querySelectorAll('.radio-option');
         radioOptions.forEach(option => {
@@ -477,20 +599,19 @@
             const radio = this.querySelector('input[type="radio"]');
             if (radio) {
               radio.checked = true;
+              
+              // Remove selected class from all options
               radioOptions.forEach(opt => opt.classList.remove('selected'));
+              // Add selected class to clicked option
               this.classList.add('selected');
+              
+              // Trigger change event
               radio.dispatchEvent(new Event('change'));
             }
           });
         });
 
-        // Student fields toggle
-        const studentRadios = document.querySelectorAll('input[name="is_student"]');
-        const studentFields = document.getElementById('student-fields');
-        const institutionField = document.getElementById('institution');
-        const courseField = document.getElementById('course');
-        const passingYearField = document.getElementById('passing_year');
-
+        // Handle student status change
         studentRadios.forEach(radio => {
           radio.addEventListener('change', function() {
             if (this.value === 'yes') {
@@ -498,11 +619,17 @@
               institutionField.required = true;
               courseField.required = true;
               passingYearField.required = true;
+              
+              setTimeout(() => {
+                institutionField.focus();
+              }, 200);
+              
             } else {
               studentFields.classList.remove('show');
               institutionField.required = false;
               courseField.required = false;
               passingYearField.required = false;
+              
               institutionField.value = '';
               courseField.value = '';
               passingYearField.value = '';
@@ -510,7 +637,7 @@
           });
         });
 
-        // Form submission
+        // Form submission handling (unchanged)
         const form = document.getElementById('form');
         if (form) {
           form.addEventListener('submit', function(e) {
@@ -518,7 +645,7 @@
             const button = document.querySelector('.animated-button');
             const message = document.getElementById('message');
             
-            // Validate student fields
+            // Validate student fields if student is selected
             const isStudent = document.querySelector('input[name="is_student"]:checked');
             if (isStudent && isStudent.value === 'yes') {
               const institution = institutionField.value.trim();
@@ -529,20 +656,54 @@
                 message.innerHTML = '<p style="color: #e74c3c; font-weight: bold;">Please fill in all student information fields.</p>';
                 return;
               }
+              
+              const currentYear = new Date().getFullYear();
+              if (passingYear < currentYear || passingYear > currentYear + 10) {
+                message.innerHTML = '<p style="color: #e74c3c; font-weight: bold;">Please enter a valid passing out year.</p>';
+                return;
+              }
             }
             
-            // Simulate submission
-            const textSpan = button.querySelector('.text');
-            if (textSpan) textSpan.textContent = 'Submitting...';
-            
-            setTimeout(() => {
-              if (textSpan) textSpan.textContent = 'Start Your Journey';
-              message.innerHTML = '<p style="color: #2ecc71; font-weight: bold;">🎉 Registration successful!</p>';
-              form.reset();
-              radioOptions.forEach(opt => opt.classList.remove('selected'));
-              studentFields.classList.remove('show');
-            }, 2000);
+            if (button && message) {
+              button.classList.add('loading');
+              const textSpan = button.querySelector('.text');
+              if (textSpan) {
+                textSpan.textContent = 'Submitting...';
+              }
+              
+              const formData = new FormData(form);
+              const data = Object.fromEntries(formData);
+              
+              console.log('Form data:', data);
+              
+              setTimeout(() => {
+                button.classList.remove('loading');
+                if (textSpan) {
+                  textSpan.textContent = 'Start Your Journey';
+                }
+                
+                let successMessage = '<p style="color: #2ecc71; font-weight: bold;">🎉 Registration successful! Check your email for next steps.</p>';
+                
+                if (data.is_student === 'yes') {
+                  successMessage += `<p style="color: #2ecc71; margin-top: 10px;">Student details recorded: ${data.course} at ${data.institution}, graduating in ${data.passing_year}</p>`;
+                }
+                
+                message.innerHTML = successMessage;
+                form.reset();
+                
+                radioOptions.forEach(opt => opt.classList.remove('selected'));
+                studentFields.classList.remove('show');
+                
+              }, 2000);
+            }
           });
+        }
+
+        // Auto-generate current year options for passing year
+        const currentYear = new Date().getFullYear();
+        const passingYearInput = document.getElementById('passing_year');
+        if (passingYearInput) {
+          passingYearInput.placeholder = `e.g., ${currentYear + 1}`;
         }
       });
     </script>
