@@ -742,14 +742,14 @@ body.sources-body.loaded {
     .links {
         padding: 3rem 1rem 0;
         /* Reduced top padding on mobile, keep original left/right, no bottom */
-        margin-bottom: 1rem;
+        margin-bottom: 0rem;
         /* Reduced margin on mobile */
         background-size: 150px;
         /* Smaller pattern on mobile */
     }
 
     .links-list {
-        padding-bottom: 1.5rem;
+        padding-bottom: 0rem;
         /* Reduced bottom padding on mobile */
     }
 
@@ -841,14 +841,14 @@ body.sources-body.loaded {
     .links {
         padding: 2rem 1rem 0;
         /* Further reduced top padding on small mobile */
-        margin-bottom: 0.5rem;
+        margin-bottom: 0rem;
         /* Smaller margin on small mobile */
         background-size: 120px;
         /* Even smaller pattern on small mobile */
     }
 
     .links-list {
-        padding-bottom: 1rem;
+        padding-bottom: 0rem;
         /* Further reduced bottom padding on small mobile */
     }
 
