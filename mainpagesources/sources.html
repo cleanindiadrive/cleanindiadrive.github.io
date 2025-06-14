@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sources - Silly Sensei</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="/assets/smalllogo.svg" type="image/svg+xml">
+
+    <!-- Firebase SDK v8 (compat version) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  </head>
+  <body class="sources-body">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <p>Loading Sources...</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <img
+            src="/assets/smalllogo.svg"
+            alt="Silly Sensei"
+            class="logo-text"
+            loading="eager"
+          />
+        </div>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <!-- Navigation Menu -->
+        <div class="nav-menu" id="navMenu">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="/mainpagesources/sources.html" class="nav-link active">Sources</a>
+          <a href="#contact" class="nav-link">Contact</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sources Page Content -->
+    <main class="sources-page">
+      <a href="/index.html" class="back-btn">Back</a>
+      <section class="sources-header">
+        <h1>Sources</h1>
+        <p>
+          Here you will find the research papers from which the information of
+          my videos are sourced
+        </p>
+      </section>
+
+      <section class="search-section">
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Search : Enter a key word"
+            class="search-input"
+            id="searchInput"
+          />
+          <button class="search-btn" id="searchBtn">🔍</button>
+        </div>
+      </section>
+
+      <!-- Sources Content -->
+      <section class="sources-content" id="sourcesContent">
+        <!-- Loading indicator -->
+        <div class="sources-loading" id="sourcesLoading">
+          <div class="loading-spinner"></div>
+          <p>Loading sources from database...</p>
+        </div>
+
+        <!-- Sources will be dynamically loaded here -->
+      </section>
+      <section class="contact" id="contact">
+        <div class="contact-item">
+          <h3>I read my emails.</h3>
+          <p>
+            <a href="mailto:abhishekreddy2499@gmail.com"
+              >abhishekreddy2499@gmail.com</a
+            >
+          </p>
+        </div>
+        <div class="contact-item">
+          <h3>He builds my tech.</h3>
+          <p>
+            <a href="https://idkshetty.github.io" target="_blank"
+              >idkshetty.github.io</a
+            >
+          </p>
+        </div>
+
+        <div class="contact-logo">
+          <img
+            src="/assets/smalllogo.svg"
+            alt="Silly Sensei"
+            class="footer-logo"
+            loading="lazy"
+          />
+        </div>
+      </section>
+
+      <style>
+        .contact {
+          padding: 30px;
+          font-family: "Segoe UI", sans-serif;
+          color: #333;
+        }
+
+        .contact-item {
+          margin-bottom: 24px;
+        }
+
+        .contact-item h3 {
+          font-size: 20px;
+          font-weight: 600;
+          margin-bottom: 6px;
+        }
+
+        .contact-item p {
+          margin: 0;
+          font-size: 16px;
+        }
+
+        .contact-item a {
+          color: #f9c74f;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+
+        .contact-item a:hover {
+          color: #fcfcfc;
+          text-decoration: underline;
+        }
+      </style>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/mainpagejs/sources.js"></script>
+  </body>
+</html>
