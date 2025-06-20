@@ -4,13 +4,61 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sources - Silly Sensei</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Browse the verified research sources and references used in Silly Sensei’s educational content. Transparency and credibility backed by data." />
+    <link rel="canonical" href="https://sillysensei.com/" />
+
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="/assets/smalllogo.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/styles.css" as="style" />
+    <link rel="preload" href="/assets/fontawesome/css/all.min.css" as="style" />
+    <meta name="theme-color" content="#ee9c2d" />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="icon" href="/assets/smalllogo.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.min.css" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/assets/smalllogo.svg" type="image/svg+xml" />
 
     <!-- Firebase SDK v8 (compat version) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js" defer></script>
+
+    <!-- Inline Fix for h1 Warning -->
+    <style>
+      .sources-header h1 {
+        font-size: 2rem;
+      }
+      .contact {
+        padding: 30px;
+        font-family: "Segoe UI", sans-serif;
+        color: #333;
+      }
+      .contact-item {
+        margin-bottom: 24px;
+      }
+      .contact-item h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .contact-item p {
+        margin: 0;
+        font-size: 16px;
+      }
+      .contact-item a {
+        color: #f9c74f;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      .contact-item a:hover {
+        color: #fcfcfc;
+        text-decoration: underline;
+      }
+    </style>
   </head>
+
   <body class="sources-body">
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
@@ -27,14 +75,12 @@
             alt="Silly Sensei"
             class="logo-text"
             loading="eager"
+            fetchpriority="high"
           />
         </div>
         <div class="hamburger" id="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span></span><span></span><span></span>
         </div>
-        <!-- Navigation Menu -->
         <div class="nav-menu" id="navMenu">
           <a href="/index.html" class="nav-link">Home</a>
           <a href="/mainpageresources/sources.html" class="nav-link active">Sources</a>
@@ -43,9 +89,10 @@
       </div>
     </nav>
 
-    <!-- Sources Page Content -->
+    <!-- Main Page -->
     <main class="sources-page">
       <a href="/index.html" class="back-btn">Back</a>
+
       <section class="sources-header">
         <h1>Sources</h1>
         <p>
@@ -66,34 +113,26 @@
         </div>
       </section>
 
-      <!-- Sources Content -->
       <section class="sources-content" id="sourcesContent">
-        <!-- Loading indicator -->
         <div class="sources-loading" id="sourcesLoading">
           <div class="loading-spinner"></div>
           <p>Loading sources from database...</p>
         </div>
-
-        <!-- Sources will be dynamically loaded here -->
       </section>
+
       <section class="contact" id="contact">
         <div class="contact-item">
           <h3>I read my emails.</h3>
           <p>
-            <a href="mailto:abhishekreddy2499@gmail.com"
-              >abhishekreddy2499@gmail.com</a
-            >
+            <a href="mailto:abhishekreddy2499@gmail.com">abhishekreddy2499@gmail.com</a>
           </p>
         </div>
         <div class="contact-item">
           <h3>He builds my tech.</h3>
           <p>
-            <a href="https://idkshetty.github.io" target="_blank"
-              >idkshetty.github.io</a
-            >
+            <a href="https://idkshetty.github.io" target="_blank" rel="noopener">idkshetty.github.io</a>
           </p>
         </div>
-
         <div class="contact-logo">
           <img
             src="/assets/smalllogo.svg"
@@ -103,45 +142,12 @@
           />
         </div>
       </section>
-
-      <style>
-        .contact {
-          padding: 30px;
-          font-family: "Segoe UI", sans-serif;
-          color: #333;
-        }
-
-        .contact-item {
-          margin-bottom: 24px;
-        }
-
-        .contact-item h3 {
-          font-size: 20px;
-          font-weight: 600;
-          margin-bottom: 6px;
-        }
-
-        .contact-item p {
-          margin: 0;
-          font-size: 16px;
-        }
-
-        .contact-item a {
-          color: #f9c74f;
-          text-decoration: none;
-          transition: color 0.3s ease;
-        }
-
-        .contact-item a:hover {
-          color: #fcfcfc;
-          text-decoration: underline;
-        }
-      </style>
     </main>
 
-    <!-- Toast Notifications -->
+    <!-- Toast -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="/mainpageresources/sources.js"></script>
+    <!-- App Script -->
+    <script src="/mainpageresources/sources.js" defer></script>
   </body>
 </html>

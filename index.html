@@ -3,41 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Silly Sensei</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="icon" href="/assets/smalllogo.svg" type="image/svg+xml">
+    <title>Silly Sensei | Abhishek Reddy</title>
 
-    <!-- Preload critical assets -->
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Join Abhishek Reddy (Silly Sensei) on his inspiring journey from corporate life to farming, environmental projects, and social media awareness." />
+    <meta name="keywords" content="Silly Sensei, Abhishek Reddy, Farming, Agriculture, Social Media, Delhi Cleanup, Environmental Projects, Influencer" />
+    <meta name="author" content="Abhishek Reddy" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Silly Sensei - Abhishek Reddy's Journey" />
+    <meta property="og:description" content="Discover Silly Sensei's story from corporate to farming & environmental impact." />
+    <meta property="og:image" content="https://sillysensei.com/assets/biglogo.webp" />
+    <meta property="og:url" content="https://sillysensei.com/" />
+    <meta property="og:type" content="website" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/assets/smalllogo.svg" type="image/svg+xml" />
+
+    <!-- Preload Optimized -->
     <link rel="preload" href="/assets/smalllogo.svg" as="image" />
-    <link rel="preload" href="/assets/biglogo.svg" as="image" />
-    <link rel="preload" href="/assets/bg.png" as="image" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
+    <link rel="preload" href="/assets/biglogo.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/assets/biglogo.svg" as="image" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" media="all" />
+    <link rel="preload" as="style" href="/assets/fontawesome/css/all.min.css" onload="this.onload=null;this.rel='stylesheet';" />
+    <noscript><link rel="stylesheet" href="/assets/fontawesome/css/all.min.css" /></noscript>
+
+    <!-- Theme color for mobile -->
+    <meta name="theme-color" content="#ee9c2d" />
   </head>
   <body>
-    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
       <div class="loading-spinner"></div>
       <p>Loading Silly Sensei...</p>
     </div>
 
-    <!-- Navigation -->
     <nav class="navbar">
       <div class="nav-container">
         <div class="nav-logo">
-          <img
-            src="assets/smalllogo.svg"
-            alt="Silly Sensei"
-            class="logo-text"
-            loading="eager"
-          />
+          <img src="assets/smalllogo.svg" alt="Silly Sensei Logo" class="logo-text" loading="eager" />
         </div>
         <div class="hamburger" id="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span></span><span></span><span></span>
         </div>
         <div class="nav-menu" id="navMenu">
           <a href="index.html" class="nav-link">Home</a>
@@ -47,81 +54,62 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-content">
-      <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
           <div class="main-logo-container">
-            <img
-              src="assets/biglogo.svg"
-              alt="Silly Sensei"
-              class="main-logo"
-              loading="eager"
-            />
+            <picture>
+              <source srcset="assets/biglogo.webp" type="image/webp" />
+              <img src="assets/biglogo.svg" alt="Silly Sensei Main Logo" class="main-logo" loading="lazy" fetchpriority="high" />
+            </picture>
           </div>
         </div>
       </section>
 
-      <!-- Bio Section -->
       <section class="bio">
-        <p>
-          Abhishek Reddy, also known as Silly Sensei, is a social media
-          personality who gained popularity for sharing his unique journey of
-          leaving a high-paying corporate job to pursue farming. He documents
-          his experiences and insights on his social media platforms, engaging
-          his audience with quirky and educational videos about agriculture.
-        </p>
+        <h1 style="font-size: 2rem;">Meet Silly Sensei - Abhishek Reddy</h1>
+        <p>Abhishek Reddy, famously known as Silly Sensei, is a social media influencer who made headlines for his bold decision to leave a high-paying corporate job and pursue farming. Through his quirky, educational videos on agriculture, he inspires thousands, spreading awareness about sustainability and environmental responsibility.</p>
       </section>
 
-      <!-- Links Section -->
       <section class="links">
         <h2 class="links-title">🔗 Explore Our Channels</h2>
         <div class="links-list">
-          <a href="https://www.instagram.com/silly.sensei?utm_source=ig_web_button_share_sheet&igsh=MWQ4ZTdpNmNyeWN3Yg==" class="link-item">Follow Us on Instagram</a>
-          <a href="https://youtube.com/@sillysensei.original?si=dy0wBt2pnjZsKo56" class="link-item">Explore us on YouTube</a>
-          <a href="https://whatsapp.com/channel/0029Vah5vM48aKvSHWCtMn1d" class="link-item">Join Our WhatsApp Channel</a>
+          <a href="https://www.instagram.com/silly.sensei?utm_source=ig_web_button_share_sheet&igsh=MWQ4ZTdpNmNyeWN3Yg==" class="link-item" target="_blank" rel="noopener">Follow Us on Instagram</a>
+          <a href="https://youtube.com/@sillysensei.original?si=dy0wBt2pnjZsKo56" class="link-item" target="_blank" rel="noopener">Explore us on YouTube</a>
+          <a href="https://whatsapp.com/channel/0029Vah5vM48aKvSHWCtMn1d" class="link-item" target="_blank" rel="noopener">Join Our WhatsApp Channel</a>
           <a href="/mainpageresources/sources.html" class="link-item">View Video Info Sources</a>
           <a href="/projectcleanupindia/index.html" class="link-item">Support the Delhi Cleanup Drive</a>
-          <a href="https://www.facebook.com/share/1DhqFAHsqo/?mibextid=wwXIfr" class="link-item">I am on Facebook too!</a>
+          <a href="https://www.facebook.com/share/1DhqFAHsqo/?mibextid=wwXIfr" class="link-item" target="_blank" rel="noopener">I am on Facebook too!</a>
         </div>
       </section>
 
       <style>
         .links {
-          padding-top: 3rem;
-          padding: 30px;
-          text-align: left;
+          padding: 3rem 30px;
           font-family: "Segoe UI", sans-serif;
-        }
-
-        .links-title {
-          font-size: 28px; /* Explicit font-size to prevent browser warnings */
           text-align: left;
+        }
+        .links-title {
+          font-size: 28px;
           margin-bottom: 20px;
           color: #333;
-          font-weight: 600; /* Added for better consistency */
+          font-weight: 600;
         }
-
         .links-list {
           display: flex;
           flex-direction: column;
           gap: 12px;
-          text-align: left;
           max-width: 400px;
-          /* margin: 0 auto; */ /* Remove or comment out this line */
         }
-
         .link-item {
           color: #444;
           text-decoration: none;
           font-size: 18px;
           font-weight: 500;
-          transition: color 0.3s ease, transform 0.2s ease;
           padding: 8px 12px;
           border-radius: 6px;
+          transition: color 0.3s ease, transform 0.2s ease;
         }
-
         .link-item:hover {
           color: #6e40c9;
           background-color: #f3f0ff;
@@ -129,32 +117,18 @@
         }
       </style>
 
-      <!-- Contact Section -->
       <section class="contact" id="contact">
+        <h2>Contact</h2>
         <div class="contact-item">
-          <h3>I read my emails.</h3>
-          <p>
-            <a href="mailto:abhishekreddy2499@gmail.com"
-              >abhishekreddy2499@gmail.com</a
-            >
-          </p>
+          <h3>For Enquiries:</h3>
+          <p><a href="mailto:abhishekreddy2499@gmail.com">abhishekreddy2499@gmail.com</a></p>
         </div>
         <div class="contact-item">
-          <h3>He builds my tech.</h3>
-          <p>
-            <a href="https://idkshetty.github.io" target="_blank"
-              >idkshetty.github.io</a
-            >
-          </p>
+          <h3>Tech Partner:</h3>
+          <p><a href="https://idkshetty.github.io" target="_blank" rel="noopener">idkshetty.github.io</a></p>
         </div>
-
         <div class="contact-logo">
-          <img
-            src="assets/smalllogo.svg"
-            alt="Silly Sensei"
-            class="footer-logo"
-            loading="lazy"
-          />
+          <img src="assets/smalllogo.svg" alt="Silly Sensei Footer Logo" class="footer-logo" loading="lazy" />
         </div>
       </section>
 
@@ -164,28 +138,23 @@
           font-family: "Segoe UI", sans-serif;
           color: #333;
         }
-
         .contact-item {
           margin-bottom: 24px;
         }
-
         .contact-item h3 {
-          font-size: 20px; /* Explicit font-size to prevent browser warnings */
+          font-size: 20px;
           font-weight: 600;
           margin-bottom: 6px;
         }
-
         .contact-item p {
           margin: 0;
           font-size: 16px;
         }
-
         .contact-item a {
           color: #f9c74f;
           text-decoration: none;
           transition: color 0.3s ease;
         }
-
         .contact-item a:hover {
           color: #fcfcfc;
           text-decoration: underline;
@@ -193,6 +162,6 @@
       </style>
     </main>
 
-    <script src="/mainpageresources/script.js"></script>
+    <script src="/mainpageresources/script.js" defer></script>
   </body>
 </html>

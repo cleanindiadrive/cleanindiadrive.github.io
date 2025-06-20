@@ -4,253 +4,237 @@
     --success-color: #4caf50;
     --error-color: #f44336;
     --warning-color: #ff9800;
-    --info-color: #2196f3;
+    --info-color: #2196f3
 }
 
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
+    margin: 0;
+    padding: 0
 }
 
-/* Loading Screen */
 .loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    align-items: center;
     background: var(--primary-color);
     display: flex;
     flex-direction: column;
+    height: 100%;
     justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s ease-out;
+    left: 0;
+    position: fixed;
+    top: 0;
+    transition: opacity .5s ease-out;
+    width: 100%;
+    z-index: 9999
 }
 
 .loading-screen.hidden {
     opacity: 0;
-    pointer-events: none;
+    pointer-events: none
 }
 
 .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(255, 255, 255, 0.3);
-    border-top: 5px solid white;
-    border-radius: 50%;
     animation: spin 1s linear infinite;
+    border: 5px solid hsla(0, 0%, 100%, .3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    height: 50px;
     margin-bottom: 1rem;
+    width: 50px
 }
 
 @keyframes spin {
     0% {
-        transform: rotate(0deg);
+        transform: rotate(0deg)
     }
 
-    100% {
-        transform: rotate(360deg);
+    to {
+        transform: rotate(1turn)
     }
 }
 
 .loading-screen p {
-    color: white;
+    color: #fff;
     font-size: 1.2rem;
-    font-weight: bold;
+    font-weight: 700
 }
 
 body {
-    font-family: 'Arial', sans-serif;
     background-color: var(--primary-color);
-    color: white;
-    line-height: 1.6;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    line-height: 1.6
 }
 
 body.loaded,
 body.sources-body.loaded {
-    background-image: url('assets/bg.png');
-    background-size: 300px;
-    background-repeat: repeat;
     background-attachment: fixed;
+    background-image: url(assets/bg.png);
+    background-repeat: repeat;
+    background-size: 300px
 }
 
-/* Navigation */
 .navbar {
     background-color: var(--secondary-color);
+    height: 70px;
     padding: 1rem 0;
     position: fixed;
     top: 0;
+    transition: transform .3s ease-in-out;
     width: 100%;
-    z-index: 1000;
-    transition: transform 0.3s ease-in-out;
-    height: 70px;
+    z-index: 1000
 }
 
 .nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
+    align-items: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 0 1rem
 }
 
 .logo-text {
     height: 35px;
-    width: auto;
-    transition: opacity 0.3s ease;
+    transition: opacity .3s ease;
+    width: auto
 }
 
 .logo-text:not([src]) {
-    opacity: 0;
+    opacity: 0
 }
 
 .hamburger {
-    display: flex;
-    flex-direction: column;
     cursor: pointer;
+    display: flex;
+    flex-direction: column
 }
 
 .hamburger span {
-    width: 25px;
+    background-color: #fff;
     height: 3px;
-    background-color: white;
     margin: 3px 0;
-    transition: 0.3s;
+    transition: .3s;
+    width: 25px
 }
 
-.hamburger.active span:nth-child(1) {
-    transform: rotate(-45deg) translate(-5px, 6px);
+.hamburger.active span:first-child {
+    transform: rotate(-45deg) translate(-5px, 6px)
 }
 
 .hamburger.active span:nth-child(2) {
-    opacity: 0;
+    opacity: 0
 }
 
 .hamburger.active span:nth-child(3) {
-    transform: rotate(45deg) translate(-5px, -6px);
+    transform: rotate(45deg) translate(-5px, -6px)
 }
 
-/* Navigation Menu */
 .nav-menu {
-    display: flex;
-    gap: 2rem;
     align-items: center;
+    display: flex;
+    gap: 2rem
 }
 
 .nav-link {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
     border-radius: 5px;
-    transition: all 0.3s ease;
+    color: #fff;
+    font-weight: 500;
+    padding: .5rem 1rem;
     position: relative;
+    text-decoration: none;
+    transition: all .3s ease
 }
 
 .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--primary-color);
+    background-color: hsla(0, 0%, 100%, .1);
+    color: var(--primary-color)
 }
 
 .nav-link.active {
     background-color: var(--primary-color);
-    color: white;
+    color: #fff
 }
 
-/* Main Content */
 .main-content {
-    margin-top: 70px;
+    margin-top: 70px
 }
 
-/* Hero Section - Transparent background to show body background */
 .hero {
-    position: relative;
-    min-height: 70vh;
-    display: flex;
     align-items: center;
-    justify-content: center;
     background: transparent;
+    display: flex;
+    justify-content: center;
+    min-height: 70vh;
     overflow: hidden;
     padding-bottom: 4rem;
-    /* Added padding between hero and bio */
+    position: relative
 }
 
 .hero-content {
+    padding: 2rem;
     position: relative;
     text-align: center;
-    z-index: 2;
-    padding: 2rem;
+    z-index: 2
 }
 
 .main-logo-container {
-    display: flex;
-    justify-content: center;
     align-items: center;
+    display: flex;
+    justify-content: center
 }
 
 .main-logo {
-    width: 350px;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, .3));
     height: auto;
     max-width: 90vw;
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
-    transition: opacity 0.3s ease;
+    transition: opacity .3s ease;
+    width: 350px
 }
 
 .main-logo:not([src]) {
-    opacity: 0;
+    opacity: 0
 }
 
-/* Bio Section */
 .bio {
-    padding: 3rem 1.5rem;
-    padding-bottom: 4rem;
-    /* Added extra bottom padding */
-    max-width: 800px;
-    margin: 0 auto;
-    margin-bottom: 3rem;
-    /* Added margin between bio and links */
-    text-align: center;
+    background: hsla(0, 0%, 100%, .15);
+    border: 1px solid hsla(0, 0%, 100%, .2);
+    border-radius: 15px;
     font-size: 1.1rem;
     line-height: 1.8;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 15px;
-    margin-top: -2rem;
+    margin: -2rem auto 3rem;
+    max-width: 800px;
+    padding: 3rem 1.5rem 4rem;
     position: relative;
-    z-index: 3;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    z-index: 3
+}
+.bio h1 {
+    font-size: 2rem;
 }
 
-/* Links Section */
 .links {
-    padding-top: 4rem;
-    /* Increased top padding */
-    background-color: rgba(245, 245, 245, 0.95);
-    background-image: url('assets/bg.png');
-    /* Added background pattern */
-    background-size: 200px;
-    /* Smaller pattern size for subtle effect */
-    background-repeat: repeat;
     background-blend-mode: overlay;
-    /* Blend the pattern with the background color */
+    background-color: hsla(0, 0%, 96%, .95);
+    background-image: url(assets/bg.png);
+    background-repeat: repeat;
+    background-size: 200px;
+    margin-bottom: 0;
+    padding: 4rem 1.5rem 0
+}
+
+.links,
+.links h2 {
     color: var(--secondary-color);
-    padding: 4rem 1.5rem 0;
-    /* Top padding 4rem, left/right 1.5rem (original), bottom 0 */
-    position: relative;
-    margin-bottom: 0rem;
-    /* Keep margin between links and contact */
+    position: relative
 }
 
 .links h2 {
     font-size: 3rem;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 2rem;
-    color: var(--secondary-color);
-    position: relative;
-    z-index: 2;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-    /* Added text shadow for better readability */
+    text-shadow: 1px 1px 2px hsla(0, 0%, 100%, .8);
+    z-index: 2
 }
 
 .links-list {
@@ -258,1048 +242,987 @@ body.sources-body.loaded {
     flex-direction: column;
     gap: 1.5rem;
     max-width: 600px;
-    position: relative;
-    z-index: 2;
     padding-bottom: 2rem;
-    /* Add padding to the list itself instead of the section */
+    position: relative;
+    z-index: 2
 }
 
 .link-item {
-    color: #666;
-    text-decoration: underline;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    padding: 0.5rem 0;
     border-radius: 5px;
+    color: #666;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: .5rem 0;
+    text-decoration: underline;
+    transition: all .3s ease
 }
 
 .link-item:hover {
+    background-color: rgba(238, 156, 45, .1);
     color: var(--primary-color);
-    background-color: rgba(238, 156, 45, 0.1);
     padding-left: 1rem;
-    transform: translateX(10px);
+    transform: translateX(10px)
 }
 
-/* Contact Section */
 .contact {
-    background-color: rgba(94, 58, 11, 0.95);
+    background-color: rgba(94, 58, 11, .95);
     padding: 4rem 1.5rem;
-    /* Increased padding */
-    padding-top: 4rem;
-    /* Added extra top padding */
-    position: relative;
+    position: relative
 }
 
 .contact-item {
     margin-bottom: 2rem;
     position: relative;
-    z-index: 2;
+    z-index: 2
 }
 
 .contact-item h3 {
+    color: #fff;
     font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: white;
+    margin-bottom: .5rem
 }
 
 .contact-item p {
-    font-size: 1.1rem;
     color: var(--primary-color);
-    transition: color 0.3s ease;
+    font-size: 1.1rem;
+    transition: color .3s ease
 }
 
 .contact-item p:hover {
-    color: #f4b942;
+    color: #f4b942
 }
 
 .contact-logo {
-    position: absolute;
     bottom: 1rem;
+    position: absolute;
     right: 1rem;
-    z-index: 2;
+    z-index: 2
 }
 
 .footer-logo {
-    width: 80px;
     height: auto;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
+    opacity: .7;
+    transition: opacity .3s ease;
+    width: 80px
 }
 
 .footer-logo:hover {
-    opacity: 1;
+    opacity: 1
 }
 
-/* Sources Page */
 .sources-page {
-    background-color: rgba(245, 245, 245, 0.95);
+    background-color: hsla(0, 0%, 96%, .95);
     color: var(--secondary-color);
     min-height: 100vh;
     padding-top: 70px;
-    position: relative;
+    position: relative
 }
 
 .sources-header {
-    padding: 3rem 1.5rem;
-    /* Increased padding */
-    padding-bottom: 2rem;
-    /* Added bottom padding */
-    text-align: center;
-    position: relative;
-    z-index: 2;
+    margin: 0 auto 2rem;
     max-width: 1200px;
-    margin: 0 auto;
-    margin-bottom: 2rem;
-    /* Added margin between header and search */
+    padding: 3rem 1.5rem 2rem;
+    position: relative;
+    text-align: center;
+    z-index: 2
 }
 
 .sources-header-content {
-    position: relative;
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: center;
     margin-bottom: 1rem;
+    position: relative
 }
 
 .sources-header h1 {
-    font-size: 3rem;
     color: var(--primary-color);
+    font-size: 3rem;
     margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, .1)
 }
 
 .sources-header p {
-    font-size: 1.1rem;
     color: #666;
-    font-style: italic;
+    font-size: 1.1rem;
+    font-style: italic
 }
 
 .search-section {
-    padding: 2rem 1.5rem;
-    padding-bottom: 3rem;
-    /* Added extra bottom padding */
+    margin: 0 auto 2rem;
     max-width: 800px;
-    margin: 0 auto;
-    margin-bottom: 2rem;
-    /* Added margin between search and admin actions */
+    padding: 2rem 1.5rem 3rem;
     position: relative;
-    z-index: 2;
+    z-index: 2
 }
 
 .search-container {
-    position: relative;
-    display: flex;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background-color: hsla(0, 0%, 100%, .9);
     border: 2px solid var(--primary-color);
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
+    display: flex;
+    overflow: hidden;
+    position: relative
 }
 
 .search-input {
-    flex: 1;
-    padding: 1rem 1.5rem;
-    border: none;
     background: transparent;
-    font-size: 1rem;
+    border: none;
     color: #333;
+    flex: 1;
+    font-size: 1rem;
+    padding: 1rem 1.5rem
 }
 
 .search-input::placeholder {
-    color: #999;
+    color: #999
 }
 
 .search-input:focus {
-    outline: none;
+    outline: none
 }
 
 .search-btn {
-    padding: 1rem 1.5rem;
-    border: none;
     background: var(--primary-color);
-    color: white;
+    border: none;
+    color: #fff;
     cursor: pointer;
     font-size: 1.2rem;
-    transition: background-color 0.3s ease;
+    padding: 1rem 1.5rem;
+    transition: background-color .3s ease
 }
 
 .search-btn:hover {
-    background-color: #d4861f;
+    background-color: #d4861f
 }
 
 .sources-content {
-    padding: 3rem 1.5rem;
-    /* Increased top padding */
-    max-width: 800px;
     margin: 0 auto;
+    max-width: 800px;
+    padding: 3rem 1.5rem 6rem;
     position: relative;
-    z-index: 2;
-    padding-bottom: 6rem;
+    z-index: 2
 }
 
 .source-item {
+    background: hsla(0, 0%, 100%, .95);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .1);
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    border-left: 4px solid var(--primary-color);
-    transition: all 0.3s ease;
     position: relative;
+    transition: all .3s ease
 }
 
 .source-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .15);
+    transform: translateY(-2px)
 }
 
 .source-header {
-    display: flex;
-    justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1rem;
+    display: flex;
     gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem
 }
 
 .source-header h3 {
-    font-size: 1.2rem;
     color: var(--secondary-color);
-    margin: 0;
     flex: 1;
+    font-size: 1.2rem;
+    margin: 0
 }
 
 .source-actions {
-    display: flex;
     align-items: center;
-    gap: 1rem;
+    display: flex;
     flex-shrink: 0;
+    gap: 1rem
 }
 
 .source-date {
-    font-size: 0.8rem;
     color: #999;
-    white-space: nowrap;
+    font-size: .8rem;
+    white-space: nowrap
 }
 
 .source-links {
-    margin-left: 0;
+    margin-left: 0
 }
 
 .links-label {
-    font-weight: bold;
     color: var(--secondary-color);
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    font-size: .9rem;
+    font-weight: 700;
+    margin-bottom: .5rem
 }
 
 .source-link {
-    display: block;
     color: #4a90e2;
+    display: block;
+    font-size: .9rem;
+    padding: .25rem 0;
     text-decoration: none;
-    font-size: 0.9rem;
-    padding: 0.25rem 0;
-    transition: color 0.3s ease;
-    word-break: break-all;
+    transition: color .3s ease;
+    word-break: break-all
 }
 
 .source-link:hover {
     color: var(--primary-color);
-    text-decoration: underline;
+    text-decoration: underline
 }
 
 .sources-loading {
-    text-align: center;
-    padding: 3rem;
     color: var(--secondary-color);
+    padding: 3rem;
+    text-align: center
 }
 
 .sources-loading .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(94, 58, 11, 0.3);
+    border: 4px solid rgba(94, 58, 11, .3);
     border-top: 4px solid var(--secondary-color);
+    height: 40px;
     margin: 0 auto 1rem;
+    width: 40px
 }
 
 .no-sources {
-    text-align: center;
-    padding: 4rem 2rem;
     color: #666;
+    padding: 4rem 2rem;
+    text-align: center
 }
 
 .no-sources-content {
-    max-width: 400px;
     margin: 0 auto;
+    max-width: 400px
 }
 
 .no-sources-icon {
     font-size: 4rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1rem
 }
 
 .no-sources h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
     color: var(--secondary-color);
+    font-size: 1.5rem;
+    margin-bottom: 1rem
 }
 
 .no-sources p {
     font-size: 1rem;
-    line-height: 1.6;
+    line-height: 1.6
 }
 
 .search-highlight {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 2px 4px;
     border-radius: 3px;
+    padding: 2px 4px
 }
 
-/* Back Button - Fixed positioning below navbar */
-.back-btn {
-    position: absolute;
-    left: 1.5rem;
-    top: 90px;
+.back-btn,
+.search-highlight {
     background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-    text-decoration: none;
-    display: inline-flex;
+    color: #fff
+}
+
+.back-btn {
     align-items: center;
-    gap: 0.5rem;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: .9rem;
+    font-weight: 500;
+    gap: .5rem;
+    left: 1.5rem;
+    padding: .6rem 1.2rem;
+    position: absolute;
+    text-decoration: none;
+    top: 90px;
+    transition: all .3s ease;
     white-space: nowrap;
+    z-index: 10
 }
 
 .back-btn:hover {
     background-color: #d4861f;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .3);
+    transform: translateY(-2px)
 }
 
-.back-btn::before {
-    content: '←';
+.back-btn:before {
+    content: "←";
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 700
 }
 
-/* Toast Notifications */
 .toast-container {
-    position: fixed;
-    top: 100px;
-    right: 1rem;
-    z-index: 3000;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: .5rem;
+    position: fixed;
+    right: 1rem;
+    top: 100px;
+    z-index: 3000
 }
 
 .toast {
-    background: white;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    min-width: 300px;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
+    background: #fff;
     border-left: 4px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
+    display: flex;
+    gap: .5rem;
+    min-width: 300px;
+    padding: 1rem;
+    transform: translateX(100%);
+    transition: transform .3s ease
 }
 
 .toast.toast-show {
-    transform: translateX(0);
+    transform: translateX(0)
 }
 
 .toast-success {
-    border-left-color: var(--success-color);
+    border-left-color: var(--success-color)
 }
 
 .toast-error {
-    border-left-color: var(--error-color);
+    border-left-color: var(--error-color)
 }
 
 .toast-info {
-    border-left-color: var(--info-color);
+    border-left-color: var(--info-color)
 }
 
 .toast-warning {
-    border-left-color: var(--warning-color);
+    border-left-color: var(--warning-color)
 }
 
 .toast-icon {
-    font-size: 1.2rem;
+    font-size: 1.2rem
 }
 
 .toast-message {
-    flex: 1;
     color: #333;
+    flex: 1
 }
 
 .toast-close {
+    align-items: center;
     background: none;
     border: none;
-    font-size: 1.2rem;
     color: #999;
     cursor: pointer;
-    padding: 0;
-    width: 20px;
-    height: 20px;
     display: flex;
-    align-items: center;
+    font-size: 1.2rem;
+    height: 20px;
     justify-content: center;
+    padding: 0;
+    width: 20px
 }
 
 .toast-close:hover {
-    color: #333;
+    color: #333
 }
 
-/* Mobile Navigation */
-@media (max-width: 768px) {
+@media (max-width:768px) {
     .nav-menu {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        height: calc(100vh - 70px);
+        align-items: center;
         background-color: var(--secondary-color);
         flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        padding-top: 2rem;
         gap: 1rem;
+        height: calc(100vh - 70px);
+        justify-content: flex-start;
+        left: 0;
+        padding-top: 2rem;
+        position: fixed;
+        top: 70px;
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 999;
+        transition: transform .3s ease;
+        width: 100%;
+        z-index: 999
     }
 
     .nav-menu.active {
-        transform: translateX(0);
+        transform: translateX(0)
     }
 
     .nav-link {
+        border-radius: 10px;
         font-size: 1.2rem;
         padding: 1rem 2rem;
-        width: 80%;
         text-align: center;
-        border-radius: 10px;
+        width: 80%
     }
 
     .hamburger {
         display: flex;
-        z-index: 1001;
+        z-index: 1001
     }
 }
 
-@media (min-width: 769px) {
+@media (min-width:769px) {
     .hamburger {
-        display: none;
+        display: none
     }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width:768px) {
 
     body.loaded,
     body.sources-body.loaded {
-        background-size: 250px;
+        background-size: 250px
     }
 
     .hero {
         min-height: 60vh;
-        padding-bottom: 3rem;
-        /* Reduced padding on mobile */
+        padding-bottom: 3rem
     }
 
     .main-logo {
-        width: 280px;
+        width: 280px
     }
 
-    .links h2 {
-        font-size: 2.5rem;
-    }
-
+    .links h2,
     .sources-header h1 {
-        font-size: 2.5rem;
+        font-size: 2.5rem
     }
 
     .bio {
-        margin: 1rem;
-        padding: 2rem 1rem;
-        margin-bottom: 2rem;
-        /* Reduced margin on mobile */
+        margin: 1rem 1rem 2rem;
+        padding: 2rem 1rem
     }
 
     .links {
-        padding: 3rem 1rem 0;
-        /* Reduced top padding on mobile, keep original left/right, no bottom */
-        margin-bottom: 0rem;
-        /* Reduced margin on mobile */
         background-size: 150px;
-        /* Smaller pattern on mobile */
+        margin-bottom: 0;
+        padding: 3rem 1rem 0
     }
 
     .links-list {
-        padding-bottom: 0rem;
-        /* Reduced bottom padding on mobile */
+        padding-bottom: 0
     }
 
     .contact {
-        padding: 3rem 1rem;
-        /* Reduced padding on mobile */
+        padding: 3rem 1rem
     }
 
     .sources-header {
-        padding: 2rem 1.5rem;
-        /* Reduced padding on mobile */
         margin-bottom: 1rem;
-        /* Reduced margin on mobile */
+        padding: 2rem 1.5rem
     }
 
     .search-section {
-        padding-bottom: 2rem;
-        /* Reduced padding on mobile */
         margin-bottom: 1rem;
-        /* Reduced margin on mobile */
+        padding-bottom: 2rem
     }
 
     .sources-content {
-        padding-top: 2rem;
-        /* Reduced padding on mobile */
+        padding-top: 2rem
     }
 
     .source-header {
-        flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        flex-direction: column;
+        gap: .5rem
     }
 
     .source-actions {
-        width: 100%;
         justify-content: space-between;
+        width: 100%
     }
 
     .toast-container {
-        right: 0.5rem;
-        left: 0.5rem;
-        top: 140px;
+        left: .5rem;
+        right: .5rem;
+        top: 140px
     }
 
     .toast {
-        min-width: auto;
+        min-width: auto
     }
 
     .back-btn {
-        top: 90px;
+        font-size: .8rem;
         left: 1rem;
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
+        padding: .5rem 1rem;
+        top: 90px
     }
 
     .sources-page {
-        padding-top: 140px;
+        padding-top: 140px
     }
 
     .sources-header {
-        padding-top: 1rem;
+        padding-top: 1rem
     }
 
     .sources-header h1 {
-        font-size: 2.2rem;
+        font-size: 2.2rem
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
 
     body.loaded,
     body.sources-body.loaded {
-        background-size: 200px;
+        background-size: 200px
     }
 
     .hero {
-        padding-bottom: 2rem;
-        /* Further reduced padding on small mobile */
+        padding-bottom: 2rem
     }
 
     .bio {
-        padding: 2rem 1rem;
         font-size: 1rem;
-        margin: 0.5rem;
-        margin-bottom: 1.5rem;
-        /* Reduced margin on small mobile */
+        margin: .5rem .5rem 1.5rem;
+        padding: 2rem 1rem
     }
 
     .links {
-        padding: 2rem 1rem 0;
-        /* Further reduced top padding on small mobile */
-        margin-bottom: 0rem;
-        /* Smaller margin on small mobile */
         background-size: 120px;
-        /* Even smaller pattern on small mobile */
+        margin-bottom: 0;
+        padding: 2rem 1rem 0
     }
 
     .links-list {
-        padding-bottom: 0rem;
-        /* Further reduced bottom padding on small mobile */
+        padding-bottom: 0
     }
 
     .contact {
-        padding: 2rem 1rem;
+        padding: 2rem 1rem
     }
 
     .main-logo {
-        width: 240px;
+        width: 240px
     }
 
     .logo-text {
-        height: 30px;
+        height: 30px
     }
 
     .search-container {
-        flex-direction: column;
         border-radius: 15px;
+        flex-direction: column
     }
 
     .search-btn {
-        border-radius: 0 0 15px 15px;
+        border-radius: 0 0 15px 15px
     }
 
     .back-btn {
-        top: 90px;
-        left: 0.75rem;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.75rem;
+        font-size: .75rem;
+        left: .75rem;
+        padding: .4rem .8rem;
+        top: 90px
     }
 
     .sources-page {
-        padding-top: 130px;
+        padding-top: 130px
     }
 
     .sources-header h1 {
-        font-size: 2rem;
+        font-size: 2rem
     }
 
     .sources-header {
-        padding: 1.5rem 1rem;
+        padding: 1.5rem 1rem
     }
 
     .toast-container {
-        top: 120px;
+        top: 120px
     }
 }
 
-/* Loading Animation */
 @keyframes fadeInUp {
-    from {
+    0% {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(30px)
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0)
     }
 }
 
 .main-logo {
-    animation: fadeInUp 1s ease-out;
+    animation: fadeInUp 1s ease-out
 }
 
 .bio {
-    animation: fadeInUp 1s ease-out 0.3s both;
+    animation: fadeInUp 1s ease-out .3s both
 }
 
 .links {
-    animation: fadeInUp 1s ease-out 0.6s both;
+    animation: fadeInUp 1s ease-out .6s both
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 8px
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #f1f1f1
 }
 
 ::-webkit-scrollbar-thumb {
     background: var(--primary-color);
-    border-radius: 4px;
+    border-radius: 4px
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #d4861f;
+    background: #d4861f
 }
 
-/* Performance optimizations */
 img {
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
+    image-rendering: crisp-edges
 }
 
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion:reduce) {
     * {
-        animation-duration: 0.01ms !important;
+        animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        transition-duration: .01ms !important
     }
 }
 
-/* Admin Actions Section */
 .admin-actions-section {
-    padding: 2rem 1.5rem;
-    /* Increased padding */
-    padding-top: 3rem;
-    /* Added extra top padding */
-    padding-bottom: 3rem;
-    /* Added extra bottom padding */
-    max-width: 800px;
-    margin: 0 auto;
-    margin-bottom: 2rem;
-    /* Added margin between admin actions and sources content */
-    text-align: center;
-    position: relative;
-    z-index: 2;
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
-    flex-wrap: wrap;
+    margin: 0 auto 2rem;
+    max-width: 800px;
+    padding: 3rem 1.5rem;
+    position: relative;
+    text-align: center;
+    z-index: 2
 }
 
 .add-new-source-btn,
 .refresh-sources-btn {
-    background: linear-gradient(135deg, var(--primary-color), #d4861f);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(238, 156, 45, 0.3);
-    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--primary-color), #d4861f);
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(238, 156, 45, .3);
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.1rem;
+    font-weight: 700;
+    gap: .5rem;
+    padding: 1rem 2rem;
+    transition: all .3s ease
 }
 
 .refresh-sources-btn {
     background: linear-gradient(135deg, var(--info-color), #1976d2);
-    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, .3)
 }
 
 .add-new-source-btn:hover,
 .refresh-sources-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(238, 156, 45, 0.4);
+    box-shadow: 0 8px 25px rgba(238, 156, 45, .4);
+    transform: translateY(-2px)
 }
 
 .refresh-sources-btn:hover {
-    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+    box-shadow: 0 8px 25px rgba(33, 150, 243, .4)
 }
 
 .add-new-source-btn .btn-icon,
 .refresh-sources-btn .btn-icon {
     font-size: 1.3rem;
-    font-weight: bold;
+    font-weight: 700
 }
 
-/* Modal Styles */
 .modal {
+    align-items: center;
+    animation: fadeIn .3s ease;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, .5);
     display: none;
-    position: fixed;
-    z-index: 2000;
+    height: 100%;
+    justify-content: center;
     left: 0;
+    position: fixed;
     top: 0;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.3s ease;
+    z-index: 2000
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
+    0% {
+        opacity: 0
     }
 
     to {
-        opacity: 1;
+        opacity: 1
     }
 }
 
 .modal-content {
-    background: white;
+    animation: slideIn .3s ease;
+    background: #fff;
     border-radius: 15px;
-    width: 90%;
-    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
     max-height: 90vh;
+    max-width: 500px;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideIn 0.3s ease;
+    width: 90%
 }
 
 @keyframes slideIn {
-    from {
+    0% {
         opacity: 0;
-        transform: translateY(-50px) scale(0.9);
+        transform: translateY(-50px) scale(.9)
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0) scale(1)
     }
 }
 
 .modal-header {
+    align-items: center;
+    border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid #eee;
+    padding: 1.5rem
 }
 
 .modal-header h3 {
     color: var(--secondary-color);
     font-size: 1.5rem;
-    margin: 0;
+    margin: 0
 }
 
 .close-modal {
+    align-items: center;
     background: none;
     border: none;
-    font-size: 2rem;
+    border-radius: 50%;
     color: #999;
     cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
     display: flex;
-    align-items: center;
+    font-size: 2rem;
+    height: 30px;
     justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
+    padding: 0;
+    transition: all .3s ease;
+    width: 30px
 }
 
 .close-modal:hover {
     background-color: #f5f5f5;
-    color: #333;
+    color: #333
 }
 
 .add-source-form {
-    padding: 1.5rem;
+    padding: 1.5rem
 }
 
 .delete-modal-body {
     padding: 1.5rem;
-    text-align: center;
+    text-align: center
 }
 
 .delete-modal-body p {
-    margin-bottom: 1rem;
     color: #333;
+    margin-bottom: 1rem
 }
 
 .delete-warning {
     color: var(--error-color);
-    font-weight: bold;
-    font-size: 0.9rem;
+    font-size: .9rem;
+    font-weight: 700
 }
 
-/* Form Styles */
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
     color: var(--secondary-color);
+    display: block;
+    font-weight: 700;
+    margin-bottom: .5rem
 }
 
 .form-group input,
 .form-group textarea {
-    width: 100%;
-    padding: 0.8rem;
     border: 2px solid #ddd;
     border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
     font-family: inherit;
+    font-size: 1rem;
+    padding: .8rem;
+    transition: border-color .3s ease;
+    width: 100%
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-    outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(238, 156, 45, 0.1);
+    box-shadow: 0 0 0 3px rgba(238, 156, 45, .1);
+    outline: none
 }
 
 .form-help {
-    display: block;
-    margin-top: 0.25rem;
-    font-size: 0.85rem;
     color: #666;
+    display: block;
+    font-size: .85rem;
     font-style: italic;
+    margin-top: .25rem
 }
 
 .form-actions {
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
-    margin-top: 2rem;
+    margin-top: 2rem
 }
 
 .cancel-btn {
     background: #f5f5f5;
-    color: #666;
     border: 1px solid #ddd;
-    padding: 0.8rem 1.5rem;
     border-radius: 8px;
+    color: #666;
     cursor: pointer;
-    transition: all 0.3s ease;
+    padding: .8rem 1.5rem;
+    transition: all .3s ease
 }
 
 .cancel-btn:hover {
     background: #e0e0e0;
-    color: #333;
+    color: #333
 }
 
 .submit-btn {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    min-width: 120px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    gap: .5rem;
     justify-content: center;
+    min-width: 120px;
+    padding: .8rem 1.5rem;
+    transition: all .3s ease
 }
 
 .submit-btn:hover:not(:disabled) {
     background: #d4861f;
-    transform: translateY(-1px);
+    transform: translateY(-1px)
 }
 
 .submit-btn:disabled {
-    opacity: 0.7;
     cursor: not-allowed;
-    transform: none;
+    opacity: .7;
+    transform: none
 }
 
 .delete-confirm-btn {
-    background: var(--error-color);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    min-width: 120px;
+    background: var(--error-color);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    gap: .5rem;
     justify-content: center;
+    min-width: 120px;
+    padding: .8rem 1.5rem;
+    transition: all .3s ease
 }
 
 .delete-confirm-btn:hover:not(:disabled) {
     background: #d32f2f;
-    transform: translateY(-1px);
+    transform: translateY(-1px)
 }
 
 .delete-confirm-btn:disabled {
-    opacity: 0.7;
     cursor: not-allowed;
-    transform: none;
+    opacity: .7;
+    transform: none
 }
 
 .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid white;
-    border-radius: 50%;
     animation: spin 1s linear infinite;
+    border: 2px solid hsla(0, 0%, 100%, .3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    height: 16px;
+    width: 16px
 }
 
-/* Edit/Delete Button Styles */
-.edit-source-btn,
-.delete-source-btn {
+.delete-source-btn,
+.edit-source-btn {
+    align-items: center;
     background: none;
     border: none;
-    cursor: pointer;
-    padding: 0.5rem;
     border-radius: 50%;
-    transition: all 0.3s ease;
+    cursor: pointer;
     display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 1.2rem;
+    justify-content: center;
+    padding: .5rem;
+    transition: all .3s ease
 }
 
 .edit-source-btn:hover {
-    background-color: rgba(33, 150, 243, 0.1);
-    transform: scale(1.1);
+    background-color: rgba(33, 150, 243, .1);
+    transform: scale(1.1)
 }
 
 .delete-source-btn:hover {
-    background-color: rgba(244, 67, 54, 0.1);
-    transform: scale(1.1);
+    background-color: rgba(244, 67, 54, .1);
+    transform: scale(1.1)
 }
 
-/* Responsive Design for Admin Elements */
-@media (max-width: 768px) {
+@media (max-width:768px) {
     .modal-content {
-        width: 95%;
         margin: 1rem;
+        width: 95%
     }
 
     .form-actions {
-        flex-direction: column;
+        flex-direction: column
     }
 
     .admin-actions-section {
-        flex-direction: column;
         align-items: center;
-        padding: 2rem 1.5rem;
-        /* Reduced padding on mobile */
+        flex-direction: column;
         margin-bottom: 1rem;
-        /* Reduced margin on mobile */
+        padding: 2rem 1.5rem
     }
 
     .add-new-source-btn,
     .refresh-sources-btn {
-        width: 100%;
         max-width: 300px;
+        width: 100%
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
     .admin-actions-section {
-        padding: 1.5rem 1rem;
-        /* Further reduced padding on small mobile */
+        padding: 1.5rem 1rem
     }
 
     .add-new-source-btn,
     .refresh-sources-btn {
-        padding: 0.8rem 1.5rem;
         font-size: 1rem;
+        padding: .8rem 1.5rem
     }
 }
