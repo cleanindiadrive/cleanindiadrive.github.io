@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sillysensei.com/sitemap.xml
