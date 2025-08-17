@@ -1,1449 +1,1235 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - SILLY SenSei</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      body {
-        font-family: "Quicksand", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background-color: #ffffff;
-        min-height: 100vh;
-      }
+        body {
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+            min-height: 100vh;
+        }
 
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.5rem;
-        background: white;
-        border-bottom: 1px solid #f0f0f0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-      .logo {
-        display: flex;
-        align-items: center;
-      }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
 
-      .logo-text {
-        display: flex;
-        align-items: center;
-        font-weight: bold;
-        font-size: 1.2rem;
-        color: #333;
-      }
+        .logo-image {
+            height: 40px;
+            width: auto;
+        }
 
-      .back-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-        transition: transform 0.2s;
-        text-decoration: none;
-        color: #333;
-        font-size: 1rem;
-      }
+        .back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: #333;
+            font-size: 1rem;
+        }
 
-      .back-btn:hover {
-        transform: scale(1.1);
-      }
+        .back-btn:hover {
+            transform: scale(1.1);
+        }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        background: white;
-        min-height: 100vh;
-      }
-
-      .checkout-title {
-        font-size: 2rem;
-        color: #4a90e2;
-        font-weight: 600;
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-
-      .checkout-container {
-        display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 3rem;
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        border: 1px solid #f0f0f0;
-        max-width: 100%;
-        overflow: hidden;
-      }
-
-      .checkout-form {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        min-width: 0;
-      }
-
-      .section {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-      }
-
-      .section h3 {
-        color: #333;
-        margin-bottom: 1.5rem;
-        font-size: 1.2rem;
-        font-weight: 600;
-      }
-
-      .form-group {
-        margin-bottom: 1.5rem;
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #555;
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: white;
-        font-family: inherit;
-        box-sizing: border-box;
-      }
-
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: #4a90e2;
-        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-      }
-
-      .order-summary {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 8px;
-        height: fit-content;
-        position: sticky;
-        top: 2rem;
-        border: 1px solid #e9ecef;
-        min-width: 0;
-      }
-
-      .order-summary h3 {
-        margin-bottom: 1.5rem;
-        color: #333;
-        font-size: 1.2rem;
-        font-weight: 600;
-      }
-
-      .empty-cart {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: #666;
-      }
-
-      .empty-cart h4 {
-        margin-bottom: 1rem;
-        color: #333;
-      }
-
-      .empty-cart p {
-        margin-bottom: 1.5rem;
-      }
-
-      .shop-btn {
-        background: #4a90e2;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.3s;
-        text-decoration: none;
-        display: inline-block;
-      }
-
-      .shop-btn:hover {
-        background: #357abd;
-      }
-
-      .product-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-        background: white;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        border: 1px solid #e9ecef;
-      }
-
-      .product-image {
-        width: 60px;
-        height: 60px;
-        background: #f0f0f0;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        object-fit: cover;
-      }
-
-      .product-details {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .product-details h4 {
-        margin-bottom: 0.5rem;
-        color: #333;
-        font-weight: 600;
-      }
-
-      .product-details p {
-        color: #666;
-        font-size: 0.9rem;
-      }
-
-      .quantity-controls {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: #f8f9fa;
-        padding: 0.5rem;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-        margin: 0.5rem 0;
-      }
-
-      .qty-btn {
-        background: white;
-        border: 1px solid #ddd;
-        width: 32px;
-        height: 32px;
-        border-radius: 4px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        color: #333;
-        font-weight: 600;
-        transition: all 0.2s;
-      }
-
-      .qty-btn:hover {
-        background: #e9ecef;
-        border-color: #4a90e2;
-      }
-
-      .qty-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .quantity {
-        font-size: 1.1rem;
-        font-weight: 600;
-        min-width: 32px;
-        text-align: center;
-        color: #333;
-      }
-
-      .price-breakdown {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-      }
-
-      .price-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.8rem;
-        padding: 0.5rem 0;
-      }
-
-      .price-row.total {
-        border-top: 2px solid #e9ecef;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        font-weight: 700;
-        font-size: 1.1rem;
-        color: #333;
-      }
-
-      .checkout-btn {
-        background: #4a90e2;
-        color: white;
-        border: none;
-        padding: 16px 32px;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.3s;
-        margin-top: 1.5rem;
-        font-family: inherit;
-        width: 100%;
-      }
-
-      .checkout-btn:hover {
-        background: #357abd;
-      }
-
-      .checkout-btn:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-      }
-
-      .security-info {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        color: #666;
-        font-size: 0.9rem;
-      }
-
-      /* Popup Styles */
-      .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-      }
-
-      .popup-overlay.show {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      .popup-card {
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        width: 90%;
-        max-width: 400px;
-        max-height: 80vh;
-        overflow-y: auto;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      }
-
-      .popup-overlay.show .popup-card {
-        transform: scale(1);
-      }
-
-      .popup-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e9ecef;
-      }
-
-      .popup-header h3 {
-        margin: 0;
-        color: #333;
-        font-size: 1.3rem;
-      }
-
-      .close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #666;
-        padding: 0;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: all 0.2s ease;
-      }
-
-      .close-btn:hover {
-        background: #f8f9fa;
-        color: #333;
-      }
-
-      .popup-form .form-group {
-        margin-bottom: 1rem;
-      }
-
-      .popup-form .form-row {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-
-      .save-address-btn {
-        width: 100%;
-        padding: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 1rem;
-      }
-
-      .save-address-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      }
-
-      /* Mobile responsive styles */
-      @media (max-width: 768px) {
-        /* Added mobile container centering and layout fixes */
         .container {
-          padding: 1rem;
-          max-width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .checkout-title {
+            font-size: 2rem;
+            color: #4a90e2;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
         .checkout-container {
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
-          padding: 1.5rem;
-          margin: 0 auto;
-          max-width: 500px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #f0f0f0;
+            max-width: 100%;
+            overflow: hidden;
         }
 
         .checkout-form {
-          padding: 1rem;
-          order: 2;
-        }
-
-        .order-summary {
-          order: 1;
-          margin: 0 auto;
-          width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            min-width: 0;
         }
 
         .section {
-          padding: 1rem;
+            background: #fafafa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
         }
 
         .form-row {
-          grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
-        /* Hide full address form on mobile and show compact button */
-        .shipping-section {
-          display: none;
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
         }
 
-        .mobile-address-trigger {
-          display: block;
-          width: 100%;
-          padding: 0.75rem 1rem;
-          background: #4f46e5;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          margin-bottom: 1rem;
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            font-family: inherit;
         }
 
-        .mobile-address-trigger:hover {
-          background: #4338ca;
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
-        .address-preview {
-          margin-bottom: 1rem;
-          padding: 1rem;
-          background: #f8f9fa;
-          border-radius: 8px;
-          border-left: 4px solid #4f46e5;
-          display: none;
+        textarea {
+            resize: vertical;
+            min-height: 80px;
         }
 
-        .address-preview.show {
-          display: block;
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            height: fit-content;
         }
 
-        .address-preview h4 {
-          margin: 0 0 0.5rem 0;
-          color: #333;
-          font-size: 1rem;
+        .order-summary h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.2rem;
         }
 
-        .address-preview p {
-          margin: 0;
-          color: #666;
-          font-size: 0.9rem;
-          line-height: 1.4;
-        }
-      }
-
-      @media (min-width: 769px) {
-        .mobile-address-trigger {
-          display: none;
-        }
-
-        .address-preview {
-          display: none !important;
-        }
-      }
-
-      /* Payment Status Styles */
-      .payment-status {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-
-      .status-message {
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        text-align: center;
-        max-width: 400px;
-        margin: 1rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      }
-
-      .status-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-      }
-
-      .payment-status.success .status-message {
-        border-top: 4px solid #10b981;
-      }
-
-      .payment-status.failed .status-message {
-        border-top: 4px solid #ef4444;
-      }
-
-      .payment-status.pending .status-message {
-        border-top: 4px solid #f59e0b;
-      }
-
-      .status-btn {
-        background: #4f46e5;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        margin-top: 1rem;
-        transition: background-color 0.3s;
-      }
-
-      .status-btn:hover {
-        background: #4338ca;
-      }
-
-      .status-btn:disabled {
-        background: #9ca3af;
-        cursor: not-allowed;
-      }
-
-      .logo-image {
-        height: 40px;
-        width: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <div class="logo">
-          <!-- Replaced text logo with SVG image -->
-          <img src="Group 1.svg" alt="SILLY SenSei Logo" class="logo-image" />
-        </div>
-        <div class="back-to-shop">
-          <span>← Back to Shop</span>
-        </div>
-      </div>
-
-      <h1 class="checkout-title">Checkout</h1>
-
-      <!-- Added payment status messages -->
-      <div class="payment-status" id="paymentStatus" style="display: none;">
-        <div class="status-message" id="statusMessage">
-          <div class="status-icon" id="statusIcon"></div>
-          <h3 id="statusTitle"></h3>
-          <p id="statusText"></p>
-          <button class="status-btn" id="statusBtn" onclick="handleStatusAction()">Continue Shopping</button>
-        </div>
-      </div>
-
-      <div class="checkout-container">
-        <div class="checkout-form">
-          <div class="section shipping-section">
-            <h3>Shipping Information</h3>
-            <div class="form-group">
-              <div class="form-row">
-                <div>
-                  <label for="firstName">First Name</label>
-                  <input type="text" id="firstName" required />
-                </div>
-                <div>
-                  <label for="lastName">Last Name</label>
-                  <input type="text" id="lastName" required />
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" required />
-            </div>
-            <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" required />
-            </div>
-            <div class="form-group">
-              <label for="address">Street Address</label>
-              <textarea id="address" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-              <div class="form-row">
-                <div>
-                  <label for="city">City</label>
-                  <input type="text" id="city" required />
-                </div>
-                <div>
-                  <label for="state">State</label>
-                  <select id="state" required>
-                    <option value="">Select State</option>
-                    <option value="AP">Andhra Pradesh</option>
-                    <option value="AR">Arunachal Pradesh</option>
-                    <option value="AS">Assam</option>
-                    <option value="BR">Bihar</option>
-                    <option value="CT">Chhattisgarh</option>
-                    <option value="GA">Goa</option>
-                    <option value="GJ">Gujarat</option>
-                    <option value="HR">Haryana</option>
-                    <option value="HP">Himachal Pradesh</option>
-                    <option value="JK">Jammu and Kashmir</option>
-                    <option value="JH">Jharkhand</option>
-                    <option value="KA">Karnataka</option>
-                    <option value="KL">Kerala</option>
-                    <option value="MP">Madhya Pradesh</option>
-                    <option value="MH">Maharashtra</option>
-                    <option value="MN">Manipur</option>
-                    <option value="ML">Meghalaya</option>
-                    <option value="MZ">Mizoram</option>
-                    <option value="NL">Nagaland</option>
-                    <option value="OR">Odisha</option>
-                    <option value="PB">Punjab</option>
-                    <option value="RJ">Rajasthan</option>
-                    <option value="SK">Sikkim</option>
-                    <option value="TN">Tamil Nadu</option>
-                    <option value="TG">Telangana</option>
-                    <option value="TR">Tripura</option>
-                    <option value="UP">Uttar Pradesh</option>
-                    <option value="UT">Uttarakhand</option>
-                    <option value="WB">West Bengal</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="pincode">PIN Code</label>
-              <input type="text" id="pincode" maxlength="6" required />
-            </div>
-          </div>
-        </div>
-
-        <div class="order-summary">
-          <h3>Order Summary</h3>
-
-          <button class="mobile-address-trigger" onclick="openAddressPopup()">
-            Add Shipping Address
-          </button>
-
-          <div class="address-preview" id="addressPreview">
-            <h4>Shipping Address</h4>
-            <p id="previewText">No address added yet</p>
-          </div>
-
-          <div class="cart-items" id="cartItems">
-            <!-- Cart items will be populated here -->
-          </div>
-
-          <div id="emptyCartMessage" class="empty-cart" style="display: none">
-            <h4>Your cart is empty</h4>
-            <p>Add some products to your cart to continue with checkout.</p>
-            <a href="shop_page.html" class="shop-btn">Continue Shopping</a>
-          </div>
-
-          <div
-            id="priceBreakdown"
-            class="price-breakdown"
-            style="display: none"
-          >
-            <div class="price-row">
-              <span>Bag Cost:</span>
-              <span id="bagCost">₹0</span>
-            </div>
-            <div class="price-row">
-              <span>Net Profit:</span>
-              <span id="netProfit">₹0</span>
-            </div>
-            <div class="price-row">
-              <span>Shipping:</span>
-              <span id="shippingCost">₹150</span>
-            </div>
-            <div class="price-row total">
-              <span>Total:</span>
-              <span id="finalTotal">₹0</span>
-            </div>
-          </div>
-
-          <button
-            id="checkoutBtn"
-            class="checkout-btn"
-            onclick="processOrder()"
-            style="display: none"
-          >
-            Proceed to Pay
-          </button>
-
-          <div class="security-info">
-            <span>🔒</span>
-            <span>Secure payment powered by Cashfree</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add popup modal for mobile address entry -->
-    <div class="popup-overlay" id="addressPopup">
-      <div class="popup-card">
-        <div class="popup-header">
-          <h3>Shipping Address</h3>
-          <button class="close-btn" onclick="closeAddressPopup()">&times;</button>
-        </div>
-
-        <form class="popup-form" id="popupAddressForm">
-          <div class="form-group">
-            <div class="form-row">
-              <div>
-                <label for="popupFirstName">First Name</label>
-                <input type="text" id="popupFirstName" required />
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="form-row">
-              <div>
-                <label for="popupLastName">Last Name</label>
-                <input type="text" id="popupLastName" required />
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="popupEmail">Email Address</label>
-            <input type="email" id="popupEmail" required />
-          </div>
-
-          <div class="form-group">
-            <label for="popupPhone">Phone Number</label>
-            <input type="tel" id="popupPhone" required />
-          </div>
-
-          <div class="form-group">
-            <label for="popupAddress">Street Address</label>
-            <textarea id="popupAddress" rows="3" required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="popupCity">City</label>
-            <input type="text" id="popupCity" required />
-          </div>
-
-          <div class="form-group">
-            <label for="popupState">State</label>
-            <select id="popupState" required>
-              <option value="">Select State</option>
-              <option value="AP">Andhra Pradesh</option>
-              <option value="AR">Arunachal Pradesh</option>
-              <option value="AS">Assam</option>
-              <option value="BR">Bihar</option>
-              <option value="CT">Chhattisgarh</option>
-              <option value="GA">Goa</option>
-              <option value="GJ">Gujarat</option>
-              <option value="HR">Haryana</option>
-              <option value="HP">Himachal Pradesh</option>
-              <option value="JK">Jammu and Kashmir</option>
-              <option value="JH">Jharkhand</option>
-              <option value="KA">Karnataka</option>
-              <option value="KL">Kerala</option>
-              <option value="MP">Madhya Pradesh</option>
-              <option value="MH">Maharashtra</option>
-              <option value="MN">Manipur</option>
-              <option value="ML">Meghalaya</option>
-              <option value="MZ">Mizoram</option>
-              <option value="NL">Nagaland</option>
-              <option value="OR">Odisha</option>
-              <option value="PB">Punjab</option>
-              <option value="RJ">Rajasthan</option>
-              <option value="SK">Sikkim</option>
-              <option value="TN">Tamil Nadu</option>
-              <option value="TG">Telangana</option>
-              <option value="TR">Tripura</option>
-              <option value="UP">Uttar Pradesh</option>
-              <option value="UT">Uttarakhand</option>
-              <option value="WB">West Bengal</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="popupPincode">PIN Code</label>
-            <input type="text" id="popupPincode" maxlength="6" required />
-          </div>
-
-          <button type="button" class="save-address-btn" onclick="saveAddress()">
-            Save Address
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <script>
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const isDirect =
-        new URLSearchParams(window.location.search).get("direct") === "true";
-      let currentQuantity =
-        parseInt(new URLSearchParams(window.location.search).get("quantity")) ||
-        1;
-
-      const CASHFREE_CONFIG = {
-        mode: "production", // Changed from sandbox to production
-      };
-
-      // Initialize Cashfree
-      const cashfree = Cashfree({
-        mode: CASHFREE_CONFIG.mode,
-      });
-
-      function showPopup(message, type = "success") {
-        const existingPopup = document.querySelector(".popup-overlay");
-        if (existingPopup) {
-          existingPopup.remove();
+        .mobile-address-btn {
+            display: none;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        const popup = document.createElement("div");
-        popup.className = "popup-overlay";
-        popup.innerHTML = `
-        <div class="popup-content ${type}">
-          <div class="popup-message">${message}</div>
-          <button class="popup-close" onclick="this.parentElement.parentElement.remove()">×</button>
-        </div>
-      `;
+        .mobile-address-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
 
-        document.body.appendChild(popup);
+        .mobile-address-preview {
+            display: none;
+            background: white;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.3s ease;
+        }
 
-        if (type === "success") {
-          setTimeout(() => {
-            if (popup.parentElement) {
-              popup.remove();
+        .mobile-address-preview h4 {
+            color: #4a90e2;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .mobile-address-preview p {
+            margin: 0.25rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .mobile-address-preview .edit-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
             }
-          }, 3000);
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-      }
 
-      function generateOrderId() {
-        let orderCounter = parseInt(localStorage.getItem("orderCounter")) || 0;
-        orderCounter++;
-        localStorage.setItem("orderCounter", orderCounter.toString());
-        return orderCounter.toString().padStart(6, "0");
-      }
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 1rem;
+        }
 
-      function displayCartItems() {
-        const cartItemsContainer = document.getElementById("cartItems");
-        const emptyMessage = document.getElementById("emptyCartMessage");
-        const priceBreakdown = document.getElementById("priceBreakdown");
-        const checkoutBtn = document.getElementById("checkoutBtn");
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
 
-        if (isDirect) {
-          cartItemsContainer.innerHTML = `
-          <div class="product-item">
-            <img src="/tote bag mockup web 2.svg" alt="Rex Bag" class="product-image">
-            <div class="product-details">
-              <h4>Rex Bag</h4>
-              <div style="display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0;">
-                <span>Quantity:</span>
-                <div class="quantity-controls">
-                  <button class="qty-btn" onclick="decreaseQuantity()">−</button>
-                  <span class="quantity" id="orderQuantity">${currentQuantity}</span>
-                  <button class="qty-btn" onclick="increaseQuantity()">+</button>
+        .product-details {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-price {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .quantity-btn:hover {
+            background: #f0f0f0;
+            border-color: #4a90e2;
+        }
+
+        .quantity-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .price-breakdown {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .price-row.total {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 0.5rem;
+            margin-top: 1rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .checkout-btn:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .checkout-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .popup-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        .popup-content h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .popup-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .popup-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .popup-btn.primary {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .popup-btn.primary:hover {
+            background: #357abd;
+        }
+
+        .popup-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .popup-btn.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .popup-message {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                margin: 0 auto;
+                max-width: 500px;
+            }
+
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1rem;
+            }
+
+            .checkout-form .section {
+                display: none;
+            }
+
+            .mobile-address-btn {
+                display: block;
+            }
+
+            .order-summary {
+                position: static;
+                order: -1;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .popup-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .popup-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="Group 1.svg" alt="SILLY SenSei Logo" class="logo-image" />
+        </div>
+        <a href="shop_page.html" class="back-btn">← Back to Shop</a>
+    </header>
+
+    <div class="container">
+        <h1 class="checkout-title">Checkout</h1>
+        
+        <div class="checkout-container">
+            <div class="checkout-form">
+                <div class="section">
+                    <h3>Shipping Information</h3>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" required />
+                            </div>
+                            <div>
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Street Address</label>
+                        <textarea id="address" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="city">City</label>
+                                <input type="text" id="city" required />
+                            </div>
+                            <div>
+                                <label for="state">State</label>
+                                <select id="state" required>
+                                    <option value="">Select State</option>
+                                    <option value="AP">Andhra Pradesh</option>
+                                    <option value="AR">Arunachal Pradesh</option>
+                                    <option value="AS">Assam</option>
+                                    <option value="BR">Bihar</option>
+                                    <option value="CT">Chhattisgarh</option>
+                                    <option value="GA">Goa</option>
+                                    <option value="GJ">Gujarat</option>
+                                    <option value="HR">Haryana</option>
+                                    <option value="HP">Himachal Pradesh</option>
+                                    <option value="JK">Jammu and Kashmir</option>
+                                    <option value="JH">Jharkhand</option>
+                                    <option value="KA">Karnataka</option>
+                                    <option value="KL">Kerala</option>
+                                    <option value="MP">Madhya Pradesh</option>
+                                    <option value="MH">Maharashtra</option>
+                                    <option value="MN">Manipur</option>
+                                    <option value="ML">Meghalaya</option>
+                                    <option value="MZ">Mizoram</option>
+                                    <option value="NL">Nagaland</option>
+                                    <option value="OR">Odisha</option>
+                                    <option value="PB">Punjab</option>
+                                    <option value="RJ">Rajasthan</option>
+                                    <option value="SK">Sikkim</option>
+                                    <option value="TN">Tamil Nadu</option>
+                                    <option value="TG">Telangana</option>
+                                    <option value="TR">Tripura</option>
+                                    <option value="UP">Uttar Pradesh</option>
+                                    <option value="UT">Uttarakhand</option>
+                                    <option value="WB">West Bengal</option>
+                                    <option value="AN">Andaman and Nicobar Islands</option>
+                                    <option value="CH">Chandigarh</option>
+                                    <option value="DN">Dadra and Nagar Haveli</option>
+                                    <option value="DD">Daman and Diu</option>
+                                    <option value="DL">Delhi</option>
+                                    <option value="LD">Lakshadweep</option>
+                                    <option value="PY">Puducherry</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pincode">PIN Code</label>
+                        <input type="text" id="pincode" maxlength="6" required />
+                    </div>
                 </div>
-              </div>
-              <p>Price: ₹200 each</p>
             </div>
-          </div>
-        `;
-          emptyMessage.style.display = "none";
-          priceBreakdown.style.display = "block";
-          checkoutBtn.style.display = "block";
-        } else if (cart.length === 0) {
-          cartItemsContainer.innerHTML = "";
-          emptyMessage.style.display = "block";
-          priceBreakdown.style.display = "none";
-          checkoutBtn.style.display = "none";
-        } else {
-          cartItemsContainer.innerHTML = cart
-            .map(
-              (item, index) => ``
-            )
-            .join("");
-          emptyMessage.style.display = "none";
-          priceBreakdown.style.display = "block";
-          checkoutBtn.style.display = "block";
-        }
 
-        updatePricing();
-      }
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                
+                <button class="mobile-address-btn" onclick="openAddressPopup()">
+                    Add Shipping Address
+                </button>
+                
+                <div class="mobile-address-preview" id="mobileAddressPreview">
+                    <h4>📍 Shipping Address</h4>
+                    <div id="previewContent"></div>
+                    <button class="edit-btn" onclick="openAddressPopup()">Edit Address</button>
+                </div>
 
-      function increaseQuantity() {
-        if (isDirect) {
-          currentQuantity++;
-          document.getElementById("orderQuantity").textContent =
-            currentQuantity;
-          updatePricing();
-        }
-      }
+                <div id="cartItems"></div>
+                
+                <div class="price-breakdown" id="priceBreakdown">
+                    <div class="price-row">
+                        <span>Bag Cost:</span>
+                        <span id="bagCost">₹0</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Net Profit:</span>
+                        <span id="netProfit">₹0</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Shipping:</span>
+                        <span id="shippingCost">₹150</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total:</span>
+                        <span id="finalTotal">₹0</span>
+                    </div>
+                </div>
 
-      function decreaseQuantity() {
-        if (isDirect && currentQuantity > 1) {
-          currentQuantity--;
-          document.getElementById("orderQuantity").textContent =
-            currentQuantity;
-          updatePricing();
-        }
-      }
+                <button class="checkout-btn" onclick="processOrder()">
+                    Proceed to Pay
+                </button>
+            </div>
+        </div>
+    </div>
 
-      function increaseCartQuantity(index) {
-        if (cart[index]) {
-          cart[index].quantity++;
-          localStorage.setItem("cart", JSON.stringify(cart));
-          displayCartItems();
-        }
-      }
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const isDirect = new URLSearchParams(window.location.search).get('direct') === 'true';
+        let currentQuantity = parseInt(new URLSearchParams(window.location.search).get('quantity')) || 1;
 
-      function decreaseCartQuantity(index) {
-        if (cart[index] && cart[index].quantity > 1) {
-          cart[index].quantity--;
-          localStorage.setItem("cart", JSON.stringify(cart));
-          displayCartItems();
-        }
-      }
-
-      function updatePricing() {
-        let totalQuantity = 0;
-
-        if (isDirect) {
-          totalQuantity = currentQuantity;
-        } else {
-          totalQuantity = cart.reduce(
-            (total, item) => total + item.quantity,
-            0
-          );
-        }
-
-        const bagCost = 100 * totalQuantity;
-        const netProfit = 100 * totalQuantity;
-        const shippingCost = 150;
-        const total = bagCost + netProfit + shippingCost;
-
-        document.getElementById("bagCost").textContent = `₹${bagCost}`;
-        document.getElementById("netProfit").textContent = `₹${netProfit}`;
-        document.getElementById(
-          "shippingCost"
-        ).textContent = `₹${shippingCost}`;
-        document.getElementById("finalTotal").textContent = `₹${total}`;
-      }
-
-      document
-        .getElementById("pincode")
-        .addEventListener("input", function (e) {
-          e.target.value = e.target.value.replace(/[^0-9]/g, "");
-        });
-
-      async function saveOrderToFirebase(orderData) {
-        try {
-          const { initializeApp } = await import(
-            "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
-          );
-          const { getFirestore, collection, addDoc, serverTimestamp } =
-            await import(
-              "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"
-            );
-
-          const firebaseConfig = {
-            apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
-            authDomain: "shoppagforss.firebaseapp.com",
-            projectId: "shoppagforss",
-            storageBucket: "shoppagforss.firebasestorage.app",
-            messagingSenderId: "475416573730",
-            appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
-            measurementId: "G-D8ZSG5K38R",
-          };
-
-          const app = initializeApp(firebaseConfig);
-          const db = getFirestore(app);
-
-          const docRef = await addDoc(collection(db, "orders"), {
-            orderId: orderData.orderId,
-            customerInfo: {
-              firstName: orderData.customerInfo.firstName,
-              lastName: orderData.customerInfo.lastName,
-              email: orderData.customerInfo.email,
-              phone: orderData.customerInfo.phone,
-              address: orderData.customerInfo.address,
-              city: orderData.customerInfo.city,
-              state: orderData.customerInfo.state,
-              pincode: orderData.customerInfo.pincode,
-            },
-            orderDetails: {
-              items: orderData.items,
-              bagCost: orderData.pricing.bagCost,
-              netProfit: orderData.pricing.netProfit,
-              shippingCost: orderData.pricing.shippingCost,
-              total: orderData.pricing.total,
-              totalQuantity: orderData.pricing.totalQuantity,
-            },
-            paymentMethod: orderData.paymentMethod,
-            orderType: orderData.orderType,
-            orderDate: orderData.orderDate,
-            timestamp: serverTimestamp(),
-            status: "pending",
-          });
-
-          console.log("Order saved with ID: ", docRef.id);
-          return docRef.id;
-        } catch (error) {
-          console.error("Error saving order: ", error);
-          throw error;
-        }
-      }
-
-      async function processOrder() {
-        const firstName = document.getElementById("firstName").value;
-        const lastName = document.getElementById("lastName").value;
-        const email = document.getElementById("email").value;
-        const phone = document.getElementById("phone").value;
-        const address = document.getElementById("address").value;
-        const city = document.getElementById("city").value;
-        const state = document.getElementById("state").value;
-        const pincode = document.getElementById("pincode").value;
-
-        if (
-          !firstName ||
-          !lastName ||
-          !email ||
-          !phone ||
-          !address ||
-          !city ||
-          !state ||
-          !pincode
-        ) {
-          showPopup("Please fill in all required fields.", "error");
-          return;
-        }
-
-        const orderId = generateOrderId();
-
-        let totalQuantity = 0;
-        let totalItems = [];
-
-        if (isDirect) {
-          totalQuantity = currentQuantity;
-          totalItems = [
-            { product: "Rex Bag", quantity: currentQuantity, price: 200 },
-          ];
-        } else {
-          totalQuantity = cart.reduce(
-            (total, item) => total + item.quantity,
-            0
-          );
-          totalItems = cart.map((item) => ({
-            product: item.name,
-            quantity: item.quantity,
-            price: item.price,
-          }));
-        }
-
-        const total = (100 + 100) * totalQuantity + 150;
-
-        const orderData = {
-          orderId: orderId,
-          customerInfo: {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            phone: phone,
-            address: address,
-            city: city,
-            state: state,
-            pincode: pincode,
-          },
-          items: totalItems,
-          pricing: {
-            totalQuantity: totalQuantity,
-            bagCost: 100 * totalQuantity,
-            netProfit: 100 * totalQuantity,
-            shippingCost: 150,
-            total: total,
-          },
-          orderDate: new Date().toISOString(),
-          paymentMethod: "Cashfree",
-          orderType: isDirect ? "direct" : "cart",
-          status: "pending",
+        const CASHFREE_CONFIG = {
+            mode: 'production'
         };
 
-        const btn = document.querySelector(".checkout-btn");
-        btn.textContent = "Processing Order...";
-        btn.disabled = true;
+        const cashfree = Cashfree({
+            mode: CASHFREE_CONFIG.mode
+        });
 
-        try {
-          // Save order to Firebase first
-          const firebaseOrderId = await saveOrderToFirebase(orderData);
-
-          // Create Cashfree payment session
-          const paymentSessionId = await createPaymentSession(orderData);
-
-          // Redirect to Cashfree payment page
-          btn.textContent = "Redirecting to Payment...";
-
-          const checkoutOptions = {
-            paymentSessionId: paymentSessionId,
-            redirectTarget: "_self",
-          };
-
-          cashfree.checkout(checkoutOptions).then((result) => {
-            if (result.error) {
-              console.error("Payment failed:", result.error);
-              showPopup("Payment failed. Please try again.", "error");
-              updateOrderStatus(orderId, "failed");
-              btn.textContent = "Proceed to Pay";
-              btn.disabled = false;
+        function openAddressPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'popup-overlay';
+            popup.innerHTML = `
+                <div class="popup-content address-popup">
+                    <button class="popup-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                    <h3>Shipping Address</h3>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="popupFirstName">First Name</label>
+                                <input type="text" id="popupFirstName" value="${document.getElementById('firstName').value}" required />
+                            </div>
+                            <div>
+                                <label for="popupLastName">Last Name</label>
+                                <input type="text" id="popupLastName" value="${document.getElementById('lastName').value}" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="popupEmail">Email Address</label>
+                        <input type="email" id="popupEmail" value="${document.getElementById('email').value}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="popupPhone">Phone Number</label>
+                        <input type="tel" id="popupPhone" value="${document.getElementById('phone').value}" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="popupAddress">Street Address</label>
+                        <textarea id="popupAddress" rows="3" required>${document.getElementById('address').value}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="popupCity">City</label>
+                                <input type="text" id="popupCity" value="${document.getElementById('city').value}" required />
+                            </div>
+                            <div>
+                                <label for="popupState">State</label>
+                                <select id="popupState" required>
+                                    <option value="">Select State</option>
+                                    <option value="AP">Andhra Pradesh</option>
+                                    <option value="AR">Arunachal Pradesh</option>
+                                    <option value="AS">Assam</option>
+                                    <option value="BR">Bihar</option>
+                                    <option value="CT">Chhattisgarh</option>
+                                    <option value="GA">Goa</option>
+                                    <option value="GJ">Gujarat</option>
+                                    <option value="HR">Haryana</option>
+                                    <option value="HP">Himachal Pradesh</option>
+                                    <option value="JK">Jammu and Kashmir</option>
+                                    <option value="JH">Jharkhand</option>
+                                    <option value="KA">Karnataka</option>
+                                    <option value="KL">Kerala</option>
+                                    <option value="MP">Madhya Pradesh</option>
+                                    <option value="MH">Maharashtra</option>
+                                    <option value="MN">Manipur</option>
+                                    <option value="ML">Meghalaya</option>
+                                    <option value="MZ">Mizoram</option>
+                                    <option value="NL">Nagaland</option>
+                                    <option value="OR">Odisha</option>
+                                    <option value="PB">Punjab</option>
+                                    <option value="RJ">Rajasthan</option>
+                                    <option value="SK">Sikkim</option>
+                                    <option value="TN">Tamil Nadu</option>
+                                    <option value="TG">Telangana</option>
+                                    <option value="TR">Tripura</option>
+                                    <option value="UP">Uttar Pradesh</option>
+                                    <option value="UT">Uttarakhand</option>
+                                    <option value="WB">West Bengal</option>
+                                    <option value="AN">Andaman and Nicobar Islands</option>
+                                    <option value="CH">Chandigarh</option>
+                                    <option value="DN">Dadra and Nagar Haveli</option>
+                                    <option value="DD">Daman and Diu</option>
+                                    <option value="DL">Delhi</option>
+                                    <option value="LD">Lakshadweep</option>
+                                    <option value="PY">Puducherry</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="popupPincode">PIN Code</label>
+                        <input type="text" id="popupPincode" maxlength="6" value="${document.getElementById('pincode').value}" required />
+                    </div>
+                    <button class="checkout-btn" onclick="saveAddressFromPopup()">Save Address</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            
+            // Set the selected state value
+            const currentState = document.getElementById('state').value;
+            if (currentState) {
+                document.getElementById('popupState').value = currentState;
             }
-            if (result.redirect) {
-              console.log("Redirecting to payment page");
+        }
+
+        function saveAddressFromPopup() {
+            const firstName = document.getElementById('popupFirstName').value;
+            const lastName = document.getElementById('popupLastName').value;
+            const email = document.getElementById('popupEmail').value;
+            const phone = document.getElementById('popupPhone').value;
+            const address = document.getElementById('popupAddress').value;
+            const city = document.getElementById('popupCity').value;
+            const state = document.getElementById('popupState').value;
+            const pincode = document.getElementById('popupPincode').value;
+
+            if (!firstName || !lastName || !email || !phone || !address || !city || !state || !pincode) {
+                showPopup('Please fill in all required fields.', 'error');
+                return;
             }
-          });
-        } catch (error) {
-          console.error("Error processing order:", error);
-          showPopup("Error processing order. Please try again.", "error");
-          btn.textContent = "Proceed to Pay";
-          btn.disabled = false;
-        }
-      }
 
-      async function createPaymentSession(orderData) {
-        try {
-          const sessionRequest = {
-            order_id: `ORDER_${orderData.orderId}`,
-            order_amount: orderData.pricing.total,
-            order_currency: "INR",
-            customer_details: {
-              customer_id: `CUST_${orderData.orderId}`,
-              customer_name: `${orderData.customerInfo.firstName} ${orderData.customerInfo.lastName}`,
-              customer_email: orderData.customerInfo.email,
-              customer_phone: orderData.customerInfo.phone,
-            },
-            order_meta: {
-              return_url:
-                window.location.hostname === "localhost" ||
-                window.location.hostname === "127.0.0.1"
-                  ? `${window.location.origin}/index.html?payment=success&order_id=${orderData.orderId}`
-                  : `${window.location.origin}/payment-success.html?order_id=${orderData.orderId}`,
-              notify_url:
-                window.location.hostname === "localhost" ||
-                window.location.hostname === "127.0.0.1"
-                  ? "http://localhost:3000/webhook"
-                  : `${window.location.origin}/payment-webhook`,
-              payment_methods: "cc,dc,nb,upi,paylater,emi",
-            },
-          };
+            // Update main form fields
+            document.getElementById('firstName').value = firstName;
+            document.getElementById('lastName').value = lastName;
+            document.getElementById('email').value = email;
+            document.getElementById('phone').value = phone;
+            document.getElementById('address').value = address;
+            document.getElementById('city').value = city;
+            document.getElementById('state').value = state;
+            document.getElementById('pincode').value = pincode;
 
-          const backendUrl =
-            window.location.hostname === "localhost" ||
-            window.location.hostname === "127.0.0.1"
-              ? "http://localhost:3000/create-order"
-              : "https://2f5c8vn9-3000.inc1.devtunnels.ms/create-order";
+            // Update mobile preview
+            updateMobileAddressPreview();
 
-          const response = await fetch(backendUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(sessionRequest),
-          });
-
-          const data = await response.json();
-
-          if (data.payment_session_id) {
-            localStorage.setItem('currentOrderId', orderData.orderId);
-            return data.payment_session_id;
-          } else {
-            throw new Error("Failed to get payment session ID");
-          }
-        } catch (error) {
-          console.error("Error creating payment session:", error);
-          throw error;
-        }
-      }
-
-      async function verifyPaymentStatus(orderId) {
-        try {
-          const backendUrl =
-            window.location.hostname === "localhost" ||
-            window.location.hostname === "127.0.0.1"
-              ? `http://localhost:3000/verify/ORDER_${orderId}`
-              : `https://2f5c8vn9-3000.inc1.devtunnels.ms/verify/ORDER_${orderId}`;
-
-          const response = await fetch(backendUrl);
-          const data = await response.json();
-          
-          console.log("[v0] Payment verification response:", data);
-          return data;
-        } catch (error) {
-          console.error("Error verifying payment:", error);
-          return { order_status: "FAILED", error: error.message };
-        }
-      }
-
-      function showPaymentStatus(status, orderId, amount) {
-        const statusDiv = document.getElementById('paymentStatus');
-        const statusIcon = document.getElementById('statusIcon');
-        const statusTitle = document.getElementById('statusTitle');
-        const statusText = document.getElementById('statusText');
-        const statusBtn = document.getElementById('statusBtn');
-        
-        // Hide checkout form
-        document.querySelector('.checkout-container').style.display = 'none';
-        
-        if (status === 'PAID' || status === 'SUCCESS') {
-          statusIcon.innerHTML = '✅';
-          statusTitle.textContent = 'Payment Successful!';
-          statusText.textContent = `Your order #${orderId} has been confirmed. Amount paid: ₹${amount}`;
-          statusDiv.className = 'payment-status success';
-          statusBtn.textContent = 'Continue Shopping';
-        } else if (status === 'FAILED' || status === 'CANCELLED') {
-          statusIcon.innerHTML = '❌';
-          statusTitle.textContent = 'Payment Failed';
-          statusText.textContent = `Your payment for order #${orderId} was not successful. Please try again.`;
-          statusDiv.className = 'payment-status failed';
-          statusBtn.textContent = 'Try Again';
-        } else {
-          statusIcon.innerHTML = '⏳';
-          statusTitle.textContent = 'Payment Pending';
-          statusText.textContent = `Your payment for order #${orderId} is being processed. Please wait.`;
-          statusDiv.className = 'payment-status pending';
-          statusBtn.textContent = 'Check Status';
-        }
-        
-        statusDiv.style.display = 'block';
-      }
-
-      function handleStatusAction() {
-        const statusDiv = document.getElementById('paymentStatus');
-        const statusBtn = document.getElementById('statusBtn');
-        
-        if (statusBtn.textContent === 'Try Again') {
-          // Reset form and show checkout again
-          statusDiv.style.display = 'none';
-          document.querySelector('.checkout-container').style.display = 'block';
-          document.querySelector('.checkout-btn').textContent = 'Proceed to Pay';
-          document.querySelector('.checkout-btn').disabled = false;
-        } else if (statusBtn.textContent === 'Check Status') {
-          // Re-verify payment status
-          const orderId = localStorage.getItem('currentOrderId');
-          if (orderId) {
-            checkPaymentStatusAndShow(orderId);
-          }
-        } else {
-          // Continue shopping - redirect to shop page
-          window.location.href = '/';
-        }
-      }
-
-      async function checkPaymentStatusAndShow(orderId) {
-        const statusBtn = document.getElementById('statusBtn');
-        statusBtn.textContent = 'Checking...';
-        statusBtn.disabled = true;
-        
-        const result = await verifyPaymentStatus(orderId);
-        
-        if (result.order_status) {
-          showPaymentStatus(result.order_status, orderId, result.order_amount || 'N/A');
-        } else {
-          showPaymentStatus('FAILED', orderId, 'N/A');
-        }
-        
-        statusBtn.disabled = false;
-      }
-
-      function checkUrlParameters() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const paymentStatus = urlParams.get('payment');
-        const orderId = urlParams.get('order_id');
-        
-        if (paymentStatus && orderId) {
-          console.log("[v0] Payment return detected:", paymentStatus, orderId);
-          
-          if (paymentStatus === 'success') {
-            // Verify the actual payment status from backend
-            checkPaymentStatusAndShow(orderId);
-          } else {
-            showPaymentStatus('FAILED', orderId, 'N/A');
-          }
-          
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      }
-
-      function openAddressPopup() {
-        document.getElementById('addressPopup').classList.add('show');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeAddressPopup() {
-        document.getElementById('addressPopup').classList.remove('show');
-        document.body.style.overflow = 'auto';
-      }
-
-      function saveAddress() {
-        const form = document.getElementById('popupAddressForm');
-        const formData = new FormData(form);
-
-        // Get form values
-        const firstName = document.getElementById('popupFirstName').value;
-        const lastName = document.getElementById('popupLastName').value;
-        const email = document.getElementById('popupEmail').value;
-        const phone = document.getElementById('popupPhone').value;
-        const address = document.getElementById('popupAddress').value;
-        const city = document.getElementById('popupCity').value;
-        const state = document.getElementById('popupState').value;
-        const pincode = document.getElementById('popupPincode').value;
-
-        // Validate required fields
-        if (!firstName || !lastName || !email || !phone || !address || !city || !state || !pincode) {
-          alert('Please fill in all required fields');
-          return;
+            // Close popup
+            document.querySelector('.popup-overlay').remove();
+            
+            showPopup('Address saved successfully!', 'success');
         }
 
-        // Create preview text
-        const previewText = `${firstName} ${lastName}\n${address}\n${city}, ${state} ${pincode}\n${phone}`;
+        function updateMobileAddressPreview() {
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            const pincode = document.getElementById('pincode').value;
 
-        // Update preview
-        document.getElementById('previewText').innerText = previewText;
-        document.getElementById('addressPreview').classList.add('show');
+            const preview = document.getElementById('mobileAddressPreview');
+            const content = document.getElementById('previewContent');
+            const button = document.querySelector('.mobile-address-btn');
 
-        // Update button text
-        document.querySelector('.mobile-address-trigger').innerHTML = '✓ Address Added - Tap to Edit';
-
-        // Close popup
-        closeAddressPopup();
-
-        // Also sync with main form if on desktop
-        syncToMainForm();
-      }
-
-      function syncToMainForm() {
-        // Sync popup form data to main form
-        document.getElementById('firstName').value = document.getElementById('popupFirstName').value;
-        document.getElementById('lastName').value = document.getElementById('popupLastName').value;
-        document.getElementById('email').value = document.getElementById('popupEmail').value;
-        document.getElementById('phone').value = document.getElementById('popupPhone').value;
-        document.getElementById('address').value = document.getElementById('popupAddress').value;
-        document.getElementById('city').value = document.getElementById('popupCity').value;
-        document.getElementById('state').value = document.getElementById('popupState').value;
-        document.getElementById('pincode').value = document.getElementById('popupPincode').value;
-      }
-
-      // Close popup when clicking outside
-      document.getElementById('addressPopup').addEventListener('click', function(e) {
-        if (e.target === this) {
-          closeAddressPopup();
+            if (firstName && lastName && address && city && state && pincode) {
+                content.innerHTML = `
+                    <p><strong>${firstName} ${lastName}</strong></p>
+                    <p>${address}</p>
+                    <p>${city}, ${state} ${pincode}</p>
+                `;
+                preview.style.display = 'block';
+                button.textContent = '✓ Address Added';
+                button.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+            } else {
+                preview.style.display = 'none';
+                button.textContent = 'Add Shipping Address';
+                button.style.background = 'linear-gradient(135deg, #4a90e2, #357abd)';
+            }
         }
-      });
 
-      // Prevent body scroll when popup is open
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          closeAddressPopup();
+        function showPopup(message, type) {
+            const existingPopup = document.querySelector('.popup-overlay');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+
+            let icon = '';
+            let actions = '';
+            
+            if (type === 'success') {
+                icon = '<div style="font-size: 3rem; color: #34a853; margin-bottom: 1rem;">✓</div>';
+                if (message.includes('Payment successful')) {
+                    actions = `
+                        <div class="popup-actions">
+                            <button class="popup-btn primary" onclick="window.location.href='shop_page.html'">Continue Shopping</button>
+                        </div>
+                    `;
+                }
+            } else if (type === 'error') {
+                icon = '<div style="font-size: 3rem; color: #ea4335; margin-bottom: 1rem;">✗</div>';
+                if (message.includes('Payment failed') || message.includes('Payment cancelled')) {
+                    actions = `
+                        <div class="popup-actions">
+                            <button class="popup-btn primary" onclick="this.closest('.popup-overlay').remove()">Try Again</button>
+                            <button class="popup-btn secondary" onclick="window.location.href='shop_page.html'">Continue Shopping</button>
+                        </div>
+                    `;
+                }
+            } else if (type === 'warning') {
+                icon = '<div style="font-size: 3rem; color: #fbbc04; margin-bottom: 1rem;">⚠</div>';
+                if (message.includes('cancelled')) {
+                    actions = `
+                        <div class="popup-actions">
+                            <button class="popup-btn primary" onclick="this.closest('.popup-overlay').remove()">Try Again</button>
+                            <button class="popup-btn secondary" onclick="window.location.href='shop_page.html'">Continue Shopping</button>
+                        </div>
+                    `;
+                }
+            }
+
+            const popup = document.createElement('div');
+            popup.className = 'popup-overlay';
+            popup.innerHTML = `
+                <div class="popup-content ${type}">
+                    ${icon}
+                    <div class="popup-message">${message}</div>
+                    ${actions}
+                    ${!actions ? '<button class="popup-close" onclick="this.parentElement.parentElement.remove()">×</button>' : ''}
+                </div>
+            `;
+
+            document.body.appendChild(popup);
+
+            if (type === 'success' && !message.includes('Payment successful') && !message.includes('Address saved')) {
+                setTimeout(() => {
+                    if (popup.parentElement) {
+                        popup.remove();
+                    }
+                }, 3000);
+            }
         }
-      });
 
-      document.addEventListener("DOMContentLoaded", function () {
-        displayCartItems();
-        checkUrlParameters();
-      });
+        async function verifyPaymentStatus(orderId) {
+            try {
+                const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                    ? `http://localhost:3000/verify/${orderId}`
+                    : `https://2f5c8vn9-3000.inc1.devtunnels.ms/verify/${orderId}`;
+                
+                const response = await fetch(backendUrl);
+                const data = await response.json();
+                
+                if (response.ok && data.order_status === 'PAID') {
+                    showPopup('🎉 Payment successful! Your order has been confirmed and will be processed shortly.', 'success');
+                    updateOrderStatus(orderId.replace('ORDER_', ''), 'completed');
+                    
+                    if (!isDirect) {
+                        localStorage.removeItem('cart');
+                    }
+                } else {
+                    showPopup('❌ Payment was cancelled or failed. Please try again or contact support if you believe this is an error.', 'warning');
+                }
+            } catch (error) {
+                console.error('Error verifying payment:', error);
+                showPopup('❌ Payment was cancelled or failed. Please try again or contact support if you believe this is an error.', 'warning');
+            }
+        }
+
+        function generateOrderId() {
+            let orderCounter = parseInt(localStorage.getItem('orderCounter')) || 0;
+            orderCounter++;
+            localStorage.setItem('orderCounter', orderCounter.toString());
+            return orderCounter.toString().padStart(6, '0');
+        }
+
+        function displayCartItems() {
+            const cartItemsContainer = document.getElementById('cartItems');
+
+            if (isDirect) {
+                cartItemsContainer.innerHTML = `
+                    <div class="product-item">
+                        <img src="/tote bag mockup web 2.svg" alt="Rex Bag" class="product-image">
+                        <div class="product-details">
+                            <div class="product-name">Rex Bag</div>
+                            <div class="product-price">Price: ₹200 each</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                            <span class="quantity-display" id="quantityDisplay">${currentQuantity}</span>
+                            <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+                } else {
+                    cartItemsContainer.innerHTML = cart.map(item => `
+                        <div class="product-item">
+                            <img src="${item.image}" alt="${item.name}" class="product-image">
+                            <div class="product-details">
+                                <div class="product-name">${item.name}</div>
+                                <div class="product-price">Price: ₹${item.price} each</div>
+                            </div>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                                <span class="quantity-display">${item.quantity}</span>
+                                <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            updatePricing();
+        }
+
+        function increaseQuantity() {
+            currentQuantity++;
+            document.getElementById('quantityDisplay').textContent = currentQuantity;
+            updatePricing();
+        }
+
+        function decreaseQuantity() {
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                document.getElementById('quantityDisplay').textContent = currentQuantity;
+                updatePricing();
+            }
+        }
+
+        function updateCartQuantity(itemId, newQuantity) {
+            if (newQuantity <= 0) {
+                cart = cart.filter(item => item.id !== itemId);
+            } else {
+                const item = cart.find(item => item.id === itemId);
+                if (item) {
+                    item.quantity = newQuantity;
+                }
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCartItems();
+        }
+
+        function updatePricing() {
+            let totalQuantity = 0;
+
+            if (isDirect) {
+                totalQuantity = currentQuantity;
+            } else {
+                totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+            }
+
+            const bagCost = 100 * totalQuantity;
+            const netProfit = 100 * totalQuantity;
+            const shippingCost = 150;
+            const total = bagCost + netProfit + shippingCost;
+
+            document.getElementById('bagCost').textContent = `₹${bagCost}`;
+            document.getElementById('netProfit').textContent = `₹${netProfit}`;
+            document.getElementById('shippingCost').textContent = `₹${shippingCost}`;
+            document.getElementById('finalTotal').textContent = `₹${total}`;
+        }
+
+        document.getElementById('pincode').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        async function saveOrderToFirebase(orderData) {
+            try {
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
+                const { getFirestore, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js');
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
+                    authDomain: "shoppagforss.firebaseapp.com",
+                    projectId: "shoppagforss",
+                    storageBucket: "shoppagforss.firebasestorage.app",
+                    messagingSenderId: "475416573730",
+                    appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
+                    measurementId: "G-D8ZSG5K38R"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+
+                const docRef = await addDoc(collection(db, 'orders'), {
+                    orderId: orderData.orderId,
+                    customerInfo: {
+                        firstName: orderData.customerInfo.firstName,
+                        lastName: orderData.customerInfo.lastName,
+                        email: orderData.customerInfo.email,
+                        phone: orderData.customerInfo.phone,
+                        address: orderData.customerInfo.address,
+                        city: orderData.customerInfo.city,
+                        state: orderData.customerInfo.state,
+                        pincode: orderData.customerInfo.pincode
+                    },
+                    orderDetails: {
+                        items: orderData.items,
+                        bagCost: orderData.pricing.bagCost,
+                        netProfit: orderData.pricing.netProfit,
+                        shippingCost: orderData.pricing.shippingCost,
+                        total: orderData.pricing.total,
+                        totalQuantity: orderData.pricing.totalQuantity
+                    },
+                    paymentMethod: orderData.paymentMethod,
+                    orderType: orderData.orderType,
+                    orderDate: orderData.orderDate,
+                    timestamp: serverTimestamp(),
+                    status: 'pending'
+                });
+
+                console.log('Order saved with ID: ', docRef.id);
+                return docRef.id;
+            } catch (error) {
+                console.error('Error saving order: ', error);
+                throw error;
+            }
+        }
+
+        async function processOrder() {
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            const pincode = document.getElementById('pincode').value;
+
+            if (!firstName || !lastName || !email || !phone || !address || !city || !state || !pincode) {
+                showPopup('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            const orderId = generateOrderId();
+
+            let totalQuantity = 0;
+            let totalItems = [];
+
+            if (isDirect) {
+                totalQuantity = currentQuantity;
+                totalItems = [{ product: 'Rex Bag', quantity: currentQuantity, price: 200 }];
+            } else {
+                totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+                totalItems = cart.map(item => ({
+                    product: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                }));
+            }
+
+            const total = (100 + 100) * totalQuantity + 150;
+
+            const orderData = {
+                orderId: orderId,
+                customerInfo: {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    phone: phone,
+                    address: address,
+                    city: city,
+                    state: state,
+                    pincode: pincode
+                },
+                items: totalItems,
+                pricing: {
+                    totalQuantity: totalQuantity,
+                    bagCost: 100 * totalQuantity,
+                    netProfit: 100 * totalQuantity,
+                    shippingCost: 150,
+                    total: total
+                },
+                orderDate: new Date().toISOString(),
+                paymentMethod: 'Cashfree',
+                orderType: isDirect ? 'direct' : 'cart',
+                status: 'pending'
+            };
+
+            const btn = document.querySelector('.checkout-btn');
+            btn.textContent = 'Processing Order...';
+            btn.disabled = true;
+
+            try {
+                const firebaseOrderId = await saveOrderToFirebase(orderData);
+                const paymentSessionId = await createPaymentSession(orderData);
+
+                btn.textContent = 'Redirecting to Payment...';
+
+                const checkoutOptions = {
+                    paymentSessionId: paymentSessionId,
+                    redirectTarget: '_self'
+                };
+
+                cashfree.checkout(checkoutOptions).then((result) => {
+                    if (result.error) {
+                        console.error('Payment failed:', result.error);
+                        showPopup('Payment failed. Please try again.', 'error');
+                        updateOrderStatus(orderId, 'failed');
+                        btn.textContent = 'Proceed to Pay';
+                        btn.disabled = false;
+                    }
+                    if (result.redirect) {
+                        console.log('Redirecting to payment page');
+                    }
+                });
+            } catch (error) {
+                console.error('Error processing order:', error);
+                showPopup('Error processing order. Please try again.', 'error');
+                btn.textContent = 'Proceed to Pay';
+                btn.disabled = false;
+            }
+        }
+
+        async function createPaymentSession(orderData) {
+            try {
+                const sessionRequest = {
+                    order_id: `ORDER_${orderData.orderId}`,
+                    order_amount: orderData.pricing.total,
+                    order_currency: 'INR',
+                    customer_details: {
+                        customer_id: `CUST_${orderData.orderId}`,
+                        customer_name: `${orderData.customerInfo.firstName} ${orderData.customerInfo.lastName}`,
+                        customer_email: orderData.customerInfo.email,
+                        customer_phone: orderData.customerInfo.phone
+                    },
+                    order_meta: {
+                        return_url: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                            ? 'https://api.cashfree.com/pg/orders'
+                            : `${window.location.origin}/checkout.html?order_id=${orderData.orderId}`,
+                        notify_url: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                            ? 'https://api.cashfree.com/pg/orders'
+                            : `${window.location.origin}/payment-webhook`,
+                        payment_methods: 'cc,dc,nb,upi,paylater,emi'
+                    }
+                };
+
+                const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                    ? 'http://localhost:3000/create-order'
+                    : 'https://2f5c8vn9-3000.inc1.devtunnels.ms/create-order';
+
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sessionRequest)
+                });
+
+                const data = await response.json();
+
+                if (data.payment_session_id) {
+                    return data.payment_session_id;
+                } else {
+                    throw new Error('Failed to get payment session ID');
+                }
+            } catch (error) {
+                console.error('Error creating payment session:', error);
+                throw error;
+            }
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            try {
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
+                const { getFirestore, collection, query, where, getDocs, updateDoc } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js');
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
+                    authDomain: "shoppagforss.firebaseapp.com",
+                    projectId: "shoppagforss",
+                    storageBucket: "shoppagforss.firebasestorage.app",
+                    messagingSenderId: "475416573730",
+                    appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
+                    measurementId: "G-D8ZSG5K38R"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+
+                const q = query(collection(db, 'orders'), where('orderId', '==', orderId));
+                const querySnapshot = await getDocs(q);
+
+                querySnapshot.forEach(async (doc) => {
+                    await updateDoc(doc.ref, {
+                        status: status,
+                        paymentDate: status === 'completed' ? new Date().toISOString() : null
+                    });
+                });
+            } catch (error) {
+                console.error('Error updating order status:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            displayCartItems();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order_id');
+            
+            if (orderId) {
+                verifyPaymentStatus(`ORDER_${orderId}`);
+            }
+            
+            updateMobileAddressPreview();
+        });
     </script>
-  </body>
+</body>
 </html>
