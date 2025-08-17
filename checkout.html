@@ -10,7 +10,6 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
-    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
     <style>
       * {
@@ -71,10 +70,11 @@
       .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 2rem 1.5rem;
+        background: white;
+        min-height: 100vh;
       }
 
-      .page-title {
+      .checkout-title {
         font-size: 2rem;
         color: #4a90e2;
         font-weight: 600;
@@ -354,155 +354,292 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
         display: flex;
-        align-items: center;
         justify-content: center;
-        z-index: 10000;
-        animation: fadeIn 0.3s ease;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
       }
 
-      .popup-content {
+      .popup-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .popup-card {
         background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        max-width: 400px;
+        border-radius: 16px;
+        padding: 1.5rem;
         width: 90%;
-        position: relative;
-        animation: slideIn 0.3s ease;
+        max-width: 400px;
+        max-height: 80vh;
+        overflow-y: auto;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
       }
 
-      .popup-content.success {
-        border-left: 4px solid #28a745;
+      .popup-overlay.show .popup-card {
+        transform: scale(1);
       }
 
-      .popup-content.error {
-        border-left: 4px solid #dc3545;
+      .popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
       }
 
-      .popup-message {
-        font-size: 1.1rem;
+      .popup-header h3 {
+        margin: 0;
         color: #333;
-        margin-bottom: 1rem;
-        line-height: 1.5;
+        font-size: 1.3rem;
       }
 
-      .popup-close {
-        position: absolute;
-        top: 10px;
-        right: 15px;
+      .close-btn {
         background: none;
         border: none;
         font-size: 1.5rem;
         cursor: pointer;
         color: #666;
+        padding: 0;
         width: 30px;
         height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
       }
 
-      .popup-close:hover {
+      .close-btn:hover {
+        background: #f8f9fa;
         color: #333;
       }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
+      .popup-form .form-group {
+        margin-bottom: 1rem;
       }
 
-      @keyframes slideIn {
-        from {
-          transform: translateY(-50px);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
+      .popup-form .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
       }
 
+      .save-address-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+      }
+
+      .save-address-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      /* Mobile responsive styles */
       @media (max-width: 768px) {
+        /* Added mobile container centering and layout fixes */
+        .container {
+          padding: 1rem;
+          max-width: 100%;
+        }
+
         .checkout-container {
           grid-template-columns: 1fr;
-          gap: 2rem;
+          gap: 1.5rem;
+          padding: 1.5rem;
+          margin: 0 auto;
+          max-width: 500px;
+        }
+
+        .checkout-form {
           padding: 1rem;
-          margin: 0 1rem;
-        }
-
-        .form-row {
-          grid-template-columns: 1fr;
-        }
-
-        .page-title {
-          font-size: 1.5rem;
-        }
-
-        .container {
-          padding: 1rem 0.5rem;
-        }
-
-        .header {
-          padding: 1rem;
+          order: 2;
         }
 
         .order-summary {
-          position: static;
-        }
-
-        .quantity-controls {
-          padding: 0.7rem;
-        }
-
-        .product-item {
-          flex-direction: column;
-          text-align: center;
-          gap: 0.5rem;
-        }
-
-        .product-details {
+          order: 1;
+          margin: 0 auto;
           width: 100%;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .container {
-          padding: 0.5rem;
-        }
-
-        .checkout-container {
-          margin: 0 0.5rem;
-          padding: 0.5rem;
         }
 
         .section {
           padding: 1rem;
         }
 
-        .order-summary {
-          padding: 1rem;
+        .form-row {
+          grid-template-columns: 1fr;
         }
+
+        /* Hide full address form on mobile and show compact button */
+        .shipping-section {
+          display: none;
+        }
+
+        .mobile-address-trigger {
+          display: block;
+          width: 100%;
+          padding: 0.75rem 1rem;
+          background: #4f46e5;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          margin-bottom: 1rem;
+        }
+
+        .mobile-address-trigger:hover {
+          background: #4338ca;
+        }
+
+        .address-preview {
+          margin-bottom: 1rem;
+          padding: 1rem;
+          background: #f8f9fa;
+          border-radius: 8px;
+          border-left: 4px solid #4f46e5;
+          display: none;
+        }
+
+        .address-preview.show {
+          display: block;
+        }
+
+        .address-preview h4 {
+          margin: 0 0 0.5rem 0;
+          color: #333;
+          font-size: 1rem;
+        }
+
+        .address-preview p {
+          margin: 0;
+          color: #666;
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .mobile-address-trigger {
+          display: none;
+        }
+
+        .address-preview {
+          display: none !important;
+        }
+      }
+
+      /* Payment Status Styles */
+      .payment-status {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .status-message {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 400px;
+        margin: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .status-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .payment-status.success .status-message {
+        border-top: 4px solid #10b981;
+      }
+
+      .payment-status.failed .status-message {
+        border-top: 4px solid #ef4444;
+      }
+
+      .payment-status.pending .status-message {
+        border-top: 4px solid #f59e0b;
+      }
+
+      .status-btn {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: background-color 0.3s;
+      }
+
+      .status-btn:hover {
+        background: #4338ca;
+      }
+
+      .status-btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      .logo-image {
+        height: 40px;
+        width: auto;
       }
     </style>
   </head>
   <body>
-    <div class="header">
-      <div class="logo">
-        <img src="Group 1.svg" alt="SILLY SenSei Logo" class="logo-image" />
-      </div>
-      <a href="/index.html" class="back-btn">← Back to Shop</a>
-    </div>
-
     <div class="container">
-      <h1 class="page-title">Checkout</h1>
+      <div class="header">
+        <div class="logo">
+          <!-- Replaced text logo with SVG image -->
+          <img src="Group 1.svg" alt="SILLY SenSei Logo" class="logo-image" />
+        </div>
+        <div class="back-to-shop">
+          <span>← Back to Shop</span>
+        </div>
+      </div>
+
+      <h1 class="checkout-title">Checkout</h1>
+
+      <!-- Added payment status messages -->
+      <div class="payment-status" id="paymentStatus" style="display: none;">
+        <div class="status-message" id="statusMessage">
+          <div class="status-icon" id="statusIcon"></div>
+          <h3 id="statusTitle"></h3>
+          <p id="statusText"></p>
+          <button class="status-btn" id="statusBtn" onclick="handleStatusAction()">Continue Shopping</button>
+        </div>
+      </div>
 
       <div class="checkout-container">
         <div class="checkout-form">
-          <div class="section">
+          <div class="section shipping-section">
             <h3>Shipping Information</h3>
             <div class="form-group">
               <div class="form-row">
@@ -581,7 +718,16 @@
         <div class="order-summary">
           <h3>Order Summary</h3>
 
-          <div id="cartItems">
+          <button class="mobile-address-trigger" onclick="openAddressPopup()">
+            Add Shipping Address
+          </button>
+
+          <div class="address-preview" id="addressPreview">
+            <h4>Shipping Address</h4>
+            <p id="previewText">No address added yet</p>
+          </div>
+
+          <div class="cart-items" id="cartItems">
             <!-- Cart items will be populated here -->
           </div>
 
@@ -628,6 +774,101 @@
             <span>Secure payment powered by Cashfree</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Add popup modal for mobile address entry -->
+    <div class="popup-overlay" id="addressPopup">
+      <div class="popup-card">
+        <div class="popup-header">
+          <h3>Shipping Address</h3>
+          <button class="close-btn" onclick="closeAddressPopup()">&times;</button>
+        </div>
+
+        <form class="popup-form" id="popupAddressForm">
+          <div class="form-group">
+            <div class="form-row">
+              <div>
+                <label for="popupFirstName">First Name</label>
+                <input type="text" id="popupFirstName" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-row">
+              <div>
+                <label for="popupLastName">Last Name</label>
+                <input type="text" id="popupLastName" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="popupEmail">Email Address</label>
+            <input type="email" id="popupEmail" required />
+          </div>
+
+          <div class="form-group">
+            <label for="popupPhone">Phone Number</label>
+            <input type="tel" id="popupPhone" required />
+          </div>
+
+          <div class="form-group">
+            <label for="popupAddress">Street Address</label>
+            <textarea id="popupAddress" rows="3" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="popupCity">City</label>
+            <input type="text" id="popupCity" required />
+          </div>
+
+          <div class="form-group">
+            <label for="popupState">State</label>
+            <select id="popupState" required>
+              <option value="">Select State</option>
+              <option value="AP">Andhra Pradesh</option>
+              <option value="AR">Arunachal Pradesh</option>
+              <option value="AS">Assam</option>
+              <option value="BR">Bihar</option>
+              <option value="CT">Chhattisgarh</option>
+              <option value="GA">Goa</option>
+              <option value="GJ">Gujarat</option>
+              <option value="HR">Haryana</option>
+              <option value="HP">Himachal Pradesh</option>
+              <option value="JK">Jammu and Kashmir</option>
+              <option value="JH">Jharkhand</option>
+              <option value="KA">Karnataka</option>
+              <option value="KL">Kerala</option>
+              <option value="MP">Madhya Pradesh</option>
+              <option value="MH">Maharashtra</option>
+              <option value="MN">Manipur</option>
+              <option value="ML">Meghalaya</option>
+              <option value="MZ">Mizoram</option>
+              <option value="NL">Nagaland</option>
+              <option value="OR">Odisha</option>
+              <option value="PB">Punjab</option>
+              <option value="RJ">Rajasthan</option>
+              <option value="SK">Sikkim</option>
+              <option value="TN">Tamil Nadu</option>
+              <option value="TG">Telangana</option>
+              <option value="TR">Tripura</option>
+              <option value="UP">Uttar Pradesh</option>
+              <option value="UT">Uttarakhand</option>
+              <option value="WB">West Bengal</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="popupPincode">PIN Code</label>
+            <input type="text" id="popupPincode" maxlength="6" required />
+          </div>
+
+          <button type="button" class="save-address-btn" onclick="saveAddress()">
+            Save Address
+          </button>
+        </form>
       </div>
     </div>
 
@@ -716,27 +957,7 @@
         } else {
           cartItemsContainer.innerHTML = cart
             .map(
-              (item, index) => `
-          <div class="product-item">
-            <img src="${item.image || "/tote bag mockup web 2.svg"}" alt="${
-                item.name
-              }" class="product-image">
-            <div class="product-details">
-              <h4>${item.name}</h4>
-              <div style="display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0;">
-                <span>Quantity:</span>
-                <div class="quantity-controls">
-                  <button class="qty-btn" onclick="decreaseCartQuantity(${index})" ${
-                item.quantity <= 1 ? "disabled" : ""
-              }>−</button>
-                  <span class="quantity">${item.quantity}</span>
-                  <button class="qty-btn" onclick="increaseCartQuantity(${index})">+</button>
-                </div>
-              </div>
-              <p>Price: ₹${item.price} each</p>
-            </div>
-          </div>
-        `
+              (item, index) => ``
             )
             .join("");
           emptyMessage.style.display = "none";
@@ -999,18 +1220,17 @@
               return_url:
                 window.location.hostname === "localhost" ||
                 window.location.hostname === "127.0.0.1"
-                  ? "https://api.cashfree.com/pg/orders"
+                  ? `${window.location.origin}/index.html?payment=success&order_id=${orderData.orderId}`
                   : `${window.location.origin}/payment-success.html?order_id=${orderData.orderId}`,
               notify_url:
                 window.location.hostname === "localhost" ||
                 window.location.hostname === "127.0.0.1"
-                  ? "https://api.cashfree.com/pg/orders"
+                  ? "http://localhost:3000/webhook"
                   : `${window.location.origin}/payment-webhook`,
-              payment_methods: "cc,dc,nb,upi,paylater,emi", // ✅ fixed list
+              payment_methods: "cc,dc,nb,upi,paylater,emi",
             },
           };
 
-          // 👇 Decide backend URL (localhost for dev, yourdomain.com for prod)
           const backendUrl =
             window.location.hostname === "localhost" ||
             window.location.hostname === "127.0.0.1"
@@ -1026,6 +1246,7 @@
           const data = await response.json();
 
           if (data.payment_session_id) {
+            localStorage.setItem('currentOrderId', orderData.orderId);
             return data.payment_session_id;
           } else {
             throw new Error("Failed to get payment session ID");
@@ -1036,76 +1257,192 @@
         }
       }
 
-      async function updateOrderStatus(orderId, status) {
+      async function verifyPaymentStatus(orderId) {
         try {
-          const { initializeApp } = await import(
-            "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
-          );
-          const { getFirestore, collection, query, where, getDocs, updateDoc } =
-            await import(
-              "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"
-            );
+          const backendUrl =
+            window.location.hostname === "localhost" ||
+            window.location.hostname === "127.0.0.1"
+              ? `http://localhost:3000/verify/ORDER_${orderId}`
+              : `https://2f5c8vn9-3000.inc1.devtunnels.ms/verify/ORDER_${orderId}`;
 
-          const firebaseConfig = {
-            apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
-            authDomain: "shoppagforss.firebaseapp.com",
-            projectId: "shoppagforss",
-            storageBucket: "shoppagforss.firebasestorage.app",
-            messagingSenderId: "475416573730",
-            appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
-            measurementId: "G-D8ZSG5K38R",
-          };
-
-          const app = initializeApp(firebaseConfig);
-          const db = getFirestore(app);
-
-          const q = query(
-            collection(db, "orders"),
-            where("orderId", "==", orderId)
-          );
-          const querySnapshot = await getDocs(q);
-
-          querySnapshot.forEach(async (doc) => {
-            await updateDoc(doc.ref, {
-              status: status,
-              paymentDate:
-                status === "completed" ? new Date().toISOString() : null,
-            });
-          });
+          const response = await fetch(backendUrl);
+          const data = await response.json();
+          
+          console.log("[v0] Payment verification response:", data);
+          return data;
         } catch (error) {
-          console.error("Error updating order status:", error);
+          console.error("Error verifying payment:", error);
+          return { order_status: "FAILED", error: error.message };
         }
       }
 
-      function handlePaymentSuccess() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get("order_id");
+      function showPaymentStatus(status, orderId, amount) {
+        const statusDiv = document.getElementById('paymentStatus');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusText = document.getElementById('statusText');
+        const statusBtn = document.getElementById('statusBtn');
+        
+        // Hide checkout form
+        document.querySelector('.checkout-container').style.display = 'none';
+        
+        if (status === 'PAID' || status === 'SUCCESS') {
+          statusIcon.innerHTML = '✅';
+          statusTitle.textContent = 'Payment Successful!';
+          statusText.textContent = `Your order #${orderId} has been confirmed. Amount paid: ₹${amount}`;
+          statusDiv.className = 'payment-status success';
+          statusBtn.textContent = 'Continue Shopping';
+        } else if (status === 'FAILED' || status === 'CANCELLED') {
+          statusIcon.innerHTML = '❌';
+          statusTitle.textContent = 'Payment Failed';
+          statusText.textContent = `Your payment for order #${orderId} was not successful. Please try again.`;
+          statusDiv.className = 'payment-status failed';
+          statusBtn.textContent = 'Try Again';
+        } else {
+          statusIcon.innerHTML = '⏳';
+          statusTitle.textContent = 'Payment Pending';
+          statusText.textContent = `Your payment for order #${orderId} is being processed. Please wait.`;
+          statusDiv.className = 'payment-status pending';
+          statusBtn.textContent = 'Check Status';
+        }
+        
+        statusDiv.style.display = 'block';
+      }
 
-        if (orderId) {
-          updateOrderStatus(orderId, "completed");
-          showPopup(
-            "Payment successful! Order placed successfully.",
-            "success"
-          );
-
-          if (!isDirect) {
-            localStorage.removeItem("cart");
+      function handleStatusAction() {
+        const statusDiv = document.getElementById('paymentStatus');
+        const statusBtn = document.getElementById('statusBtn');
+        
+        if (statusBtn.textContent === 'Try Again') {
+          // Reset form and show checkout again
+          statusDiv.style.display = 'none';
+          document.querySelector('.checkout-container').style.display = 'block';
+          document.querySelector('.checkout-btn').textContent = 'Proceed to Pay';
+          document.querySelector('.checkout-btn').disabled = false;
+        } else if (statusBtn.textContent === 'Check Status') {
+          // Re-verify payment status
+          const orderId = localStorage.getItem('currentOrderId');
+          if (orderId) {
+            checkPaymentStatusAndShow(orderId);
           }
-
-          setTimeout(() => {
-            window.location.href = "shop_page.html";
-          }, 3000);
+        } else {
+          // Continue shopping - redirect to shop page
+          window.location.href = '/';
         }
       }
+
+      async function checkPaymentStatusAndShow(orderId) {
+        const statusBtn = document.getElementById('statusBtn');
+        statusBtn.textContent = 'Checking...';
+        statusBtn.disabled = true;
+        
+        const result = await verifyPaymentStatus(orderId);
+        
+        if (result.order_status) {
+          showPaymentStatus(result.order_status, orderId, result.order_amount || 'N/A');
+        } else {
+          showPaymentStatus('FAILED', orderId, 'N/A');
+        }
+        
+        statusBtn.disabled = false;
+      }
+
+      function checkUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('payment');
+        const orderId = urlParams.get('order_id');
+        
+        if (paymentStatus && orderId) {
+          console.log("[v0] Payment return detected:", paymentStatus, orderId);
+          
+          if (paymentStatus === 'success') {
+            // Verify the actual payment status from backend
+            checkPaymentStatusAndShow(orderId);
+          } else {
+            showPaymentStatus('FAILED', orderId, 'N/A');
+          }
+          
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+
+      function openAddressPopup() {
+        document.getElementById('addressPopup').classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeAddressPopup() {
+        document.getElementById('addressPopup').classList.remove('show');
+        document.body.style.overflow = 'auto';
+      }
+
+      function saveAddress() {
+        const form = document.getElementById('popupAddressForm');
+        const formData = new FormData(form);
+
+        // Get form values
+        const firstName = document.getElementById('popupFirstName').value;
+        const lastName = document.getElementById('popupLastName').value;
+        const email = document.getElementById('popupEmail').value;
+        const phone = document.getElementById('popupPhone').value;
+        const address = document.getElementById('popupAddress').value;
+        const city = document.getElementById('popupCity').value;
+        const state = document.getElementById('popupState').value;
+        const pincode = document.getElementById('popupPincode').value;
+
+        // Validate required fields
+        if (!firstName || !lastName || !email || !phone || !address || !city || !state || !pincode) {
+          alert('Please fill in all required fields');
+          return;
+        }
+
+        // Create preview text
+        const previewText = `${firstName} ${lastName}\n${address}\n${city}, ${state} ${pincode}\n${phone}`;
+
+        // Update preview
+        document.getElementById('previewText').innerText = previewText;
+        document.getElementById('addressPreview').classList.add('show');
+
+        // Update button text
+        document.querySelector('.mobile-address-trigger').innerHTML = '✓ Address Added - Tap to Edit';
+
+        // Close popup
+        closeAddressPopup();
+
+        // Also sync with main form if on desktop
+        syncToMainForm();
+      }
+
+      function syncToMainForm() {
+        // Sync popup form data to main form
+        document.getElementById('firstName').value = document.getElementById('popupFirstName').value;
+        document.getElementById('lastName').value = document.getElementById('popupLastName').value;
+        document.getElementById('email').value = document.getElementById('popupEmail').value;
+        document.getElementById('phone').value = document.getElementById('popupPhone').value;
+        document.getElementById('address').value = document.getElementById('popupAddress').value;
+        document.getElementById('city').value = document.getElementById('popupCity').value;
+        document.getElementById('state').value = document.getElementById('popupState').value;
+        document.getElementById('pincode').value = document.getElementById('popupPincode').value;
+      }
+
+      // Close popup when clicking outside
+      document.getElementById('addressPopup').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeAddressPopup();
+        }
+      });
+
+      // Prevent body scroll when popup is open
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeAddressPopup();
+        }
+      });
 
       document.addEventListener("DOMContentLoaded", function () {
         displayCartItems();
-
-        // Check if this is a payment success redirect
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("payment_status") === "success") {
-          handlePaymentSuccess();
-        }
+        checkUrlParameters();
       });
     </script>
   </body>
