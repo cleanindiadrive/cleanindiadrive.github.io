@@ -453,11 +453,78 @@
             }
         }
 
-        @media (max-width: 768px) {
+        /* Enhanced empty cart styling */
+        .empty-cart-container {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 2px dashed #dee2e6;
+        }
+
+        .empty-cart-icon {
+            font-size: 4rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .empty-cart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-cart-message {
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .continue-shopping-btn {
+            /* Made gradient colors more vibrant and added opacity for better visibility */
+            background: linear-gradient(135deg, #2980e2, #1e6bb8);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            /* Ensure button is always clickable */
+            pointer-events: auto !important;
+            z-index: 10;
+            /* Added full opacity to make button more prominent */
+            opacity: 1;
+        }
+
+        .continue-shopping-btn:hover {
+            transform: translateY(-2px);
+            /* Enhanced shadow for better visibility on hover */
+            box-shadow: 0 6px 16px rgba(41, 128, 226, 0.4);
+        }
+
+        /* Improved order summary for empty cart */
+        .order-summary.empty-state {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .order-summary.empty-state .checkout-btn {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Extended mobile breakpoint for iPad 9th gen and better tablet support */
+        @media (max-width: 1024px) {
             .container {
                 padding: 1rem;
                 margin: 0 auto;
-                max-width: 500px;
+                max-width: 600px;
             }
 
             .checkout-container {
@@ -487,10 +554,34 @@
             .popup-content {
                 padding: 1.5rem;
                 margin: 1rem;
+                max-width: 90vw;
+                max-height: 90vh;
+                overflow-y: auto;
             }
 
-            .popup-actions {
-                flex-direction: column;
+            .empty-cart-container {
+                padding: 2rem 1rem;
+                margin: 1rem 0;
+            }
+
+            .empty-cart-icon {
+                font-size: 3rem;
+            }
+
+            .empty-cart-title {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Specific styles for smaller mobile devices */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 500px;
+            }
+
+            .popup-content {
+                margin: 0.5rem;
+                padding: 1rem;
             }
         }
     </style>
@@ -901,6 +992,7 @@
 
         function displayCartItems() {
             const cartItemsContainer = document.getElementById('cartItems');
+            const orderSummary = document.querySelector('.order-summary');
 
             if (isDirect) {
                 cartItemsContainer.innerHTML = `
@@ -917,9 +1009,18 @@
                         </div>
                     </div>
                 `;
+                orderSummary.classList.remove('empty-state');
             } else {
                 if (cart.length === 0) {
-                    cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+                    cartItemsContainer.innerHTML = `
+                        <div class="empty-cart-container">
+                            <div class="empty-cart-icon">🛒</div>
+                            <div class="empty-cart-title">Your cart is empty</div>
+                            <div class="empty-cart-message">Looks like you haven't added any items to your cart yet. Start shopping to fill it up!</div>
+                            <button class="continue-shopping-btn" onclick="handleContinueShopping()">Continue Shopping</button>
+                        </div>
+                    `;
+                    orderSummary.classList.add('empty-state');
                 } else {
                     cartItemsContainer.innerHTML = cart.map(item => `
                         <div class="product-item">
@@ -935,6 +1036,7 @@
                             </div>
                         </div>
                     `).join('');
+                    orderSummary.classList.remove('empty-state');
                 }
             }
 
@@ -979,18 +1081,39 @@
 
             const bagCost = 100 * totalQuantity;
             const netProfit = 100 * totalQuantity;
-            const shippingCost = 150;
+            
+            const shippingCost = totalQuantity === 0 ? 0 : 150;
             const total = bagCost + netProfit + shippingCost;
 
             document.getElementById('bagCost').textContent = `₹${bagCost}`;
             document.getElementById('netProfit').textContent = `₹${netProfit}`;
             document.getElementById('shippingCost').textContent = `₹${shippingCost}`;
             document.getElementById('finalTotal').textContent = `₹${total}`;
+
+            const shippingElement = document.getElementById('shippingCost').parentElement;
+            if (totalQuantity === 0) {
+                shippingElement.innerHTML = `<span>Shipping Cost:</span> <span id="shippingCost">₹0</span> <small style="color: #28a745;">(Free for empty cart)</small>`;
+            } else {
+                shippingElement.innerHTML = `<span>Shipping Cost:</span> <span id="shippingCost">₹${shippingCost}</span>`;
+            }
         }
 
         document.getElementById('pincode').addEventListener('input', function(e) {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
+
+        function handleContinueShopping() {
+            /* Simplified and more reliable navigation */
+            console.log("[v0] Continue shopping button clicked");
+            
+            // Simply go back in history or to a default page
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // Fallback to current directory or alert user
+                window.location.href = './';
+            }
+        }
 
         async function saveOrderToFirebase(orderData) {
             try {
