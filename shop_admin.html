@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - SILLY SenSei</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Added jsPDF library for proper PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Quicksand", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    /* Added popup styles for themed notifications */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .popup-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      transform: scale(0.7);
+      transition: transform 0.3s ease;
+    }
+
+    .popup-overlay.show .popup {
+      transform: scale(1);
+    }
+
+    .popup-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .popup-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .popup-message {
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+
+    .popup-btn {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .popup-btn:hover {
+      background: #357abd;
+    }
+
+    .popup-success .popup-icon { color: #28a745; }
+    .popup-error .popup-icon { color: #dc3545; }
+    .popup-warning .popup-icon { color: #ffc107; }
+    .popup-info .popup-icon { color: #17a2b8; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-bottom: 1px solid #f0f0f0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .logo-text {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .back-btn {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+
+    .back-btn:hover {
+      background: #357abd;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      color: #4a90e2;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4a90e2;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Added styles for multi-select functionality */
+    .multi-select-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+
+    .select-all-checkbox {
+      margin-right: 0.5rem;
+    }
+
+    .print-selected-btn {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .print-selected-btn:hover {
+      background: #138496;
+    }
+
+    .print-selected-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .order-checkbox {
+      margin-right: 1rem;
+      transform: scale(1.2);
+    }
+
+    .orders-section {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .section-header {
+      background: #4a90e2;
+      color: white;
+      padding: 1rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .orders-container {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .order-card {
+      border-bottom: 1px solid #f0f0f0;
+      padding: 1.5rem;
+      transition: background 0.2s;
+      /* Added flex layout for checkbox */
+      display: flex;
+      gap: 1rem;
+    }
+
+    .order-content {
+      flex: 1;
+    }
+
+    .order-id {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .order-date {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    /* Enhanced status dropdown styling */
+    .status-dropdown {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-right: 0.5rem;
+    }
+
+    .status-dropdown:hover {
+      border-color: #4a90e2;
+    }
+
+    .status-dropdown:focus {
+      outline: none;
+      border-color: #4a90e2;
+      box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    }
+
+    .order-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-processing {
+      background: #cce5ff;
+      color: #004085;
+    }
+
+    .status-shipped {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-delivered {
+      background: #e9ecef;
+      color: #383d41;
+    }
+
+    .status-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .order-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .customer-info, .order-info {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .info-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .info-item {
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .order-total {
+      text-align: right;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #28a745;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+
+    .no-orders {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .order-details {
+        grid-template-columns: 1fr;
+      }
+
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      /* Mobile responsive popup */
+      .popup {
+        width: 95%;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Added popup overlay for themed notifications -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup" id="popup">
+      <div class="popup-icon" id="popupIcon">✓</div>
+      <div class="popup-title" id="popupTitle">Success</div>
+      <div class="popup-message" id="popupMessage">Operation completed successfully</div>
+      <button class="popup-btn" onclick="hidePopup()">OK</button>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="logo-text">SILLY SenSei - Admin Dashboard</div>
+    <a href="/index.html" class="back-btn">← Back to Shop</a>
+  </div>
+
+  <div class="container">
+    <h1 class="page-title">Order Management Dashboard</h1>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalOrders">0</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalRevenue">₹0</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingOrders">0</div>
+        <div class="stat-label">Pending Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="todayOrders">0</div>
+        <div class="stat-label">Today's Orders</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="date-filter">
+        <label>From:</label>
+        <input type="date" id="fromDate">
+        <label>To:</label>
+        <input type="date" id="toDate">
+      </div>
+      <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
+    </div>
+
+    <!-- Added multi-select controls -->
+    <div class="multi-select-controls">
+      <label style="display: flex; align-items: center; font-weight: 600;">
+        <input type="checkbox" id="selectAllCheckbox" class="select-all-checkbox" onchange="toggleSelectAll()">
+        Select All Orders
+      </label>
+      <button id="printSelectedBtn" class="print-selected-btn" onclick="printSelectedOrders()" disabled>
+        📄 Print Selected Bills
+      </button>
+      <span id="selectedCount" style="color: #666; font-size: 0.9rem;">0 orders selected</span>
+    </div>
+
+    <div class="orders-section">
+      <div class="section-header">Recent Orders</div>
+      <div class="orders-container" id="ordersContainer">
+        <div class="loading">Loading orders...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase configuration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, where, Timestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
+      authDomain: "shoppagforss.firebaseapp.com",
+      projectId: "shoppagforss",
+      storageBucket: "shoppagforss.firebasestorage.app",
+      messagingSenderId: "475416573730",
+      appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
+      measurementId: "G-D8ZSG5K38R"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allOrders = [];
+    let selectedOrders = [];
+
+    function showPopup(type, title, message) {
+      const overlay = document.getElementById('popupOverlay');
+      const popup = document.getElementById('popup');
+      const icon = document.getElementById('popupIcon');
+      const titleEl = document.getElementById('popupTitle');
+      const messageEl = document.getElementById('popupMessage');
+
+      // Reset classes
+      popup.className = 'popup';
+      
+      // Set content based on type
+      switch(type) {
+        case 'success':
+          popup.classList.add('popup-success');
+          icon.textContent = '✓';
+          break;
+        case 'error':
+          popup.classList.add('popup-error');
+          icon.textContent = '✕';
+          break;
+        case 'warning':
+          popup.classList.add('popup-warning');
+          icon.textContent = '⚠';
+          break;
+        case 'info':
+          popup.classList.add('popup-info');
+          icon.textContent = 'ℹ';
+          break;
+      }
+
+      titleEl.textContent = title;
+      messageEl.textContent = message;
+      overlay.classList.add('show');
+    }
+
+    function hidePopup() {
+      document.getElementById('popupOverlay').classList.remove('show');
+    }
+
+    function generateOrderId() {
+      let orderCounter = parseInt(localStorage.getItem('orderCounter')) || 0;
+      orderCounter++;
+      localStorage.setItem('orderCounter', orderCounter.toString());
+      return orderCounter.toString().padStart(6, '0');
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return 'N/A';
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('en-IN') + ' ' + date.toLocaleTimeString('en-IN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+
+    function updateStats(orders) {
+      const totalOrders = orders.length;
+      const totalRevenue = orders.reduce((sum, order) => sum + (order.orderDetails?.total || 0), 0);
+      const pendingOrders = orders.filter(order => order.status === 'pending').length;
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayOrders = orders.filter(order => {
+        const orderDate = order.timestamp?.toDate ? order.timestamp.toDate() : new Date(order.orderDate);
+        return orderDate >= today;
+      }).length;
+
+      document.getElementById('totalOrders').textContent = totalOrders;
+      document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
+      document.getElementById('pendingOrders').textContent = pendingOrders;
+      document.getElementById('todayOrders').textContent = todayOrders;
+    }
+
+    function renderOrders(orders) {
+      const container = document.getElementById('ordersContainer');
+      
+      if (orders.length === 0) {
+        container.innerHTML = '<div class="no-orders">No orders found for the selected date range.</div>';
+        return;
+      }
+
+      const ordersHtml = orders.map(order => {
+        const customer = order.customerInfo || {};
+        const orderDetails = order.orderDetails || {};
+        
+        return `
+          <div class="order-card">
+            <!-- Added checkbox for order selection -->
+            <input type="checkbox" class="order-checkbox" value="${order.id}" onchange="toggleOrderSelection('${order.id}')">
+            <div class="order-content">
+              <div class="order-header">
+                <div>
+                  <div class="order-id">Order #${order.orderId || generateOrderId()}</div>
+                  <div class="order-date">${formatDate(order.timestamp)}</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <select class="status-dropdown" onchange="updateOrderStatus('${order.id}', this.value)">
+                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                    <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                    <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                  </select>
+                  <div class="order-status status-${order.status || 'pending'}">${order.status || 'pending'}</div>
+                  <button class="print-btn" onclick="generatePDFBill('${order.id}')" style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">📄 PDF Bill</button>
+                </div>
+              </div>
+              
+              <div class="order-details">
+                <div class="customer-info">
+                  <div class="info-title">Customer Information</div>
+                  <div class="info-item"><strong>Name:</strong> ${customer.firstName || ''} ${customer.lastName || ''}</div>
+                  <div class="info-item"><strong>Email:</strong> ${customer.email || 'N/A'}</div>
+                  <div class="info-item"><strong>Phone:</strong> ${customer.phone || 'N/A'}</div>
+                  <div class="info-item"><strong>Address:</strong> ${customer.address || 'N/A'}</div>
+                  <div class="info-item"><strong>City:</strong> ${customer.city || 'N/A'}, ${customer.state || 'N/A'} - ${customer.pincode || 'N/A'}</div>
+                </div>
+                
+                <div class="order-info">
+                  <div class="info-title">Order Information</div>
+                  ${orderDetails.items ? orderDetails.items.map(item => `
+                    <div class="info-item"><strong>Product:</strong> ${item.product} (Qty: ${item.quantity})</div>
+                  `).join('') : `<div class="info-item"><strong>Product:</strong> Rex Bag</div>
+                  <div class="info-item"><strong>Quantity:</strong> ${orderDetails.totalQuantity || 1}</div>`}
+                  <div class="info-item"><strong>Bag Cost:</strong> ₹${orderDetails.bagCost || 0}</div>
+                  <div class="info-item"><strong>Net Profit:</strong> ₹${orderDetails.netProfit || 0}</div>
+                  <div class="info-item"><strong>Shipping:</strong> ₹${orderDetails.shippingCost || 0}</div>
+                  <div class="info-item"><strong>Payment:</strong> ${order.paymentMethod || 'PhonePe'}</div>
+                </div>
+              </div>
+              
+              <div class="order-total">Total: ₹${orderDetails.total || 0}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = ordersHtml;
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      try {
+        await updateDoc(doc(db, "orders", orderId), {
+          status: newStatus,
+          lastUpdated: new Date().toISOString()
+        });
+        
+        showPopup('success', 'Status Updated', `Order status changed to ${newStatus.toUpperCase()}`);
+      } catch (error) {
+        console.error("Error updating order status:", error);
+        showPopup('error', 'Update Failed', 'Error updating order status. Please try again.');
+      }
+    }
+
+    function generatePDFBill(orderId) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) {
+        showPopup('error', 'Order Not Found', 'Unable to find the selected order.');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: [105, 74.25] // Quarter A4 size (A4 is 210x297mm, quarter is 105x74.25mm)
+      });
+
+      // Set font
+      doc.setFont('helvetica');
+
+      // Header
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SILLY SENSEI', 52.5, 8, { align: 'center' });
+      
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text('SHIPPING LABEL & INVOICE', 52.5, 12, { align: 'center' });
+
+      // Draw border
+      doc.rect(2, 2, 101, 70.25);
+      doc.line(2, 15, 103, 15); // Header separator
+
+      // Order details (left side)
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'bold');
+      doc.text('ORDER DETAILS:', 4, 20);
+      
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Order ID: #${order.orderId || generateOrderId()}`, 4, 24);
+      doc.text(`Date: ${formatDate(order.timestamp)}`, 4, 27);
+      doc.text(`Payment: ${order.paymentMethod || 'PhonePe'}`, 4, 30);
+      doc.text(`Status: ${(order.status || 'pending').toUpperCase()}`, 4, 33);
+
+      // Customer details (right side)
+      doc.setFont('helvetica', 'bold');
+      doc.text('SHIP TO:', 55, 20);
+      
+      doc.setFont('helvetica', 'normal');
+      const customer = order.customerInfo || {};
+      doc.text(`${customer.firstName || ''} ${customer.lastName || ''}`, 55, 24);
+      doc.text(`${customer.address || ''}`, 55, 27);
+      doc.text(`${customer.city || ''}, ${customer.state || ''} - ${customer.pincode || ''}`, 55, 30);
+      doc.text(`Phone: ${customer.phone || ''}`, 55, 33);
+
+      // Items table
+      doc.line(2, 37, 103, 37); // Table top border
+      doc.setFont('helvetica', 'bold');
+      doc.text('ITEM', 4, 41);
+      doc.text('QTY', 60, 41);
+      doc.text('PRICE', 75, 41);
+      doc.text('TOTAL', 90, 41);
+      
+      doc.line(2, 43, 103, 43); // Header separator
+      
+      doc.setFont('helvetica', 'normal');
+      const orderDetails = order.orderDetails || {};
+      
+      if (orderDetails.items) {
+        let yPos = 47;
+        orderDetails.items.forEach(item => {
+          doc.text(item.product, 4, yPos);
+          doc.text(item.quantity.toString(), 60, yPos);
+          doc.text(`₹${item.price}`, 75, yPos);
+          doc.text(`₹${item.price * item.quantity}`, 90, yPos);
+          yPos += 4;
+        });
+      } else {
+        doc.text(orderDetails.product || 'Rex Bag', 4, 47);
+        doc.text((orderDetails.quantity || 1).toString(), 60, 47);
+        doc.text('₹350', 75, 47);
+        doc.text(`₹${350 * (orderDetails.quantity || 1)}`, 90, 47);
+      }
+
+      // Total section
+      doc.line(2, 52, 103, 52); // Table bottom border
+      
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Subtotal: ₹${(orderDetails.bagCost || 0) + (orderDetails.netProfit || 0)}`, 75, 57);
+      doc.text(`Shipping: ₹${orderDetails.shippingCost || 0}`, 75, 60);
+      
+      doc.setFont('helvetica', 'bold');
+      doc.text(`TOTAL: ₹${orderDetails.total || 0}`, 75, 65);
+
+      // Footer
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Thank you for your business!', 52.5, 70, { align: 'center' });
+
+      // Download PDF
+      doc.save(`silly_sensei_Bill_${order.orderId || generateOrderId()}.pdf`);
+      
+      showPopup('success', 'PDF Generated', 'Bill has been downloaded successfully!');
+    }
+
+    function loadOrders() {
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+      
+      let q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+      
+      // Apply date filters if provided
+      if (fromDate || toDate) {
+        const startDate = fromDate ? Timestamp.fromDate(new Date(fromDate)) : null;
+        const endDate = toDate ? Timestamp.fromDate(new Date(toDate + 'T23:59:59')) : null;
+        
+        if (startDate && endDate) {
+          q = query(collection(db, "orders"), 
+                   where("timestamp", ">=", startDate),
+                   where("timestamp", "<=", endDate),
+                   orderBy("timestamp", "desc"));
+        } else if (startDate) {
+          q = query(collection(db, "orders"), 
+                   where("timestamp", ">=", startDate),
+                   orderBy("timestamp", "desc"));
+        } else if (endDate) {
+          q = query(collection(db, "orders"), 
+                   where("timestamp", "<=", endDate),
+                   orderBy("timestamp", "desc"));
+        }
+      }
+
+      // Real-time listener
+      onSnapshot(q, (querySnapshot) => {
+        allOrders = [];
+        querySnapshot.forEach((doc) => {
+          allOrders.push({ id: doc.id, ...doc.data() });
+        });
+        
+        updateStats(allOrders);
+        renderOrders(allOrders);
+      }, (error) => {
+        console.error("Error loading orders:", error);
+        document.getElementById('ordersContainer').innerHTML = 
+          '<div class="no-orders">Error loading orders. Please check your connection and try again.</div>';
+      });
+    }
+
+    function toggleSelectAll() {
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+      const orderCheckboxes = document.querySelectorAll('.order-checkbox');
+      
+      orderCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+      });
+      
+      if (selectAllCheckbox.checked) {
+        selectedOrders = allOrders.map(order => order.id);
+      } else {
+        selectedOrders = [];
+      }
+      
+      updateSelectedCount();
+    }
+
+    function toggleOrderSelection(orderId) {
+      const checkbox = document.querySelector(`.order-checkbox[value="${orderId}"]`);
+      
+      if (checkbox.checked) {
+        if (!selectedOrders.includes(orderId)) {
+          selectedOrders.push(orderId);
+        }
+      } else {
+        selectedOrders = selectedOrders.filter(id => id !== orderId);
+      }
+      
+      // Update select all checkbox
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+      const orderCheckboxes = document.querySelectorAll('.order-checkbox');
+      const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+      
+      selectAllCheckbox.checked = checkedBoxes.length === orderCheckboxes.length;
+      selectAllCheckbox.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < orderCheckboxes.length;
+      
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const selectedCount = document.getElementById('selectedCount');
+      const printSelectedBtn = document.getElementById('printSelectedBtn');
+      
+      selectedCount.textContent = `${selectedOrders.length} orders selected`;
+      printSelectedBtn.disabled = selectedOrders.length === 0;
+    }
+
+    function printSelectedOrders() {
+      if (selectedOrders.length === 0) {
+        showPopup('warning', 'No Orders Selected', 'Please select at least one order to print.');
+        return;
+      }
+
+      const selectedOrdersData = allOrders.filter(order => selectedOrders.includes(order.id));
+      generateMultipleBillsPDF(selectedOrdersData);
+    }
+
+    function generateMultipleBillsPDF(orders) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // A4 dimensions: 210mm x 297mm
+      // Quarter page: 105mm x 148.5mm
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const billWidth = 105;
+      const billHeight = 148.5;
+
+      orders.forEach((order, index) => {
+        // Calculate position (2x2 grid per page)
+        const col = index % 2;
+        const row = Math.floor((index % 4) / 2);
+        const xOffset = col * billWidth;
+        const yOffset = row * billHeight;
+
+        // Add new page if needed (every 4 bills)
+        if (index > 0 && index % 4 === 0) {
+          doc.addPage();
+        }
+
+        // Draw bill border
+        doc.rect(xOffset + 2, yOffset + 2, billWidth - 4, billHeight - 4);
+
+        // Header
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('SILLY SENSEI', xOffset + billWidth/2, yOffset + 12, { align: 'center' });
+        
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text('SHIPPING LABEL & INVOICE', xOffset + billWidth/2, yOffset + 18, { align: 'center' });
+
+        // Header separator
+        doc.line(xOffset + 2, yOffset + 22, xOffset + billWidth - 2, yOffset + 22);
+
+        // Order details (left side)
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.text('ORDER DETAILS:', xOffset + 5, yOffset + 28);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Order ID: #${order.orderId || generateOrderId()}`, xOffset + 5, yOffset + 33);
+        doc.text(`Date: ${formatDate(order.timestamp)}`, xOffset + 5, yOffset + 37);
+        doc.text(`Payment: ${order.paymentMethod || 'PhonePe'}`, xOffset + 5, yOffset + 41);
+        doc.text(`Status: ${(order.status || 'pending').toUpperCase()}`, xOffset + 5, yOffset + 45);
+
+        // Customer details (right side)
+        doc.setFont('helvetica', 'bold');
+        doc.text('SHIP TO:', xOffset + 55, yOffset + 28);
+        
+        doc.setFont('helvetica', 'normal');
+        const customer = order.customerInfo || {};
+        doc.text(`${customer.firstName || ''} ${customer.lastName || ''}`, xOffset + 55, yOffset + 33);
+        
+        // Wrap long address text
+        const address = customer.address || '';
+        if (address.length > 25) {
+          const addressLines = doc.splitTextToSize(address, 45);
+          addressLines.slice(0, 2).forEach((line, i) => {
+            doc.text(line, xOffset + 55, yOffset + 37 + (i * 4));
+          });
+        } else {
+          doc.text(address, xOffset + 55, yOffset + 37);
+        }
+        
+        doc.text(`${customer.city || ''}, ${customer.state || ''} - ${customer.pincode || ''}`, xOffset + 55, yOffset + 45);
+        doc.text(`Phone: ${customer.phone || ''}`, xOffset + 55, yOffset + 49);
+
+        // Items section
+        doc.line(xOffset + 2, yOffset + 55, xOffset + billWidth - 2, yOffset + 55);
+        doc.setFont('helvetica', 'bold');
+        doc.text('ITEM', xOffset + 5, yOffset + 61);
+        doc.text('QTY', xOffset + 60, yOffset + 61);
+        doc.text('PRICE', xOffset + 75, yOffset + 61);
+        doc.text('TOTAL', xOffset + 90, yOffset + 61);
+        
+        doc.line(xOffset + 2, yOffset + 64, xOffset + billWidth - 2, yOffset + 64);
+        
+        doc.setFont('helvetica', 'normal');
+        const orderDetails = order.orderDetails || {};
+        
+        if (orderDetails.items && orderDetails.items.length > 0) {
+          let yPos = yOffset + 70;
+          orderDetails.items.slice(0, 3).forEach(item => { // Limit to 3 items for space
+            const itemName = item.product.length > 15 ? item.product.substring(0, 15) + '...' : item.product;
+            doc.text(itemName, xOffset + 5, yPos);
+            doc.text(item.quantity.toString(), xOffset + 60, yPos);
+            doc.text(`₹${item.price}`, xOffset + 75, yPos);
+            doc.text(`₹${item.price * item.quantity}`, xOffset + 90, yPos);
+            yPos += 6;
+          });
+        } else {
+          doc.text('Rex Bag', xOffset + 5, yOffset + 70);
+          doc.text((orderDetails.totalQuantity || 1).toString(), xOffset + 60, yOffset + 70);
+          doc.text('₹350', xOffset + 75, yOffset + 70);
+          doc.text(`₹${350 * (orderDetails.totalQuantity || 1)}`, xOffset + 90, yOffset + 70);
+        }
+
+        // Total section
+        doc.line(xOffset + 2, yOffset + 85, xOffset + billWidth - 2, yOffset + 85);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Subtotal: ₹${(orderDetails.bagCost || 0) + (orderDetails.netProfit || 0)}`, xOffset + 60, yOffset + 92);
+        doc.text(`Shipping: ₹${orderDetails.shippingCost || 0}`, xOffset + 60, yOffset + 97);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text(`TOTAL: ₹${orderDetails.total || 0}`, xOffset + 60, yOffset + 105);
+
+        // Footer
+        doc.setFontSize(6);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Thank you for your business!', xOffset + billWidth/2, yOffset + 140, { align: 'center' });
+      });
+
+      // Download PDF
+      doc.save(`silly_sensei_Multiple_Bills_${new Date().toISOString().split('T')[0]}.pdf`);
+      
+      showPopup('success', 'PDF Generated', `${orders.length} bills have been downloaded successfully!`);
+      
+      // Clear selection
+      selectedOrders = [];
+      document.getElementById('selectAllCheckbox').checked = false;
+      document.querySelectorAll('.order-checkbox').forEach(cb => cb.checked = false);
+      updateSelectedCount();
+    }
+
+    // Set default date range (last 30 days)
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+    
+    document.getElementById('toDate').value = today.toISOString().split('T')[0];
+    document.getElementById('fromDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+
+    // Make functions globally available
+    window.loadOrders = loadOrders;
+    window.updateOrderStatus = updateOrderStatus;
+    window.generatePDFBill = generatePDFBill;
+    window.showPopup = showPopup;
+    window.hidePopup = hidePopup;
+    window.toggleSelectAll = toggleSelectAll;
+    window.toggleOrderSelection = toggleOrderSelection;
+    window.printSelectedOrders = printSelectedOrders;
+
+    // Load orders on page load
+    loadOrders();
+
+    // Add event listeners for date filters
+    document.getElementById('fromDate').addEventListener('change', loadOrders);
+    document.getElementById('toDate').addEventListener('change', loadOrders);
+
+    document.getElementById('popupOverlay').addEventListener('click', function(e) {
+      if (e.target === this) {
+        hidePopup();
+      }
+    });
+  </script>
+</body>
+</html>
