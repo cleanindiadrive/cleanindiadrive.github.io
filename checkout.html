@@ -1133,10 +1133,9 @@
       }
 
       function generateOrderId() {
-        let orderCounter = parseInt(localStorage.getItem("orderCounter")) || 0;
-        orderCounter++;
-        localStorage.setItem("orderCounter", orderCounter.toString());
-        return orderCounter.toString().padStart(6, "0");
+        const timestamp = Date.now().toString(); // milliseconds
+        const randomNum = Math.floor(Math.random() * 1000); // 0–999
+        return `${timestamp}${randomNum}`; // always unique
       }
 
       function displayCartItems() {
