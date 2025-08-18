@@ -1050,6 +1050,17 @@
         }
       }
 
+      // Store order data temporarily until payment is verified
+      function storeOrderDataTemporarily(orderId, orderData) {
+        localStorage.setItem(`tempOrder_${orderId}`, JSON.stringify(orderData));
+      }
+
+      // Retrieve temporary order data for Firebase save after payment success
+      function getOrderDataFromSession(orderId) {
+        const storedData = localStorage.getItem(`tempOrder_${orderId}`);
+        return storedData ? JSON.parse(storedData) : null;
+      }
+
       async function verifyPaymentStatus(orderId) {
         try {
           const backendUrl =
@@ -1082,6 +1093,7 @@
               "🎉 Payment successful! Your order has been confirmed and will be processed shortly.",
               "success"
             );
+            updateOrderStatus(orderId.replace("ORDER_", ""), "completed");
 
             if (!isDirect) {
               localStorage.removeItem("cart");
@@ -1099,7 +1111,7 @@
               "warning"
             );
 
-            // Clean up temporary order data since payment failed
+            // Clean up temporary order data since payment failed - NO Firebase save
             const orderIdClean = orderId.replace("ORDER_", "");
             localStorage.removeItem(`tempOrder_${orderIdClean}`);
 
@@ -1112,7 +1124,7 @@
             "warning"
           );
 
-          // Clean up temporary order data since verification failed
+          // Clean up temporary order data since verification failed - NO Firebase save
           const orderIdClean = orderId.replace("ORDER_", "");
           localStorage.removeItem(`tempOrder_${orderIdClean}`);
 
@@ -1262,24 +1274,16 @@
         });
 
       function handleContinueShopping() {
+        /* Simplified and more reliable navigation */
         console.log("[v0] Continue shopping button clicked");
 
+        // Simply go back in history or to a default page
         if (window.history.length > 1) {
           window.history.back();
         } else {
+          // Fallback to current directory or alert user
           window.location.href = "./";
         }
-      }
-
-      // Store order data temporarily until payment is verified
-      function storeOrderDataTemporarily(orderId, orderData) {
-        localStorage.setItem(`tempOrder_${orderId}`, JSON.stringify(orderData));
-      }
-
-      // Retrieve temporary order data for Firebase save after payment success
-      function getOrderDataFromSession(orderId) {
-        const storedData = localStorage.getItem(`tempOrder_${orderId}`);
-        return storedData ? JSON.parse(storedData) : null;
       }
 
       async function saveOrderToFirebase(orderData) {
@@ -1328,15 +1332,14 @@
             paymentMethod: orderData.paymentMethod,
             orderType: orderData.orderType,
             orderDate: orderData.orderDate,
-            paymentDate: new Date().toISOString(), // Set payment date when saving to Firebase
             timestamp: serverTimestamp(),
-            status: "completed", // Set as completed since payment was successful
+            status: "completed", // Only save to Firebase when payment is successful
           });
 
-          console.log("Order saved to Firebase with ID: ", docRef.id);
+          console.log("Order saved with ID: ", docRef.id);
           return docRef.id;
         } catch (error) {
-          console.error("Error saving order to Firebase: ", error);
+          console.error("Error saving order: ", error);
           throw error;
         }
       }
@@ -1420,10 +1423,9 @@
         btn.disabled = true;
 
         try {
-          // Store order data temporarily (not in Firebase yet)
+          // Store order data temporarily (DO NOT save to Firebase yet)
           storeOrderDataTemporarily(orderId, orderData);
 
-          // Create payment session
           const paymentSessionId = await createPaymentSession(orderData);
 
           btn.textContent = "Redirecting to Payment...";
@@ -1437,8 +1439,9 @@
             if (result.error) {
               console.error("Payment failed:", result.error);
               showPopup("Payment failed. Please try again.", "error");
+              updateOrderStatus(orderId, "failed");
 
-              // Clean up temporary order data since payment failed
+              // Clean up temporary order data since payment failed - NO Firebase save
               localStorage.removeItem(`tempOrder_${orderId}`);
 
               btn.textContent = "Proceed to Pay";
@@ -1453,7 +1456,7 @@
           console.error("Error processing order:", error);
           showPopup("Error processing order. Please try again.", "error");
 
-          // Clean up temporary order data since processing failed
+          // Clean up temporary order data since processing failed - NO Firebase save
           localStorage.removeItem(`tempOrder_${orderId}`);
 
           btn.textContent = "Proceed to Pay";
@@ -1514,12 +1517,45 @@
         }
       }
 
-      // This function is no longer needed since we don't update Firebase status manually
-      // Orders are only saved to Firebase when payment is successful
       async function updateOrderStatus(orderId, status) {
-        // This function is kept for compatibility but no longer used
-        // since we only save orders to Firebase after successful payment
-        console.log(`Order ${orderId} status would be updated to: ${status}`);
+        try {
+          const { initializeApp } = await import(
+            "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
+          );
+          const { getFirestore, collection, query, where, getDocs, updateDoc } =
+            await import(
+              "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js"
+            );
+
+          const firebaseConfig = {
+            apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
+            authDomain: "shoppagforss.firebaseapp.com",
+            projectId: "shoppagforss",
+            storageBucket: "shoppagforss.firebasestorage.app",
+            messagingSenderId: "475416573730",
+            appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
+            measurementId: "G-D8ZSG5K38R",
+          };
+
+          const app = initializeApp(firebaseConfig);
+          const db = getFirestore(app);
+
+          const q = query(
+            collection(db, "orders"),
+            where("orderId", "==", orderId)
+          );
+          const querySnapshot = await getDocs(q);
+
+          querySnapshot.forEach(async (doc) => {
+            await updateDoc(doc.ref, {
+              status: status,
+              paymentDate:
+                status === "completed" ? new Date().toISOString() : null,
+            });
+          });
+        } catch (error) {
+          console.error("Error updating order status:", error);
+        }
       }
 
       document.addEventListener("DOMContentLoaded", function () {
