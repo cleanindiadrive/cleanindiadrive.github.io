@@ -1437,7 +1437,6 @@
           cashfree.checkout(checkoutOptions).then((result) => {
             if (result.error) {
               console.error("Payment failed:", result.error);
-              showPopup("Payment failed. Please try again.", "error");
               updateOrderStatus(orderId, "failed");
 
               // Clean up temporary order data since payment failed - NO Firebase save
@@ -1453,7 +1452,7 @@
           });
         } catch (error) {
           console.error("Error processing order:", error);
-          showPopup("Error processing order. Please try again.", "error");
+          // showPopup("Error processing order. Please try again.", "error");
 
           // Clean up temporary order data since processing failed - NO Firebase save
           localStorage.removeItem(`tempOrder_${orderId}`);
