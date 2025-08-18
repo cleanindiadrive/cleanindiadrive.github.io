@@ -23,6 +23,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding-top: 40px;
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         .header {
@@ -67,9 +70,8 @@
         .message-box {
             box-shadow: 0 15px 25px #00000019;
             padding: 45px;
-            width: 100%;
+            max-width: 500px;
             text-align: center;
-            margin: 40px auto;
             background: white;
             border-radius: 12px;
         }
@@ -136,10 +138,15 @@
             transform: translateY(-2px);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+            body {
+                padding-top: 35px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
             .message-box {
                 padding: 30px 20px;
-                margin: 20px;
             }
 
             ._failed h2 {
@@ -174,20 +181,14 @@
         <a href="/" class="back-btn">← Back to Home</a>
     </div>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="message-box _success _failed">
-                    <i class="fa fa-times-circle" aria-hidden="true"></i>
-                    <h2>Your payment failed</h2>
-                    <p>Try again later</p>
-                    
-                    <div class="action-buttons">
-                        <a href="/checkout.html" class="btn btn-danger">Try Again</a>
-                        <a href="/" class="btn btn-outline-secondary">Back to Home</a>
-                    </div>
-                </div>
-            </div>
+    <div class="message-box _success _failed">
+        <i class="fa fa-times-circle" aria-hidden="true"></i>
+        <h2>Your payment failed</h2>
+        <p>Try again later</p>
+        
+        <div class="action-buttons">
+            <a href="/checkout.html" class="btn btn-danger">Try Again</a>
+            <a href="/" class="btn btn-outline-secondary">Back to Home</a>
         </div>
     </div>
 

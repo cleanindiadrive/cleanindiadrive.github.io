@@ -23,6 +23,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            /* Reduced padding and added horizontal padding for better centering */
+            padding: 20px 15px 0;
         }
 
         .header {
@@ -67,9 +69,11 @@
         .message-box {
             box-shadow: 0 15px 25px #00000019;
             padding: 45px;
+            /* Set max-width and ensure proper centering */
             width: 100%;
+            max-width: 500px;
             text-align: center;
-            margin: 40px auto;
+            margin: 0 auto;
             background: white;
             border-radius: 12px;
         }
@@ -96,6 +100,29 @@
             font-size: 18px;
             color: #495057;
             font-weight: 500;
+        }
+
+        /* Added styling for order ID display */
+        .order-id-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .order-id-label {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .order-id-value {
+            font-size: 18px;
+            color: #333;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
         }
 
         .action-buttons {
@@ -136,10 +163,17 @@
             transform: translateY(-2px);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+            /* Better mobile padding for centering */
+            body {
+                padding: 15px 10px 0;
+            }
+            
             .message-box {
                 padding: 30px 20px;
-                margin: 20px;
+                /* Remove margin on mobile for better fit */
+                margin: 0;
+                max-width: none;
             }
 
             ._success h2 {
@@ -175,22 +209,45 @@
     </div>
 
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="message-box _success">
-                    <i class="fa fa-check-circle" aria-hidden="true"></i>
-                    <h2>Your payment was successful</h2>
-                    <p>Thank you for your payment. We will<br>be in touch with you shortly!</p>
-                    
-                    <div class="action-buttons">
-                        <a href="./index.html" class="btn btn-primary">Home</a>
-                        <!--<a href="./index.html" class="btn btn-outline-secondary">Home</a>-->
-                    </div>
-                </div>
+        <!-- Removed Bootstrap grid system that was causing alignment issues -->
+        <div class="message-box _success">
+            <i class="fa fa-check-circle" aria-hidden="true"></i>
+            <h2>Your payment was successful</h2>
+            
+            <!-- Added order ID display section -->
+            <div class="order-id-section">
+                <div class="order-id-label">Order ID</div>
+                <div class="order-id-value" id="orderIdDisplay">Loading...</div>
+            </div>
+            
+            <p>Thank you for your payment. We will<br>be in touch with you shortly!</p>
+            
+            <div class="action-buttons">
+                <a href="./index.html" class="btn btn-primary">Home</a>
+                <!--<a href="./index.html" class="btn btn-outline-secondary">Home</a>-->
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Added JavaScript to generate and display order ID -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderIdElement = document.getElementById('orderIdDisplay');
+            
+            // Get order ID from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+            
+            if (orderId) {
+                // Display the real order ID with proper formatting
+                orderIdElement.textContent = orderId.padStart(6, '0');
+            } else {
+                // Fallback if no order ID is provided
+                orderIdElement.textContent = 'N/A';
+            }
+        });
+    </script>
 </body>
 </html>
