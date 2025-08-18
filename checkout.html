@@ -520,7 +520,7 @@
         }
 
         /* Extended mobile breakpoint for iPad 9th gen and better tablet support */
-        @media (max-width: 1024px) {
+        @media (max-width: 900px) {
             .container {
                 padding: 1rem;
                 margin: 0 auto;
@@ -582,6 +582,32 @@
             .popup-content {
                 margin: 0.5rem;
                 padding: 1rem;
+            }
+        }
+
+        /* Added zoom-out scaling for screens smaller than 475px */
+        @media (max-width: 475px) {
+            body {
+                transform: scale(0.85);
+                transform-origin: top left;
+                width: 117.65%; /* Compensate for the scale to maintain full width */
+                overflow-x: hidden;
+            }
+            
+            .container {
+                max-width: none;
+                width: 100%;
+            }
+            
+            .checkout-container {
+                padding: 0.75rem;
+            }
+            
+            .popup-content {
+                transform: scale(1.18); /* Counter-scale popups to maintain readability */
+                transform-origin: center;
+                margin: 0.25rem;
+                padding: 0.75rem;
             }
         }
     </style>
@@ -690,7 +716,7 @@
                 </button>
                 
                 <div class="mobile-address-preview" id="mobileAddressPreview">
-                    <h4>📍 Shipping Address</h4>
+                    <h4>Shipping Address</h4>
                     <div id="previewContent"></div>
                     <button class="edit-btn" onclick="openAddressPopup()">Edit Address</button>
                 </div>
@@ -804,7 +830,7 @@
                                     <option value="TN">Tamil Nadu</option>
                                     <option value="TG">Telangana</option>
                                     <option value="TR">Tripura</option>
-                                    <option value="UP">Uttar Pradesh</option>
+                                    <option value="UP">Uttar Pradesh</ప్రదేశ్</option>
                                     <option value="UT">Uttarakhand</option>
                                     <option value="WB">West Bengal</option>
                                     <option value="AN">Andaman and Nicobar Islands</option>
@@ -865,12 +891,13 @@
             // Close popup
             document.querySelector('.popup-overlay').remove();
             
-            showPopup('Address saved successfully!', 'success');
         }
 
         function updateMobileAddressPreview() {
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
             const city = document.getElementById('city').value;
             const state = document.getElementById('state').value;
@@ -883,8 +910,18 @@
             if (firstName && lastName && address && city && state && pincode) {
                 content.innerHTML = `
                     <p><strong>${firstName} ${lastName}</strong></p>
+                    <p>${email}</p>
+                    <p>${phone}</p>
                     <p>${address}</p>
                     <p>${city}, ${state} ${pincode}</p>
+                    <style>
+                        .mobile-address-preview p {
+                            margin: 0.25rem 0;
+                            color: #666;
+                            line-height: 0.9;
+                            font-size: 0.9rem;
+                        }
+                    </style>
                 `;
                 preview.style.display = 'block';
                 button.textContent = '✓ Address Added';
@@ -974,12 +1011,16 @@
                     if (!isDirect) {
                         localStorage.removeItem('cart');
                     }
+                    
+                    window.location.href = 'payment-success.html';
                 } else {
                     showPopup('❌ Payment was cancelled or failed. Please try again or contact support if you believe this is an error.', 'warning');
+                    window.location.href = 'payment-failed.html';
                 }
             } catch (error) {
                 console.error('Error verifying payment:', error);
                 showPopup('❌ Payment was cancelled or failed. Please try again or contact support if you believe this is an error.', 'warning');
+                window.location.href = 'payment-failed.html';
             }
         }
 
@@ -1250,6 +1291,7 @@
                         updateOrderStatus(orderId, 'failed');
                         btn.textContent = 'Proceed to Pay';
                         btn.disabled = false;
+                        window.location.href = 'payment-failed.html';
                     }
                     if (result.redirect) {
                         console.log('Redirecting to payment page');
@@ -1260,6 +1302,7 @@
                 showPopup('Error processing order. Please try again.', 'error');
                 btn.textContent = 'Proceed to Pay';
                 btn.disabled = false;
+                window.location.href = 'payment-failed.html';
             }
         }
 
