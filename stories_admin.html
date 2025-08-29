@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Stray Animal Stories</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4e89e8;
+      --secondary: #6cbd7e;
+      --accent: #ff7e5f;
+      --light: #f8f9fa;
+      --dark: #343a40;
+      --background: #f0f7ff;
+      --card-bg: #ffffff;
+      --text-primary: #2c3e50;
+      --text-secondary: #7f8c8d;
+      --border-radius: 12px;
+      --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+    
+    .card {
+      border-radius: var(--border-radius);
+      border: none;
+      box-shadow: var(--shadow);
+      background: var(--card-bg);
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+      background-color: #3d76d5;
+      border-color: #3d76d5;
+    }
+    
+    .btn-success {
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    
+    .btn-success:hover {
+      background-color: #5ca86d;
+      border-color: #5ca86d;
+    }
+    
+    .btn-danger {
+      background-color: #ff6b6b;
+      border-color: #ff6b6b;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    
+    .btn-danger:hover {
+      background-color: #ee5253;
+      border-color: #ee5253;
+    }
+    
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+      margin: 20px;
+    }
+    
+    .login-header {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .login-body {
+      padding: 1.5rem;
+    }
+    
+    .form-control {
+      border-radius: 8px;
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(78, 137, 232, 0.25);
+    }
+    
+    .input-group-text {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-right: none;
+      border-radius: 8px 0 0 8px;
+    }
+    
+    .admin-dashboard {
+      width: 100%;
+      padding: 0;
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: white;
+      box-shadow: var(--shadow);
+      margin-bottom: 0;
+    }
+    
+    .admin-title {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    .admin-title i {
+      font-size: 1.8rem;
+      color: var(--primary);
+    }
+    
+    .dashboard-content {
+      padding: 1.5rem;
+    }
+    
+    .section-title {
+      position: relative;
+      padding-bottom: 0.5rem;
+      margin: 1.5rem 0 1rem;
+      font-size: 1.25rem;
+    }
+    
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: var(--secondary);
+      border-radius: 2px;
+    }
+    
+    .story-form {
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .story-img {
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .story-list .card {
+      margin-bottom: 1rem;
+      padding: 1rem;
+    }
+    
+    .story-content {
+      display: flex;
+      align-items: center;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+      
+      .story-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .story-img {
+        margin-bottom: 0.8rem;
+        width: 100% !important;
+      }
+      
+      .dashboard-content {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Card (no container) -->
+  <div id="loginCard" class="card login-card">
+    <div class="login-header">
+      <i class="fas fa-paw fa-2x mb-2"></i>
+      <h3>Stray Animal Stories</h3>
+      <p class="mb-0">Admin Portal</p>
+    </div>
+    <div class="login-body">
+      <form id="loginForm">
+        <div class="mb-3">
+          <label class="form-label">Email Address</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input type="email" id="email" class="form-control" autocomplete="username" required>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" id="password" class="form-control" autocomplete="current-password" required>
+            <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2">
+          <i class="fas fa-sign-in-alt me-2"></i> Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard" class="hidden admin-dashboard">
+    <div class="admin-header">
+      <div class="admin-title">
+        <i class="fas fa-paw"></i>
+        <div>
+          <h2 class="mb-0" style="font-size: 1.5rem;">Stray Animal Stories</h2>
+          <p class="text-muted mb-0" style="font-size: 0.9rem;">Admin Dashboard</p>
+        </div>
+      </div>
+      <button id="logoutBtn" class="btn btn-danger btn-sm">
+        <i class="fas fa-sign-out-alt me-1"></i> Logout
+      </button>
+    </div>
+
+    <div class="dashboard-content">
+      <!-- Add Story Section -->
+      <div class="card story-form">
+        <h4 class="section-title">Add New Story</h4>
+        <form id="storyForm">
+          <div class="mb-3">
+            <label class="form-label">Story Title</label>
+            <input type="text" id="title" class="form-control" placeholder="Enter story title" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea id="description" class="form-control" rows="3" placeholder="Write about the animal..." required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Upload Images</label>
+            <input type="file" id="images" class="form-control" multiple accept="image/*">
+          </div>
+          <button type="submit" class="btn btn-success w-100 py-2">
+            <i class="fas fa-upload me-2"></i> Upload Story
+          </button>
+        </form>
+      </div>
+
+      <!-- Story List Section -->
+      <div class="mt-4">
+        <h4 class="section-title">Existing Stories</h4>
+        <div id="storiesList" class="story-list">
+          <!-- Sample story for demonstration -->
+          <div class="card shadow-sm">
+            <div class="story-content">
+              <img src="https://via.placeholder.com/120" class="story-img me-3" width="120">
+              <div class="flex-grow-1">
+                <h5 class="mb-1">leaves</h5>
+                <p class="text-muted mb-2 small">leaves...</p>
+                <button class="btn btn-sm btn-danger">
+                  <i class="fas fa-trash me-1"></i> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, orderBy, query, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
+      authDomain: "shoppagforss.firebaseapp.com",
+      projectId: "shoppagforss",
+      storageBucket: "shoppagforss.firebasestorage.app",
+      messagingSenderId: "475416573730",
+      appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
+      measurementId: "G-D8ZSG5K38R",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const loginCard = document.getElementById("loginCard");
+    const adminDashboard = document.getElementById("adminDashboard");
+    const loginForm = document.getElementById("loginForm");
+    const storyForm = document.getElementById("storyForm");
+    const storiesList = document.getElementById("storiesList");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Toggle password visibility
+    document.getElementById("togglePassword").addEventListener("click", () => {
+      const passwordInput = document.getElementById("password");
+      const icon = document.getElementById("togglePassword").querySelector('i');
+      
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = "password";
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginCard.classList.add("hidden");
+        adminDashboard.classList.remove("hidden");
+        loadStories();
+      } else {
+        loginCard.classList.remove("hidden");
+        adminDashboard.classList.add("hidden");
+      }
+    });
+
+    // Login form
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      }
+    });
+
+    // Logout
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth);
+    });
+
+    // Add story
+    storyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const imagesInput = document.getElementById("images").files;
+
+      const imageStrings = [];
+      for (let file of imagesInput) {
+        const reader = new FileReader();
+        const base64 = await new Promise((resolve) => {
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+        imageStrings.push(base64);
+      }
+
+      await addDoc(collection(db, "stories"), {
+        title,
+        description,
+        images: imageStrings,
+        createdAt: new Date()
+      });
+
+      alert("✅ Story uploaded successfully!");
+      storyForm.reset();
+      loadStories();
+    });
+
+    // Load stories
+    async function loadStories() {
+      storiesList.innerHTML = "";
+      const q = query(collection(db, "stories"), orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+
+      snapshot.forEach((docSnap) => {
+        const story = docSnap.data();
+        const storyId = docSnap.id;
+        const firstImg = story.images?.[0] || "https://via.placeholder.com/150";
+
+        const card = document.createElement("div");
+        card.className = "card shadow-sm";
+
+        card.innerHTML = `
+          <div class="story-content">
+            <img src="${firstImg}" class="story-img me-3" width="120">
+            <div class="flex-grow-1">
+              <h5 class="mb-1">${story.title}</h5>
+              <p class="text-muted mb-2 small">${story.description.substring(0,80)}...</p>
+              <button class="btn btn-sm btn-danger delete-btn">
+                <i class="fas fa-trash me-1"></i> Delete
+              </button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector(".delete-btn").addEventListener("click", async () => {
+          if (confirm("Are you sure you want to delete this story?")) {
+            await deleteDoc(doc(db, "stories", storyId));
+            loadStories();
+          }
+        });
+
+        storiesList.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>

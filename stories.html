@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stray Animal Stories - Silly Sensei</title>
+
+  <!-- Quicksand font -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Quicksand", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #ffffff;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* App Bar - Matching index.html style */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-bottom: 1px solid #f0f0f0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-image {
+      height: 32px;
+      width: auto;
+    }
+
+    .back-btn {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: #357abd;
+      color: white;
+    }
+
+    /* Main container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Page title */
+    .page-title {
+      font-size: 2.5rem;
+      color: #4a90e2;
+      margin-bottom: 2rem;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* Stories grid */
+    .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    /* Story card */
+    .story-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .story-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Card image */
+    .card-img-container {
+      height: 250px;
+      overflow: hidden;
+    }
+
+    .card-img-top {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+
+    .story-card:hover .card-img-top {
+      transform: scale(1.05);
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      color: #333;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .card-text {
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Carousel */
+    .carousel {
+      height: 250px;
+    }
+
+    .carousel-item img {
+      height: 250px;
+      object-fit: cover;
+    }
+
+    /* Loading screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #4a90e2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.2rem;
+      color: #4a90e2;
+      font-weight: 500;
+    }
+
+    /* No stories message */
+    .no-stories {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 2rem;
+      }
+      
+      .stories-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- App Bar -->
+  <header class="header">
+    <div class="logo">
+      <img src="../assets/shoplogo.svg" alt="SILLY SenSei Logo" class="logo-image">
+    </div>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </header>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading stories...</p>
+  </div>
+
+  <div class="container">
+    <h1 class="page-title">Our Stray Animal Stories</h1>
+    <div class="stories-grid" id="storiesContainer"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDgfpZCkjA2OPxuzaS3rvQ4XakXRTjLO4w",
+      authDomain: "shoppagforss.firebaseapp.com",
+      projectId: "shoppagforss",
+      storageBucket: "shoppagforss.firebasestorage.app",
+      messagingSenderId: "475416573730",
+      appId: "1:475416573730:web:0e9b8c01ea365f02cb577b",
+      measurementId: "G-D8ZSG5K38R",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const container = document.getElementById("storiesContainer");
+      const loadingScreen = document.getElementById("loadingScreen");
+      
+      try {
+        const q = query(collection(db, "stories"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        
+        // Check if we have any stories
+        if (querySnapshot.empty) {
+          container.innerHTML = `
+            <div class="no-stories">
+              <h3>No stories yet</h3>
+              <p>Check back later for inspiring stories about stray animals.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Process and display stories
+        querySnapshot.forEach((doc, index) => {
+          const story = doc.data();
+          const images = story.images || [];
+          let imageContent = "";
+
+          if (images.length === 1) {
+            imageContent = `
+              <div class="card-img-container">
+                <img src="${images[0]}" class="card-img-top">
+              </div>
+            `;
+          } else if (images.length > 1) {
+            const carouselId = `carousel${index}`;
+            imageContent = `
+              <div id="${carouselId}" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+                <div class="carousel-inner">
+                  ${images.map((img, i) => `
+                    <div class="carousel-item ${i === 0 ? "active" : ""}">
+                      <img src="${img}" class="d-block w-100">
+                    </div>
+                  `).join("")}
+                </div>
+                ${images.length > 1 ? `
+                  <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                ` : ''}
+              </div>`;
+          }
+
+          container.innerHTML += `
+            <div class="story-card">
+              ${imageContent}
+              <div class="card-body">
+                <h3 class="card-title">${story.title || 'Untitled Story'}</h3>
+                <p class="card-text">${story.description || 'No description available.'}</p>
+              </div>
+            </div>`;
+        });
+      } catch (error) {
+        console.error("Error loading stories:", error);
+        container.innerHTML = `
+          <div class="no-stories">
+            <h3>Error loading stories</h3>
+            <p>Please try again later.</p>
+          </div>
+        `;
+      } finally {
+        // Hide loading screen with a slight delay for smoother UX
+        setTimeout(() => {
+          loadingScreen.style.opacity = "0";
+          setTimeout(() => {
+            loadingScreen.style.display = "none";
+          }, 500);
+        }, 500);
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
