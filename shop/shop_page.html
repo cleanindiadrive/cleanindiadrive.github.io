@@ -10,6 +10,9 @@
       href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+     <!-- Preload critical resources -->
+    <link rel="preload" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/refs/heads/main/assets/cat.webp" as="image" />
+    <link rel="preload" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/tote-bag-mockup-web-2.webp" as="image" />
     <style>
       * {
         margin: 0;
@@ -777,7 +780,7 @@
         <div class="rex-image-container">
           <img
             link="preload"
-            src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/refs/heads/main/assets/cat.svg"
+            src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/refs/heads/main/assets/cat.webp"
             alt="Rex the cat"
             class="rex-image"
           />
@@ -797,7 +800,7 @@
           <h2 class="bag-title">Rex On A Bag</h2>
           <div class="bag-image-container">
             <img
-              src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/tote-bag-mockup-web-2.svg"
+              src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/tote-bag-mockup-web-2.webp"
               alt="Rex tote bag"
               class="bag-image"
             />
@@ -974,7 +977,7 @@
             name: productName,
             price: price,
             quantity: quantity,
-            image: 'https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/tote-bag-mockup-web-2.svg',
+            image: 'https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/tote-bag-mockup-web-2.webp',
           });
         }
         
