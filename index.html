@@ -30,27 +30,11 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="16x16" href="icons/biglogo.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/biglogo.svg" />
-  <!-- Classic & SVG favicons -->
   <link rel="icon" href="icons/biglogo.svg" type="image/svg+xml" />
-  <link
-    rel="icon"
-    href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/icons/biglogo.ico?v=1"
-  />
+  <link rel="icon" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/icons/biglogo.ico?v=1" />
   <link rel="icon" type="image/png" sizes="96x96" href="icons/biglogo.svg" />
-
-  <!-- Android Chrome and PWA -->
-  <link
-    rel="icon"
-    type="image/png"
-    sizes="192x192"
-    href="icons/biglogo.svg"
-  />
-  <link
-    rel="icon"
-    type="image/png"
-    sizes="512x512"
-    href="icons/biglogo.svg"
-  />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/biglogo.svg" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/biglogo.svg" />
 
   <!-- Apple Touch icon -->
   <link rel="apple-touch-icon" sizes="180x180" href="icons/biglogo.svg" />
@@ -79,12 +63,20 @@
 
     .price-btn, .alt-btn {
       width:260px; padding:1rem; border-radius:8px; cursor:pointer; font-weight:700; font-size:16px;
-      margin:0.5rem 0; display:inline-block; font-family:'Poppins', sans-serif; text-align:center;
+      margin:0.5rem auto; display:block; font-family:'Poppins', sans-serif; text-align:center;
     }
     .price-btn { background:#FFDD00; border:none; color:#393939; }
     .alt-btn { background:transparent; border:2px solid #FFDD00; color:#393939; }
 
     .price-btn span { display:block; font-size:9px; font-weight:400; color:#555; margin-top:0.3rem; }
+
+    /* Ensure Insta button & counter stack neatly */
+    #insta-btn,
+    #money-counter {
+      display: block;
+      margin: 0.7rem auto;
+      text-align: center;
+    }
 
     .faq-section { padding:3rem 2rem; }
     .faq-card {
@@ -109,17 +101,12 @@
     #popup-form h2 { margin-bottom:1.5rem; font-size:1.4rem; }
     #popup-form input { width:100%; padding:1rem; margin-bottom:1.5rem; border-radius:10px; border:1px solid #ccc; }
 
-    /* Centered popup buttons container with side-by-side buttons */
+    /* Popup buttons */
     #popup-form .popup-buttons {
-      display: flex;
-      justify-content: center; /* centers buttons inside container */
-      gap: 1rem; /* space between buttons */
-      margin: 0 auto; /* centers the container itself */
+      display:flex; justify-content:center; gap:1rem; margin:0 auto;
     }
     #popup-form .popup-buttons button {
-      width: 45%; /* keeps buttons side by side */
-      padding: 0.8rem;
-      font-size: 16px;
+      width:45%; padding:0.8rem; font-size:16px;
     }
 
     @media (max-width: 400px) {
@@ -129,26 +116,38 @@
 </head>
 <body>
   <nav>
-    <div class="logo"><img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png" alt="Logo"></div>
+    <div class="logo">
+      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png" alt="Logo">
+    </div>
   </nav>
 
   <section class="hero-section">
     <div class="container">
       <h1>Subscribe to<br>Manali Strays</h1>
-      <p><em>For Boom-Chicka-Boom-Boom group members only.</em> You were tricked to join this group so I can sell you this subscription</p>
+      <p>
+        <em>
+          For <u>Boom-Chicka-Boom-Boom</u> and <u>The Chimneys</u> group members only.
+        </em>
+        You were tricked to join this group so I can sell you this subscription
+      </p>
       <button class="price-btn" id="subscribe-btn">
         ₹100 Per Month<br>
         <span id="subscriber-count">0 active subscribers</span>
       </button>
       <br>
       <button class="alt-btn" id="insta-btn">Follow Them On Insta</button>
+
+      <!-- Money Counter -->
+      <div id="money-counter" class="alt-btn" style="display:none;">
+        Raised: ₹<span id="money-raised">0</span>
+      </div>
     </div>
   </section>
 
   <div class="faq-section">
     <div class="faq-card" id="money">
       <strong>Where your monie go?</strong>
-      <p>It lands in bank account of Manali Strays NGO. (no middle men) It will be used to treat the fur babies.</p>
+      <p>All money is being sent to Manali Strays. It will be used to treat the fur babies. </p>
       <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/money.png" alt="Money Icon" class="faq-icon-right">
     </div>
     <div class="faq-card" id="get">
@@ -200,16 +199,52 @@
     const analytics = getAnalytics(app);
     const db = getDatabase(app);
     const subscribersRef = ref(db, 'subscribers');
+    const settingsRef = ref(db, 'settings/showCounter');
+
+    const subscriberCountEl = document.getElementById('subscriber-count');
+    const moneyCounterEl = document.getElementById('money-counter');
+    const moneyRaisedEl = document.getElementById('money-raised');
 
     document.getElementById("insta-btn").addEventListener("click", () => {
       window.open("https://www.instagram.com/manalistrays?igsh=MXFiMThkOG5zeW82aw==", "_blank");
     });
 
-    const subscriberCountEl = document.getElementById('subscriber-count');
+    // Subscriber count + animated counter
     onValue(subscribersRef, (snapshot) => {
       const data = snapshot.val();
       const count = data ? Object.keys(data).length : 0;
       subscriberCountEl.textContent = `${count} active subscribers`;
+
+      // Animate money counter
+      const targetValue = count * 100;
+      const currentValue = parseInt(moneyRaisedEl.textContent) || 0;
+      const duration = 800; // ms
+      const steps = 30;
+      const increment = (targetValue - currentValue) / steps;
+
+      let step = 0;
+      const animate = () => {
+        step++;
+        const newValue = Math.round(currentValue + increment * step);
+        moneyRaisedEl.textContent = newValue;
+        if (step < steps) {
+          requestAnimationFrame(animate);
+        } else {
+          moneyRaisedEl.textContent = targetValue; // snap to final
+        }
+      };
+      animate();
+    });
+
+    // Counter visibility (auto-create if missing)
+    onValue(settingsRef, (snapshot) => {
+      const showCounter = snapshot.val();
+      if (showCounter === null) {
+        set(settingsRef, false);
+        moneyCounterEl.style.display = 'none';
+      } else {
+        moneyCounterEl.style.display = showCounter ? 'block' : 'none';
+      }
     });
 
     const popup = document.getElementById('popup-form');
@@ -236,6 +271,7 @@
       });
     });
 
+    // Auto-remove old subscribers after 1 month
     onValue(subscribersRef, (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
