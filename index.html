@@ -1,49 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Primary Meta Tags -->
   <title>Subscribe to Manali Strays | Silly Sensei</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Subscribe to Manali Strays, the exclusive subscription for Boom-Chicka-Boom-Boom group members. Support Manali Strays NGO and follow updates from Silly Sensei.">
-  <meta name="keywords" content="manali Strays, animal rescue, cat with disability, support animals, ethical shopping, Abhishek Reddy , Silly Sensei, Manali Strays, dog subscription, NGO support, pet care, Boom-Chicka-Boom-Boom group, Manali dogs, donate to strays, follow Silly Sensei, subscription service, pet updates, dog photos, support animals">
-  <meta name="author" content="Silly Sensei">
-  <meta name="robots" content="index, follow">
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Subscribe to Manali Strays | Silly Sensei">
-  <meta property="og:description" content="Join the exclusive subscription to support Manali Strays NGO and get updates from Silly Sensei.">
-  <meta property="og:url" content="https://sillysensei.com">
-  <meta property="og:image" content="https://sillysensei.com/Group%201.png">
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Subscribe to Manali Strays | Silly Sensei">
-  <meta name="twitter:description" content="Support Manali Strays NGO and get exclusive updates from Silly Sensei. Join now!">
-  <meta name="twitter:image" content="https://sillysensei.com/Group%201.png">
-  <meta name="twitter:site" content="@SillySensei">
-
-  <!-- Canonical URL -->
-  <link rel="canonical" href="https://sillysensei.com">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/biglogo.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/biglogo.svg" />
-  <link rel="icon" href="icons/biglogo.svg" type="image/svg+xml" />
-  <link rel="icon" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/icons/biglogo.ico?v=1" />
-  <link rel="icon" type="image/png" sizes="96x96" href="icons/biglogo.svg" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/biglogo.svg" />
-  <link rel="icon" type="image/png" sizes="512x512" href="icons/biglogo.svg" />
-
-  <!-- Apple Touch icon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/biglogo.svg" />
-  <meta name="apple-mobile-web-app-title" content="Silly Sensei" />
-
-  <link rel="manifest" href="/manifest.json" />
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap">
 
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -70,13 +32,69 @@
 
     .price-btn span { display:block; font-size:9px; font-weight:400; color:#555; margin-top:0.3rem; }
 
-    /* Ensure Insta button & counter stack neatly */
-    #insta-btn,
-    #money-counter {
-      display: block;
-      margin: 0.7rem auto;
-      text-align: center;
-    }
+    /* Money counter card below Insta button */
+    /* Uniform button and money card widths */
+.price-btn,
+.alt-btn,
+.money-card {
+  display: block;
+  width: 280px;              /* uniform width for all */
+  max-width: 90%;            /* responsive on small screens */
+  padding: 1rem 0;           /* vertical padding */
+  margin: 0.5rem auto;       /* center horizontally */
+  border-radius: 12px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  white-space: normal;       /* allow text wrap if needed */
+  box-shadow: none;          /* remove shadow */
+}
+
+/* Price button */
+.price-btn {
+  background: #FFDD00;
+  border: none;
+  color: #393939;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.price-btn span {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  color: #555;
+  margin-top: 0.3rem;
+}
+
+/* Alt button */
+.alt-btn {
+  background: transparent;
+  border: 2px solid #FFDD00;
+  color: #393939;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Money card */
+.money-card {
+  background: rgba(255, 221, 0, 0.15);
+  color: #393939;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 1rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 400px) {
+  .price-btn,
+  .alt-btn,
+  .money-card {
+    width: 90%;
+    font-size: 16px;
+    padding: 0.9rem 0;
+  }
+}
+
 
     .faq-section { padding:3rem 2rem; }
     .faq-card {
@@ -111,6 +129,7 @@
 
     @media (max-width: 400px) {
       #popup-form .popup-buttons button { width:48%; }
+      .money-card { font-size:14px; } /* responsive */
     }
   </style>
 </head>
@@ -126,20 +145,23 @@
       <h1>Subscribe to<br>Manali Strays</h1>
       <p>
         <em>
-          For <u>Boom-Chicka-Boom-Boom</u> and <u>The Chimneys</u> group members only.
+          For <u>Boom-Chicka-Boom-Boom</u> group members only.
         </em>
         You were tricked to join this group so I can sell you this subscription
       </p>
+
+      <!-- Subscription button -->
       <button class="price-btn" id="subscribe-btn">
         ₹100 Per Month<br>
         <span id="subscriber-count">0 active subscribers</span>
       </button>
-      <br>
+
+      <!-- Instagram button -->
       <button class="alt-btn" id="insta-btn">Follow Them On Insta</button>
 
-      <!-- Money Counter -->
-      <div id="money-counter" class="alt-btn" style="display:none;">
-        Raised: ₹<span id="money-raised">0</span>
+      <!-- Money Counter Card below Insta button -->
+      <div id="money-counter" class="money-card">
+        Currently raising ₹<span id="money-raised">0</span>/month
       </div>
     </div>
   </section>
@@ -147,7 +169,7 @@
   <div class="faq-section">
     <div class="faq-card" id="money">
       <strong>Where your monie go?</strong>
-      <p>All money is being sent to Manali Strays. It will be used to treat the fur babies. </p>
+      <p>All money is being sent to Manali Strays. It will be used to treat the fur babies. You can contact me for tracking and transaction proof anytime.</p>
       <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/money.png" alt="Money Icon" class="faq-icon-right">
     </div>
     <div class="faq-card" id="get">
@@ -218,7 +240,6 @@
       // Animate money counter
       const targetValue = count * 100;
       const currentValue = parseInt(moneyRaisedEl.textContent) || 0;
-      const duration = 800; // ms
       const steps = 30;
       const increment = (targetValue - currentValue) / steps;
 
@@ -227,11 +248,8 @@
         step++;
         const newValue = Math.round(currentValue + increment * step);
         moneyRaisedEl.textContent = newValue;
-        if (step < steps) {
-          requestAnimationFrame(animate);
-        } else {
-          moneyRaisedEl.textContent = targetValue; // snap to final
-        }
+        if (step < steps) requestAnimationFrame(animate);
+        else moneyRaisedEl.textContent = targetValue;
       };
       animate();
     });
@@ -243,7 +261,7 @@
         set(settingsRef, false);
         moneyCounterEl.style.display = 'none';
       } else {
-        moneyCounterEl.style.display = showCounter ? 'block' : 'none';
+        moneyCounterEl.style.display = showCounter ? 'inline-block' : 'none';
       }
     });
 

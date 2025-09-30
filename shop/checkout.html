@@ -1071,7 +1071,7 @@
             window.location.hostname === "localhost" ||
             window.location.hostname === "127.0.0.1"
               ? `http://localhost:3000/verify/${orderId}`
-              : `https://2f5c8vn9-3000.inc1.devtunnels.ms/verify/${orderId}`;
+              : `https://m7b8ll35-3000.inc1.devtunnels.ms/verify/${orderId}`;
 
           const response = await fetch(backendUrl);
           const data = await response.json();
@@ -1492,7 +1492,7 @@
             window.location.hostname === "localhost" ||
             window.location.hostname === "127.0.0.1"
               ? "http://localhost:3000/create-order"
-              : "https://2f5c8vn9-3000.inc1.devtunnels.ms/create-order";
+              : "https://m7b8ll35-3000.inc1.devtunnels.ms/create-order";
 
           const response = await fetch(backendUrl, {
             method: "POST",
