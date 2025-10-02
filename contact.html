@@ -1,91 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - MANALI STRAYS</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            color: #000;
-            background-color: #fff;
-        }
-        h1 {
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-        }
-        .last-updated {
-            font-style: italic;
-            margin-bottom: 30px;
-        }
-        .contact-info {
-            margin-top: 20px;
-        }
-        .contact-item {
-            margin-bottom: 15px;
-        }
-        .contact-label {
-            font-weight: bold;
-            display: inline-block;
-            width: 180px;
-        }
-        .navigation {
-            margin-top: 30px;
-            text-align: center;
-        }
-        .nav-button {
-            display: inline-block;
-            margin: 0 10px;
-            padding: 8px 15px;
-            background-color: #000;
-            color: #fff;
-            text-decoration: none;
-            border: 1px solid #000;
-        }
-        .nav-button:hover {
-            background-color: #fff;
-            color: #000;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - MANALI STRAYS</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Poppins', sans-serif; background:#F9F8EF; color:#000; line-height:1.6; }
+
+    nav {
+      display:flex; justify-content:center; align-items:center;
+      padding:1rem 2rem; border-bottom:1px solid #eee; background:#fff;
+    }
+    .logo img { height:30px; }
+
+    main {
+      max-width:800px;
+      margin:2rem auto;
+      padding:0 1rem;
+      background:#fff;
+      border-radius:12px;
+      padding:2rem;
+    }
+
+    h1 {
+      font-size:28px;
+      font-weight:600;
+      border-bottom:2px solid #000;
+      padding-bottom:10px;
+      margin-bottom:1rem;
+    }
+    .last-updated {
+      font-style:italic;
+      margin-bottom:20px;
+      font-size:14px;
+      color:#555;
+    }
+    h2 { margin-top:2rem; margin-bottom:1rem; font-size:20px; }
+    .contact-info { margin-top:20px; }
+    .contact-item { margin-bottom:10px; }
+    .contact-label { font-weight:600; display:inline-block; width:180px; }
+
+    footer {
+      background:#000;
+      color:#fff;
+      padding:2rem 1rem;
+      text-align:center;
+      margin-top:3rem;
+    }
+    footer .contact-title { font-weight:bold; font-size:17px; margin-bottom:0.3rem; text-decoration:underline; }
+    footer .contact-details { font-size:14px; text-decoration:underline; }
+
+    /* Footer links */
+    .footer-links {
+      margin-top:1rem;
+    }
+    .footer-links a {
+      color:#fff;
+      margin:0 10px;
+      text-decoration:underline;
+      font-size:14px;
+    }
+    .footer-links a:hover {
+      color:#FFDD00;
+    }
+  </style>
 </head>
 <body>
+  <nav>
+    <div class="logo">
+      <a href="index.html">
+        <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png" alt="Logo">
+      </a>
+    </div>
+  </nav>
+
+  <main>
     <h1>Contact Us</h1>
-    <div class="last-updated">Last updated on 28-09-2025 11:01:56</div>
-    
+    <div class="last-updated">Last updated on 01-10-2025 2:35:10</div>
+
     <p>You may contact us using the information below:</p>
-    
+
     <div class="contact-info">
-        <div class="contact-item">
-            <span class="contact-label">Legal Entity Name:</span>
-            <span>MANALI STRAYS</span>
-        </div>
-        <div class="contact-item">
-            <span class="contact-label">Registered Address:</span>
-            <span>manali strays, kullu-manali road, haripur s.o (kullu), barahar (34/80), himachal pradesh, india, 175136, Manali (34/80), HIMACHAL PRADESH, PIN: 175136</span>
-        </div>
-        <div class="contact-item">
-            <span class="contact-label">Operational Address:</span>
-            <span>manali strays, kullu-manali road, haripur s.o (kullu), barahar (34/80), himachal pradesh, india, 175136, Barahar (34/80), HIMACHAL PRADESH, PIN: 175136</span>
-        </div>
-        <div class="contact-item">
-            <span class="contact-label">Telephone No:</span>
-            <span>9418704924</span>
-        </div>
-        <div class="contact-item">
-            <span class="contact-label">E-Mail ID:</span>
-            <span>help@manalistrays.org</span>
-        </div>
+      <div class="contact-item">
+        <span class="contact-label">Legal Entity Name:</span>
+        <span>MANALI STRAYS</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">Registered Address:</span>
+        <span>Manali Strays, Kullu-Manali Road, Haripur S.O (Kullu), Barahar (34/80), Himachal Pradesh, India, 175136, Manali (34/80), HIMACHAL PRADESH, PIN: 175136</span>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">Operational Address:</span>
+        <span>Manali Strays, Kullu-Manali Road, Haripur S.O (Kullu), Barahar (34/80), Himachal Pradesh, India, 175136, Barahar (34/80), HIMACHAL PRADESH, PIN: 175136</span>
+      </div>
+      <div class="contact-item" onclick="copyToClipboard('+919418704924')" style="cursor: pointer;">
+        <span class="contact-label">Telephone No:</span>
+        <span id="phone-number">+91 9418704924</span>
     </div>
-    
-    <div class="navigation">
-        <a href="contact.html" class="nav-button">Contact Us</a>
-        <a href="refund.html" class="nav-button">Refund Policy</a>
-        <a href="terms.html" class="nav-button">Terms & Conditions</a>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Phone number copied: ' + text);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+      
+      <div class="contact-item">
+        <span class="contact-label">E-Mail ID:</span>
+        <span>help@manalistrays.org</span>
+      </div>
     </div>
+  </main>
+
+  <footer>
+    <div class="contact-title">Contact us</div>
+    <div class="contact-details">I'm in the group, you silly buffallo</div>
+    <div class="footer-links">
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="cancellation.html">Cancellation Policy</a>
+      <a href="terms.html">Terms & Conditions</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
 </body>
 </html>

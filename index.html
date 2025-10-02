@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Subscribe to Manali Strays, the exclusive subscription for Boom-Chicka-Boom-Boom group members. Support Manali Strays NGO and follow updates from Silly Sensei.">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap">
-
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Poppins', sans-serif; background:#F9F8EF; color:#000; line-height:1.6; }
@@ -32,81 +31,48 @@
 
     .price-btn span { display:block; font-size:9px; font-weight:400; color:#555; margin-top:0.3rem; }
 
-    /* Money counter card below Insta button */
-    /* Uniform button and money card widths */
-.price-btn,
-.alt-btn,
-.money-card {
-  display: block;
-  width: 280px;              /* uniform width for all */
-  max-width: 90%;            /* responsive on small screens */
-  padding: 1rem 0;           /* vertical padding */
-  margin: 0.5rem auto;       /* center horizontally */
-  border-radius: 12px;
-  text-align: center;
-  font-family: 'Poppins', sans-serif;
-  white-space: normal;       /* allow text wrap if needed */
-  box-shadow: none;          /* remove shadow */
-}
-
-/* Price button */
-.price-btn {
-  background: #FFDD00;
-  border: none;
-  color: #393939;
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.price-btn span {
-  display: block;
-  font-size: 9px;
-  font-weight: 400;
-  color: #555;
-  margin-top: 0.3rem;
-}
-
-/* Alt button */
-.alt-btn {
-  background: transparent;
-  border: 2px solid #FFDD00;
-  color: #393939;
-  font-weight: 700;
-  font-size: 16px;
-}
-
-/* Money card */
-.money-card {
-  background: rgba(255, 221, 0, 0.15);
-  color: #393939;
-  font-weight: 700;
-  font-size: 16px;
-  padding: 1rem 0;
-}
-
-/* Responsive adjustments */
-@media (max-width: 400px) {
-  .price-btn,
-  .alt-btn,
-  .money-card {
-    width: 90%;
-    font-size: 16px;
-    padding: 0.9rem 0;
-  }
-}
-
+    /* Money counter & buttons uniform */
+    .price-btn, .alt-btn, .money-card {
+      display:block;
+      width:280px;
+      max-width:90%;
+      padding:1rem 0;
+      margin:0.5rem auto;
+      border-radius:12px;
+      text-align:center;
+      font-family:'Poppins', sans-serif;
+      white-space:normal;
+      box-shadow:none;
+    }
+    .money-card {
+      background:rgba(255,221,0,0.15);
+      color:#393939;
+      font-weight:700;
+      font-size:16px;
+    }
+    @media (max-width:400px) {
+      .price-btn, .alt-btn, .money-card {
+        width:90%; font-size:16px; padding:0.9rem 0;
+      }
+      .money-card { font-size:14px; }
+    }
 
     .faq-section { padding:3rem 2rem; }
     .faq-card {
-      background:#fff; margin:3.5rem auto; padding:1rem 1rem; max-width:700px; border-radius:20px;
+      background:#fff; margin:3.5rem auto; padding:1.5rem 1rem; max-width:700px; border-radius:20px;
       text-align:left; font-size:15px; line-height:1.5; position:relative;
     }
     .faq-card strong { display:block; margin-bottom:0.5rem; font-size:20px; }
-    .faq-icon-right { position:absolute; width:120px; top:-60px; right:-30px; }
+    .faq-icon-right { position:absolute; width:120px; top:-62px; right:-30px; }
+    .faq-icon-right-money { position:absolute; width:120px; top:-78px; right:-30px; }
 
     footer { background:#000; color:#fff; padding:2rem 1rem; text-align:center; }
     footer .contact-title { font-weight:bold; font-size:17px; margin-bottom:0.3rem; text-decoration:underline; }
     footer .contact-details { font-size:14px; text-decoration:underline; }
+    .footer-links { margin-top:1rem; }
+    .footer-links a {
+      color:#fff; margin:0 10px; font-size:14px; text-decoration:underline;
+    }
 
     /* Popup */
     #popup-form {
@@ -119,17 +85,10 @@
     #popup-form h2 { margin-bottom:1.5rem; font-size:1.4rem; }
     #popup-form input { width:100%; padding:1rem; margin-bottom:1.5rem; border-radius:10px; border:1px solid #ccc; }
 
-    /* Popup buttons */
-    #popup-form .popup-buttons {
-      display:flex; justify-content:center; gap:1rem; margin:0 auto;
-    }
-    #popup-form .popup-buttons button {
-      width:45%; padding:0.8rem; font-size:16px;
-    }
-
-    @media (max-width: 400px) {
+    #popup-form .popup-buttons { display:flex; justify-content:center; gap:1rem; margin:0 auto; }
+    #popup-form .popup-buttons button { width:45%; padding:0.8rem; font-size:16px; }
+    @media (max-width:400px) {
       #popup-form .popup-buttons button { width:48%; }
-      .money-card { font-size:14px; } /* responsive */
     }
   </style>
 </head>
@@ -143,23 +102,15 @@
   <section class="hero-section">
     <div class="container">
       <h1>Subscribe to<br>Manali Strays</h1>
-      <p>
-        <em>
-          For <u>Boom-Chicka-Boom-Boom</u> group members only.
-        </em>
-        You were tricked to join this group so I can sell you this subscription
-      </p>
+      <p><em>For <u>Boom-Chicka-Boom-Boom</u> group members only.</em> You were tricked to join this group so I can sell you this subscription</p>
 
-      <!-- Subscription button -->
       <button class="price-btn" id="subscribe-btn">
         ₹100 Per Month<br>
         <span id="subscriber-count">0 active subscribers</span>
       </button>
 
-      <!-- Instagram button -->
       <button class="alt-btn" id="insta-btn">Follow Them On Insta</button>
 
-      <!-- Money Counter Card below Insta button -->
       <div id="money-counter" class="money-card">
         Currently raising ₹<span id="money-raised">0</span>/month
       </div>
@@ -170,26 +121,34 @@
     <div class="faq-card" id="money">
       <strong>Where your monie go?</strong>
       <p>All money is being sent to Manali Strays. It will be used to treat the fur babies. You can contact me for tracking and transaction proof anytime.</p>
-      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/money.png" alt="Money Icon" class="faq-icon-right">
+      <img src="money.png" alt="Money Icon" class="faq-icon-right-money">
     </div>
     <div class="faq-card" id="get">
       <strong>What you get?</strong>
       <p>Regular updates about the dogs. Photos of me spending time with the dogs. Everything you wish you could be doing.</p>
-      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/dog.png" alt="Dog Icon" class="faq-icon-right">
+      <img src="dog.png" alt="Dog Icon" class="faq-icon-right">
     </div>
     <div class="faq-card" id="scam">
       <strong>Is this scam?</strong>
       <p>Yes, because you get no material value in return. Your money will be used with full responsibility, and you can call me (+91 8073263514) and ask me for proof anytime. I will show you where your money gets used. That's the scam.</p>
-      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/slippery.png" alt="Slipper Icon" class="faq-icon-right">
+      <img src="slippery.png" alt="Slipper Icon" class="faq-icon-right">
     </div>
   </div>
 
   <footer>
     <div class="contact-title">Contact me?</div>
     <div class="contact-details">I'm in the group, you silly buffallo</div>
+    <!-- Footer links section -->
+    <div class="footer-links" id="footer-links">
+      <a href="contact.html">Contact</a>|
+      <a href="about.html">About</a>|
+      <a href="terms.html">Terms</a>|
+      <a href="cancellation.html">Cancellation Policy</a>|
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
   </footer>
 
-  <!-- Popup Form -->
+  <!-- Popup -->
   <div id="popup-form">
     <div>
       <h2>Enter your name to subscribe</h2>
@@ -222,27 +181,27 @@
     const db = getDatabase(app);
     const subscribersRef = ref(db, 'subscribers');
     const settingsRef = ref(db, 'settings/showCounter');
+    const footerLinksRef = ref(db, 'settings/showFooterLinks');
 
     const subscriberCountEl = document.getElementById('subscriber-count');
     const moneyCounterEl = document.getElementById('money-counter');
     const moneyRaisedEl = document.getElementById('money-raised');
+    const footerLinksEl = document.getElementById('footer-links');
 
     document.getElementById("insta-btn").addEventListener("click", () => {
-      window.open("https://www.instagram.com/manalistrays?igsh=MXFiMThkOG5zeW82aw==", "_blank");
+      window.open("https://www.instagram.com/manalistrays", "_blank");
     });
 
-    // Subscriber count + animated counter
+    // Subscriber count
     onValue(subscribersRef, (snapshot) => {
       const data = snapshot.val();
       const count = data ? Object.keys(data).length : 0;
       subscriberCountEl.textContent = `${count} active subscribers`;
 
-      // Animate money counter
       const targetValue = count * 100;
       const currentValue = parseInt(moneyRaisedEl.textContent) || 0;
       const steps = 30;
       const increment = (targetValue - currentValue) / steps;
-
       let step = 0;
       const animate = () => {
         step++;
@@ -254,7 +213,7 @@
       animate();
     });
 
-    // Counter visibility (auto-create if missing)
+    // Counter visibility
     onValue(settingsRef, (snapshot) => {
       const showCounter = snapshot.val();
       if (showCounter === null) {
@@ -265,6 +224,18 @@
       }
     });
 
+    // Footer links visibility
+    onValue(footerLinksRef, (snapshot) => {
+      const showFooter = snapshot.val();
+      if (showFooter === null) {
+        set(footerLinksRef, true);
+        footerLinksEl.style.display = 'block';
+      } else {
+        footerLinksEl.style.display = showFooter ? 'block' : 'none';
+      }
+    });
+
+    // Popup
     const popup = document.getElementById('popup-form');
     const subscribeBtn = document.getElementById('subscribe-btn');
     const closePopup = document.getElementById('close-popup');
@@ -281,15 +252,14 @@
       const name = subscriberNameInput.value.trim();
       if (!name) return alert("Please enter your name.");
       const newSubRef = push(subscribersRef);
-      const now = Date.now();
-      set(newSubRef, { name: name, subscribedAt: now }).then(() => {
+      set(newSubRef, { name: name, subscribedAt: Date.now() }).then(() => {
         popup.style.display = 'none';
         subscriberNameInput.value = '';
         alert("Thank you! Proceed to payment later.");
       });
     });
 
-    // Auto-remove old subscribers after 1 month
+    // Auto-remove old subscribers
     onValue(subscribersRef, (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
