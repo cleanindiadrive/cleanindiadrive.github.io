@@ -1,11 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Subscribe to Manali Strays | Silly Sensei</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Subscribe to Manali Strays, the exclusive subscription for Boom-Chicka-Boom-Boom group members. Support Manali Strays NGO and follow updates from Silly Sensei.">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap">
+
+  <!-- SEO Meta Tags -->
+  <meta
+    name="description"
+    content="Subscribe for just ₹100 per month to support Manali Strays NGO. Your contribution helps provide food, medical care, and shelter for rescued stray animals in Manali."
+  />
+  <meta
+    name="keywords"
+    content="Silly Sensei, Manali Strays, animal rescue, dog shelter, ₹100 subscription, donate animals, support strays, NGO donation, Abhishek Reddy"
+  />
+  <meta name="author" content="Abhishek Reddy" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://sillysensei.com/" />
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Subscribe to Manali Strays | Silly Sensei" />
+  <meta property="og:description" content="Join our ₹100 monthly subscription and help Manali Strays NGO rescue and care for stray dogs and animals in Manali." />
+  <meta property="og:image" content="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/dogs.webp" />
+  <meta property="og:url" content="https://sillysensei.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Silly Sensei" />
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@sillysensei" />
+  <meta name="twitter:title" content="Support Manali Strays with a ₹100 Monthly Subscription" />
+  <meta name="twitter:description" content="Every ₹100 monthly subscription supports Manali Strays NGO in providing food and medical care to rescued animals." />
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/dogs.webp" />
+  <meta name="twitter:creator" content="@sillysensei" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/biglogo.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/biglogo.svg" />
+  <link rel="icon" href="icons/biglogo.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/biglogo.svg" />
+  <meta name="apple-mobile-web-app-title" content="Silly Sensei" />
+
+  <!-- Manifest for PWA -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Preload critical resources -->
+  <link
+    rel="preload"
+    as="image"
+    href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png"
+    type="image/png"
+    fetchpriority="high"
+  />
+  <link
+    rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "₹100 Monthly Subscription - Support Manali Strays",
+    "image": "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/dogs.webp",
+    "description": "Support Manali Strays NGO with a monthly subscription of ₹100. Funds are used for food, veterinary care, and shelter for rescued stray animals.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Silly Sensei"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "100",
+      "priceCurrency": "INR",
+      "availability": "https://schema.org/InStock",
+      "url": "https://sillysensei.com/"
+    }
+  }
+  </script>
+
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Poppins', sans-serif; background:#F9F8EF; color:#000; line-height:1.6; }
@@ -14,7 +90,7 @@
       display:flex; justify-content:center; align-items:center;
       padding:1rem 2rem; border-bottom:1px solid #eee; background:#fff;
     }
-    .logo img { height:30px; }
+    .logo img { height:30px; width:auto; }
 
     .hero-section { background:#fff; padding:4rem 1rem 2rem; text-align:center; }
     .hero-section .container { max-width:700px; margin:auto; }
@@ -28,7 +104,6 @@
     }
     .price-btn { background:#FFDD00; border:none; color:#393939; }
     .alt-btn { background:transparent; border:2px solid #FFDD00; color:#393939; }
-
     .price-btn span { display:block; font-size:9px; font-weight:400; color:#555; margin-top:0.3rem; }
 
     /* Money counter & buttons uniform */
@@ -63,8 +138,9 @@
       text-align:left; font-size:15px; line-height:1.5; position:relative;
     }
     .faq-card strong { display:block; margin-bottom:0.5rem; font-size:20px; }
-    .faq-icon-right { position:absolute; width:120px; top:-62px; right:-30px; }
-    .faq-icon-right-money { position:absolute; width:120px; top:-78px; right:-30px; }
+    .faq-icon-right, .faq-icon-right-money { position:absolute; width:120px; height:auto; right:-30px; }
+    .faq-icon-right { top:-62px; }
+    .faq-icon-right-money { top:-78px; }
 
     footer { background:#000; color:#fff; padding:2rem 1rem; text-align:center; }
     footer .contact-title { font-weight:bold; font-size:17px; margin-bottom:0.3rem; text-decoration:underline; }
@@ -84,7 +160,6 @@
     }
     #popup-form h2 { margin-bottom:1.5rem; font-size:1.4rem; }
     #popup-form input { width:100%; padding:1rem; margin-bottom:1.5rem; border-radius:10px; border:1px solid #ccc; }
-
     #popup-form .popup-buttons { display:flex; justify-content:center; gap:1rem; margin:0 auto; }
     #popup-form .popup-buttons button { width:45%; padding:0.8rem; font-size:16px; }
     @media (max-width:400px) {
@@ -95,7 +170,9 @@
 <body>
   <nav>
     <div class="logo">
-      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png" alt="Logo">
+      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png"
+           alt="Manali Strays Logo"
+           width="120" height="30" />
     </div>
   </nav>
 
@@ -121,24 +198,23 @@
     <div class="faq-card" id="money">
       <strong>Where your monie go?</strong>
       <p>All money is being sent to Manali Strays. It will be used to treat the fur babies. You can contact me for tracking and transaction proof anytime.</p>
-      <img src="money.png" alt="Money Icon" class="faq-icon-right-money">
+      <img src="money.png" alt="Money Icon" class="faq-icon-right-money" width="120" height="120">
     </div>
     <div class="faq-card" id="get">
       <strong>What you get?</strong>
       <p>Regular updates about the dogs. Photos of me spending time with the dogs. Everything you wish you could be doing.</p>
-      <img src="dog.png" alt="Dog Icon" class="faq-icon-right">
+      <img src="dog.png" alt="Dog Icon" class="faq-icon-right" width="120" height="120">
     </div>
     <div class="faq-card" id="scam">
       <strong>Is this scam?</strong>
       <p>Yes, because you get no material value in return. Your money will be used with full responsibility, and you can call me (+91 8073263514) and ask me for proof anytime. I will show you where your money gets used. That's the scam.</p>
-      <img src="slippery.png" alt="Slipper Icon" class="faq-icon-right">
+      <img src="slippery.png" alt="Slipper Icon" class="faq-icon-right" width="120" height="120">
     </div>
   </div>
 
   <footer>
     <div class="contact-title">Contact me?</div>
     <div class="contact-details">I'm in the group, you silly buffallo</div>
-    <!-- Footer links section -->
     <div class="footer-links" id="footer-links">
       <a href="about.html">About Us</a>|
       <a href="contact.html">Contact Us</a>|
