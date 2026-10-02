@@ -420,6 +420,51 @@ nav {
   color: var(--ink);
 }
 
+.monthly-tier-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.tier-pill {
+  padding: 0.44rem 0.8rem;
+  border-radius: 9999px;
+  border: 1px solid #dfded6;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.tier-pill:hover {
+  border-color: #232319;
+  transform: translateY(-1px);
+}
+
+.tier-pill.active {
+  background: #232319;
+  border-color: #232319;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(35, 35, 25, 0.16);
+}
+
+.tier-pill-exclusive {
+  border: 1px dashed #d97706;
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.tier-pill-exclusive.active {
+  background: #d97706;
+  border-color: #d97706;
+  color: #ffffff;
+}
+
 .mode-form-row {
   display: flex;
   align-items: center;

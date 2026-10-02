@@ -36,8 +36,8 @@
           <h1>Subscribe to<br />Manali Strays</h1>
 
           <div class="hero-cta-group">
-            <a class="price-btn" id="subscribe-btn" href="user-login.html?mode=signup&amp;plan=monthly">
-              <strong>₹100 Per Month</strong>
+            <a class="price-btn" id="subscribe-btn" href="#ways-to-support">
+              <strong id="hero-btn-amount">₹100 Per Month</strong>
               <span id="subscriber-count">0 active subscribers</span>
             </a>
 
@@ -61,8 +61,15 @@
 
           <div class="mode-panel" id="monthly-mode" role="tabpanel">
             <div class="mode-panel-copy">
-              <strong>Monthly subscription · ₹100</strong>
-              <p id="subscription-mode-status">Log in to manage your subscription.</p>
+              <strong id="monthly-plan-label">Monthly subscription · ₹100 / mo</strong>
+              <p id="subscription-mode-status">Choose an autopay plan to support Manali Strays monthly.</p>
+            </div>
+
+            <div class="monthly-tier-pills" id="home-tier-pills" role="group" aria-label="Select monthly autopay tier">
+              <button type="button" class="tier-pill active" data-amount="100">₹100/mo</button>
+              <button type="button" class="tier-pill" data-amount="500">₹500/mo</button>
+              <button type="button" class="tier-pill" data-amount="1000">₹1,000/mo</button>
+              <button type="button" class="tier-pill" data-amount="1500">₹1,500/mo</button>
             </div>
 
             <div class="mode-panel-actions">

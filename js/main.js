@@ -170,15 +170,37 @@ function isAnonymousDonationSelected() {
   return document.getElementById("anonymous-donation")?.checked === true;
 }
 
+let selectedMonthlyAmount = 100;
+
+function updateSelectedMonthlyPlan(amount) {
+  selectedMonthlyAmount = Number(amount) || 100;
+
+  const heroAmount = document.getElementById("hero-btn-amount");
+  if (heroAmount) heroAmount.textContent = `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Per Month`;
+
+  const planLabel = document.getElementById("monthly-plan-label");
+  if (planLabel) planLabel.textContent = `Monthly subscription · ₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
+
+  document.querySelectorAll("#home-tier-pills .tier-pill").forEach((pill) => {
+    pill.classList.toggle("active", Number(pill.dataset.amount) === selectedMonthlyAmount);
+  });
+
+  refreshSubscriptionMode();
+}
+
 function refreshSubscriptionMode() {
   const status = document.getElementById("subscription-mode-status");
   const button = document.getElementById("subscription-toggle");
   const accountAction = document.getElementById("subscription-account-link");
+  const planLabel = document.getElementById("monthly-plan-label");
+  if (planLabel) {
+    planLabel.textContent = `Monthly subscription · ₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
+  }
   if (!status || !button) return;
 
   currentSubscription = currentUser ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase()) : null;
   if (!currentUser) {
-    status.textContent = "Log in to manage your subscription.";
+    status.textContent = `Log in to start your ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
     button.textContent = "Log in";
     button.disabled = false;
     accountAction?.classList.add("is-hidden");
@@ -188,7 +210,7 @@ function refreshSubscriptionMode() {
   if (!currentSubscription) {
     status.textContent = monthlyRequestPending
       ? "Your subscription request is pending payment confirmation."
-      : "No subscription yet. Start with ₹100 per month.";
+      : `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
     button.textContent = monthlyRequestPending ? "Payment pending" : "Start subscription";
     button.disabled = monthlyRequestPending;
     accountAction?.classList.add("is-hidden");
@@ -198,19 +220,32 @@ function refreshSubscriptionMode() {
   if (currentSubscription.status === "cancelled") {
     status.textContent = monthlyRequestPending
       ? "Your new subscription request is pending payment confirmation."
-      : "You do not have an active subscription. You can start a new one.";
-    button.textContent = monthlyRequestPending ? "Payment pending" : "Start new subscription";
+      : `You can start a new subscription at ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo.`;
+    button.textContent = monthlyRequestPending ? "Payment pending" : "Start subscription";
     button.disabled = monthlyRequestPending;
     accountAction?.classList.remove("is-hidden");
     return;
   }
 
   const paused = currentSubscription.status === "paused";
-  status.textContent = paused
-    ? "Your subscription is paused. Resume it from your account."
-    : "You already have an active subscription. One account can have only one.";
-  button.textContent = paused ? "Resume subscription" : "Already subscribed";
-  button.disabled = !paused;
+  if (paused) {
+    status.textContent = "Your subscription is paused. Resume it from your account.";
+    button.textContent = "Resume subscription";
+    button.disabled = false;
+    accountAction?.classList.remove("is-hidden");
+    return;
+  }
+
+  const currentSubAmount = Number(currentSubscription.amount) || 100;
+  if (selectedMonthlyAmount === currentSubAmount) {
+    status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo.`;
+    button.textContent = "Active subscription";
+    button.disabled = true;
+  } else {
+    status.textContent = `Your active plan is ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Manage or switch in your dashboard.`;
+    button.textContent = "Manage in account";
+    button.disabled = false;
+  }
   accountAction?.classList.remove("is-hidden");
 }
 
@@ -218,10 +253,19 @@ async function toggleSubscription() {
   const button = document.getElementById("subscription-toggle");
   const status = document.getElementById("subscription-mode-status");
   if (!button || !status) return;
+
   if (!currentUser) {
-    window.location.href = "user-login.html?mode=signup&plan=monthly";
+    window.location.href = `user-login.html?return=index.html&plan=monthly&amount=${selectedMonthlyAmount}`;
     return;
   }
+
+  if (currentSubscription && currentSubscription.status === "active") {
+    if (button.textContent === "Manage in account") {
+      window.location.href = "user-dashboard.html";
+      return;
+    }
+  }
+
   if (!currentSubscription || currentSubscription.status === "cancelled") {
     if (monthlyRequestPending) return;
     button.disabled = true;
@@ -232,7 +276,7 @@ async function toggleSubscription() {
       const now = Date.now();
       await set(intent, {
         type: "monthly",
-        amount: 100,
+        amount: selectedMonthlyAmount,
         anonymous: isAnonymousDonationSelected(),
         status: isDevelopmentMode ? "active" : "pending",
         ...(isDevelopmentMode ? { subscriptionStatus: "active", isTest: true, paidAt: now, reference: `DEV-SUBSCRIPTION-${now}` } : {}),
@@ -240,7 +284,7 @@ async function toggleSubscription() {
         email: currentUser.email || "",
       });
       if (isDevelopmentMode) {
-        status.textContent = "Development subscription activated. No payment confirmation was required.";
+        status.textContent = `Development subscription for ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo activated.`;
         button.textContent = "Active subscription";
         button.disabled = true;
       } else {
@@ -255,8 +299,6 @@ async function toggleSubscription() {
     if (!isDevelopmentMode) refreshSubscriptionMode();
     return;
   }
-
-
 
   const nextStatus = currentSubscription.status === "paused" ? "active" : "paused";
   button.disabled = true;
@@ -367,6 +409,25 @@ document.getElementById("gift-recipient")?.addEventListener("change", (event) =>
 });
 
 
+// Check initial plan amount from URL or sessionStorage
+const initialUrlAmount = Number.parseInt(new URLSearchParams(window.location.search).get("amount"), 10);
+if (Number.isFinite(initialUrlAmount) && initialUrlAmount > 0) {
+  updateSelectedMonthlyPlan(initialUrlAmount);
+} else {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem("sillysensei_intended_plan") || "{}");
+    if (saved?.plan === "monthly" && Number(saved.amount) > 0) {
+      updateSelectedMonthlyPlan(Number(saved.amount));
+    }
+  } catch (_) {}
+}
+
+document.querySelectorAll("#home-tier-pills .tier-pill").forEach((pill) => {
+  pill.addEventListener("click", () => {
+    updateSelectedMonthlyPlan(Number(pill.dataset.amount));
+  });
+});
+
 const requestedMode = new URLSearchParams(window.location.search).get("plan");
 setMode(requestedMode === "one-time" ? "one-time" : requestedMode === "gift" ? "gift" : "monthly");
 renderGiftRecipients();
@@ -384,6 +445,26 @@ onAuthStateChanged(auth, (user) => {
     if (label) label.textContent = currentUser ? "My account" : "Account";
   }
   if (currentUser) {
+    // Check if account has an exclusive custom autopay plan configured
+    get(ref(database, `customPlans/${currentUser.uid}`)).then((snapshot) => {
+      const custom = snapshot.val();
+      if (custom && Number(custom.amount) > 0) {
+        let exclusivePill = document.getElementById("exclusive-home-pill");
+        if (!exclusivePill) {
+          exclusivePill = document.createElement("button");
+          exclusivePill.type = "button";
+          exclusivePill.id = "exclusive-home-pill";
+          exclusivePill.className = "tier-pill tier-pill-exclusive";
+          exclusivePill.dataset.amount = String(custom.amount);
+          exclusivePill.textContent = `⭐ ₹${Number(custom.amount).toLocaleString("en-IN")}/mo Exclusive`;
+          exclusivePill.addEventListener("click", () => {
+            updateSelectedMonthlyPlan(Number(custom.amount));
+          });
+          document.getElementById("home-tier-pills")?.appendChild(exclusivePill);
+        }
+      }
+    }).catch(() => {});
+
     const userPaymentPath = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
     detachMonthlyIntentListener = onValue(ref(database, userPaymentPath), (snapshot) => {
       const data = snapshot.val();

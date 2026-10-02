@@ -42,7 +42,7 @@ function showNameForm(user) {
   nameInput?.focus();
 }
 
-async function saveUserAndRequest(user, name) {
+async function saveUserProfile(user, name) {
   const cleanName = String(name || "").trim().replace(/\s+/g, " ");
   await update(ref(database, `users/${user.uid}`), {
     name: cleanName,
@@ -52,47 +52,6 @@ async function saveUserAndRequest(user, name) {
     updatedAt: Date.now(),
   });
   if (cleanName && user.displayName !== cleanName) await updateProfile(user, { displayName: cleanName });
-
-  if (!requestedPlan) return;
-  const requestRef = push(ref(database, isDevelopmentMode ? "testPayments" : `paymentIntents/${user.uid}`));
-  const requestType = requestedPlan === "gift" ? "gift-monthly" : requestedPlan === "one-time" ? "one-time" : "monthly";
-  const requestAmount = requestedPlan === "monthly" ? requestedAmount : (requestedPlan === "gift" ? 100 : requestedAmount);
-  const now = Date.now();
-  const nextPayment = now + 30 * 24 * 60 * 60 * 1000;
-  await set(requestRef, {
-    type: requestType,
-    amount: requestAmount,
-    status: isDevelopmentMode ? requestedPlan === "monthly" ? "active" : "paid" : "pending",
-    createdAt: now,
-    email: user.email || "",
-    name: cleanName,
-    anonymous: params.get("anonymous") === "1",
-    ...(requestedPlan === "gift" ? { recipientPhone: params.get("phone") || "" } : {}),
-    ...(isDevelopmentMode ? { isTest: true, paidAt: now, reference: `DEV-${requestType.toUpperCase()}-${now}` } : {}),
-    ...(isDevelopmentMode && requestedPlan === "monthly" ? {
-      subscriptionStatus: "active",
-      nextPaymentDue: nextPayment,
-      team: "BCBB Dog Rescue",
-      isSubscriptionRoot: true,
-    } : {}),
-  });
-
-  if (isDevelopmentMode && requestedPlan === "monthly") {
-    const payRef = push(ref(database, "testPayments"));
-    await set(payRef, {
-      type: "monthly",
-      amount: requestAmount,
-      status: "paid",
-      isTest: true,
-      email: user.email || "",
-      createdAt: now,
-      paidAt: now,
-      date: now,
-      subscriptionId: requestRef.key,
-      reference: `MS-SUB-${Math.floor(2000 + Math.random() * 8000)}`,
-      note: "Initial contribution",
-    });
-  }
 }
 
 
@@ -100,8 +59,31 @@ async function continueWithUser(user, name) {
   if (setupCompleted) return;
   setupCompleted = true;
   try {
-    await saveUserAndRequest(user, name);
-    window.location.replace("user-dashboard.html");
+    await saveUserProfile(user, name);
+
+    // Save intended plan in sessionStorage so it preselects without auto-charging
+    if (requestedPlan) {
+      try {
+        sessionStorage.setItem("sillysensei_intended_plan", JSON.stringify({
+          plan: requestedPlan,
+          amount: requestedAmount,
+        }));
+      } catch (_) {}
+    }
+
+    const returnUrl = params.get("return") || params.get("redirect");
+    if (returnUrl) {
+      const url = new URL(returnUrl, window.location.origin);
+      if (requestedPlan) url.searchParams.set("plan", requestedPlan);
+      if (requestedAmount) url.searchParams.set("amount", String(requestedAmount));
+      window.location.replace(url.toString());
+      return;
+    }
+
+    const target = requestedPlan === "monthly" && requestedAmount
+      ? `user-dashboard.html?plan=monthly&amount=${requestedAmount}`
+      : "user-dashboard.html";
+    window.location.replace(target);
   } catch (error) {
     console.error("Google user setup could not be saved:", error);
     setupCompleted = false;
