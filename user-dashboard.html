@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My account | Manali Strays</title>
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="preload" as="image" href="assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
+  </head>
+  <body class="dashboard-page">
+    <header class="dashboard-header">
+      <div class="dashboard-nav">
+        <a class="logo" href="index.html" aria-label="Manali Strays home">
+          <img src="Group%201.png" alt="Manali Strays" width="120" height="30" />
+        </a>
+        <div class="dashboard-user">
+          <div class="dashboard-user-badge">
+            <span class="user-badge-dot" aria-hidden="true"></span>
+            <span class="dashboard-user-email" id="dashboard-user-email"></span>
+          </div>
+          <a class="dashboard-nav-home" href="index.html" title="Back to homepage">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+          </a>
+          <button class="dashboard-logout" id="logout-button" type="button">Log out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <section class="dashboard-welcome">
+        <div class="dashboard-profile">
+          <div class="account-avatar" id="account-avatar" aria-hidden="true">S</div>
+          <div class="dashboard-welcome-copy">
+            <div class="dashboard-eyebrow-row">
+              <span class="dashboard-eyebrow">SUPPORTER ACCOUNT</span>
+              <span class="dashboard-status-indicator status-active" id="dashboard-status-pill">Active Supporter</span>
+            </div>
+            <h1>Hello, <span id="dashboard-name">supporter</span>.</h1>
+            <p class="dashboard-email-text" id="dashboard-email"></p>
+          </div>
+          <a class="dashboard-home-link" href="index.html" aria-label="Back to home page">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span>Back to site</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Quick Supporter Highlights -->
+      <section class="dashboard-stats-grid" aria-label="Account highlights">
+        <div class="stat-card">
+          <div class="stat-icon-wrap" aria-hidden="true">
+            <img class="stat-icon-img stat-icon-rupee" src="assets/icon-rupee.png" alt="" width="26" height="26" />
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Total Contributed</span>
+            <strong class="stat-value" id="quick-stat-total">₹0</strong>
+            <span class="stat-sub" id="quick-stat-count">0 contributions</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap stat-icon-plan" aria-hidden="true">
+            <img class="stat-icon-img stat-icon-payment" src="assets/icon-payment.png" alt="" width="25" height="25" />
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Monthly Plan</span>
+            <strong class="stat-value" id="quick-stat-plan">₹100 / mo</strong>
+            <span class="stat-sub" id="quick-stat-plan-status">Active supporter</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap stat-icon-renewal" aria-hidden="true">
+            <img class="stat-icon-img stat-icon-calendar" src="assets/icon-recurring.png" alt="" width="34" height="34" />
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Next Renewal</span>
+            <strong class="stat-value" id="quick-stat-renewal">—</strong>
+            <span class="stat-sub" id="quick-stat-renewal-sub">Automatic monthly support</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="tracker-accordions" aria-label="Support details">
+        <details class="tracker-accordion">
+          <summary><span>All payments</span><strong class="accordion-value" id="total-paid">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <div class="accordion-info-bar">
+              <p class="accordion-lead">Confirmed and recorded payments connected to this account (<span id="record-count">0 records</span>).</p>
+            </div>
+            <div class="payments-table-wrap" id="all-payments-wrap">
+              <div class="card__title">
+                <span class="card__title-main">All Transactions</span>
+                <div class="table-view-controls">
+                  <span class="card__badge" id="all-payments-badge">0 records</span>
+                  <div class="view-toggle" role="group" aria-label="Transaction view format">
+                    <button type="button" class="view-toggle-btn is-active" data-view-target="all-payments" data-view="table">Table</button>
+                    <button type="button" class="view-toggle-btn" data-view-target="all-payments" data-view="cards">Cards</button>
+                  </div>
+                </div>
+              </div>
+              <div class="table-view-container" id="all-payments-table-container">
+                <div class="table-scroll-wrap">
+                  <table class="payments-table">
+                    <thead><tr><th>Date &amp; Time</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="all-payments-body"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-view-container is-hidden" id="all-payments-cards-container">
+                <div class="uiverse-card-list" id="all-payments-cards"></div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="tracker-accordion">
+          <summary><span>Monthly subscription</span><strong class="accordion-value" id="active-monthly">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <div class="subscription-status-card" id="subscription-status-banner">
+              <div class="status-banner-header">
+                <span class="status-banner-title">Monthly Support Status</span>
+                <span class="status-pill status-pill-active" id="subscription-badge-pill">Active</span>
+              </div>
+              <p id="subscription-summary">Your monthly subscription status will appear here.</p>
+            </div>
+            <div class="subscription-actions">
+              <button class="mode-action" id="subscription-toggle" type="button">Start subscription</button>
+              <button class="mode-action mode-action-danger" id="subscription-cancel" type="button" disabled>Cancel subscription</button>
+              <button class="mode-action mode-action-dev is-hidden" id="dev-charge-button" type="button">Simulate monthly renewal</button>
+            </div>
+            <span class="mode-message" id="subscription-message" role="status"></span>
+            <details class="nested-accordion">
+              <summary><span>Subscription payments</span><strong class="accordion-value" id="subscription-payment-count">0 transactions · ₹0</strong></summary>
+              <div class="nested-content">
+                <div id="subscription-payments-list" class="subscription-payment-list" aria-live="polite">
+                  <p class="empty-state">No subscription payments yet.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <details class="tracker-accordion">
+          <summary><span>One-time support</span><strong class="accordion-value" id="one-time-count">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <p class="accordion-lead">One-time payments made from this account.</p>
+            <div class="payments-table-wrap" id="one-time-payments-wrap">
+              <div class="card__title">
+                <span class="card__title-main">One-Time Contributions</span>
+                <div class="table-view-controls">
+                  <span class="card__badge" id="one-time-badge">0 records</span>
+                  <div class="view-toggle" role="group" aria-label="One-time payments view format">
+                    <button type="button" class="view-toggle-btn is-active" data-view-target="one-time" data-view="table">Table</button>
+                    <button type="button" class="view-toggle-btn" data-view-target="one-time" data-view="cards">Cards</button>
+                  </div>
+                </div>
+              </div>
+              <div class="table-view-container" id="one-time-table-container">
+                <div class="table-scroll-wrap">
+                  <table class="payments-table">
+                    <thead><tr><th>Date &amp; Time</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="one-time-body"><tr><td colspan="5" class="empty-state">No one-time payments yet.</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-view-container is-hidden" id="one-time-cards-container">
+                <div class="uiverse-card-list" id="one-time-cards"></div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="tracker-accordion">
+          <summary><span>Gifted support</span><strong class="accordion-value" id="gift-count">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <p class="accordion-lead" id="gift-summary">Gift payments made for another supporter.</p>
+            <div id="gift-list" class="gift-history-list"></div>
+          </div>
+        </details>
+
+      </section>
+      <p class="dashboard-note" id="dashboard-note">Confirmed payments count toward totals. Pending requests stay visible until payment is confirmed.</p>
+    </main>
+
+    <div class="cancel-modal is-hidden" id="cancel-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+      <div class="cancel-modal-backdrop" data-cancel-dismiss></div>
+      <section class="cancel-modal-card">
+        <button class="cancel-modal-close" id="cancel-modal-close" type="button" aria-label="Close cancellation dialog">×</button>
+        <div class="cancel-modal-icon" aria-hidden="true">!</div>
+        <h2 id="cancel-modal-title">Cancel monthly subscription</h2>
+        <p>Are you sure you want to cancel your monthly subscription? No further charges will be made. All your past contributions and receipts will remain safely saved in your account history.</p>
+        <div class="cancel-modal-actions">
+          <button class="mode-action" id="cancel-modal-keep" type="button">Keep subscription</button>
+          <button class="mode-action mode-action-danger" id="cancel-modal-confirm" type="button">Yes, cancel subscription</button>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="js/user-dashboard.js"></script>
+  </body>
+</html>

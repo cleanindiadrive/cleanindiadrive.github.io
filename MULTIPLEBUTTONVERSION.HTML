@@ -1,0 +1,331 @@
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscribe to Manali Strays | Silly Sensei</title>
+
+  <meta name="description" content="Subscribe for ₹100/month to support Manali Strays NGO.">
+  <meta name="keywords" content="Silly Sensei, Manali Strays, BCBB, Velcrow, animal rescue, dog shelter, ₹100 subscription">
+  <meta name="author" content="Abhishek Reddy">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sillysensei.com/">
+
+  <meta property="og:title" content="Subscribe to Manali Strays">
+  <meta property="og:description" content="You were tricked to join this group so I can sell you this subscription.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/dogs.webp">
+  <meta property="og:url" content="https://sillysensei.com/">
+  <meta property="og:type" content="website">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/biglogo.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/biglogo.svg">
+  <link rel="icon" href="icons/biglogo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/biglogo.svg">
+
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&amp;display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Poppins', sans-serif; background:#F9F8EF; color:#393939; line-height:1.6; }
+
+    nav {
+      display:flex; justify-content:center; align-items:center;
+      padding:1rem 2rem; border-bottom:1px solid #eee; background:#fff;
+    }
+    .logo img { height:30px; width:auto; }
+
+    .hero-section { background:#fff; padding:3rem 1rem 2rem; text-align:center; }
+    .hero-section .container { max-width:700px; margin:auto; }
+    
+    .hero-section h1 { font-weight:900; font-size:32px; margin-bottom:0.5rem; color:#000; line-height:1.2; text-transform: uppercase; }
+    .hero-section p { font-weight:400; font-size:15px; margin-bottom:2rem; color:#555; }
+    .hero-section p em { font-style:italic; }
+
+    .leaderboard-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .score-card {
+      background: #f4f4f4;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 45%;
+      text-align: center;
+    }
+    .score-card h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+    .score-card .count { font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 5px; }
+    
+    .money-stat {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0.8;
+      background: rgba(0,0,0,0.05);
+      border-radius: 4px;
+      padding: 2px 8px;
+      display: inline-block;
+    }
+
+    .bcbb-card { border-color: #FFDD00; background: #FFF9D1; }
+    .bcbb-card .money-stat { color: #856404; background: rgba(255, 221, 0, 0.2); }
+
+    .velcrow-card { border-color: #333; background: #eee; color: #333; }
+    .velcrow-card .money-stat { color: #333; background: rgba(0,0,0,0.1); }
+
+    .total-counter {
+      font-size: 16px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: #333;
+    }
+    .total-highlight {
+      color: #006400; 
+      font-weight: 800;
+    }
+
+    .battle-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .team-btn {
+      width: 100%;
+      max-width: 320px;
+      padding: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      position: relative;
+      transition: transform 0.1s;
+    }
+    .team-btn:active { transform: scale(0.98); }
+
+    .btn-bcbb {
+      background: #FFDD00;
+      border: none;
+      color: #000;
+      box-shadow: 0 4px 0 #d4b700;
+    }
+    .btn-velcrow {
+      background: #222;
+      border: none;
+      color: #fff;
+      box-shadow: 0 4px 0 #000;
+    }
+
+    .btn-main-text { display: block; font-weight: 800; font-size: 18px; }
+    .btn-sub-text { display: block; font-size: 11px; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+
+    .alt-btn {
+      background: transparent;
+      border: 2px solid #ccc;
+      color: #777;
+      width: 200px;
+      padding: 0.8rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .money-card {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(0, 128, 0, 0.1);
+      color: #006400;
+      font-weight: 700;
+      border-radius: 12px;
+      display: inline-block;
+      padding: 0.8rem 2rem;
+    }
+
+    .faq-section { padding:3rem 2rem; }
+    .faq-card {
+      background:#fff; margin:3.5rem auto; padding:1.5rem 1rem; max-width:700px; border-radius:20px;
+      text-align:left; font-size:15px; line-height:1.5; position:relative; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .faq-card strong { display:block; margin-bottom:0.5rem; font-size:20px; }
+    .faq-icon-right, .faq-icon-right-money { position:absolute; width:120px; height:auto; right:-30px; }
+    .faq-icon-right { top:-62px; }
+    .faq-icon-right-money { top:-78px; }
+
+    @media (max-width:400px) {
+      .hero-section h1 { font-size: 26px; }
+      .score-card h3 { font-size: 11px; }
+      .score-card .count { font-size: 24px; }
+      .money-stat { font-size: 12px; }
+    }
+  </style>
+
+
+
+  <nav>
+    <div class="logo">
+      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png" alt="Manali Strays Logo" loading="lazy">
+    </div>
+  </nav>
+
+  <section class="hero-section">
+    <div class="container">
+      <h1>Subscribe to<br>Manali Strays</h1>
+      <p>You were tricked to join this group so I can sell you this subscription</p>
+
+      <div class="leaderboard-container">
+        <div class="score-card bcbb-card">
+          <h3>Team BCBB</h3>
+          <div class="count" id="bcbb-count">0</div>
+          <div class="money-stat">Raising ₹<span id="bcbb-money">0</span></div>
+        </div>
+
+        <div class="score-card velcrow-card">
+          <h3>Team Velcrow</h3>
+          <div class="count" id="velcrow-count">0</div>
+          <div class="money-stat">Raising ₹<span id="velcrow-money">0</span></div>
+        </div>
+      </div>
+
+      <div class="total-counter">
+        Total Monthly Impact: <span class="total-highlight">₹<span id="total-money">0</span></span>
+      </div>
+
+      <div class="battle-actions">
+        <button class="team-btn btn-bcbb" id="btn-bcbb">
+          <span class="btn-main-text">Join Team BCBB</span>
+          <span class="btn-sub-text">₹100 / Month</span>
+        </button>
+
+        <button class="team-btn btn-velcrow" id="btn-velcrow">
+          <span class="btn-main-text">Join Team Velcrow</span>
+          <span class="btn-sub-text">₹100 / Month</span>
+        </button>
+      </div>
+
+      <button class="alt-btn" id="insta-btn">See the Dogs</button>
+
+      <div id="money-counter" class="money-card">
+        Total Goal: Raising ₹<span id="money-raised">0</span>/month
+      </div>
+    </div>
+  </section>
+
+  <div class="faq-section">
+    <div class="faq-card">
+      <strong>Where your monie go?</strong>
+      <p>All money is sent to Manali Strays to treat fur babies. Contact me for tracking anytime.</p>
+      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/refs/heads/main/money.png" alt="Money" class="faq-icon-right-money" loading="lazy">
+    </div>
+    <div class="faq-card" id="get">
+      <strong>What you get?</strong>
+      <p>Regular updates about the dogs. Photos of me spending time with the dogs. Everything you wish you could be doing.</p>
+      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/refs/heads/main/dog.png" alt="Dog Icon" class="faq-icon-right" width="120" height="120" loading="lazy">
+    </div>
+    <div class="faq-card">
+      <strong>Is this scam?</strong>
+      <p>Yes, because you get no material value. But the dogs get food and meds. You can call me (+91 8073263514) for proof.</p>
+      <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/refs/heads/main/slippery.png" alt="Slipper" class="faq-icon-right" loading="lazy">
+    </div>
+  </div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+  window.addEventListener("DOMContentLoaded", () => {
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDma_UrBD5XQICj5LOu214Fu3va_7VnvDg",
+      authDomain: "sillysensei-b251b.firebaseapp.com",
+      databaseURL: "https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "sillysensei-b251b",
+      storageBucket: "sillysensei-b251b.appspot.com",
+      messagingSenderId: "859697431303",
+      appId: "1:859697431303:web:f91ce7535a3aff27cc7ba2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const bcbbRef = ref(db, 'subscribers'); 
+    const velcrowRef = ref(db, 'subscribers_velcrow'); 
+
+    const bcbbCountEl = document.getElementById('bcbb-count');
+    const bcbbMoneyEl = document.getElementById('bcbb-money'); 
+    const velcrowCountEl = document.getElementById('velcrow-count');
+    const velcrowMoneyEl = document.getElementById('velcrow-money'); 
+    const totalMoneyEl = document.getElementById('total-money'); 
+    const moneyRaisedEl = document.getElementById('money-raised'); 
+    
+    let bcbbCount = 0;
+    let velcrowCount = 0;
+
+    onValue(bcbbRef, (snapshot) => {
+      const data = snapshot.val();
+      bcbbCount = data ? Object.keys(data).length : 0;
+      updateTotals();
+    });
+
+    onValue(velcrowRef, (snapshot) => {
+      const data = snapshot.val();
+      velcrowCount = data ? Object.keys(data).length : 0;
+      updateTotals();
+    });
+
+    function updateTotals() {
+      bcbbCountEl.textContent = bcbbCount;
+      velcrowCountEl.textContent = velcrowCount;
+      bcbbMoneyEl.textContent = bcbbCount * 100;
+      velcrowMoneyEl.textContent = velcrowCount * 100;
+
+      const totalAmount = (bcbbCount + velcrowCount) * 100;
+      totalMoneyEl.textContent = totalAmount; 
+      moneyRaisedEl.textContent = totalAmount; 
+    }
+
+    const instaBtn = document.getElementById("insta-btn");
+    if (instaBtn) {
+      instaBtn.addEventListener("click", () => {
+        window.open("https://www.instagram.com/manalistrays", "_blank");
+      });
+    }
+
+    async function handlePayment(groupName) {
+      try {
+        // UPDATED: Sending the groupName to backend
+        const res = await fetch(
+          "https://sillypayement.onrender.com/create-subscription",
+          { 
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ team: groupName })
+          }
+        );
+        const data = await res.json();
+
+        const options = {
+          key: data.razorpay_key,
+          subscription_id: data.subscription_id,
+          name: "Manali Strays",
+          description: `₹100 Monthly - Team ${groupName}`,
+          theme: { color: groupName === 'BCBB' ? "#FFDD00" : "#222222" },
+          handler: function (response) {
+            // Success logic remains for local feedback
+            alert(`Welcome to Team ${groupName}! Your monthly support means a lot.`);
+          },
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } catch (err) {
+        alert("Error starting subscription");
+        console.error(err);
+      }
+    }
+
+    document.getElementById("btn-bcbb").addEventListener("click", () => handlePayment("BCBB"));
+    document.getElementById("btn-velcrow").addEventListener("click", () => handlePayment("Velcrow"));
+  });
+</script>

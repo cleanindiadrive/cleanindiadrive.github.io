@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Continue with Google | Manali Strays</title>
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body class="auth-page">
+    <main class="auth-shell">
+      <section class="auth-card" aria-labelledby="auth-title">
+        <a class="back-link" href="index.html">← Back to Manali Strays</a>
+        <div class="account-intro-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" />
+          </svg>
+        </div>
+        <h2 id="auth-title">Continue to your tracker</h2>
+        <p class="form-intro">Use your Google account to view and manage your support.</p>
+        <div class="plan-note is-hidden" id="plan-note"></div>
+        <button class="button button-google" id="google-sign-in" type="button">
+          <span class="google-mark" aria-hidden="true">G</span>
+          Continue with Google
+        </button>
+        <form class="profile-name-form is-hidden" id="profile-name-form">
+          <label for="profile-name">Your name</label>
+          <input id="profile-name" type="text" autocomplete="given-name" maxlength="80" placeholder="Enter your name" required />
+          <button class="button" type="submit">Continue</button>
+        </form>
+        <div class="auth-message" id="auth-message" role="status" aria-live="polite"></div>
+      </section>
+    </main>
+    <script type="module" src="js/user-login.js"></script>
+  </body>
+</html>

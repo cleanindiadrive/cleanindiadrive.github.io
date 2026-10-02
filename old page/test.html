@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Subscribe to Manali Strays | Silly Sensei</title>
+
+  <!-- Cashfree SDK -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
+  <style>
+    body{font-family:'Poppins',sans-serif;background:#F9F8EF;color:#111;margin:0}
+    nav{display:flex;justify-content:center;align-items:center;padding:1rem;background:#fff;border-bottom:1px solid #eee}
+    .hero{text-align:center;padding:3rem 1rem}
+    .price-btn{background:#FFDD00;border:none;padding:1rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;display:inline-block;margin:1rem 0}
+    .alt-btn{background:transparent;border:2px solid #FFDD00;padding:1rem 1.5rem;border-radius:8px;cursor:pointer}
+    .money-card{background:rgba(255,221,0,0.15);padding:1rem;border-radius:12px;display:inline-block;margin-top:1rem}
+    footer{text-align:center;padding:2rem;background:#000;color:#fff;margin-top:3rem}
+    .overlay{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .modal{background:#fff;width:95%;max-width:420px;padding:1.5rem;border-radius:14px;text-align:left}
+    .modal h2{margin-bottom:8px}
+    .modal label{display:block;font-size:.85rem;margin-top:10px;color:#333}
+    .modal input{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid #ccc}
+    .popup-buttons{display:flex;gap:.5rem;margin-top:1rem}
+    .popup-buttons button{flex:1;padding:10px;border-radius:10px;font-weight:700;border:0;cursor:pointer}
+    .btn-primary{background:#FFDD00;color:#222}
+    .btn-secondary{background:transparent;border:2px solid #FFDD00;color:#222}
+  </style>
+</head>
+<body>
+  <nav>
+    <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/139e8cc0992e865b13de1e1da94aeda0abb2160a/Group%201.png"
+         width="140" alt="logo" />
+  </nav>
+
+  <section class="hero">
+    <h1>Subscribe to Manali Strays — ₹100 / month</h1>
+    <p>Support rescued dogs with monthly donations. Only for Boom-Chicka-Boom-Boom group members.</p>
+    <button id="subscribe-btn" class="price-btn">Subscribe — ₹100 / month</button>
+    <button id="insta-btn" class="alt-btn">Follow on Instagram</button>
+    <div class="money-card">
+      Currently raising ₹<span id="money-raised">0</span>/month —
+      <span id="subscriber-count">0 active subscribers</span>
+    </div>
+  </section>
+
+  <footer>
+    Contact me in the group — you silly buffalo
+  </footer>
+
+  <!-- Popup -->
+  <div id="subscribe-popup" class="overlay" style="display:none;">
+    <div class="modal">
+      <h2>Enter your details</h2>
+      <label>Name</label><input id="sub-name" type="text" />
+      <label>Email</label><input id="sub-email" type="email" />
+      <label>Phone</label><input id="sub-phone" type="tel" maxlength="15" />
+      <div class="popup-buttons">
+        <button id="btn-create-order" class="btn-primary">Proceed to Pay</button>
+        <button id="btn-close" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay-spinner" class="overlay" style="display:none;">
+    <div style="background:#fff;padding:1rem;border-radius:10px;">Processing...</div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getDatabase, ref, set, push, onValue, remove, get } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+    // ---------- Firebase config (keeps your subscribers list) ----------
+    const firebaseConfig = {
+      apiKey: "AIzaSyDma_UrBD5XQICj5LOu214Fu3va_7VnvDg",
+      authDomain: "sillysensei-b251b.firebaseapp.com",
+      databaseURL: "https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "sillysensei-b251b",
+      storageBucket: "sillysensei-b251b.appspot.com",
+      messagingSenderId: "859697431303",
+      appId: "1:859697431303:web:f91ce7535a3aff27cc7ba2",
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const subsRef = ref(db, "subscribers");
+
+    // ---------- Backend base (your backend created earlier) ----------
+    const backendBase = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+      ? "http://localhost:3000"
+      : "https://17vq6c3z-3000.inc1.devtunnels.ms";
+
+    // ---------- IMPORTANT: Replace with your plan_id from Cashfree dashboard ----------
+    const PLAN_ID = "YOUR_PLAN_ID_HERE"; // <-- change this to your actual plan_id
+
+    // Cashfree SDK instance
+    const cashfree = Cashfree({ mode: "production" });
+
+    // UI elements
+    const popup = document.getElementById("subscribe-popup");
+    const spinner = document.getElementById("overlay-spinner");
+    const nameI = document.getElementById("sub-name"), emailI = document.getElementById("sub-email"), phoneI = document.getElementById("sub-phone");
+
+    // UI handlers
+    document.getElementById("subscribe-btn").onclick = () => popup.style.display = "flex";
+    document.getElementById("btn-close").onclick = () => popup.style.display = "none";
+    document.getElementById("insta-btn").onclick = () => window.open("https://www.instagram.com/manalistrays", "_blank");
+
+    // Count & money display (reads from Firebase)
+    const countEl = document.getElementById("subscriber-count");
+    const moneyEl = document.getElementById("money-raised");
+    onValue(subsRef, snap => {
+      const d = snap.val();
+      const c = d ? Object.keys(d).length : 0;
+      countEl.textContent = `${c} active subscribers`;
+      moneyEl.textContent = c * 100;
+
+      // cleanup stale subscribers (best-effort)
+      const now = Date.now(), th = 35 * 24 * 60 * 60 * 1000;
+      if (d) {
+        Object.entries(d).forEach(([k, v]) => {
+          const lp = v.lastPaymentAt || v.subscribedAt || 0;
+          if (now - lp > th) remove(ref(db, "subscribers/" + k));
+        });
+      }
+    });
+
+    // Basic validation
+    function validate(n, e, p) {
+      if (!n) return "Enter name";
+      if (!/^\S+@\S+\.\S+$/.test(e)) return "Invalid email";
+      if (!/^\d{10,15}$/.test(p.replace(/\D/g, ''))) return "Invalid phone";
+      return null;
+    }
+
+    // --- Existing order functions (left unchanged) ---
+    async function createOrder(customer) {
+      const order = {
+        order_id: `ORDER_${Date.now()}`,
+        order_amount: 100,
+        order_currency: "INR",
+        customer_details: {
+          customer_id: `CUST_${Date.now()}`,
+          customer_name: customer.name,
+          customer_email: customer.email,
+          customer_phone: customer.phone
+        }
+      };
+      const res = await fetch(`${backendBase}/create-order`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "order failed");
+      return { id: order.order_id, session: data.payment_session_id };
+    }
+
+    async function verifyOrder(id) {
+      const res = await fetch(`${backendBase}/verify/${id}`);
+      const data = await res.json();
+      if (!res.ok) return { ok: false, data };
+      const st = (data.order_status || data.status || "").toUpperCase();
+      return { ok: st === "PAID" || st === "SUCCESS" || st === "ACTIVE", data };
+    }
+    // --- end existing order functions ---
+
+    // --- NEW: create subscription via backend ---
+    async function createSubscription(customer) {
+      const subscription_id = `SUB_${Date.now()}`;
+      const payload = {
+        subscription_id,
+        customer_details: {
+          customer_name: customer.name,
+          customer_email: customer.email,
+          customer_phone: customer.phone
+        },
+        plan_id: PLAN_ID
+        // optional: subscription_meta: { return_url: "https://your-backend/return-handler" }
+      };
+
+      const res = await fetch(`${backendBase}/create-subscription-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "create subscription failed");
+
+      // Read subscription_session_id (Cashfree field names can vary slightly)
+      const subsSession = data.subscription_session_id || data.subscriptionSessionId || data.subscription_sessionId || data.subscription_session;
+      const subsId = data.subscription_id || data.subscriptionId || subscription_id;
+
+      if (!subsSession) throw new Error("No subscription_session_id returned from backend");
+
+      return { id: subsId, session: subsSession };
+    }
+    // --- end createSubscription ---
+
+    // temp storage helpers so we can match user after redirect
+    function tempStore(id, obj) { localStorage.setItem("temp_" + id, JSON.stringify(obj)); }
+    function tempGet(id) { const t = localStorage.getItem("temp_" + id); return t ? JSON.parse(t) : null; }
+    function tempDel(id) { localStorage.removeItem("temp_" + id); }
+
+    // Save subscriber into Firebase
+    async function saveSubscriber(info) {
+      const n = push(subsRef);
+      const now = Date.now();
+      await set(n, {
+        name: info.name, email: info.email, phone: info.phone,
+        subscribedAt: now, lastPaymentAt: now, nextPaymentDue: now + 30 * 24 * 60 * 60 * 1000,
+        orderId: info.orderId
+      });
+    }
+
+    // Handle frontend return from Cashfree (either order or subscription)
+    async function handleReturn() {
+      const params = new URLSearchParams(location.search);
+      // common possible keys Cashfree may provide (orders or subscriptions)
+      const possibleKeys = ["order_id", "orderId", "subscription_id", "subscriptionId", "cf_subscriptionId", "cf_subReferenceId", "cf_referenceId", "cf_subscription_id"];
+      let id = null;
+      for (const k of possibleKeys) {
+        if (params.get(k)) { id = params.get(k); break; }
+      }
+      if (!id) return; // nothing to handle
+
+      spinner.style.display = "flex";
+
+      try {
+        // Try verifying as an order first (works for order flow)
+        const orderCheck = await verifyOrder(id);
+        if (orderCheck.ok) {
+          const tmp = tempGet(id);
+          if (tmp) await saveSubscriber({ ...tmp, orderId: id });
+          tempDel(id);
+          location.href = "payment-success.html";
+          return;
+        }
+      } catch (e) {
+        // ignore and try subscription fallback
+      }
+
+      // Subscription fallback: check temp storage for subscription id (best-effort)
+      const tmp = tempGet(id);
+      if (tmp) {
+        // NOTE: frontend cannot securely verify subscription status (secret keys required).
+        // This is best-effort: ideally backend should verify and then redirect to success page.
+        await saveSubscriber({ ...tmp, orderId: id });
+        tempDel(id);
+        location.href = "payment-success.html";
+        return;
+      }
+
+      // Nothing matched -> failure
+      tempDel(id);
+      location.href = "payment-failed.html";
+    }
+
+    // On clicking proceed: create subscription and open Cashfree subscriptions checkout
+    document.getElementById("btn-create-order").onclick = async () => {
+      const n = nameI.value.trim(), e = emailI.value.trim(), p = phoneI.value.trim();
+      const bad = validate(n, e, p); if (bad) return alert(bad);
+
+      try {
+        spinner.style.display = "flex"; popup.style.display = "none";
+
+        // Create subscription on backend
+        const ord = await createSubscription({ name: n, email: e, phone: p });
+
+        // Save temp data using subscription id so we can match after redirect
+        tempStore(ord.id, { name: n, email: e, phone: p });
+
+        // Initiate Cashfree subscriptions checkout using subscriptionsCheckout
+        await cashfree.subscriptionsCheckout({
+          subsSessionId: ord.session,
+          redirectTarget: "_self"
+        }).then(function (result) {
+          if (result && result.error) {
+            spinner.style.display = "none";
+            alert("Payment init failed: " + (result.error.message || JSON.stringify(result.error)));
+          }
+          // normally the SDK will redirect away; on return handleReturn() handles the rest
+        }).catch((err) => {
+          spinner.style.display = "none";
+          alert("Checkout error: " + (err.message || err));
+        });
+
+      } catch (err) {
+        spinner.style.display = "none"; alert("Failed: " + (err.message || err));
+      }
+    };
+
+    // run handler on load (detect return from Cashfree)
+    document.addEventListener("DOMContentLoaded", handleReturn);
+  </script>
+</body>
+</html>
