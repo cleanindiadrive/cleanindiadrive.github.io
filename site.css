@@ -865,14 +865,6 @@ footer .contact-details {
   border-radius: 999px;
 }
 
-.user-badge-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-}
-
 .dashboard-user-email {
   max-width: 220px;
   overflow: hidden;
