@@ -3,6 +3,62 @@ import { onValue, push, ref, remove, set, update } from "https://www.gstatic.com
 import { auth, database, isDevelopmentMode } from "./firebase-client.js";
 
 const get = (id) => document.getElementById(id);
+
+function playPosTransactionAnimation(container, onComplete) {
+  if (!container) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  if (container.classList.contains("is-disabled") || container.getAttribute("aria-disabled") === "true") {
+    return;
+  }
+  container.classList.remove("is-animating");
+  const card = container.querySelector(".card");
+  const post = container.querySelector(".post");
+  const dollar = container.querySelector(".dollar");
+  if (card) card.style.animation = "none";
+  if (post) post.style.animation = "none";
+  if (dollar) dollar.style.animation = "none";
+  void container.offsetWidth; // force reflow
+  if (card) card.style.animation = "";
+  if (post) post.style.animation = "";
+  if (dollar) dollar.style.animation = "";
+
+  container.classList.add("is-animating");
+  setTimeout(() => {
+    container.classList.remove("is-animating");
+    if (typeof onComplete === "function") {
+      onComplete();
+    }
+  }, 1250);
+}
+
+function setPosButtonDisabled(button, isDisabled) {
+  if (!button) return;
+  button.classList.toggle("is-disabled", Boolean(isDisabled));
+  button.setAttribute("aria-disabled", String(Boolean(isDisabled)));
+  if (button.tagName === "BUTTON") {
+    button.disabled = Boolean(isDisabled);
+  }
+}
+
+function isPosButtonDisabled(button) {
+  if (!button) return true;
+  return button.classList.contains("is-disabled") || button.getAttribute("aria-disabled") === "true" || button.disabled === true;
+}
+
+function setPosButtonText(button, text) {
+  if (!button) return;
+  const label = button.querySelector(".new") || button;
+  label.textContent = text;
+}
+
+function getPosButtonText(button) {
+  if (!button) return "";
+  const label = button.querySelector(".new") || button;
+  return label.textContent.trim();
+}
+
 const subscriberRecords = new Map();
 let paymentRecords = [];
 let testPaymentRecords = [];
@@ -774,16 +830,17 @@ function renderRecords() {
   const toggle = get("subscription-toggle");
   if (toggle) {
     const isTestablePending = Boolean(monthlyIntent) && !activeSub && (isDevelopmentMode || isPreviewMode);
-    toggle.disabled = Boolean(monthlyIntent) && !activeSub && !isTestablePending;
-    toggle.textContent = status === "active"
+    setPosButtonDisabled(toggle, Boolean(monthlyIntent) && !activeSub && !isTestablePending);
+    const label = status === "active"
       ? "Pause subscription"
       : status === "paused"
         ? "Resume subscription"
         : status === "pending"
-          ? (isTestablePending ? "Activate subscription (Test)" : "Payment pending")
+          ? (isTestablePending ? "Activate (Test)" : "Payment pending")
           : status === "cancelled"
-            ? "Start new subscription"
-            : "Start subscription";
+            ? "New Transaction"
+            : "New Transaction";
+    setPosButtonText(toggle, label);
   }
   const cancel = get("subscription-cancel");
   if (cancel) {
@@ -841,14 +898,12 @@ function showDatabaseError(error) {
   setText("dashboard-note", "Your account is ready, but the supporter records could not be loaded.");
 }
 
-let selectedDashboardPlanAmount = 100;
-
 document.querySelectorAll('input[name="dash-autopay-tier"]').forEach((input) => {
   input.addEventListener("change", (e) => {
     selectedDashboardPlanAmount = Number(e.target.value) || 100;
     const button = get("subscription-toggle");
-    if (button && !button.disabled && (button.textContent.includes("Start") || button.textContent.includes("subscription"))) {
-      button.textContent = `Start ₹${selectedDashboardPlanAmount.toLocaleString("en-IN")}/mo`;
+    if (button && !isPosButtonDisabled(button) && (getPosButtonText(button).includes("Start") || getPosButtonText(button).includes("Transaction"))) {
+      setPosButtonText(button, "New Transaction");
     }
   });
 });
@@ -858,7 +913,7 @@ async function startMonthlySubscription() {
   if (!currentUser || activeOrPending) return;
   const button = get("subscription-toggle");
   const message = get("subscription-message");
-  if (button) button.disabled = true;
+  if (button) setPosButtonDisabled(button, true);
   if (message) {
     message.textContent = "Setting up monthly subscription…";
     message.classList.remove("error");
@@ -981,12 +1036,15 @@ async function startMonthlySubscription() {
       message.classList.add("error");
     }
   } finally {
-    if (button) button.disabled = false;
+    if (button) setPosButtonDisabled(button, false);
   }
 }
 
-get("subscription-toggle")?.addEventListener("click", async () => {
-  if (!currentUser) return;
+const dashSubToggle = get("subscription-toggle");
+dashSubToggle?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (!currentUser || isPosButtonDisabled(dashSubToggle)) return;
+  playPosTransactionAnimation(dashSubToggle);
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
   if (!activeSub) {
@@ -994,9 +1052,8 @@ get("subscription-toggle")?.addEventListener("click", async () => {
     return;
   }
   const nextStatus = normalizedStatus(activeSub) === "paused" ? "active" : "paused";
-  const button = get("subscription-toggle");
   const message = get("subscription-message");
-  if (button) button.disabled = true;
+  setPosButtonDisabled(dashSubToggle, true);
   if (message) message.textContent = "Updating subscription…";
   try {
     if (isPreviewMode) {
@@ -1018,9 +1075,33 @@ get("subscription-toggle")?.addEventListener("click", async () => {
     console.error("Unable to update subscription:", error);
     if (message) { message.textContent = "Could not update your subscription. Please try again."; message.classList.add("error"); }
   } finally {
-    if (button) button.disabled = false;
+    setPosButtonDisabled(dashSubToggle, false);
   }
 });
+
+dashSubToggle?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    dashSubToggle.click();
+  }
+});
+
+const dashPosTxBtn = get("dash-pos-tx-btn");
+if (dashPosTxBtn) {
+  dashPosTxBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    playPosTransactionAnimation(dashPosTxBtn, () => {
+      const href = dashPosTxBtn.getAttribute("href") || "index.html#ways-to-support";
+      window.location.href = href;
+    });
+  });
+  dashPosTxBtn.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      dashPosTxBtn.click();
+    }
+  });
+}
 
 get("dev-charge-button")?.addEventListener("click", async () => {
   const records = allRawRecords();

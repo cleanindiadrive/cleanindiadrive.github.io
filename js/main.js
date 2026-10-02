@@ -187,6 +187,61 @@ function updateSelectedMonthlyPlan(amount) {
   refreshSubscriptionMode();
 }
 
+function playPosTransactionAnimation(container, onComplete) {
+  if (!container) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  if (container.classList.contains("is-disabled") || container.getAttribute("aria-disabled") === "true") {
+    return;
+  }
+  container.classList.remove("is-animating");
+  const card = container.querySelector(".card");
+  const post = container.querySelector(".post");
+  const dollar = container.querySelector(".dollar");
+  if (card) card.style.animation = "none";
+  if (post) post.style.animation = "none";
+  if (dollar) dollar.style.animation = "none";
+  void container.offsetWidth; // force reflow
+  if (card) card.style.animation = "";
+  if (post) post.style.animation = "";
+  if (dollar) dollar.style.animation = "";
+
+  container.classList.add("is-animating");
+  setTimeout(() => {
+    container.classList.remove("is-animating");
+    if (typeof onComplete === "function") {
+      onComplete();
+    }
+  }, 1250);
+}
+
+function setPosButtonDisabled(button, isDisabled) {
+  if (!button) return;
+  button.classList.toggle("is-disabled", Boolean(isDisabled));
+  button.setAttribute("aria-disabled", String(Boolean(isDisabled)));
+  if (button.tagName === "BUTTON") {
+    button.disabled = Boolean(isDisabled);
+  }
+}
+
+function isPosButtonDisabled(button) {
+  if (!button) return true;
+  return button.classList.contains("is-disabled") || button.getAttribute("aria-disabled") === "true" || button.disabled === true;
+}
+
+function setPosButtonText(button, text) {
+  if (!button) return;
+  const label = button.querySelector(".new") || button;
+  label.textContent = text;
+}
+
+function getPosButtonText(button) {
+  if (!button) return "";
+  const label = button.querySelector(".new") || button;
+  return label.textContent.trim();
+}
+
 function refreshSubscriptionMode() {
   const status = document.getElementById("subscription-mode-status");
   const button = document.getElementById("subscription-toggle");
@@ -200,8 +255,8 @@ function refreshSubscriptionMode() {
   currentSubscription = currentUser ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase()) : null;
   if (!currentUser) {
     status.textContent = `Log in to start your ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
-    button.textContent = "Log in";
-    button.disabled = false;
+    setPosButtonText(button, "New Transaction");
+    setPosButtonDisabled(button, false);
     accountAction?.classList.add("is-hidden");
     return;
   }
@@ -210,8 +265,8 @@ function refreshSubscriptionMode() {
     status.textContent = monthlyRequestPending
       ? "Your subscription request is pending payment confirmation."
       : `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
-    button.textContent = monthlyRequestPending ? "Payment pending" : "Start subscription";
-    button.disabled = monthlyRequestPending;
+    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "New Transaction");
+    setPosButtonDisabled(button, monthlyRequestPending);
     accountAction?.classList.add("is-hidden");
     return;
   }
@@ -220,8 +275,8 @@ function refreshSubscriptionMode() {
     status.textContent = monthlyRequestPending
       ? "Your new subscription request is pending payment confirmation."
       : `You can start a new subscription at ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo.`;
-    button.textContent = monthlyRequestPending ? "Payment pending" : "Start subscription";
-    button.disabled = monthlyRequestPending;
+    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "New Transaction");
+    setPosButtonDisabled(button, monthlyRequestPending);
     accountAction?.classList.remove("is-hidden");
     return;
   }
@@ -229,8 +284,8 @@ function refreshSubscriptionMode() {
   const paused = currentSubscription.status === "paused";
   if (paused) {
     status.textContent = "Your subscription is paused. Resume it from your account.";
-    button.textContent = "Resume subscription";
-    button.disabled = false;
+    setPosButtonText(button, "Resume subscription");
+    setPosButtonDisabled(button, false);
     accountAction?.classList.remove("is-hidden");
     return;
   }
@@ -238,36 +293,42 @@ function refreshSubscriptionMode() {
   const currentSubAmount = Number(currentSubscription.amount) || 100;
   if (selectedMonthlyAmount === currentSubAmount) {
     status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo.`;
-    button.textContent = "Active subscription";
-    button.disabled = true;
+    setPosButtonText(button, "Active subscription");
+    setPosButtonDisabled(button, true);
   } else {
     status.textContent = `Your active plan is ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Manage or switch in your dashboard.`;
-    button.textContent = "Manage in account";
-    button.disabled = false;
+    setPosButtonText(button, "Manage in account");
+    setPosButtonDisabled(button, false);
   }
   accountAction?.classList.remove("is-hidden");
 }
 
-async function toggleSubscription() {
+async function toggleSubscription(event) {
+  event?.preventDefault?.();
   const button = document.getElementById("subscription-toggle");
   const status = document.getElementById("subscription-mode-status");
-  if (!button || !status) return;
+  if (!button || !status || isPosButtonDisabled(button)) return;
 
   if (!currentUser) {
-    window.location.href = `user-login.html?return=index.html&plan=monthly&amount=${selectedMonthlyAmount}`;
+    playPosTransactionAnimation(button, () => {
+      window.location.href = `user-login.html?return=index.html&plan=monthly&amount=${selectedMonthlyAmount}`;
+    });
     return;
   }
 
   if (currentSubscription && currentSubscription.status === "active") {
-    if (button.textContent === "Manage in account") {
-      window.location.href = "user-dashboard.html";
+    if (getPosButtonText(button) === "Manage in account") {
+      playPosTransactionAnimation(button, () => {
+        window.location.href = "user-dashboard.html";
+      });
       return;
     }
   }
 
   if (!currentSubscription || currentSubscription.status === "cancelled") {
     if (monthlyRequestPending) return;
-    button.disabled = true;
+    setPosButtonDisabled(button, true);
+    playPosTransactionAnimation(button);
     status.textContent = "Saving your subscription request…";
     try {
       const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
@@ -284,8 +345,8 @@ async function toggleSubscription() {
       });
       if (isDevelopmentMode) {
         status.textContent = `Development subscription for ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo activated.`;
-        button.textContent = "Active subscription";
-        button.disabled = true;
+        setPosButtonText(button, "Active subscription");
+        setPosButtonDisabled(button, true);
       } else {
         monthlyRequestPending = true;
         status.textContent = "Request saved. Complete payment confirmation to activate it.";
@@ -293,14 +354,15 @@ async function toggleSubscription() {
     } catch (error) {
       console.error("Unable to start subscription:", error);
       status.textContent = "Could not start the subscription request. Please try again.";
-      button.disabled = false;
+      setPosButtonDisabled(button, false);
     }
     if (!isDevelopmentMode) refreshSubscriptionMode();
     return;
   }
 
   const nextStatus = currentSubscription.status === "paused" ? "active" : "paused";
-  button.disabled = true;
+  setPosButtonDisabled(button, true);
+  playPosTransactionAnimation(button);
   try {
     await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
       subscriptionStatus: nextStatus,
@@ -311,13 +373,14 @@ async function toggleSubscription() {
   } catch (error) {
     console.error("Unable to update subscription:", error);
     status.textContent = "Could not update your subscription. Please try again.";
-    button.disabled = false;
+    setPosButtonDisabled(button, false);
     return;
   }
   refreshSubscriptionMode();
 }
 
-async function saveOneTimeIntent() {
+async function saveOneTimeIntent(event) {
+  event?.preventDefault?.();
   const amountInput = document.getElementById("one-time-amount");
   const button = document.getElementById("one-time-submit");
   const amount = Number(amountInput?.value);
@@ -326,11 +389,15 @@ async function saveOneTimeIntent() {
     return;
   }
   if (!currentUser) {
-    window.location.href = `user-login.html?mode=signup&plan=one-time&amount=${encodeURIComponent(amount)}`;
+    playPosTransactionAnimation(button, () => {
+      window.location.href = `user-login.html?mode=signup&plan=one-time&amount=${encodeURIComponent(amount)}`;
+    });
     return;
   }
+  if (isPosButtonDisabled(button)) return;
 
-  button.disabled = true;
+  setPosButtonDisabled(button, true);
+  playPosTransactionAnimation(button);
   setModeMessage("one-time-message", "Saving your payment request…");
   try {
     const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
@@ -350,11 +417,12 @@ async function saveOneTimeIntent() {
     console.error("Unable to save one-time payment request:", error);
     setModeMessage("one-time-message", "Could not save the request. Please try again.", true);
   } finally {
-    button.disabled = false;
+    setPosButtonDisabled(button, false);
   }
 }
 
-async function saveGiftIntent() {
+async function saveGiftIntent(event) {
+  event?.preventDefault?.();
   const recipientSelect = document.getElementById("gift-recipient");
   const button = document.getElementById("gift-submit");
   const recipient = giftRecipients[Number(recipientSelect?.value)];
@@ -363,11 +431,15 @@ async function saveGiftIntent() {
     return;
   }
   if (!currentUser) {
-    window.location.href = `user-login.html?mode=signup&plan=gift&phone=${encodeURIComponent(recipient.phone)}`;
+    playPosTransactionAnimation(button, () => {
+      window.location.href = `user-login.html?mode=signup&plan=gift&phone=${encodeURIComponent(recipient.phone)}`;
+    });
     return;
   }
+  if (isPosButtonDisabled(button)) return;
 
-  button.disabled = true;
+  setPosButtonDisabled(button, true);
+  playPosTransactionAnimation(button);
   setModeMessage("gift-message", "Saving your gift request…");
   try {
     const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
@@ -391,20 +463,34 @@ async function saveGiftIntent() {
     console.error("Unable to save gift request:", error);
     setModeMessage("gift-message", "Could not save the gift request. Please try again.", true);
   } finally {
-    button.disabled = false;
+    setPosButtonDisabled(button, false);
   }
 }
 
 document.querySelectorAll(".mode-tab").forEach((tab) => {
   tab.addEventListener("click", () => setMode(tab.dataset.mode));
 });
-document.getElementById("subscription-toggle")?.addEventListener("click", toggleSubscription);
-document.getElementById("one-time-submit")?.addEventListener("click", saveOneTimeIntent);
-document.getElementById("gift-submit")?.addEventListener("click", saveGiftIntent);
+
+const subToggleBtn = document.getElementById("subscription-toggle");
+const oneTimeSubmitBtn = document.getElementById("one-time-submit");
+const giftSubmitBtn = document.getElementById("gift-submit");
+
+subToggleBtn?.addEventListener("click", toggleSubscription);
+oneTimeSubmitBtn?.addEventListener("click", saveOneTimeIntent);
+giftSubmitBtn?.addEventListener("click", saveGiftIntent);
+
+[subToggleBtn, oneTimeSubmitBtn, giftSubmitBtn].forEach((btn) => {
+  btn?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+});
+
 document.getElementById("gift-phone")?.addEventListener("input", renderGiftRecipients);
 document.getElementById("gift-recipient")?.addEventListener("change", (event) => {
-  const button = document.getElementById("gift-submit");
-  if (button) button.disabled = !giftRecipients[Number(event.target.value)];
+  if (giftSubmitBtn) setPosButtonDisabled(giftSubmitBtn, !giftRecipients[Number(event.target.value)]);
 });
 
 

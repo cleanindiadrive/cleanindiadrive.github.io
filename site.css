@@ -307,14 +307,16 @@ nav {
 
 .mode-panel {
   display: flex;
+  flex-direction: column;
   min-width: 0;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1.25rem;
-  padding: clamp(1rem, 2.5vw, 1.35rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
   border: 1px solid #edece4;
   border-radius: var(--radius-md);
   background: #fcfcfa;
+  text-align: center;
 }
 
 .mode-panel > div:first-child {
@@ -323,7 +325,7 @@ nav {
 
 .mode-panel strong {
   color: var(--ink);
-  font-size: 0.93rem;
+  font-size: 1.05rem;
   font-weight: 700;
 }
 
@@ -331,22 +333,54 @@ nav {
   max-width: 36rem;
   margin-top: 0.25rem;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
+}
+
+.mode-panel-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 #one-time-mode,
 #gift-mode {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
 }
 
 #one-time-mode .mode-message,
 #gift-mode .mode-message {
-  grid-column: 1 / -1;
+  width: 100%;
+  text-align: center;
+  margin-top: 0.5rem;
 }
 
-#gift-mode {
-  grid-template-columns: minmax(150px, 0.8fr) minmax(190px, 1fr) auto;
+.gift-fields {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 320px;
+  margin: 0.25rem auto 0;
+  text-align: left;
+}
+
+.gift-fields label {
+  align-self: flex-start;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: -0.25rem;
+}
+
+.gift-fields input,
+.gift-fields select {
+  width: 100%;
 }
 
 .mode-action {
@@ -599,12 +633,16 @@ nav {
   color: inherit;
 }
 
-.pos-transaction-container:hover {
+.pos-transaction-container:hover,
+.pos-transaction-container.is-animating,
+.pos-transaction-container:active {
   transform: scale(1.02);
   width: 220px;
 }
 
-.pos-transaction-container:hover .left-side {
+.pos-transaction-container:hover .left-side,
+.pos-transaction-container.is-animating .left-side,
+.pos-transaction-container:active .left-side {
   width: 100%;
 }
 
@@ -646,11 +684,12 @@ nav {
 }
 
 .pos-transaction-container .new {
-  font-size: 21px;
+  font-size: clamp(16px, 2.2vw, 20px);
   font-family: 'Outfit', 'Lexend Deca', sans-serif;
   font-weight: 700;
   color: #1a1a1a;
-  margin-left: 20px;
+  margin-left: 18px;
+  letter-spacing: -0.01em;
 }
 
 .pos-transaction-container .card {
@@ -685,11 +724,13 @@ nav {
   margin: 10px 0 0 -30px;
 }
 
-.pos-transaction-container:hover .card {
+.pos-transaction-container:hover .card,
+.pos-transaction-container.is-animating .card {
   animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
 }
 
-.pos-transaction-container:hover .post {
+.pos-transaction-container:hover .post,
+.pos-transaction-container.is-animating .post {
   animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
 }
 
@@ -799,7 +840,8 @@ nav {
   line-height: 23px;
 }
 
-.pos-transaction-container:hover .dollar {
+.pos-transaction-container:hover .dollar,
+.pos-transaction-container.is-animating .dollar {
   animation: fade-in-fwd 0.3s 1s backwards;
 }
 
@@ -815,32 +857,54 @@ nav {
   }
 }
 
-.dashboard-new-tx-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 1.5rem 0 2rem;
+.pos-transaction-container.is-disabled,
+.pos-transaction-container[aria-disabled="true"] {
+  opacity: 0.52;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.5);
 }
 
+.dashboard-new-tx-wrap,
+.dashboard-subscription-tx-wrap,
 .home-new-tx-wrap {
   display: flex;
   justify-content: center;
-  margin-top: 1.25rem;
+  width: 100%;
+  margin: 1.25rem 0 1rem;
 }
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 540px) {
   .pos-transaction-container {
-    transform: scale(0.85);
-    transform-origin: center center;
+    width: 100%;
+    max-width: 340px;
+    height: 110px;
     margin: 0.5rem auto;
   }
 
-  .pos-transaction-container:hover {
-    transform: scale(0.88);
+  .pos-transaction-container:hover,
+  .pos-transaction-container.is-animating,
+  .pos-transaction-container:active {
+    width: 200px;
+    transform: scale(1.02);
+  }
+
+  .pos-transaction-container .left-side {
+    width: 115px;
+    height: 110px;
+  }
+
+  .pos-transaction-container .right-side {
+    width: calc(100% - 115px);
   }
 
   .pos-transaction-container .new {
     font-size: 17px;
-    margin-left: 12px;
+    margin-left: 14px;
+  }
+
+  .pos-transaction-container .arrow {
+    margin-right: 14px;
   }
 }
 
@@ -939,7 +1003,10 @@ nav {
 .subscription-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.6rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
 }
 
 .donors-card {
