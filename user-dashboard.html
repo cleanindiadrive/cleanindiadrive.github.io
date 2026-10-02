@@ -128,8 +128,46 @@
               </div>
               <p id="subscription-summary">Your monthly subscription status will appear here.</p>
             </div>
+
+            <!-- Exclusive Custom Autopay Plan Card (Rendered when admin configured a custom plan for this account) -->
+            <div class="dashboard-exclusive-card is-hidden" id="dash-exclusive-card">
+              <div class="exclusive-header">
+                <span class="exclusive-badge">⭐ EXCLUSIVE TO YOUR ACCOUNT</span>
+                <span class="exclusive-amount" id="dash-exclusive-amount">₹2,500 / mo</span>
+              </div>
+              <strong class="exclusive-title" id="dash-exclusive-title">Special Patron Autopay</strong>
+              <p class="exclusive-note" id="dash-exclusive-note">Custom recurring support tier configured exclusively for your account.</p>
+              <button type="button" class="btn-activate-exclusive" id="dash-exclusive-btn">
+                ⚡ Activate Exclusive ₹<span id="dash-exclusive-btn-amount">2,500</span>/mo Autopay
+              </button>
+            </div>
+
+            <!-- Standard Autopay Plan Picker (when user wants to choose/change tier) -->
+            <div class="dash-plan-picker-wrap" id="dash-plan-picker-wrap">
+              <div class="dash-plan-picker-label">Select monthly autopay tier:</div>
+              <div class="dash-plans-grid" id="dash-plans-grid">
+                <button type="button" class="dash-plan-btn active" data-amount="100">
+                  <span class="dash-plan-cost">₹100</span>
+                  <span class="dash-plan-label">Care Essentials</span>
+                </button>
+                <button type="button" class="dash-plan-btn" data-amount="500">
+                  <span class="dash-plan-cost">₹500</span>
+                  <span class="dash-plan-label">Food &amp; Shelter</span>
+                </button>
+                <button type="button" class="dash-plan-btn" data-amount="1000">
+                  <span class="dash-plan-cost">₹1,000</span>
+                  <span class="dash-plan-label">Medical &amp; Rehab</span>
+                </button>
+                <button type="button" class="dash-plan-btn" data-amount="1500">
+                  <span class="dash-plan-cost">₹1,500</span>
+                  <span class="dash-plan-label">Guardian Angel</span>
+                </button>
+              </div>
+            </div>
+
             <div class="subscription-actions">
               <button class="mode-action" id="subscription-toggle" type="button">Start subscription</button>
+
               <button class="mode-action mode-action-danger" id="subscription-cancel" type="button" disabled>Cancel subscription</button>
               <button class="mode-action mode-action-dev is-hidden" id="dev-charge-button" type="button">Simulate monthly renewal</button>
             </div>

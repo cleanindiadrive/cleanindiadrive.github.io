@@ -36,14 +36,21 @@
           <h1>Subscribe to<br />Manali Strays</h1>
 
           <div class="hero-cta-group">
-            <a class="price-btn" id="subscribe-btn" href="user-login.html?mode=signup&amp;plan=monthly">
-              <strong>₹100 Per Month</strong>
+            <a class="price-btn" id="subscribe-btn" href="user-login.html?mode=signup&amp;plan=monthly&amp;amount=100">
+              <strong id="hero-btn-amount">₹100 Per Month</strong>
               <span id="subscriber-count">0 active subscribers</span>
             </a>
 
             <div id="money-counter" class="money-card">
               <span class="money-label">Total Monthly Impact</span>
               <strong>₹<span id="money-raised">0</span></strong>
+            </div>
+
+            <div class="hero-plan-chips" id="hero-plan-chips" role="group" aria-label="Select autopay tier">
+              <button type="button" class="plan-chip active" data-amount="100">₹100/mo</button>
+              <button type="button" class="plan-chip" data-amount="500">₹500/mo</button>
+              <button type="button" class="plan-chip" data-amount="1000">₹1,000/mo</button>
+              <button type="button" class="plan-chip" data-amount="1500">₹1,500/mo</button>
             </div>
           </div>
         </div>
@@ -60,14 +67,63 @@
 
           <div class="mode-panel" id="monthly-mode" role="tabpanel">
             <div class="mode-panel-copy">
-              <strong>Monthly subscription · ₹100</strong>
+              <div class="monthly-heading-row">
+                <strong id="monthly-mode-title">Monthly subscription · <span id="monthly-selected-label">₹100 / mo</span></strong>
+                <span class="plan-tier-badge" id="monthly-tier-badge">Care Essentials</span>
+              </div>
               <p id="subscription-mode-status">Log in to manage your subscription.</p>
             </div>
+
+            <!-- Exclusive Custom Plan Slot (shown when account has custom plan assigned) -->
+            <div class="exclusive-plan-card is-hidden" id="exclusive-home-plan">
+              <div class="exclusive-header">
+                <span class="exclusive-tag">🌟 EXCLUSIVE TO YOUR ACCOUNT</span>
+                <span class="exclusive-price" id="exclusive-home-price">₹2,500/mo</span>
+              </div>
+              <strong class="exclusive-title" id="exclusive-home-title">Special Patron Autopay</strong>
+              <p class="exclusive-desc" id="exclusive-home-desc">Custom recurring amount specially configured for your account by admin.</p>
+              <button type="button" class="exclusive-select-btn" id="exclusive-home-select-btn">Select Exclusive Tier</button>
+            </div>
+
+            <!-- Multi-tier autopay selector -->
+            <div class="plan-cards-grid" id="home-plan-cards">
+              <div class="plan-option-card active" data-amount="100" data-tier="Care Essentials">
+                <div class="plan-card-top">
+                  <span class="plan-tier-name">Care Essentials</span>
+                  <span class="plan-tier-cost">₹100<span>/mo</span></span>
+                </div>
+                <p class="plan-tier-detail">Daily nutrition &amp; essential care for rescued strays.</p>
+              </div>
+              <div class="plan-option-card" data-amount="500" data-tier="Food &amp; Shelter">
+                <div class="plan-card-top">
+                  <span class="plan-tier-name">Food &amp; Shelter</span>
+                  <span class="plan-pill-popular">Popular</span>
+                  <span class="plan-tier-cost">₹500<span>/mo</span></span>
+                </div>
+                <p class="plan-tier-detail">Winter coats, healthy nourishment &amp; dry bedding.</p>
+              </div>
+              <div class="plan-option-card" data-amount="1000" data-tier="Medical &amp; Rehab">
+                <div class="plan-card-top">
+                  <span class="plan-tier-name">Medical &amp; Rehab</span>
+                  <span class="plan-tier-cost">₹1,000<span>/mo</span></span>
+                </div>
+                <p class="plan-tier-detail">Sterilization, emergency first-aid, &amp; critical vet care.</p>
+              </div>
+              <div class="plan-option-card" data-amount="1500" data-tier="Guardian Angel">
+                <div class="plan-card-top">
+                  <span class="plan-tier-name">Guardian Angel</span>
+                  <span class="plan-tier-cost">₹1,500<span>/mo</span></span>
+                </div>
+                <p class="plan-tier-detail">Full medical sanctuary sponsorship &amp; lifetime foster care.</p>
+              </div>
+            </div>
+
             <div class="mode-panel-actions">
               <button class="mode-action" id="subscription-toggle" type="button">Log in</button>
               <a class="mode-secondary-link is-hidden" id="subscription-account-link" href="user-dashboard.html">Manage account</a>
             </div>
           </div>
+
 
           <div class="mode-panel is-hidden" id="one-time-mode" role="tabpanel">
             <div class="mode-panel-copy">

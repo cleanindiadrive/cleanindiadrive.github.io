@@ -4,7 +4,10 @@ import { auth, database, isDevelopmentMode } from "./firebase-client.js";
 
 const params = new URLSearchParams(window.location.search);
 const requestedPlan = params.get("plan");
-const requestedAmount = Math.max(1, Number.parseInt(params.get("amount"), 10) || 500);
+const parsedAmount = Number.parseInt(params.get("amount"), 10);
+const requestedAmount = Number.isFinite(parsedAmount) && parsedAmount > 0
+  ? parsedAmount
+  : (requestedPlan === "monthly" || requestedPlan === "gift" ? 100 : 500);
 const authMessage = document.getElementById("auth-message");
 const planNote = document.getElementById("plan-note");
 const googleButton = document.getElementById("google-sign-in");
@@ -53,7 +56,7 @@ async function saveUserAndRequest(user, name) {
   if (!requestedPlan) return;
   const requestRef = push(ref(database, isDevelopmentMode ? "testPayments" : `paymentIntents/${user.uid}`));
   const requestType = requestedPlan === "gift" ? "gift-monthly" : requestedPlan === "one-time" ? "one-time" : "monthly";
-  const requestAmount = requestedPlan === "monthly" || requestedPlan === "gift" ? 100 : requestedAmount;
+  const requestAmount = requestedPlan === "monthly" ? requestedAmount : (requestedPlan === "gift" ? 100 : requestedAmount);
   const now = Date.now();
   const nextPayment = now + 30 * 24 * 60 * 60 * 1000;
   await set(requestRef, {
@@ -78,7 +81,7 @@ async function saveUserAndRequest(user, name) {
     const payRef = push(ref(database, "testPayments"));
     await set(payRef, {
       type: "monthly",
-      amount: 100,
+      amount: requestAmount,
       status: "paid",
       isTest: true,
       email: user.email || "",
@@ -91,6 +94,7 @@ async function saveUserAndRequest(user, name) {
     });
   }
 }
+
 
 async function continueWithUser(user, name) {
   if (setupCompleted) return;
@@ -129,12 +133,13 @@ async function inspectUser(user) {
 
 if (requestedPlan && planNote) {
   planNote.textContent = requestedPlan === "monthly"
-    ? "₹100 monthly support selected."
+    ? `₹${requestAmount.toLocaleString("en-IN")} monthly support selected.`
     : requestedPlan === "gift"
       ? "₹100 gift subscription selected."
-      : `₹${requestedAmount} one-time support selected.`;
+      : `₹${requestAmount.toLocaleString("en-IN")} one-time support selected.`;
   planNote.classList.remove("is-hidden");
 }
+
 
 onAuthStateChanged(auth, (user) => {
   if (!user || handlingGoogleSignIn || setupCompleted) return;

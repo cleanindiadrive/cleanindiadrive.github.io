@@ -214,12 +214,51 @@ function refreshSubscriptionMode() {
   accountAction?.classList.remove("is-hidden");
 }
 
+let selectedMonthlyAmount = 100;
+let selectedTierName = "Care Essentials";
+let userCustomPlan = null;
+let detachCustomPlanListener = null;
+
+function updateSelectedMonthlyPlan(amount, tierName, isCustom = false) {
+  selectedMonthlyAmount = Number(amount) || 100;
+  selectedTierName = tierName || "Care Essentials";
+
+  const heroAmount = document.getElementById("hero-btn-amount");
+  if (heroAmount) heroAmount.textContent = `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Per Month`;
+
+  const subscribeBtn = document.getElementById("subscribe-btn");
+  if (subscribeBtn) {
+    subscribeBtn.href = `user-login.html?mode=signup&plan=monthly&amount=${selectedMonthlyAmount}`;
+  }
+
+  document.querySelectorAll(".hero-plan-chips .plan-chip").forEach((chip) => {
+    const chipAmt = Number(chip.dataset.amount);
+    chip.classList.toggle("active", chipAmt === selectedMonthlyAmount);
+  });
+
+  const modeLabel = document.getElementById("monthly-selected-label");
+  if (modeLabel) modeLabel.textContent = `₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
+
+  const tierBadge = document.getElementById("monthly-tier-badge");
+  if (tierBadge) tierBadge.textContent = selectedTierName;
+
+  document.querySelectorAll("#home-plan-cards .plan-option-card").forEach((card) => {
+    const cardAmt = Number(card.dataset.amount);
+    card.classList.toggle("active", !isCustom && cardAmt === selectedMonthlyAmount);
+  });
+
+  const exclusiveBanner = document.getElementById("exclusive-home-plan");
+  if (exclusiveBanner) {
+    exclusiveBanner.classList.toggle("active-tier", isCustom);
+  }
+}
+
 async function toggleSubscription() {
   const button = document.getElementById("subscription-toggle");
   const status = document.getElementById("subscription-mode-status");
   if (!button || !status) return;
   if (!currentUser) {
-    window.location.href = "user-login.html?mode=signup&plan=monthly";
+    window.location.href = `user-login.html?mode=signup&plan=monthly&amount=${selectedMonthlyAmount}`;
     return;
   }
   if (!currentSubscription || currentSubscription.status === "cancelled") {
@@ -232,7 +271,7 @@ async function toggleSubscription() {
       const now = Date.now();
       await set(intent, {
         type: "monthly",
-        amount: 100,
+        amount: selectedMonthlyAmount,
         anonymous: isAnonymousDonationSelected(),
         status: isDevelopmentMode ? "active" : "pending",
         ...(isDevelopmentMode ? { subscriptionStatus: "active", isTest: true, paidAt: now, reference: `DEV-SUBSCRIPTION-${now}` } : {}),
@@ -255,6 +294,7 @@ async function toggleSubscription() {
     if (!isDevelopmentMode) refreshSubscriptionMode();
     return;
   }
+
 
   const nextStatus = currentSubscription.status === "paused" ? "active" : "paused";
   button.disabled = true;
@@ -364,6 +404,29 @@ document.getElementById("gift-recipient")?.addEventListener("change", (event) =>
   if (button) button.disabled = !giftRecipients[Number(event.target.value)];
 });
 
+// Wire up Autopay Plan Selection
+document.querySelectorAll(".hero-plan-chips .plan-chip").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const amt = Number(btn.dataset.amount);
+    const tierMap = { 100: "Care Essentials", 500: "Food & Shelter", 1000: "Medical & Rehab", 1500: "Guardian Angel" };
+    updateSelectedMonthlyPlan(amt, tierMap[amt] || "Monthly Plan");
+  });
+});
+
+document.querySelectorAll("#home-plan-cards .plan-option-card").forEach((card) => {
+  card.addEventListener("click", () => {
+    const amt = Number(card.dataset.amount);
+    const tier = card.dataset.tier || "Monthly Plan";
+    updateSelectedMonthlyPlan(amt, tier);
+  });
+});
+
+document.getElementById("exclusive-home-select-btn")?.addEventListener("click", () => {
+  if (userCustomPlan && userCustomPlan.amount) {
+    updateSelectedMonthlyPlan(userCustomPlan.amount, userCustomPlan.title || "Exclusive Custom Tier", true);
+  }
+});
+
 const requestedMode = new URLSearchParams(window.location.search).get("plan");
 setMode(requestedMode === "one-time" ? "one-time" : requestedMode === "gift" ? "gift" : "monthly");
 renderGiftRecipients();
@@ -371,8 +434,13 @@ renderGiftRecipients();
 onAuthStateChanged(auth, (user) => {
   detachMonthlyIntentListener?.();
   detachMonthlyIntentListener = null;
+  detachCustomPlanListener?.();
+  detachCustomPlanListener = null;
   currentUser = user?.emailVerified ? user : null;
   monthlyRequestPending = false;
+  userCustomPlan = null;
+  document.getElementById("exclusive-home-plan")?.classList.add("is-hidden");
+
   if (accountLink) {
     accountLink.href = currentUser ? "user-dashboard.html" : "user-login.html";
     accountLink.setAttribute("aria-label", currentUser ? "Open your account" : "Log in to your account");
@@ -391,9 +459,31 @@ onAuthStateChanged(auth, (user) => {
       monthlyRequestPending = currentUserPaymentRecords.some((record) => record.type === "monthly" && record.status === "pending");
       refreshSubscriptionMode();
     }, () => {});
+
+    // Listen for exclusive custom plan configured by admin
+    detachCustomPlanListener = onValue(ref(database, `customPlans/${currentUser.uid}`), (snapshot) => {
+      const custom = snapshot.val();
+      const banner = document.getElementById("exclusive-home-plan");
+      if (custom && Number(custom.amount) > 0 && custom.enabled !== false) {
+        userCustomPlan = custom;
+        if (banner) {
+          banner.classList.remove("is-hidden");
+          const price = document.getElementById("exclusive-home-price");
+          if (price) price.textContent = `₹${Number(custom.amount).toLocaleString("en-IN")}/mo`;
+          const title = document.getElementById("exclusive-home-title");
+          if (title) title.textContent = custom.title || "Special Patron Autopay";
+          const desc = document.getElementById("exclusive-home-desc");
+          if (desc) desc.textContent = custom.note || "Custom recurring amount specially configured for your account by admin.";
+        }
+      } else {
+        userCustomPlan = null;
+        banner?.classList.add("is-hidden");
+      }
+    }, () => {});
   }
   refreshSubscriptionMode();
 });
+
 
 subscriberSources.forEach((path) => {
   onValue(ref(database, path), (snapshot) => {

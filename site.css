@@ -2668,3 +2668,305 @@ footer .contact-details {
     gap: 0.75rem;
   }
 }
+
+/* =======================================================
+   AUTOPAY MULTI-TIER PLANS (100, 500, 1000, 1500)
+   ======================================================= */
+.hero-plan-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.85rem;
+  width: 100%;
+}
+
+.plan-chip {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(39, 39, 39, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+  backdrop-filter: blur(4px);
+}
+
+.plan-chip:hover {
+  background: var(--yellow-soft);
+  border-color: var(--yellow);
+  transform: translateY(-1px);
+}
+
+.plan-chip.active {
+  background: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+/* Monthly Mode Panel Extended Layout */
+#monthly-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.15rem;
+}
+
+.monthly-heading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.plan-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--yellow-soft);
+  color: #7a6000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.plan-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.plan-option-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.9rem;
+  border: 2px solid #e7e6dc;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.plan-option-card:hover {
+  border-color: #d0cebd;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.plan-option-card.active {
+  border-color: var(--yellow);
+  background: #fffdf2;
+  box-shadow: 0 6px 20px rgba(255, 218, 0, 0.28);
+}
+
+.plan-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.plan-tier-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plan-pill-popular {
+  align-self: flex-start;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: var(--green);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.15rem;
+}
+
+.plan-tier-cost {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.plan-tier-cost span {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.plan-tier-detail {
+  font-size: 0.72rem;
+  color: #66665f;
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* =======================================================
+   EXCLUSIVE CUSTOM ACCOUNT PLAN CARDS & BANNERS
+   ======================================================= */
+.exclusive-plan-card,
+.dashboard-exclusive-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.25rem 1.4rem;
+  border-radius: 16px;
+  border: 2px solid #eab308;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #fef9c3 100%);
+  box-shadow: 0 10px 30px rgba(234, 179, 8, 0.22);
+  margin-bottom: 1rem;
+  transition: all 200ms ease;
+}
+
+.exclusive-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.exclusive-tag,
+.exclusive-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: #ca8a04;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(202, 138, 4, 0.35);
+}
+
+.exclusive-price,
+.exclusive-amount {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #854d0e;
+}
+
+.exclusive-title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #713f12;
+  margin-bottom: 0.2rem;
+}
+
+.exclusive-desc,
+.exclusive-note {
+  font-size: 0.78rem;
+  color: #78350f;
+  line-height: 1.4;
+  margin: 0 0 0.85rem 0;
+}
+
+.exclusive-select-btn,
+.btn-activate-exclusive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 1.25rem;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #176b3a 0%, #15803d 100%);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(22, 107, 58, 0.3);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.exclusive-select-btn:hover,
+.btn-activate-exclusive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(22, 107, 58, 0.4);
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+}
+
+.btn-activate-exclusive:active {
+  transform: translateY(0);
+}
+
+/* Dashboard Plan Picker Grid */
+.dash-plan-picker-wrap {
+  margin: 0.85rem 0;
+}
+
+.dash-plan-picker-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.45rem;
+}
+
+.dash-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.dash-plan-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.5rem;
+  border: 2px solid #e5e5dc;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.dash-plan-btn:hover {
+  border-color: #cbcaa7;
+  transform: translateY(-1px);
+}
+
+.dash-plan-btn.active {
+  border-color: var(--yellow);
+  background: #fffdf2;
+  box-shadow: 0 3px 10px rgba(255, 218, 0, 0.25);
+}
+
+.dash-plan-cost {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.dash-plan-label {
+  font-size: 0.67rem;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 0.15rem;
+}

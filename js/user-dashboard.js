@@ -11,8 +11,25 @@ let primarySubscription = null;
 let cancelledSubscription = null;
 let monthlyIntent = null;
 let currentUser = null;
+let selectedDashboardPlanAmount = 100;
+let userCustomPlan = null;
+
+function renderCustomPlanBanner() {
+  const card = get("dash-exclusive-card");
+  if (!card) return;
+  if (userCustomPlan && Number(userCustomPlan.amount) > 0 && userCustomPlan.enabled !== false) {
+    card.classList.remove("is-hidden");
+    setText("dash-exclusive-amount", `₹${Number(userCustomPlan.amount).toLocaleString("en-IN")} / mo`);
+    setText("dash-exclusive-title", userCustomPlan.title || "Special Patron Autopay");
+    setText("dash-exclusive-note", userCustomPlan.note || "Custom recurring support tier configured exclusively for your account.");
+    setText("dash-exclusive-btn-amount", Number(userCustomPlan.amount).toLocaleString("en-IN"));
+  } else {
+    card.classList.add("is-hidden");
+  }
+}
 
 const confirmedStatuses = new Set(["paid", "completed", "success", "active"]);
+
 
 function setText(id, value) {
   const element = get(id);
@@ -702,7 +719,7 @@ function renderRecords() {
 
   setText("quick-stat-total", formatAmount(total));
   setText("quick-stat-count", `${paidRecords.length} confirmed contribution${paidRecords.length === 1 ? "" : "s"}`);
-  setText("quick-stat-plan", activeSub ? "₹100 / mo" : (status === "pending" ? "₹100 / mo" : (cancelledSubscription ? "None" : "₹100 / mo")));
+  setText("quick-stat-plan", activeSub ? `${formatAmount(activeSub.amount || 100)} / mo` : (status === "pending" ? `${formatAmount(monthlyIntent?.amount || 100)} / mo` : (cancelledSubscription ? "None" : `${formatAmount(selectedDashboardPlanAmount)} / mo`)));
   setText("quick-stat-plan-status", activeSub ? "Active supporter" : (status === "pending" ? "Payment pending" : (cancelledSubscription ? "Subscription ended" : "Not subscribed")));
 
   if (activeSub && activeSub.nextPaymentDue) {
@@ -732,9 +749,15 @@ function renderRecords() {
     subBadgePill.className = `status-pill ${paymentStatusClass(status)}`;
   }
 
+  const planPickerWrap = get("dash-plan-picker-wrap");
+  if (planPickerWrap) {
+    planPickerWrap.classList.toggle("is-hidden", Boolean(activeSub));
+  }
+  renderCustomPlanBanner();
+
   let subscriptionSummary = "";
   if (activeSub) {
-    subscriptionSummary = `Active · ${activeSub.team || "Monthly support"} · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
+    subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · ${activeSub.team || "Monthly support"} · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
   } else if (cancelledSubscription) {
     const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
     subscriptionSummary = `Your monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
@@ -743,9 +766,10 @@ function renderRecords() {
       ? "Subscription request pending. Click 'Activate subscription (Test)' to confirm and activate."
       : "Subscription request pending. Payment confirmation is still required to activate it.";
   } else {
-    subscriptionSummary = "No monthly subscription yet. Start with ₹100 per month.";
+    subscriptionSummary = `No monthly subscription yet. Start with ₹${selectedDashboardPlanAmount.toLocaleString("en-IN")} per month.`;
   }
   setText("subscription-summary", subscriptionSummary);
+
 
   const toggle = get("subscription-toggle");
   if (toggle) {
@@ -829,6 +853,8 @@ async function startMonthlySubscription() {
   }
   const now = Date.now();
   const nextPayment = nextMonthTimestamp(now);
+  const intentAmount = monthlyIntent && Number(monthlyIntent.amount) > 0 ? Number(monthlyIntent.amount) : null;
+  const effectiveAmount = intentAmount || selectedDashboardPlanAmount || 100;
 
   try {
     if (isPreviewMode) {
@@ -839,7 +865,7 @@ async function startMonthlySubscription() {
         source: "BCBB",
         type: "monthly",
         team: "BCBB Dog Rescue",
-        amount: 100,
+        amount: effectiveAmount,
         subscriptionStatus: "active",
         status: "active",
         email: currentUser.email,
@@ -858,7 +884,7 @@ async function startMonthlySubscription() {
         path: `payments/${currentUser.uid}`,
         type: "monthly",
         reference: `MS-SUB-${Math.floor(2000 + Math.random() * 8000)}`,
-        amount: 100,
+        amount: effectiveAmount,
         status: "paid",
         subscriptionStatus: "active",
         date: now,
@@ -881,7 +907,7 @@ async function startMonthlySubscription() {
       await set(subRef, {
         id: subId,
         type: "monthly",
-        amount: 100,
+        amount: effectiveAmount,
         status: "active",
         subscriptionStatus: "active",
         isTest: true,
@@ -900,7 +926,7 @@ async function startMonthlySubscription() {
       const payRef = push(ref(database, path));
       await set(payRef, {
         type: "monthly",
-        amount: 100,
+        amount: effectiveAmount,
         status: "paid",
         isTest: true,
         email: currentUser.email || "",
@@ -926,7 +952,7 @@ async function startMonthlySubscription() {
       const intent = push(ref(database, path));
       await set(intent, {
         type: "monthly",
-        amount: 100,
+        amount: effectiveAmount,
         status: "pending",
         createdAt: now,
         email: currentUser.email || "",
@@ -935,6 +961,7 @@ async function startMonthlySubscription() {
       });
       if (message) message.textContent = "Subscription request saved. Payment confirmation is required to activate.";
     }
+
   } catch (error) {
     console.error("Unable to start monthly subscription:", error);
     if (message) {
@@ -1261,6 +1288,16 @@ if (isPreviewMode) {
     }
   ];
 
+  const demoCustom = urlParams.get("customAmount");
+  if (demoCustom) {
+    userCustomPlan = {
+      amount: Number(demoCustom),
+      title: urlParams.get("customTitle") || "Special Patron Autopay",
+      note: "Custom recurring support tier configured exclusively for your account by admin.",
+      enabled: true
+    };
+  }
+
   renderRecords();
 } else {
   onAuthStateChanged(auth, (user) => {
@@ -1291,10 +1328,36 @@ if (isPreviewMode) {
     onValue(ref(database, `payments/${user.uid}`), (snapshot) => { paymentRecords = normalizeUidRecords(snapshot.val(), "payment", `payments/${user.uid}`); renderRecords(); }, () => {});
     onValue(ref(database, "testPayments"), (snapshot) => { testPaymentRecords = normalizeUidRecords(snapshot.val(), "test-payment", "testPayments").filter((record) => String(record.email || "").trim().toLowerCase() === email); renderRecords(); }, () => {});
     onValue(ref(database, `paymentIntents/${user.uid}`), (snapshot) => { paymentIntents = normalizeUidRecords(snapshot.val(), "intent", `paymentIntents/${user.uid}`); renderRecords(); }, () => {});
+
+    // Listen for exclusive custom plan assigned by admin
+    onValue(ref(database, `customPlans/${user.uid}`), (snapshot) => {
+      userCustomPlan = snapshot.val();
+      renderCustomPlanBanner();
+      renderRecords();
+    }, () => {});
   });
 }
+
+// Plan selection & exclusive button event listeners
+get("dash-exclusive-btn")?.addEventListener("click", () => {
+  if (userCustomPlan && Number(userCustomPlan.amount) > 0) {
+    selectedDashboardPlanAmount = Number(userCustomPlan.amount);
+    document.querySelectorAll(".dash-plan-btn").forEach((b) => b.classList.remove("active"));
+    toggleMonthlySubscription();
+  }
+});
+
+document.querySelectorAll(".dash-plan-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const amt = Number(btn.dataset.amount) || 100;
+    selectedDashboardPlanAmount = amt;
+    document.querySelectorAll(".dash-plan-btn").forEach((b) => b.classList.toggle("active", Number(b.dataset.amount) === amt));
+    renderRecords();
+  });
+});
 
 get("logout-button")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.replace("user-login.html");
 });
+
