@@ -4,5 +4,9 @@
 .env
 .env.*
 
-# Logs
+# Logs & Test outputs
 *.log
+scratch*
+scratch_*
+*.tmp
+

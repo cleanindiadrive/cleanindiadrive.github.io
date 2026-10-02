@@ -54,11 +54,35 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const rawUrl = (req.url || "/").split("?")[0];
-  let safePath = path.normalize(decodeURIComponent(rawUrl)).replace(/^(\.\.[/\\])+/, "");
-  if (safePath === "/" || safePath === "\\" || !safePath) safePath = "index.html";
+  let decodedUrl;
+  try {
+    decodedUrl = decodeURIComponent((req.url || "/").split("?")[0]);
+  } catch {
+    res.writeHead(400, { "Content-Type": "text/plain" });
+    res.end("Bad Request: Malformed URI");
+    return;
+  }
 
-  let filePath = path.join(__dirname, safePath);
+  // Prevent directory traversal & dotfiles (.git, .env, .gitignore)
+  const segments = decodedUrl.split(/[/\\]+/).filter(Boolean);
+  if (segments.some(seg => seg.startsWith("."))) {
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("404 Not Found");
+    return;
+  }
+
+  let safePath = path.normalize(decodedUrl).replace(/^(\.\.[/\\])+/, "").replace(/^[/\\]+/, "");
+  if (!safePath || safePath === ".") safePath = "index.html";
+
+  let filePath = path.resolve(__dirname, safePath);
+
+  // Security check: must reside inside root directory
+  if (!filePath.startsWith(__dirname)) {
+    res.writeHead(403, { "Content-Type": "text/plain" });
+    res.end("403 Forbidden");
+    return;
+  }
+
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
     filePath = path.join(filePath, "index.html");
@@ -104,12 +128,17 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, headers);
     const raw = fs.createReadStream(filePath);
     const gzip = zlib.createGzip({ level: 6 });
+    raw.on("error", () => res.end());
+    gzip.on("error", () => res.end());
     raw.pipe(gzip).pipe(res);
   } else {
     headers["Content-Length"] = stat.size;
     res.writeHead(200, headers);
-    fs.createReadStream(filePath).pipe(res);
+    const raw = fs.createReadStream(filePath);
+    raw.on("error", () => res.end());
+    raw.pipe(res);
   }
+
 });
 
 server.listen(PORT, HOST, () => {

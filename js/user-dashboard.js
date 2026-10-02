@@ -29,10 +29,11 @@ function escapeHtml(value) {
 }
 
 function formatAmount(value) {
-  if (value === null || value === undefined || value === "" || Number(value) <= 0 || Number.isNaN(Number(value))) {
+  const num = Number(value);
+  if (value === null || value === undefined || value === "" || !Number.isFinite(num) || num <= 0) {
     return "—";
   }
-  return `₹${(Number(value) || 0).toLocaleString("en-IN")}`;
+  return `₹${num.toLocaleString("en-IN")}`;
 }
 
 function formatDateTime(value) {
