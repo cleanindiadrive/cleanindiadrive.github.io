@@ -4,7 +4,7 @@ import { auth, database, isDevelopmentMode } from "./firebase-client.js";
 
 const get = (id) => document.getElementById(id);
 
-function playPosTransactionAnimation(container, onComplete) {
+function playPosTransactionAnimation(container, onComplete, reverse = false) {
   if (!container) {
     if (typeof onComplete === "function") onComplete();
     return;
@@ -13,6 +13,7 @@ function playPosTransactionAnimation(container, onComplete) {
     return;
   }
   container.classList.remove("is-animating");
+  container.classList.remove("is-animating-reverse");
   const card = container.querySelector(".card");
   const post = container.querySelector(".post");
   const dollar = container.querySelector(".dollar");
@@ -24,9 +25,10 @@ function playPosTransactionAnimation(container, onComplete) {
   if (post) post.style.animation = "";
   if (dollar) dollar.style.animation = "";
 
-  container.classList.add("is-animating");
+  container.classList.add(reverse ? "is-animating-reverse" : "is-animating");
   setTimeout(() => {
     container.classList.remove("is-animating");
+    container.classList.remove("is-animating-reverse");
     if (typeof onComplete === "function") {
       onComplete();
     }
@@ -832,14 +834,14 @@ function renderRecords() {
     const isTestablePending = Boolean(monthlyIntent) && !activeSub && (isDevelopmentMode || isPreviewMode);
     setPosButtonDisabled(toggle, Boolean(monthlyIntent) && !activeSub && !isTestablePending);
     const label = status === "active"
-      ? "Pause subscription"
+      ? "Pause"
       : status === "paused"
-        ? "Resume subscription"
+        ? "Resume"
         : status === "pending"
           ? (isTestablePending ? "Activate (Test)" : "Payment pending")
           : status === "cancelled"
-            ? "New Transaction"
-            : "New Transaction";
+            ? "Subscribe"
+            : "Subscribe";
     setPosButtonText(toggle, label);
   }
   const cancel = get("subscription-cancel");
@@ -1044,9 +1046,12 @@ const dashSubToggle = get("subscription-toggle");
 dashSubToggle?.addEventListener("click", async (e) => {
   e.preventDefault();
   if (!currentUser || isPosButtonDisabled(dashSubToggle)) return;
-  playPosTransactionAnimation(dashSubToggle);
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+  const isPausing = activeSub && normalizedStatus(activeSub) === "active";
+  const isResuming = activeSub && normalizedStatus(activeSub) === "paused";
+  // Play reverse animation when pausing, normal when resuming/starting
+  playPosTransactionAnimation(dashSubToggle, undefined, isPausing);
   if (!activeSub) {
     await startMonthlySubscription();
     return;

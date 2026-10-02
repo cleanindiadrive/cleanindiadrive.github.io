@@ -665,9 +665,9 @@ nav {
 .pos-transaction-container {
   background-color: #ffffff;
   display: flex;
-  width: 280px;
+  width: 260px;
   max-width: 100%;
-  height: 60px;
+  height: 54px;
   position: relative;
   border-radius: 10px;
   transition: 0.3s ease-in-out;
@@ -682,21 +682,28 @@ nav {
 
 .pos-transaction-container:hover,
 .pos-transaction-container.is-animating,
+.pos-transaction-container.is-animating-reverse,
 .pos-transaction-container:active {
   transform: scale(1.02);
-  width: 124px;
+  width: 116px;
 }
 
 .pos-transaction-container:hover .left-side,
 .pos-transaction-container.is-animating .left-side,
+.pos-transaction-container.is-animating-reverse .left-side,
 .pos-transaction-container:active .left-side {
   width: 100%;
 }
 
+/* Home page subscription button: yellow */
+.home-new-tx-wrap .pos-transaction-container .left-side {
+  background-color: var(--yellow);
+}
+
 .pos-transaction-container .left-side {
   background-color: #5de2a3;
-  width: 74px;
-  height: 60px;
+  width: 68px;
+  height: 54px;
   border-radius: 4px;
   position: relative;
   display: flex;
@@ -709,7 +716,7 @@ nav {
 }
 
 .pos-transaction-container .right-side {
-  width: calc(100% - 74px);
+  width: calc(100% - 68px);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -724,9 +731,9 @@ nav {
 }
 
 .pos-transaction-container .arrow {
-  width: 13px;
-  height: 13px;
-  margin-right: 14px;
+  width: 12px;
+  height: 12px;
+  margin-right: 12px;
   flex-shrink: 0;
 }
 
@@ -776,9 +783,17 @@ nav {
   animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
 }
 
+.pos-transaction-container.is-animating-reverse .card {
+  animation: slide-top-reverse 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
+}
+
 .pos-transaction-container:hover .post,
 .pos-transaction-container.is-animating .post {
   animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+}
+
+.pos-transaction-container.is-animating-reverse .post {
+  animation: slide-post-reverse 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
 }
 
 @keyframes slide-top {
@@ -796,6 +811,24 @@ nav {
 
   100% {
     transform: translateY(-4px) rotate(90deg);
+  }
+}
+
+@keyframes slide-top-reverse {
+  0% {
+    transform: translateY(-4px) rotate(90deg);
+  }
+
+  40% {
+    transform: translateY(-40px) rotate(90deg);
+  }
+
+  50% {
+    transform: translateY(-40px) rotate(180deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0deg);
   }
 }
 
@@ -874,6 +907,20 @@ nav {
   }
 }
 
+@keyframes slide-post-reverse {
+  0% {
+    transform: translateY(-40px);
+  }
+
+  50% {
+    transform: translateY(-40px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
 .pos-transaction-container .dollar {
   position: absolute;
   font-size: 11px;
@@ -912,12 +959,40 @@ nav {
   filter: grayscale(0.5);
 }
 
+/* Reverse animation: dollar symbol fades out */
+.pos-transaction-container.is-animating-reverse .dollar {
+  animation: fade-out-back 0.3s 0s forwards;
+}
+
+@keyframes fade-out-back {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
 .dashboard-new-tx-wrap,
 .dashboard-subscription-tx-wrap {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin: 0.75rem 0 0.5rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.subscription-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 1rem;
+  border: 1px solid #edece4;
+  border-radius: var(--radius-md);
+  background: #fcfcfa;
+  margin-top: 0.75rem;
 }
 
 .home-new-tx-wrap {
@@ -938,6 +1013,7 @@ nav {
 
   .pos-transaction-container:hover,
   .pos-transaction-container.is-animating,
+  .pos-transaction-container.is-animating-reverse,
   .pos-transaction-container:active {
     width: 112px;
     transform: scale(1.02);
@@ -1062,7 +1138,7 @@ nav {
   gap: 0.6rem;
   justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .donors-card {
@@ -3405,4 +3481,301 @@ footer .contact-details {
   color: var(--muted);
   font-weight: 600;
   margin-top: 0.15rem;
+}
+
+/* ==============================================================
+   Dog Loading Screen Overlay
+   ============================================================== */
+#page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--canvas);
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+  gap: 1.2rem;
+}
+
+#page-loader.loader-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Dog loader extras — appended to site.css via node script */
+
+#page-loader .loader-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  animation: loader-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes loader-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+#page-loader .main {
+  position: relative;
+  width: min(23.5vmax, 200px);
+  height: min(23.5vmax, 200px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#page-loader .leg {
+  position: absolute;
+  bottom: 0;
+  width: 2vmax;
+  height: 2.125vmax;
+}
+
+#page-loader .paw {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 1.95vmax;
+  height: 1.8vmax;
+  overflow: hidden;
+}
+
+#page-loader .paw::before {
+  content: "";
+  position: absolute;
+  width: 5vmax;
+  height: 3vmax;
+  border-radius: 50%;
+}
+
+#page-loader .top {
+  position: absolute;
+  bottom: 0;
+  left: 0.75vmax;
+  height: 4.5vmax;
+  width: 2.625vmax;
+  border-top-left-radius: 1.425vmax;
+  border-top-right-radius: 1.425vmax;
+  transform-origin: bottom right;
+  transform: rotateZ(90deg) translateX(-0.1vmax) translateY(1.5vmax);
+  z-index: -1;
+  background-image: linear-gradient(70deg, transparent 20%, #deac80 20%);
+}
+
+#page-loader .dog {
+  position: relative;
+  width: min(20vmax, 170px);
+  height: min(8vmax, 68px);
+}
+
+#page-loader .dog::before {
+  content: "";
+  position: absolute;
+  bottom: -0.75vmax;
+  right: -0.15vmax;
+  width: 100%;
+  height: 1.5vmax;
+  background-color: #b5c18e;
+  border-radius: 50%;
+  z-index: -1000;
+  animation: dog-shadow 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__head {
+  position: absolute;
+  left: 4.5vmax;
+  bottom: 0;
+  width: 8vmax;
+  height: 5vmax;
+  border-top-left-radius: 4.05vmax;
+  border-top-right-radius: 4.05vmax;
+  border-bottom-right-radius: 3.3vmax;
+  border-bottom-left-radius: 3.3vmax;
+  background-color: #deac80;
+  animation: dog-head 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__head-c {
+  position: absolute;
+  left: 1.5vmax;
+  bottom: 0;
+  width: 9.75vmax;
+  height: 8.25vmax;
+  animation: dog-head 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+  z-index: -1;
+}
+
+#page-loader .dog__snout {
+  position: absolute;
+  left: -1.5vmax;
+  bottom: 0;
+  width: 7.5vmax;
+  height: 3.75vmax;
+  border-top-right-radius: 3vmax;
+  border-bottom-right-radius: 3vmax;
+  border-bottom-left-radius: 4.5vmax;
+  background-color: #f7dcb9;
+  animation: dog-snout 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__snout::before {
+  content: "";
+  position: absolute;
+  left: -0.1125vmax;
+  top: -0.15vmax;
+  width: 1.875vmax;
+  height: 1.125vmax;
+  border-top-right-radius: 3vmax;
+  border-bottom-right-radius: 3vmax;
+  border-bottom-left-radius: 4.5vmax;
+  background-color: #6c4e31;
+  animation: dog-snout-b 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__nose {
+  position: absolute;
+  top: -1.95vmax;
+  left: 40%;
+  width: 0.75vmax;
+  height: 2.4vmax;
+  border-radius: 0.525vmax;
+  transform-origin: bottom;
+  transform: rotateZ(10deg);
+  background-color: #d7dbd2;
+}
+
+#page-loader .dog__eye-l,
+#page-loader .dog__eye-r {
+  position: absolute;
+  top: -0.9vmax;
+  width: 0.675vmax;
+  height: 0.375vmax;
+  border-radius: 50%;
+  background-color: #1c3130;
+  animation: dog-eye 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__eye-l { left: 27%; }
+#page-loader .dog__eye-r { left: 65%; }
+
+#page-loader .dog__ear-l,
+#page-loader .dog__ear-r {
+  position: absolute;
+  width: 5vmax;
+  height: 3.3vmax;
+  border-top-left-radius: 3.3vmax;
+  border-top-right-radius: 3vmax;
+  border-bottom-right-radius: 5vmax;
+  border-bottom-left-radius: 5vmax;
+  background-color: #deac80;
+}
+
+#page-loader .dog__ear-l {
+  top: 1.5vmax; left: 10vmax;
+  transform-origin: bottom left;
+  transform: rotateZ(-50deg);
+  z-index: -1;
+  animation: dog-ear-l 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__ear-r {
+  top: 1.5vmax; right: 3vmax;
+  transform-origin: bottom right;
+  transform: rotateZ(25deg);
+  z-index: -2;
+  animation: dog-ear-r 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__body {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: absolute;
+  bottom: 0.3vmax; left: 6vmax;
+  width: 18vmax; height: 4vmax;
+  border-top-left-radius: 3vmax;
+  border-top-right-radius: 6vmax;
+  border-bottom-right-radius: 1.5vmax;
+  border-bottom-left-radius: 6vmax;
+  background-color: #914f1e;
+  z-index: -2;
+  animation: dog-body 10s cubic-bezier(0.3, 0.41, 0.18, 1.01) infinite;
+}
+
+#page-loader .dog__tail {
+  position: absolute;
+  top: 20px; right: -1.5vmax;
+  height: 3vmax; width: 4vmax;
+  background-color: #914f1e;
+  border-radius: 1.5vmax;
+}
+
+#page-loader .dog__paws {
+  position: absolute;
+  bottom: 0; left: 7.5vmax;
+  width: 10vmax; height: 3vmax;
+}
+
+#page-loader .dog__bl-leg { left: -3vmax; z-index: -10; }
+#page-loader .dog__bl-paw::before { background-color: #fffbe6; }
+#page-loader .dog__bl-top { background-image: linear-gradient(80deg, transparent 20%, #deac80 20%); }
+#page-loader .dog__fl-leg { z-index: 10; left: 0; }
+#page-loader .dog__fl-paw::before { background-color: #fffbe6; }
+#page-loader .dog__fr-leg { right: 0; }
+#page-loader .dog__fr-paw::before { background-color: #fffbe6; }
+
+@keyframes dog-head {
+  0%, 10%, 20%, 26%, 28%, 90%, 100% { height: 8.25vmax; bottom: 0; transform: rotateZ(0); }
+  5%, 15%, 22%, 24%, 30% { height: 8.1vmax; }
+  32%, 50% { height: 8.25vmax; }
+  55%, 60% { bottom: 0.75vmax; transform: rotateZ(0); }
+  70%, 80% { bottom: 0.75vmax; transform: rotateZ(10deg); }
+}
+
+@keyframes dog-body {
+  0%, 10%, 20%, 26%, 28%, 32%, 100% { height: 7.2vmax; }
+  5%, 15%, 22%, 24%, 30% { height: 7.05vmax; }
+}
+
+@keyframes dog-ear-l {
+  0%, 10%, 20%, 26%, 28%, 82%, 100% { transform: rotateZ(-50deg); }
+  5%, 15%, 22%, 24% { transform: rotateZ(-48deg); }
+  30%, 31% { transform: rotateZ(-30deg); }
+  32%, 80% { transform: rotateZ(-60deg); }
+}
+
+@keyframes dog-ear-r {
+  0%, 10%, 20%, 26%, 28% { transform: rotateZ(20deg); }
+  5%, 15%, 22%, 24% { transform: rotateZ(18deg); }
+  30%, 31% { transform: rotateZ(10deg); }
+  32% { transform: rotateZ(25deg); }
+}
+
+@keyframes dog-snout {
+  0%, 10%, 20%, 26%, 28%, 82%, 100% { height: 3.75vmax; }
+  5%, 15%, 22%, 24% { height: 3.45vmax; }
+}
+
+@keyframes dog-snout-b {
+  0%, 10%, 20%, 26%, 28%, 98%, 100% { width: 1.875vmax; }
+  5%, 15%, 22%, 24% { width: 1.8vmax; }
+  34%, 98% { width: 1.275vmax; }
+}
+
+@keyframes dog-shadow {
+  0%, 10%, 20%, 26%, 28%, 30%, 84%, 100% { width: 99%; }
+  5%, 15%, 22%, 24% { width: 101%; }
+  34%, 81% { width: 96%; }
+}
+
+@keyframes dog-eye {
+  0%, 30% { width: 0.675vmax; height: 0.3vmax; }
+  32%, 59%, 90%, 100% { width: 0.525vmax; height: 0.525vmax; transform: translateY(0); }
+  60%, 75% { transform: translateY(-0.3vmax); }
+  80%, 85% { transform: translateY(0.15vmax); }
 }

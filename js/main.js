@@ -255,7 +255,7 @@ function refreshSubscriptionMode() {
   currentSubscription = currentUser ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase()) : null;
   if (!currentUser) {
     status.textContent = `Log in to start your ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
-    setPosButtonText(button, "New Transaction");
+    setPosButtonText(button, "Subscribe");
     setPosButtonDisabled(button, false);
     accountAction?.classList.add("is-hidden");
     return;
@@ -265,7 +265,7 @@ function refreshSubscriptionMode() {
     status.textContent = monthlyRequestPending
       ? "Your subscription request is pending payment confirmation."
       : `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
-    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "New Transaction");
+    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "Subscribe");
     setPosButtonDisabled(button, monthlyRequestPending);
     accountAction?.classList.add("is-hidden");
     return;
@@ -275,7 +275,7 @@ function refreshSubscriptionMode() {
     status.textContent = monthlyRequestPending
       ? "Your new subscription request is pending payment confirmation."
       : `You can start a new subscription at ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo.`;
-    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "New Transaction");
+    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "Subscribe");
     setPosButtonDisabled(button, monthlyRequestPending);
     accountAction?.classList.remove("is-hidden");
     return;
@@ -284,7 +284,7 @@ function refreshSubscriptionMode() {
   const paused = currentSubscription.status === "paused";
   if (paused) {
     status.textContent = "Your subscription is paused. Resume it from your account.";
-    setPosButtonText(button, "Resume subscription");
+    setPosButtonText(button, "Resume");
     setPosButtonDisabled(button, false);
     accountAction?.classList.remove("is-hidden");
     return;

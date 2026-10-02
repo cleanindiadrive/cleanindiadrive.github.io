@@ -12,6 +12,26 @@
     <link rel="preload" as="image" href="assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
   </head>
   <body class="dashboard-page">
+    <!-- Page Loading Screen -->
+    <div id="page-loader" aria-hidden="true">
+      <div class="main">
+        <div class="dog">
+          <div class="dog__paws">
+            <div class="dog__bl-leg leg"><div class="dog__bl-paw paw"></div><div class="dog__bl-top top"></div></div>
+            <div class="dog__fl-leg leg"><div class="dog__fl-paw paw"></div><div class="dog__fl-top top"></div></div>
+            <div class="dog__fr-leg leg"><div class="dog__fr-paw paw"></div><div class="dog__fr-top top"></div></div>
+          </div>
+          <div class="dog__body"><div class="dog__tail"></div></div>
+          <div class="dog__head">
+            <div class="dog__snout">
+              <div class="dog__eyes"><div class="dog__eye-l"></div><div class="dog__eye-r"></div></div>
+            </div>
+          </div>
+          <div class="dog__head-c"><div class="dog__ear-r"></div><div class="dog__ear-l"></div></div>
+        </div>
+      </div>
+      <span class="loader-label">Loading your account…</span>
+    </div>
     <header class="dashboard-header">
       <div class="dashboard-nav">
         <a class="logo" href="index.html" aria-label="Manali Strays home">
@@ -161,32 +181,34 @@
               </div>
             </div>
 
-            <div class="dashboard-subscription-tx-wrap">
-              <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0" aria-label="Start subscription transaction">
-                <div class="left-side">
-                  <div class="card">
-                    <div class="card-line"></div>
-                    <div class="buttons"></div>
-                  </div>
-                  <div class="post">
-                    <div class="post-line"></div>
-                    <div class="screen">
-                      <div class="dollar">₹</div>
+            <div class="subscription-action-group">
+              <div class="dashboard-subscription-tx-wrap">
+                <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0" aria-label="Start subscription transaction">
+                  <div class="left-side">
+                    <div class="card">
+                      <div class="card-line"></div>
+                      <div class="buttons"></div>
                     </div>
-                    <div class="numbers"></div>
-                    <div class="numbers-line2"></div>
+                    <div class="post">
+                      <div class="post-line"></div>
+                      <div class="screen">
+                        <div class="dollar">₹</div>
+                      </div>
+                      <div class="numbers"></div>
+                      <div class="numbers-line2"></div>
+                    </div>
                   </div>
-                </div>
-                <div class="right-side">
-                  <div class="new" id="subscription-toggle-text">New Transaction</div>
-                  <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
+                  <div class="right-side">
+                    <div class="new" id="subscription-toggle-text">Subscribe</div>
+                    <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="subscription-actions">
-              <button class="mode-action mode-action-danger" id="subscription-cancel" type="button" disabled>Cancel subscription</button>
-              <button class="mode-action mode-action-dev is-hidden" id="dev-charge-button" type="button">Simulate monthly renewal</button>
+              <div class="subscription-actions">
+                <button class="mode-action mode-action-danger" id="subscription-cancel" type="button" disabled>Cancel subscription</button>
+                <button class="mode-action mode-action-dev is-hidden" id="dev-charge-button" type="button">Simulate monthly renewal</button>
+              </div>
             </div>
             <span class="mode-message" id="subscription-message" role="status"></span>
             <details class="nested-accordion">
@@ -257,5 +279,13 @@
     </div>
 
     <script type="module" src="js/user-dashboard.js"></script>
+    <script>
+      window.addEventListener('load', function() {
+        var loader = document.getElementById('page-loader');
+        if (loader) {
+          setTimeout(function() { loader.classList.add('loader-hidden'); }, 400);
+        }
+      });
+    </script>
   </body>
 </html>
