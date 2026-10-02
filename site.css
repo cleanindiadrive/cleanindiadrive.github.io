@@ -465,6 +465,272 @@ nav {
   color: #ffffff;
 }
 
+/* ==============================================================
+   Uiverse.io "New Transaction" POS Terminal Card Animation
+   ============================================================== */
+.pos-transaction-container {
+  background-color: #ffffff;
+  display: flex;
+  width: 460px;
+  max-width: 100%;
+  height: 120px;
+  position: relative;
+  border-radius: 12px;
+  transition: 0.3s ease-in-out;
+  border: 1px solid #ebeae0;
+  box-shadow: 0 4px 14px rgba(35, 35, 25, 0.06);
+  user-select: none;
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pos-transaction-container:hover {
+  transform: scale(1.02);
+  width: 220px;
+}
+
+.pos-transaction-container:hover .left-side {
+  width: 100%;
+}
+
+.pos-transaction-container .left-side {
+  background-color: #5de2a3;
+  width: 130px;
+  height: 120px;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.pos-transaction-container .right-side {
+  width: calc(100% - 130px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  justify-content: space-between;
+  white-space: nowrap;
+  transition: 0.3s;
+}
+
+.pos-transaction-container .right-side:hover {
+  background-color: #f9f7f9;
+}
+
+.pos-transaction-container .arrow {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.pos-transaction-container .new {
+  font-size: 21px;
+  font-family: 'Outfit', 'Lexend Deca', sans-serif;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-left: 20px;
+}
+
+.pos-transaction-container .card {
+  width: 70px;
+  height: 46px;
+  background-color: #c7ffbc;
+  border-radius: 6px;
+  position: absolute;
+  display: flex;
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 9px 9px 9px -2px rgba(77, 200, 143, 0.72);
+}
+
+.pos-transaction-container .card-line {
+  width: 65px;
+  height: 13px;
+  background-color: #80ea69;
+  border-radius: 2px;
+  margin-top: 7px;
+}
+
+.pos-transaction-container .buttons {
+  width: 8px;
+  height: 8px;
+  background-color: #379e1f;
+  box-shadow: 0 -10px 0 0 #26850e, 0 10px 0 0 #56be3e;
+  border-radius: 50%;
+  margin-top: 5px;
+  transform: rotate(90deg);
+  margin: 10px 0 0 -30px;
+}
+
+.pos-transaction-container:hover .card {
+  animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
+}
+
+.pos-transaction-container:hover .post {
+  animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+}
+
+@keyframes slide-top {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-70px) rotate(90deg);
+  }
+
+  60% {
+    transform: translateY(-70px) rotate(90deg);
+  }
+
+  100% {
+    transform: translateY(-8px) rotate(90deg);
+  }
+}
+
+.pos-transaction-container .post {
+  width: 63px;
+  height: 75px;
+  background-color: #dddde0;
+  position: absolute;
+  z-index: 11;
+  bottom: 10px;
+  top: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pos-transaction-container .post-line {
+  width: 47px;
+  height: 9px;
+  background-color: #545354;
+  position: absolute;
+  border-radius: 0px 0px 3px 3px;
+  right: 8px;
+  top: 8px;
+}
+
+.pos-transaction-container .post-line:before {
+  content: "";
+  position: absolute;
+  width: 47px;
+  height: 9px;
+  background-color: #757375;
+  top: -8px;
+}
+
+.pos-transaction-container .screen {
+  width: 47px;
+  height: 23px;
+  background-color: #ffffff;
+  position: absolute;
+  top: 22px;
+  right: 8px;
+  border-radius: 3px;
+}
+
+.pos-transaction-container .numbers {
+  width: 12px;
+  height: 12px;
+  background-color: #838183;
+  box-shadow: 0 -18px 0 0 #838183, 0 18px 0 0 #838183;
+  border-radius: 2px;
+  position: absolute;
+  transform: rotate(90deg);
+  left: 25px;
+  top: 52px;
+}
+
+.pos-transaction-container .numbers-line2 {
+  width: 12px;
+  height: 12px;
+  background-color: #aaa9ab;
+  box-shadow: 0 -18px 0 0 #aaa9ab, 0 18px 0 0 #aaa9ab;
+  border-radius: 2px;
+  position: absolute;
+  transform: rotate(90deg);
+  left: 25px;
+  top: 68px;
+}
+
+@keyframes slide-post {
+  50% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-70px);
+  }
+}
+
+.pos-transaction-container .dollar {
+  position: absolute;
+  font-size: 15px;
+  font-family: 'Outfit', 'Lexend Deca', sans-serif;
+  font-weight: 700;
+  width: 100%;
+  left: 0;
+  top: 0;
+  color: #4b953b;
+  text-align: center;
+  line-height: 23px;
+}
+
+.pos-transaction-container:hover .dollar {
+  animation: fade-in-fwd 0.3s 1s backwards;
+}
+
+@keyframes fade-in-fwd {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-new-tx-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0 2rem;
+}
+
+.home-new-tx-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+@media only screen and (max-width: 480px) {
+  .pos-transaction-container {
+    transform: scale(0.85);
+    transform-origin: center center;
+    margin: 0.5rem auto;
+  }
+
+  .pos-transaction-container:hover {
+    transform: scale(0.88);
+  }
+
+  .pos-transaction-container .new {
+    font-size: 17px;
+    margin-left: 12px;
+  }
+}
+
 .mode-form-row {
   display: flex;
   align-items: center;
