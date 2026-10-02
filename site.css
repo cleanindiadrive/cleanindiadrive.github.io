@@ -783,8 +783,9 @@ nav {
   animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
 }
 
+/* Reverse: same keyframes played backwards — starts from last frame of forward anim */
 .pos-transaction-container.is-animating-reverse .card {
-  animation: slide-top-reverse 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
+  animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both reverse;
 }
 
 .pos-transaction-container:hover .post,
@@ -792,8 +793,9 @@ nav {
   animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
 }
 
+/* Reverse: same keyframes played backwards */
 .pos-transaction-container.is-animating-reverse .post {
-  animation: slide-post-reverse 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+  animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both reverse;
 }
 
 @keyframes slide-top {
@@ -811,24 +813,6 @@ nav {
 
   100% {
     transform: translateY(-4px) rotate(90deg);
-  }
-}
-
-@keyframes slide-top-reverse {
-  0% {
-    transform: translateY(-4px) rotate(90deg);
-  }
-
-  40% {
-    transform: translateY(-40px) rotate(90deg);
-  }
-
-  50% {
-    transform: translateY(-40px) rotate(180deg);
-  }
-
-  100% {
-    transform: translateY(0) rotate(0deg);
   }
 }
 
@@ -907,20 +891,6 @@ nav {
   }
 }
 
-@keyframes slide-post-reverse {
-  0% {
-    transform: translateY(-40px);
-  }
-
-  50% {
-    transform: translateY(-40px);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}
-
 .pos-transaction-container .dollar {
   position: absolute;
   font-size: 11px;
@@ -959,20 +929,9 @@ nav {
   filter: grayscale(0.5);
 }
 
-/* Reverse animation: dollar symbol fades out */
+/* Reverse animation: dollar fades in (it was hidden at forward-anim's last frame from reverse perspective) */
 .pos-transaction-container.is-animating-reverse .dollar {
-  animation: fade-out-back 0.3s 0s forwards;
-}
-
-@keyframes fade-out-back {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(3px);
-  }
+  animation: fade-in-fwd 0.3s 0s both reverse;
 }
 
 .dashboard-new-tx-wrap,
