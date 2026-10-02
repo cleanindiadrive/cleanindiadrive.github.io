@@ -94,6 +94,12 @@ const server = http.createServer((req, res) => {
   }
 
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+    const error404 = path.join(__dirname, "404.html");
+    if (fs.existsSync(error404)) {
+      res.writeHead(404, { "Content-Type": "text/html; charset=UTF-8" });
+      res.end(fs.readFileSync(error404));
+      return;
+    }
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("404 Not Found");
     return;
