@@ -143,74 +143,76 @@
           <div class="accordion-content">
             <div class="subscription-status-card" id="subscription-status-banner">
               <div class="status-banner-header">
-                <span class="status-banner-title">Monthly Support Status</span>
+                <div>
+                  <span class="status-banner-title">Monthly Support Status</span>
+                  <p id="subscription-summary" class="status-banner-sub">Your monthly subscription status will appear here.</p>
+                </div>
                 <span class="status-pill status-pill-active" id="subscription-badge-pill">Active</span>
               </div>
-              <p id="subscription-summary">Your monthly subscription status will appear here.</p>
-            </div>
 
-            <!-- Exclusive Custom Autopay Plan Card (Rendered when admin configured a custom plan for this account) -->
-            <div class="dashboard-exclusive-card is-hidden" id="dash-exclusive-card">
-              <div class="exclusive-header">
-                <span class="exclusive-badge">⭐ EXCLUSIVE TO YOUR ACCOUNT</span>
-                <span class="exclusive-amount" id="dash-exclusive-amount">₹2,500 / mo</span>
+              <!-- Exclusive Custom Autopay Plan Card (Rendered when admin configured a custom plan for this account) -->
+              <div class="dashboard-exclusive-card is-hidden" id="dash-exclusive-card">
+                <div class="exclusive-header">
+                  <span class="exclusive-badge">⭐ EXCLUSIVE TO YOUR ACCOUNT</span>
+                  <span class="exclusive-amount" id="dash-exclusive-amount">₹2,500 / mo</span>
+                </div>
+                <strong class="exclusive-title" id="dash-exclusive-title">Special Patron Autopay</strong>
+                <p class="exclusive-note" id="dash-exclusive-note">Custom recurring support tier configured exclusively for your account.</p>
+                <button type="button" class="btn-activate-exclusive" id="dash-exclusive-btn">
+                  ⚡ Activate Exclusive ₹<span id="dash-exclusive-btn-amount">2,500</span>/mo Autopay
+                </button>
               </div>
-              <strong class="exclusive-title" id="dash-exclusive-title">Special Patron Autopay</strong>
-              <p class="exclusive-note" id="dash-exclusive-note">Custom recurring support tier configured exclusively for your account.</p>
-              <button type="button" class="btn-activate-exclusive" id="dash-exclusive-btn">
-                ⚡ Activate Exclusive ₹<span id="dash-exclusive-btn-amount">2,500</span>/mo Autopay
-              </button>
-            </div>
 
-            <!-- Standard Autopay Plan Picker (when user wants to choose/change tier) -->
-            <div class="dash-plan-picker-wrap" id="dash-plan-picker-wrap">
-              <div class="dash-plan-picker-label">Select monthly autopay tier:</div>
-              <div class="cc-ios-tabs" id="dash-autopay-tabs">
-                <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-100" value="100" checked />
-                <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-500" value="500" />
-                <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-1000" value="1000" />
-                <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-1500" value="1500" />
+              <!-- Standard Autopay Plan Picker (when user wants to choose/change tier) -->
+              <div class="dash-plan-picker-wrap" id="dash-plan-picker-wrap">
+                <div class="dash-plan-picker-label">Select monthly autopay tier:</div>
+                <div class="cc-ios-tabs" id="dash-autopay-tabs">
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-100" value="100" checked />
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-500" value="500" />
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-1000" value="1000" />
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-1500" value="1500" />
 
-                <div class="cc-ios-tabs__control">
-                  <div class="cc-ios-tabs__thumb"></div>
-                  <label class="cc-ios-tabs__item" for="dash-tab-100">₹100</label>
-                  <label class="cc-ios-tabs__item" for="dash-tab-500">₹500</label>
-                  <label class="cc-ios-tabs__item" for="dash-tab-1000">₹1,000</label>
-                  <label class="cc-ios-tabs__item" for="dash-tab-1500">₹1,500</label>
+                  <div class="cc-ios-tabs__control">
+                    <div class="cc-ios-tabs__thumb"></div>
+                    <label class="cc-ios-tabs__item" for="dash-tab-100">₹100</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-500">₹500</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-1000">₹1,000</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-1500">₹1,500</label>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="subscription-action-group">
-              <div class="dashboard-subscription-tx-wrap">
-                <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0" aria-label="Start subscription transaction">
-                  <div class="left-side">
-                    <div class="card">
-                      <div class="card-line"></div>
-                      <div class="buttons"></div>
-                    </div>
-                    <div class="post">
-                      <div class="post-line"></div>
-                      <div class="screen">
-                        <div class="dollar">₹</div>
+              <div class="subscription-action-group">
+                <div class="dashboard-subscription-tx-wrap">
+                  <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0" aria-label="Start subscription transaction">
+                    <div class="left-side">
+                      <div class="card">
+                        <div class="card-line"></div>
+                        <div class="buttons"></div>
                       </div>
-                      <div class="numbers"></div>
-                      <div class="numbers-line2"></div>
+                      <div class="post">
+                        <div class="post-line"></div>
+                        <div class="screen">
+                          <div class="dollar">₹</div>
+                        </div>
+                        <div class="numbers"></div>
+                        <div class="numbers-line2"></div>
+                      </div>
+                    </div>
+                    <div class="right-side">
+                      <div class="new" id="subscription-toggle-text">Subscribe</div>
+                      <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
                     </div>
                   </div>
-                  <div class="right-side">
-                    <div class="new" id="subscription-toggle-text">Subscribe</div>
-                    <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
-                  </div>
                 </div>
-              </div>
 
-              <div class="subscription-actions">
-                <button class="mode-action mode-action-danger" id="subscription-cancel" type="button" disabled>Cancel subscription</button>
-                <button class="mode-action mode-action-dev is-hidden" id="dev-charge-button" type="button">Simulate monthly renewal</button>
+                <div class="subscription-actions">
+                  <button class="mode-action mode-action-danger" id="subscription-cancel" type="button" disabled>Cancel subscription</button>
+                  <button class="mode-action mode-action-dev is-hidden" id="dev-charge-button" type="button">Simulate monthly renewal</button>
+                </div>
+                <span class="mode-message" id="subscription-message" role="status"></span>
               </div>
             </div>
-            <span class="mode-message" id="subscription-message" role="status"></span>
             <details class="nested-accordion">
               <summary><span>Subscription payments</span><strong class="accordion-value" id="subscription-payment-count">0 transactions · ₹0</strong></summary>
               <div class="nested-content">

@@ -213,7 +213,7 @@ function playPosTransactionAnimation(container, onComplete) {
     if (typeof onComplete === "function") {
       onComplete();
     }
-  }, 1250);
+  }, 2100);
 }
 
 function setPosButtonDisabled(button, isDisabled) {

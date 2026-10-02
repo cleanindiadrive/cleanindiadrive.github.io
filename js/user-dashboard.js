@@ -32,7 +32,7 @@ function playPosTransactionAnimation(container, onComplete, reverse = false) {
     if (typeof onComplete === "function") {
       onComplete();
     }
-  }, 1250);
+  }, 2100);
 }
 
 function setPosButtonDisabled(button, isDisabled) {
@@ -843,6 +843,7 @@ function renderRecords() {
             ? "Subscribe"
             : "Subscribe";
     setPosButtonText(toggle, label);
+    toggle.setAttribute("data-state", status === "active" ? "pause" : status === "paused" ? "resume" : "subscribe");
   }
   const cancel = get("subscription-cancel");
   if (cancel) {
@@ -905,7 +906,7 @@ document.querySelectorAll('input[name="dash-autopay-tier"]').forEach((input) => 
     selectedDashboardPlanAmount = Number(e.target.value) || 100;
     const button = get("subscription-toggle");
     if (button && !isPosButtonDisabled(button) && (getPosButtonText(button).includes("Start") || getPosButtonText(button).includes("Transaction"))) {
-      setPosButtonText(button, "New Transaction");
+      setPosButtonText(button, "Subscribe");
     }
   });
 });
@@ -1043,45 +1044,62 @@ async function startMonthlySubscription() {
 }
 
 const dashSubToggle = get("subscription-toggle");
+let isSubToggling = false;
 dashSubToggle?.addEventListener("click", async (e) => {
   e.preventDefault();
-  if (!currentUser || isPosButtonDisabled(dashSubToggle)) return;
+  if (isSubToggling || !currentUser || isPosButtonDisabled(dashSubToggle)) return;
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
-  const isPausing = activeSub && normalizedStatus(activeSub) === "active";
-  const isResuming = activeSub && normalizedStatus(activeSub) === "paused";
-  // Play reverse animation when pausing, normal when resuming/starting
-  playPosTransactionAnimation(dashSubToggle, undefined, isPausing);
+  const isPausing = Boolean(activeSub && normalizedStatus(activeSub) === "active");
+
   if (!activeSub) {
-    await startMonthlySubscription();
+    isSubToggling = true;
+    playPosTransactionAnimation(dashSubToggle, async () => {
+      try {
+        await startMonthlySubscription();
+      } finally {
+        isSubToggling = false;
+      }
+    }, false);
     return;
   }
-  const nextStatus = normalizedStatus(activeSub) === "paused" ? "active" : "paused";
+
+  isSubToggling = true;
   const message = get("subscription-message");
-  setPosButtonDisabled(dashSubToggle, true);
-  if (message) message.textContent = "Updating subscription…";
-  try {
-    if (isPreviewMode) {
-      activeSub.subscriptionStatus = nextStatus;
-      activeSub.status = nextStatus;
-      if (nextStatus === "paused") activeSub.pausedAt = Date.now();
-      else activeSub.resumedAt = Date.now();
-      if (message) message.textContent = `Subscription ${nextStatus}.`;
-      renderRecords();
-    } else {
-      await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
-        subscriptionStatus: nextStatus,
-        ...(activeSub.isTest ? { status: nextStatus } : {}),
-        ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
-      });
-      if (message) message.textContent = `Subscription ${nextStatus}.`;
-    }
-  } catch (error) {
-    console.error("Unable to update subscription:", error);
-    if (message) { message.textContent = "Could not update your subscription. Please try again."; message.classList.add("error"); }
-  } finally {
-    setPosButtonDisabled(dashSubToggle, false);
+  if (message) {
+    message.textContent = isPausing ? "Pausing subscription…" : "Resuming subscription…";
+    message.classList.remove("error");
   }
+
+  // Play animation (reverse if pausing, forward if resuming) and execute state change on complete
+  playPosTransactionAnimation(dashSubToggle, async () => {
+    try {
+      const nextStatus = isPausing ? "paused" : "active";
+      if (isPreviewMode) {
+        activeSub.subscriptionStatus = nextStatus;
+        activeSub.status = nextStatus;
+        if (nextStatus === "paused") activeSub.pausedAt = Date.now();
+        else activeSub.resumedAt = Date.now();
+        if (message) message.textContent = `Subscription ${nextStatus}.`;
+        renderRecords();
+      } else {
+        await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
+          subscriptionStatus: nextStatus,
+          ...(activeSub.isTest ? { status: nextStatus } : {}),
+          ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
+        });
+        if (message) message.textContent = `Subscription ${nextStatus}.`;
+      }
+    } catch (error) {
+      console.error("Unable to update subscription:", error);
+      if (message) {
+        message.textContent = "Could not update your subscription. Please try again.";
+        message.classList.add("error");
+      }
+    } finally {
+      isSubToggling = false;
+    }
+  }, isPausing);
 });
 
 dashSubToggle?.addEventListener("keydown", (e) => {

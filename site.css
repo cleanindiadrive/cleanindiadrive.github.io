@@ -670,7 +670,7 @@ nav {
   height: 54px;
   position: relative;
   border-radius: 10px;
-  transition: 0.3s ease-in-out;
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   border: 1px solid #ebeae0;
   box-shadow: 0 3px 10px rgba(35, 35, 25, 0.06);
   user-select: none;
@@ -680,23 +680,32 @@ nav {
   color: inherit;
 }
 
-.pos-transaction-container:hover,
-.pos-transaction-container.is-animating,
-.pos-transaction-container.is-animating-reverse,
+/* Subtle, elegant hover — stays at 260px width so text is always readable */
+.pos-transaction-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(35, 35, 25, 0.1);
+  border-color: #d6d4c4;
+}
+
 .pos-transaction-container:active {
+  transform: scale(0.985);
+}
+
+/* Width only shrinks to focus on the terminal animation when actively animating */
+.pos-transaction-container.is-animating,
+.pos-transaction-container.is-animating-reverse {
   transform: scale(1.02);
   width: 116px;
 }
 
-.pos-transaction-container:hover .left-side,
 .pos-transaction-container.is-animating .left-side,
-.pos-transaction-container.is-animating-reverse .left-side,
-.pos-transaction-container:active .left-side {
+.pos-transaction-container.is-animating-reverse .left-side {
   width: 100%;
 }
 
 /* Home page subscription button: yellow */
-.home-new-tx-wrap .pos-transaction-container .left-side {
+.home-new-tx-wrap .pos-transaction-container .left-side,
+.pos-transaction-container[data-state="subscribe"] .left-side {
   background-color: var(--yellow);
 }
 
@@ -710,7 +719,7 @@ nav {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: 0.3s;
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -723,7 +732,7 @@ nav {
   cursor: pointer;
   justify-content: space-between;
   white-space: nowrap;
-  transition: 0.3s;
+  transition: background-color 0.25s ease;
 }
 
 .pos-transaction-container .right-side:hover {
@@ -735,6 +744,11 @@ nav {
   height: 12px;
   margin-right: 12px;
   flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.pos-transaction-container:hover .arrow {
+  transform: translateX(3px);
 }
 
 .pos-transaction-container .new {
@@ -757,6 +771,11 @@ nav {
   flex-direction: column;
   align-items: center;
   box-shadow: 4px 4px 6px -1px rgba(77, 200, 143, 0.65);
+  transition: transform 0.3s ease;
+}
+
+.pos-transaction-container:hover:not(.is-animating):not(.is-animating-reverse) .card {
+  transform: translateY(-2px);
 }
 
 .pos-transaction-container .card-line {
@@ -778,24 +797,23 @@ nav {
   margin: 5px 0 0 -17px;
 }
 
-.pos-transaction-container:hover .card,
+/* Slower, smoother 2.0s card insertion */
 .pos-transaction-container.is-animating .card {
-  animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
+  animation: slide-top 2s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-/* Reverse: same keyframes played backwards — starts from last frame of forward anim */
+/* Reverse: same keyframes played backwards for pause — starts from final frame */
 .pos-transaction-container.is-animating-reverse .card {
-  animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both reverse;
+  animation: slide-top 2s cubic-bezier(0.4, 0, 0.2, 1) both reverse;
 }
 
-.pos-transaction-container:hover .post,
 .pos-transaction-container.is-animating .post {
-  animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+  animation: slide-post 1.75s cubic-bezier(0.165, 0.84, 0.44, 1) both;
 }
 
 /* Reverse: same keyframes played backwards */
 .pos-transaction-container.is-animating-reverse .post {
-  animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both reverse;
+  animation: slide-post 1.75s cubic-bezier(0.165, 0.84, 0.44, 1) both reverse;
 }
 
 @keyframes slide-top {
@@ -803,7 +821,7 @@ nav {
     transform: translateY(0);
   }
 
-  50% {
+  45% {
     transform: translateY(-40px) rotate(90deg);
   }
 
@@ -882,7 +900,7 @@ nav {
 }
 
 @keyframes slide-post {
-  50% {
+  0%, 45% {
     transform: translateY(0);
   }
 
@@ -904,9 +922,12 @@ nav {
   line-height: 14px;
 }
 
-.pos-transaction-container:hover .dollar,
 .pos-transaction-container.is-animating .dollar {
-  animation: fade-in-fwd 0.3s 1s backwards;
+  animation: fade-in-fwd 0.35s 1.5s backwards;
+}
+
+.pos-transaction-container.is-animating-reverse .dollar {
+  animation: fade-in-fwd 0.35s 0s both reverse;
 }
 
 @keyframes fade-in-fwd {
@@ -929,29 +950,51 @@ nav {
   filter: grayscale(0.5);
 }
 
-/* Reverse animation: dollar fades in (it was hidden at forward-anim's last frame from reverse perspective) */
-.pos-transaction-container.is-animating-reverse .dollar {
-  animation: fade-in-fwd 0.3s 0s both reverse;
-}
-
 .dashboard-new-tx-wrap,
 .dashboard-subscription-tx-wrap {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin: 0.5rem 0 0.25rem;
+  margin: 0;
 }
 
 .subscription-action-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  padding: 1rem;
-  border: 1px solid #edece4;
-  border-radius: var(--radius-md);
-  background: #fcfcfa;
-  margin-top: 0.75rem;
+  gap: 0.85rem;
+  padding-top: 1.15rem;
+  margin-top: 1.15rem;
+  border-top: 1px dashed #e2e0d2;
+  width: 100%;
+}
+
+.subscription-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.15rem;
+}
+
+.subscription-actions .mode-action {
+  font-size: 0.76rem;
+  padding: 0.46rem 0.85rem;
+  min-height: 36px;
+}
+
+.subscription-action-group .mode-message {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--green);
+  text-align: center;
+  min-height: 1.2rem;
+}
+
+.subscription-action-group .mode-message.error {
+  color: #b3261e;
 }
 
 .home-new-tx-wrap {
@@ -965,15 +1008,13 @@ nav {
 @media only screen and (max-width: 540px) {
   .pos-transaction-container {
     width: 100%;
-    max-width: 250px;
+    max-width: 260px;
     height: 54px;
     margin: 0.35rem auto;
   }
 
-  .pos-transaction-container:hover,
   .pos-transaction-container.is-animating,
-  .pos-transaction-container.is-animating-reverse,
-  .pos-transaction-container:active {
+  .pos-transaction-container.is-animating-reverse {
     width: 112px;
     transform: scale(1.02);
   }
@@ -998,6 +1039,7 @@ nav {
     height: 12px;
   }
 }
+
 
 .mode-form-row {
   display: flex;
