@@ -307,20 +307,32 @@ nav {
 
 .mode-panel {
   display: flex;
-  flex-direction: column;
-  min-width: 0;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 2.5vw, 1.65rem);
   border: 1px solid #edece4;
   border-radius: var(--radius-md);
   background: #fcfcfa;
-  text-align: center;
+  text-align: left;
 }
 
-.mode-panel > div:first-child {
+.mode-panel-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex: 1 1 auto;
   min-width: 0;
+  gap: 0.75rem;
+}
+
+.mode-panel-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .mode-panel strong {
@@ -330,43 +342,34 @@ nav {
 }
 
 .mode-panel p {
-  max-width: 36rem;
+  max-width: 32rem;
   margin-top: 0.25rem;
   color: var(--muted);
   font-size: 0.85rem;
+  line-height: 1.45;
 }
 
-.mode-panel-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+.mode-panel-details .cc-ios-tabs {
+  justify-content: flex-start;
+  align-self: flex-start;
+  padding: 0.1rem 0;
 }
 
-#one-time-mode,
-#gift-mode {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+.mode-panel-details .mode-message {
   width: 100%;
-}
-
-#one-time-mode .mode-message,
-#gift-mode .mode-message {
-  width: 100%;
-  text-align: center;
-  margin-top: 0.5rem;
+  text-align: left;
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
 }
 
 .gift-fields {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
+  align-items: flex-start;
+  gap: 0.5rem;
   width: 100%;
   max-width: 320px;
-  margin: 0.25rem auto 0;
+  margin: 0.15rem 0 0;
   text-align: left;
 }
 
@@ -375,7 +378,51 @@ nav {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--ink);
-  margin-bottom: -0.25rem;
+  margin-bottom: -0.2rem;
+}
+
+@media only screen and (max-width: 720px) {
+  .mode-panel {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.25rem;
+  }
+
+  .mode-panel-details {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .mode-panel-copy {
+    align-items: center;
+    text-align: center;
+  }
+
+  .mode-panel-details .cc-ios-tabs {
+    justify-content: center;
+    align-self: center;
+  }
+
+  .mode-panel-details .mode-message {
+    text-align: center;
+  }
+
+  .gift-fields {
+    align-items: center;
+    margin: 0.25rem auto 0;
+  }
+
+  .gift-fields label {
+    align-self: flex-start;
+  }
+
+  .home-new-tx-wrap {
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.35rem;
+  }
 }
 
 .gift-fields input,
@@ -866,12 +913,19 @@ nav {
 }
 
 .dashboard-new-tx-wrap,
-.dashboard-subscription-tx-wrap,
-.home-new-tx-wrap {
+.dashboard-subscription-tx-wrap {
   display: flex;
   justify-content: center;
   width: 100%;
   margin: 0.75rem 0 0.5rem;
+}
+
+.home-new-tx-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 0 0 auto;
+  margin: 0;
 }
 
 @media only screen and (max-width: 540px) {

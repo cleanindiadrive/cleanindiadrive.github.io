@@ -1086,23 +1086,6 @@ dashSubToggle?.addEventListener("keydown", (e) => {
   }
 });
 
-const dashPosTxBtn = get("dash-pos-tx-btn");
-if (dashPosTxBtn) {
-  dashPosTxBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    playPosTransactionAnimation(dashPosTxBtn, () => {
-      const href = dashPosTxBtn.getAttribute("href") || "index.html#ways-to-support";
-      window.location.href = href;
-    });
-  });
-  dashPosTxBtn.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      dashPosTxBtn.click();
-    }
-  });
-}
-
 get("dev-charge-button")?.addEventListener("click", async () => {
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && normalizedStatus(record) === "active");

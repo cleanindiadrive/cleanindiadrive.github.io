@@ -60,23 +60,29 @@
           </div>
 
           <div class="mode-panel" id="monthly-mode" role="tabpanel">
-            <div class="mode-panel-copy">
-              <strong id="monthly-plan-label">Monthly subscription · ₹100 / mo</strong>
-              <p id="subscription-mode-status">Choose an autopay plan to support Manali Strays monthly.</p>
-            </div>
+            <div class="mode-panel-details">
+              <div class="mode-panel-copy">
+                <strong id="monthly-plan-label">Monthly subscription · ₹100 / mo</strong>
+                <p id="subscription-mode-status">Choose an autopay plan to support Manali Strays monthly.</p>
+              </div>
 
-            <div class="cc-ios-tabs" id="home-autopay-tabs">
-              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-100" value="100" checked />
-              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-500" value="500" />
-              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1000" value="1000" />
-              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1500" value="1500" />
+              <div class="cc-ios-tabs" id="home-autopay-tabs">
+                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-100" value="100" checked />
+                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-500" value="500" />
+                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1000" value="1000" />
+                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1500" value="1500" />
 
-              <div class="cc-ios-tabs__control">
-                <div class="cc-ios-tabs__thumb"></div>
-                <label class="cc-ios-tabs__item" for="plan-tab-100">₹100</label>
-                <label class="cc-ios-tabs__item" for="plan-tab-500">₹500</label>
-                <label class="cc-ios-tabs__item" for="plan-tab-1000">₹1,000</label>
-                <label class="cc-ios-tabs__item" for="plan-tab-1500">₹1,500</label>
+                <div class="cc-ios-tabs__control">
+                  <div class="cc-ios-tabs__thumb"></div>
+                  <label class="cc-ios-tabs__item" for="plan-tab-100">₹100</label>
+                  <label class="cc-ios-tabs__item" for="plan-tab-500">₹500</label>
+                  <label class="cc-ios-tabs__item" for="plan-tab-1000">₹1,000</label>
+                  <label class="cc-ios-tabs__item" for="plan-tab-1500">₹1,500</label>
+                </div>
+              </div>
+
+              <div class="mode-panel-actions">
+                <a class="mode-secondary-link is-hidden" id="subscription-account-link" href="user-dashboard.html">Manage account</a>
               </div>
             </div>
 
@@ -102,21 +108,20 @@
                 </div>
               </div>
             </div>
-            <div class="mode-panel-actions">
-              <a class="mode-secondary-link is-hidden" id="subscription-account-link" href="user-dashboard.html">Manage account</a>
-            </div>
           </div>
 
-
-
           <div class="mode-panel is-hidden" id="one-time-mode" role="tabpanel">
-            <div class="mode-panel-copy">
-              <strong>One-time support</strong>
-              <p>Choose any custom amount to support Manali Strays.</p>
-              <div class="mode-form-row" style="margin-top: 0.8rem;">
+            <div class="mode-panel-details">
+              <div class="mode-panel-copy">
+                <strong>One-time support</strong>
+                <p>Choose any custom amount to support Manali Strays.</p>
+              </div>
+              <div class="mode-form-row">
                 <label class="compact-amount" for="one-time-amount"><span>₹</span><input id="one-time-amount" type="number" min="1" max="1000000" step="1" value="500" inputmode="numeric" /></label>
               </div>
+              <span class="mode-message" id="one-time-message" role="status"></span>
             </div>
+
             <div class="home-new-tx-wrap">
               <div class="pos-transaction-container" id="one-time-submit" role="button" tabindex="0" aria-label="Submit one-time transaction">
                 <div class="left-side">
@@ -139,22 +144,25 @@
                 </div>
               </div>
             </div>
-            <span class="mode-message" id="one-time-message" role="status"></span>
           </div>
 
           <div class="mode-panel is-hidden" id="gift-mode" role="tabpanel">
-            <div class="mode-panel-copy">
-              <strong>Gift a subscription · ₹100</strong>
-              <p>Find a supporter by phone number and pay their monthly subscription.</p>
+            <div class="mode-panel-details">
+              <div class="mode-panel-copy">
+                <strong>Gift a subscription · ₹100</strong>
+                <p>Find a supporter by phone number and pay their monthly subscription.</p>
+              </div>
+              <div class="gift-fields">
+                <label for="gift-phone">Phone number</label>
+                <input id="gift-phone" type="tel" inputmode="tel" placeholder="Enter phone number" />
+                <label for="gift-recipient">Select from donors</label>
+                <select id="gift-recipient" disabled>
+                  <option value="">Enter a phone number first</option>
+                </select>
+              </div>
+              <span class="mode-message" id="gift-message" role="status"></span>
             </div>
-            <div class="gift-fields">
-              <label for="gift-phone">Phone number</label>
-              <input id="gift-phone" type="tel" inputmode="tel" placeholder="Enter phone number" />
-              <label for="gift-recipient">Select from donors</label>
-              <select id="gift-recipient" disabled>
-                <option value="">Enter a phone number first</option>
-              </select>
-            </div>
+
             <div class="home-new-tx-wrap">
               <div class="pos-transaction-container is-disabled" id="gift-submit" role="button" tabindex="0" aria-disabled="true" aria-label="Gift a transaction">
                 <div class="left-side">
@@ -177,7 +185,6 @@
                 </div>
               </div>
             </div>
-            <span class="mode-message" id="gift-message" role="status"></span>
           </div>
 
         </div>
