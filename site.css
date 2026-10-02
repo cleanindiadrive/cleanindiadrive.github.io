@@ -618,14 +618,14 @@ nav {
 .pos-transaction-container {
   background-color: #ffffff;
   display: flex;
-  width: 460px;
+  width: 280px;
   max-width: 100%;
-  height: 120px;
+  height: 60px;
   position: relative;
-  border-radius: 12px;
+  border-radius: 10px;
   transition: 0.3s ease-in-out;
   border: 1px solid #ebeae0;
-  box-shadow: 0 4px 14px rgba(35, 35, 25, 0.06);
+  box-shadow: 0 3px 10px rgba(35, 35, 25, 0.06);
   user-select: none;
   cursor: pointer;
   overflow: hidden;
@@ -637,7 +637,7 @@ nav {
 .pos-transaction-container.is-animating,
 .pos-transaction-container:active {
   transform: scale(1.02);
-  width: 220px;
+  width: 124px;
 }
 
 .pos-transaction-container:hover .left-side,
@@ -648,8 +648,8 @@ nav {
 
 .pos-transaction-container .left-side {
   background-color: #5de2a3;
-  width: 130px;
-  height: 120px;
+  width: 74px;
+  height: 60px;
   border-radius: 4px;
   position: relative;
   display: flex;
@@ -662,7 +662,7 @@ nav {
 }
 
 .pos-transaction-container .right-side {
-  width: calc(100% - 130px);
+  width: calc(100% - 74px);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -677,51 +677,51 @@ nav {
 }
 
 .pos-transaction-container .arrow {
-  width: 20px;
-  height: 20px;
-  margin-right: 20px;
+  width: 13px;
+  height: 13px;
+  margin-right: 14px;
   flex-shrink: 0;
 }
 
 .pos-transaction-container .new {
-  font-size: clamp(16px, 2.2vw, 20px);
+  font-size: 14.5px;
   font-family: 'Outfit', 'Lexend Deca', sans-serif;
   font-weight: 700;
   color: #1a1a1a;
-  margin-left: 18px;
+  margin-left: 14px;
   letter-spacing: -0.01em;
 }
 
 .pos-transaction-container .card {
-  width: 70px;
-  height: 46px;
+  width: 40px;
+  height: 26px;
   background-color: #c7ffbc;
-  border-radius: 6px;
+  border-radius: 4px;
   position: absolute;
   display: flex;
   z-index: 10;
   flex-direction: column;
   align-items: center;
-  box-shadow: 9px 9px 9px -2px rgba(77, 200, 143, 0.72);
+  box-shadow: 4px 4px 6px -1px rgba(77, 200, 143, 0.65);
 }
 
 .pos-transaction-container .card-line {
-  width: 65px;
-  height: 13px;
+  width: 36px;
+  height: 7px;
   background-color: #80ea69;
-  border-radius: 2px;
-  margin-top: 7px;
+  border-radius: 1px;
+  margin-top: 4px;
 }
 
 .pos-transaction-container .buttons {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   background-color: #379e1f;
-  box-shadow: 0 -10px 0 0 #26850e, 0 10px 0 0 #56be3e;
+  box-shadow: 0 -6px 0 0 #26850e, 0 6px 0 0 #56be3e;
   border-radius: 50%;
-  margin-top: 5px;
+  margin-top: 3px;
   transform: rotate(90deg);
-  margin: 10px 0 0 -30px;
+  margin: 5px 0 0 -17px;
 }
 
 .pos-transaction-container:hover .card,
@@ -740,81 +740,81 @@ nav {
   }
 
   50% {
-    transform: translateY(-70px) rotate(90deg);
+    transform: translateY(-40px) rotate(90deg);
   }
 
   60% {
-    transform: translateY(-70px) rotate(90deg);
+    transform: translateY(-40px) rotate(90deg);
   }
 
   100% {
-    transform: translateY(-8px) rotate(90deg);
+    transform: translateY(-4px) rotate(90deg);
   }
 }
 
 .pos-transaction-container .post {
-  width: 63px;
-  height: 75px;
+  width: 36px;
+  height: 44px;
   background-color: #dddde0;
   position: absolute;
   z-index: 11;
-  bottom: 10px;
-  top: 120px;
-  border-radius: 6px;
+  bottom: 4px;
+  top: 60px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .pos-transaction-container .post-line {
-  width: 47px;
-  height: 9px;
+  width: 28px;
+  height: 6px;
   background-color: #545354;
   position: absolute;
-  border-radius: 0px 0px 3px 3px;
-  right: 8px;
-  top: 8px;
+  border-radius: 0px 0px 2px 2px;
+  right: 4px;
+  top: 4px;
 }
 
 .pos-transaction-container .post-line:before {
   content: "";
   position: absolute;
-  width: 47px;
-  height: 9px;
+  width: 28px;
+  height: 6px;
   background-color: #757375;
-  top: -8px;
+  top: -5px;
 }
 
 .pos-transaction-container .screen {
-  width: 47px;
-  height: 23px;
+  width: 28px;
+  height: 14px;
   background-color: #ffffff;
   position: absolute;
-  top: 22px;
-  right: 8px;
-  border-radius: 3px;
+  top: 13px;
+  right: 4px;
+  border-radius: 2px;
 }
 
 .pos-transaction-container .numbers {
-  width: 12px;
-  height: 12px;
+  width: 7px;
+  height: 7px;
   background-color: #838183;
-  box-shadow: 0 -18px 0 0 #838183, 0 18px 0 0 #838183;
-  border-radius: 2px;
+  box-shadow: 0 -10px 0 0 #838183, 0 10px 0 0 #838183;
+  border-radius: 1px;
   position: absolute;
   transform: rotate(90deg);
-  left: 25px;
-  top: 52px;
+  left: 15px;
+  top: 30px;
 }
 
 .pos-transaction-container .numbers-line2 {
-  width: 12px;
-  height: 12px;
+  width: 7px;
+  height: 7px;
   background-color: #aaa9ab;
-  box-shadow: 0 -18px 0 0 #aaa9ab, 0 18px 0 0 #aaa9ab;
-  border-radius: 2px;
+  box-shadow: 0 -10px 0 0 #aaa9ab, 0 10px 0 0 #aaa9ab;
+  border-radius: 1px;
   position: absolute;
   transform: rotate(90deg);
-  left: 25px;
-  top: 68px;
+  left: 15px;
+  top: 39px;
 }
 
 @keyframes slide-post {
@@ -823,13 +823,13 @@ nav {
   }
 
   100% {
-    transform: translateY(-70px);
+    transform: translateY(-40px);
   }
 }
 
 .pos-transaction-container .dollar {
   position: absolute;
-  font-size: 15px;
+  font-size: 11px;
   font-family: 'Outfit', 'Lexend Deca', sans-serif;
   font-weight: 700;
   width: 100%;
@@ -837,7 +837,7 @@ nav {
   top: 0;
   color: #4b953b;
   text-align: center;
-  line-height: 23px;
+  line-height: 14px;
 }
 
 .pos-transaction-container:hover .dollar,
@@ -848,7 +848,7 @@ nav {
 @keyframes fade-in-fwd {
   0% {
     opacity: 0;
-    transform: translateY(-5px);
+    transform: translateY(-3px);
   }
 
   100% {
@@ -871,40 +871,42 @@ nav {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin: 1.25rem 0 1rem;
+  margin: 0.75rem 0 0.5rem;
 }
 
 @media only screen and (max-width: 540px) {
   .pos-transaction-container {
     width: 100%;
-    max-width: 340px;
-    height: 110px;
-    margin: 0.5rem auto;
+    max-width: 250px;
+    height: 54px;
+    margin: 0.35rem auto;
   }
 
   .pos-transaction-container:hover,
   .pos-transaction-container.is-animating,
   .pos-transaction-container:active {
-    width: 200px;
+    width: 112px;
     transform: scale(1.02);
   }
 
   .pos-transaction-container .left-side {
-    width: 115px;
-    height: 110px;
+    width: 66px;
+    height: 54px;
   }
 
   .pos-transaction-container .right-side {
-    width: calc(100% - 115px);
+    width: calc(100% - 66px);
   }
 
   .pos-transaction-container .new {
-    font-size: 17px;
-    margin-left: 14px;
+    font-size: 13.5px;
+    margin-left: 10px;
   }
 
   .pos-transaction-container .arrow {
-    margin-right: 14px;
+    margin-right: 10px;
+    width: 12px;
+    height: 12px;
   }
 }
 
