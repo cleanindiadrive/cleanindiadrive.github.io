@@ -181,9 +181,8 @@ function updateSelectedMonthlyPlan(amount) {
   const planLabel = document.getElementById("monthly-plan-label");
   if (planLabel) planLabel.textContent = `Monthly subscription · ₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
 
-  document.querySelectorAll("#home-tier-pills .tier-pill").forEach((pill) => {
-    pill.classList.toggle("active", Number(pill.dataset.amount) === selectedMonthlyAmount);
-  });
+  const radio = document.getElementById(`plan-tab-${selectedMonthlyAmount}`);
+  if (radio) radio.checked = true;
 
   refreshSubscriptionMode();
 }
@@ -422,9 +421,9 @@ if (Number.isFinite(initialUrlAmount) && initialUrlAmount > 0) {
   } catch (_) {}
 }
 
-document.querySelectorAll("#home-tier-pills .tier-pill").forEach((pill) => {
-  pill.addEventListener("click", () => {
-    updateSelectedMonthlyPlan(Number(pill.dataset.amount));
+document.querySelectorAll('input[name="home-autopay-tier"]').forEach((input) => {
+  input.addEventListener("change", (e) => {
+    updateSelectedMonthlyPlan(Number(e.target.value));
   });
 });
 

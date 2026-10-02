@@ -841,6 +841,18 @@ function showDatabaseError(error) {
   setText("dashboard-note", "Your account is ready, but the supporter records could not be loaded.");
 }
 
+let selectedDashboardPlanAmount = 100;
+
+document.querySelectorAll('input[name="dash-autopay-tier"]').forEach((input) => {
+  input.addEventListener("change", (e) => {
+    selectedDashboardPlanAmount = Number(e.target.value) || 100;
+    const button = get("subscription-toggle");
+    if (button && !button.disabled && (button.textContent.includes("Start") || button.textContent.includes("subscription"))) {
+      button.textContent = `Start ₹${selectedDashboardPlanAmount.toLocaleString("en-IN")}/mo`;
+    }
+  });
+});
+
 async function startMonthlySubscription() {
   const activeOrPending = allRawRecords().find((record) => isSubscriptionRootRecord(record) && ["active", "paused", "pending"].includes(normalizedStatus(record)));
   if (!currentUser || activeOrPending) return;

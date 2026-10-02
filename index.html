@@ -65,11 +65,19 @@
               <p id="subscription-mode-status">Choose an autopay plan to support Manali Strays monthly.</p>
             </div>
 
-            <div class="monthly-tier-pills" id="home-tier-pills" role="group" aria-label="Select monthly autopay tier">
-              <button type="button" class="tier-pill active" data-amount="100">₹100/mo</button>
-              <button type="button" class="tier-pill" data-amount="500">₹500/mo</button>
-              <button type="button" class="tier-pill" data-amount="1000">₹1,000/mo</button>
-              <button type="button" class="tier-pill" data-amount="1500">₹1,500/mo</button>
+            <div class="cc-ios-tabs" id="home-autopay-tabs">
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-100" value="100" checked />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-500" value="500" />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1000" value="1000" />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1500" value="1500" />
+
+              <div class="cc-ios-tabs__control">
+                <div class="cc-ios-tabs__thumb"></div>
+                <label class="cc-ios-tabs__item" for="plan-tab-100">₹100</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-500">₹500</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-1000">₹1,000</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-1500">₹1,500</label>
+              </div>
             </div>
 
             <div class="mode-panel-actions">
