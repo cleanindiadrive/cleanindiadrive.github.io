@@ -214,34 +214,12 @@ function refreshSubscriptionMode() {
   accountAction?.classList.remove("is-hidden");
 }
 
-let selectedMonthlyAmount = 100;
-
-function updateSelectedMonthlyPlan(amount) {
-  selectedMonthlyAmount = Number(amount) || 100;
-
-  const heroAmount = document.getElementById("hero-btn-amount");
-  if (heroAmount) heroAmount.textContent = `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Per Month`;
-
-  const subscribeBtn = document.getElementById("subscribe-btn");
-  if (subscribeBtn) {
-    subscribeBtn.href = `user-login.html?mode=signup&plan=monthly&amount=${selectedMonthlyAmount}`;
-  }
-
-  document.querySelectorAll(".hero-plan-chips .plan-chip").forEach((chip) => {
-    chip.classList.toggle("active", Number(chip.dataset.amount) === selectedMonthlyAmount);
-  });
-
-  const modeLabel = document.getElementById("monthly-selected-label");
-  if (modeLabel) modeLabel.textContent = `₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
-}
-
-
 async function toggleSubscription() {
   const button = document.getElementById("subscription-toggle");
   const status = document.getElementById("subscription-mode-status");
   if (!button || !status) return;
   if (!currentUser) {
-    window.location.href = `user-login.html?mode=signup&plan=monthly&amount=${selectedMonthlyAmount}`;
+    window.location.href = "user-login.html?mode=signup&plan=monthly";
     return;
   }
   if (!currentSubscription || currentSubscription.status === "cancelled") {
@@ -254,7 +232,7 @@ async function toggleSubscription() {
       const now = Date.now();
       await set(intent, {
         type: "monthly",
-        amount: selectedMonthlyAmount,
+        amount: 100,
         anonymous: isAnonymousDonationSelected(),
         status: isDevelopmentMode ? "active" : "pending",
         ...(isDevelopmentMode ? { subscriptionStatus: "active", isTest: true, paidAt: now, reference: `DEV-SUBSCRIPTION-${now}` } : {}),
@@ -277,6 +255,7 @@ async function toggleSubscription() {
     if (!isDevelopmentMode) refreshSubscriptionMode();
     return;
   }
+
 
 
   const nextStatus = currentSubscription.status === "paused" ? "active" : "paused";
@@ -387,12 +366,6 @@ document.getElementById("gift-recipient")?.addEventListener("change", (event) =>
   if (button) button.disabled = !giftRecipients[Number(event.target.value)];
 });
 
-// Wire up Autopay Plan Selection
-document.querySelectorAll(".hero-plan-chips .plan-chip").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    updateSelectedMonthlyPlan(Number(btn.dataset.amount));
-  });
-});
 
 const requestedMode = new URLSearchParams(window.location.search).get("plan");
 setMode(requestedMode === "one-time" ? "one-time" : requestedMode === "gift" ? "gift" : "monthly");

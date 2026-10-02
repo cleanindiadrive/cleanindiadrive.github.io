@@ -133,12 +133,13 @@ async function inspectUser(user) {
 
 if (requestedPlan && planNote) {
   planNote.textContent = requestedPlan === "monthly"
-    ? `₹${requestAmount.toLocaleString("en-IN")} monthly support selected.`
+    ? `₹${requestedAmount.toLocaleString("en-IN")} monthly support selected.`
     : requestedPlan === "gift"
       ? "₹100 gift subscription selected."
-      : `₹${requestAmount.toLocaleString("en-IN")} one-time support selected.`;
+      : `₹${requestedAmount.toLocaleString("en-IN")} one-time support selected.`;
   planNote.classList.remove("is-hidden");
 }
+
 
 
 onAuthStateChanged(auth, (user) => {
