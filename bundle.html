@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Subscribe to Manali Strays | Silly Sensei</title>
   <meta name="description" content="Subscribe to support Manali Strays and track your support online." />
-  <link rel="icon" href="https://cleanindiadrive.github.io/icons/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/icons/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
-  <link rel="preload" as="image" href="https://cleanindiadrive.github.io/assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
 
   <style>
 * {
@@ -54,7 +54,7 @@ body::before {
   position: fixed;
   z-index: -1;
   inset: 0;
-  background-image: url("https://cleanindiadrive.github.io/assets/trees-texture.webp");
+  background-image: url("https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/trees-texture.webp");
   background-position: center bottom;
   background-repeat: no-repeat;
   background-size: cover;
@@ -4797,7 +4797,7 @@ footer .contact-details {
     <nav class="site-nav">
       <div class="logo">
         <a href="index.html" aria-label="Manali Strays home">
-          <img src="https://cleanindiadrive.github.io/Group%201.png" alt="Manali Strays Logo" width="120" height="30" />
+          <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Manali Strays Logo" width="120" height="30" />
         </a>
       </div>
       <a class="account-link" id="account-link" href="#dashboard" aria-label="Open account">
@@ -5069,7 +5069,7 @@ footer .contact-details {
     <header class="dashboard-header">
       <div class="dashboard-nav">
         <a class="logo" href="#home" aria-label="Manali Strays home">
-          <img src="https://cleanindiadrive.github.io/Group%201.png" alt="Manali Strays" width="120" height="30" />
+          <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Manali Strays" width="120" height="30" />
         </a>
         <div class="dashboard-user">
           <a class="dashboard-nav-home" href="#home" title="Back to homepage">
@@ -5140,7 +5140,7 @@ footer .contact-details {
       <section class="dashboard-stats-grid" aria-label="Account highlights">
         <div class="stat-card">
           <div class="stat-icon-wrap" aria-hidden="true">
-            <img class="stat-icon-img stat-icon-rupee" src="https://cleanindiadrive.github.io/assets/icon-rupee.png" alt="" width="26" height="26" />
+            <img class="stat-icon-img stat-icon-rupee" src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/icon-rupee.png" alt="" width="26" height="26" />
           </div>
           <div class="stat-meta">
             <span class="stat-label">Total Contributed</span>
@@ -5151,7 +5151,7 @@ footer .contact-details {
 
         <div class="stat-card">
           <div class="stat-icon-wrap stat-icon-plan" aria-hidden="true">
-            <img class="stat-icon-img stat-icon-payment" src="https://cleanindiadrive.github.io/assets/icon-payment.png" alt="" width="25" height="25" />
+            <img class="stat-icon-img stat-icon-payment" src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/icon-payment.png" alt="" width="25" height="25" />
           </div>
           <div class="stat-meta">
             <span class="stat-label">Monthly Plan</span>
@@ -5162,7 +5162,7 @@ footer .contact-details {
 
         <div class="stat-card">
           <div class="stat-icon-wrap stat-icon-renewal" aria-hidden="true">
-            <img class="stat-icon-img stat-icon-calendar" src="https://cleanindiadrive.github.io/assets/icon-recurring.png" alt="" width="34" height="34" />
+            <img class="stat-icon-img stat-icon-calendar" src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/icon-recurring.png" alt="" width="34" height="34" />
           </div>
           <div class="stat-meta">
             <span class="stat-label">Next Renewal</span>
@@ -6208,7 +6208,7 @@ async function toggleSubscription(event) {
         subscription_id: data.subscription_id,
         name: "Manali Strays",
         description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
-        image: "https://cleanindiadrive.github.io/Group%201.png",
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
         prefill: {
           name: currentUser?.displayName || "",
           email: currentUser?.email || "",
@@ -6287,7 +6287,7 @@ async function saveOneTimeIntent(event) {
         order_id: data.order_id,
         name: "Manali Strays",
         description: `₹${amount.toLocaleString("en-IN")} One-time Donation`,
-        image: "https://cleanindiadrive.github.io/Group%201.png",
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
         prefill: {
           name: currentUser?.displayName || "",
           email: currentUser?.email || "",
@@ -6363,7 +6363,7 @@ async function saveGiftIntent(event) {
         subscription_id: data.subscription_id,
         name: "Manali Strays",
         description: `Gift ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo subscription for ${recipient.name}`,
-        image: "https://cleanindiadrive.github.io/Group%201.png",
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
         prefill: {
           name: currentUser?.displayName || "",
           email: currentUser?.email || "",
@@ -7628,7 +7628,7 @@ async function startMonthlySubscription() {
       subscription_id: data.subscription_id,
       name: "Manali Strays",
       description: `₹${effectiveAmount.toLocaleString("en-IN")} Monthly Support`,
-      image: "https://cleanindiadrive.github.io/Group%201.png",
+      image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
       prefill: {
         name: currentUser.displayName || "",
         email: currentUser.email || "",

@@ -3,8 +3,10 @@ import fs from 'node:fs';
 // Helper to normalize line endings
 const norm = (str) => str.replace(/\r\n/g, '\n');
 
+const RAW_GITHUB_BASE = 'https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main';
+
 const siteCss = norm(fs.readFileSync('site.css', 'utf8'))
-  .replace(/url\(["']?assets\/trees-texture\.webp["']?\)/g, 'url("https://cleanindiadrive.github.io/assets/trees-texture.webp")');
+  .replace(/url\(["']?(?:https:\/\/raw\.githubusercontent\.com\/cleanindiadrive\/cleanindiadrive\.github\.io\/main\/)?assets\/trees-texture\.webp["']?\)/g, `url("${RAW_GITHUB_BASE}/assets/trees-texture.webp")`);
 
 const indexHtml = norm(fs.readFileSync('index.html', 'utf8'));
 const dashHtml = norm(fs.readFileSync('user-dashboard.html', 'utf8'));
@@ -32,13 +34,17 @@ homeBody = homeBody.replace(/href=["']user-login\.html["']/g, 'href="#dashboard"
 homeBody = homeBody.replace(/href=["']user-dashboard\.html["']/g, 'href="#dashboard"');
 dashBody = dashBody.replace(/href=["']index\.html["']/g, 'href="#home"');
 
-// Fix relative image & policy URLs to absolute cleanindiadrive.github.io URLs so they load anywhere in Odoo
+// Fix relative image & policy URLs to absolute raw GitHub URLs so they load anywhere in Odoo
 const fixAssetUrls = (str) => {
   return str
-    .replace(/src="Group%201\.png"/g, 'src="https://cleanindiadrive.github.io/Group%201.png"')
-    .replace(/src="Group 1\.png"/g, 'src="https://cleanindiadrive.github.io/Group%201.png"')
-    .replace(/src="assets\//g, 'src="https://cleanindiadrive.github.io/assets/')
-    .replace(/href="icons\/favicon\.svg"/g, 'href="https://cleanindiadrive.github.io/icons/favicon.svg"')
+    .replace(/https:\/\/cleanindiadrive\.github\.io\/Group%201\.png/g, `${RAW_GITHUB_BASE}/Group%201.png`)
+    .replace(/https:\/\/cleanindiadrive\.github\.io\/assets\//g, `${RAW_GITHUB_BASE}/assets/`)
+    .replace(/https:\/\/cleanindiadrive\.github\.io\/icons\//g, `${RAW_GITHUB_BASE}/icons/`)
+    .replace(/src=["']Group%201\.png["']/g, `src="${RAW_GITHUB_BASE}/Group%201.png"`)
+    .replace(/src=["']Group 1\.png["']/g, `src="${RAW_GITHUB_BASE}/Group%201.png"`)
+    .replace(/src=["']assets\//g, `src="${RAW_GITHUB_BASE}/assets/`)
+    .replace(/href=["']icons\/favicon\.svg["']/g, `href="${RAW_GITHUB_BASE}/icons/favicon.svg"`)
+    .replace(/href=["']assets\/trees-texture\.webp["']/g, `href="${RAW_GITHUB_BASE}/assets/trees-texture.webp"`)
     .replace(/href="about\.html"/g, 'href="https://cleanindiadrive.github.io/about.html"')
     .replace(/href="contact\.html"/g, 'href="https://cleanindiadrive.github.io/contact.html"')
     .replace(/href="cancellation\.html"/g, 'href="https://cleanindiadrive.github.io/cancellation.html"')
@@ -327,11 +333,11 @@ const bundleHtml = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Subscribe to Manali Strays | Silly Sensei</title>
   <meta name="description" content="Subscribe to support Manali Strays and track your support online." />
-  <link rel="icon" href="https://cleanindiadrive.github.io/icons/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="${RAW_GITHUB_BASE}/icons/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
-  <link rel="preload" as="image" href="https://cleanindiadrive.github.io/assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="${RAW_GITHUB_BASE}/assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
 
   <style>
 ${siteCss}
@@ -385,7 +391,5 @@ ${dashboardJs}
 
 fs.writeFileSync('bundle.html', bundleHtml, 'utf8');
 fs.writeFileSync('odoo-bundle.html', bundleHtml, 'utf8');
-fs.writeFileSync('temp-home-check.mjs', homeJs, 'utf8');
-fs.writeFileSync('temp-dash-check.mjs', dashboardJs, 'utf8');
 
 console.log('Successfully generated bundle.html and odoo-bundle.html!');

@@ -979,7 +979,7 @@ async function startMonthlySubscription() {
       subscription_id: data.subscription_id,
       name: "Manali Strays",
       description: `₹${effectiveAmount.toLocaleString("en-IN")} Monthly Support`,
-      image: "https://cleanindiadrive.github.io/Group%201.png",
+      image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
       prefill: {
         name: currentUser.displayName || "",
         email: currentUser.email || "",

@@ -722,7 +722,7 @@ async function toggleSubscription(event) {
         subscription_id: data.subscription_id,
         name: "Manali Strays",
         description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
-        image: "https://cleanindiadrive.github.io/Group%201.png",
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
         prefill: {
           name: currentUser?.displayName || "",
           email: currentUser?.email || "",
@@ -801,7 +801,7 @@ async function saveOneTimeIntent(event) {
         order_id: data.order_id,
         name: "Manali Strays",
         description: `₹${amount.toLocaleString("en-IN")} One-time Donation`,
-        image: "https://cleanindiadrive.github.io/Group%201.png",
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
         prefill: {
           name: currentUser?.displayName || "",
           email: currentUser?.email || "",
@@ -877,7 +877,7 @@ async function saveGiftIntent(event) {
         subscription_id: data.subscription_id,
         name: "Manali Strays",
         description: `Gift ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo subscription for ${recipient.name}`,
-        image: "https://cleanindiadrive.github.io/Group%201.png",
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
         prefill: {
           name: currentUser?.displayName || "",
           email: currentUser?.email || "",
