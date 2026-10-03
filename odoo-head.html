@@ -3632,6 +3632,18 @@ footer .contact-details {
 /* ==============================================================
    Dog Loading Screen Overlay
    ============================================================== */
+@keyframes autoDismissLoader {
+  0%, 82% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
 #page-loader {
   position: fixed;
   inset: 0;
@@ -3641,14 +3653,16 @@ footer .contact-details {
   align-items: center;
   justify-content: center;
   background: var(--canvas);
-  transition: opacity 0.45s ease, visibility 0.45s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
   gap: 1.2rem;
+  animation: autoDismissLoader 2.4s ease-in-out forwards;
 }
 
 #page-loader.loader-hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  display: none !important;
 }
 
 /* Dog loader extras — appended to site.css via node script */

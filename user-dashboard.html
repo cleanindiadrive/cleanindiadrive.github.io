@@ -318,12 +318,20 @@
 
     <script type="module" src="js/user-dashboard.js?v=20261003_5"></script>
     <script>
-      window.addEventListener('load', function() {
+      function dismissLoader() {
         var loader = document.getElementById('page-loader');
-        if (loader) {
-          setTimeout(function() { loader.classList.add('loader-hidden'); }, 1800);
-        }
-      });
+        if (!loader || loader.classList.contains('loader-hidden')) return;
+        loader.classList.add('loader-hidden');
+        setTimeout(function () { if (loader) loader.style.display = 'none'; }, 450);
+      }
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(dismissLoader, 400);
+      } else {
+        document.addEventListener('DOMContentLoaded', function () { setTimeout(dismissLoader, 500); });
+        window.addEventListener('load', function () { setTimeout(dismissLoader, 300); });
+      }
+      setTimeout(dismissLoader, 1800);
+      document.getElementById('page-loader')?.addEventListener('click', dismissLoader);
     </script>
   </body>
 </html>

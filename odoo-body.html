@@ -670,13 +670,34 @@ if (window.location.hash === "#dashboard" || initialParams.get("view") === "dash
   showView("home");
 }
 
-// Loader dismissal
-window.addEventListener("load", function() {
+// Robust, fast loader dismissal with multiple triggers and failsafes
+function dismissLoader() {
   const loader = document.getElementById("page-loader");
-  if (loader) {
-    setTimeout(function() { loader.classList.add("loader-hidden"); }, 1400);
-  }
+  if (!loader) return;
+  loader.classList.add("loader-hidden");
+  setTimeout(function() {
+    if (loader) loader.style.display = "none";
+  }, 450);
+}
+
+if (document.readyState === "complete") {
+  setTimeout(dismissLoader, 200);
+} else if (document.readyState === "interactive") {
+  setTimeout(dismissLoader, 400);
+} else {
+  document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(dismissLoader, 500);
+  });
+}
+
+window.addEventListener("load", function() {
+  setTimeout(dismissLoader, 300);
 });
+
+// Hard timeout failsafe: Never get stuck on loading screen
+setTimeout(dismissLoader, 1800);
+
+document.getElementById("page-loader")?.addEventListener("click", dismissLoader);
 
   </script>
 
