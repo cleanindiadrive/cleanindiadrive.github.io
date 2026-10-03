@@ -10,6 +10,8 @@ const accountLink = document.getElementById("account-link");
 const sourceData = new Map();
 const subscriberSources = ["subscribers", "subscribers_velcrow", "users", "payments", "testPayments"];
 let currentUser = null;
+let currentUserPhone = "";
+const BACKEND_URL = window.BACKEND_API_URL || "https://69rnsfw9-3000.inc1.devtunnels.ms";
 let currentSubscription = null;
 let currentUserPaymentRecords = [];
 let monthlyRequestPending = false;
@@ -634,34 +636,68 @@ async function toggleSubscription(event) {
     if (monthlyRequestPending) return;
     playPosTransactionAnimation(button, async () => {
       setPosButtonDisabled(button, true);
-      status.textContent = "Saving your subscription request…";
+      status.textContent = "Connecting to payment gateway…";
       try {
-        const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
-        const intent = push(ref(database, path));
-        const now = Date.now();
-        await set(intent, {
-          type: "monthly",
-          amount: selectedMonthlyAmount,
-          anonymous: isAnonymousDonationSelected(),
-          status: isDevelopmentMode ? "active" : "pending",
-          ...(isDevelopmentMode ? { subscriptionStatus: "active", isTest: true, paidAt: now, reference: `DEV-SUBSCRIPTION-${now}` } : {}),
-          createdAt: now,
-          email: currentUser.email || "",
+        const res = await fetch(`${BACKEND_URL}/create-subscription`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            team: "BCBB",
+            amount: selectedMonthlyAmount,
+            user_id: currentUser.uid,
+            email: currentUser.email || "",
+            name: currentUser.displayName || "",
+            phone: currentUserPhone || "",
+          }),
         });
-        if (isDevelopmentMode) {
-          status.textContent = `Development subscription for ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo activated.`;
-          setPosButtonText(button, "Active subscription");
-          setPosButtonDisabled(button, true);
+        const data = await res.json();
+        if (!res.ok || !data.subscription_id) {
+          throw new Error(data?.error || "Subscription creation failed");
+        }
+
+        const options = {
+          key: data.razorpay_key,
+          subscription_id: data.subscription_id,
+          name: "Manali Strays",
+          description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
+          image: "https://cleanindiadrive.github.io/Group%201.png",
+          prefill: {
+            name: currentUser.displayName || "",
+            email: currentUser.email || "",
+            contact: currentUserPhone || "",
+          },
+          theme: { color: "#FFDD00" },
+          handler: function (response) {
+            console.log("Subscription mandate created:", response);
+            status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
+            setPosButtonText(button, "Active subscription");
+            setPosButtonDisabled(button, true);
+            refreshSubscriptionMode();
+          },
+          modal: {
+            ondismiss: function () {
+              setPosButtonDisabled(button, false);
+              status.textContent = "Payment window closed.";
+            },
+          },
+        };
+
+        if (typeof window.Razorpay === "function") {
+          const rzp = new window.Razorpay(options);
+          rzp.on("payment.failed", function (resp) {
+            console.error("Subscription payment failed:", resp.error);
+            status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
+            setPosButtonDisabled(button, false);
+          });
+          rzp.open();
         } else {
-          monthlyRequestPending = true;
-          status.textContent = "Request saved. Complete payment confirmation to activate it.";
+          throw new Error("Razorpay SDK is not loaded. Please refresh.");
         }
       } catch (error) {
         console.error("Unable to start subscription:", error);
-        status.textContent = "Could not start the subscription request. Please try again.";
+        status.textContent = error.message || "Could not start the subscription. Please try again.";
         setPosButtonDisabled(button, false);
       }
-      if (!isDevelopmentMode) refreshSubscriptionMode();
     });
     return;
   }
@@ -706,24 +742,65 @@ async function saveOneTimeIntent(event) {
 
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
-    setModeMessage("one-time-message", "Saving your payment request…");
+    setModeMessage("one-time-message", "Creating one-time payment order…");
     try {
-      const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
-      const intent = push(ref(database, path));
-      const now = Date.now();
-      await set(intent, {
-        type: "one-time",
-        amount,
-        anonymous: isAnonymousDonationSelected(),
-        status: isDevelopmentMode ? "paid" : "pending",
-        ...(isDevelopmentMode ? { isTest: true, paidAt: now, reference: `DEV-ONE-TIME-${now}` } : {}),
-        createdAt: now,
-        email: currentUser.email || "",
+      const res = await fetch(`${BACKEND_URL}/create-one-time-payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount,
+          team: "BCBB",
+          name: currentUser.displayName || "",
+          email: currentUser.email || "",
+          phone: currentUserPhone || "",
+          user_id: currentUser.uid,
+        }),
       });
-      setModeMessage("one-time-message", isDevelopmentMode ? "Development payment recorded as successful." : "Payment request saved as pending. A payment gateway still needs to confirm it.");
+      const data = await res.json();
+      if (!res.ok || !data.order_id) {
+        throw new Error(data?.error || "Payment order creation failed");
+      }
+
+      const options = {
+        key: data.razorpay_key,
+        amount: data.amount,
+        currency: data.currency || "INR",
+        order_id: data.order_id,
+        name: "Manali Strays",
+        description: `₹${amount.toLocaleString("en-IN")} One-time Donation`,
+        image: "https://cleanindiadrive.github.io/Group%201.png",
+        prefill: {
+          name: currentUser.displayName || "",
+          email: currentUser.email || "",
+          contact: currentUserPhone || "",
+        },
+        theme: { color: "#FFDD00" },
+        handler: function (response) {
+          console.log("One-time payment completed:", response);
+          setModeMessage("one-time-message", `Payment of ₹${amount.toLocaleString("en-IN")} received! Thank you for your generous contribution.`);
+        },
+        modal: {
+          ondismiss: function () {
+            setPosButtonDisabled(button, false);
+            setModeMessage("one-time-message", "Payment window closed.");
+          },
+        },
+      };
+
+      if (typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          console.error("One-time payment failed:", resp.error);
+          setModeMessage("one-time-message", `Payment failed: ${resp.error.description || "Please try again."}`, true);
+          setPosButtonDisabled(button, false);
+        });
+        rzp.open();
+      } else {
+        throw new Error("Razorpay SDK is not loaded. Please refresh.");
+      }
     } catch (error) {
-      console.error("Unable to save one-time payment request:", error);
-      setModeMessage("one-time-message", "Could not save the request. Please try again.", true);
+      console.error("Unable to start one-time payment:", error);
+      setModeMessage("one-time-message", error.message || "Could not process payment. Please try again.", true);
     } finally {
       setPosButtonDisabled(button, false);
     }
@@ -748,28 +825,64 @@ async function saveGiftIntent(event) {
 
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
-    setModeMessage("gift-message", "Saving your gift request…");
+    setModeMessage("gift-message", `Setting up gift subscription for ${recipient.name}…`);
     try {
-      const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
-      const intent = push(ref(database, path));
-      const now = Date.now();
-      await set(intent, {
-        type: "gift-monthly",
-        amount: 100,
-        anonymous: isAnonymousDonationSelected(),
-        status: isDevelopmentMode ? "paid" : "pending",
-        ...(isDevelopmentMode ? { isTest: true, paidAt: now, reference: `DEV-GIFT-${now}` } : {}),
-        createdAt: now,
-        email: currentUser.email || "",
-        recipientName: recipient.name,
-        recipientEmail: recipient.email || "",
-        recipientPhone: recipient.phone,
-        recipientTeam: recipient.team || "Supporter",
+      const res = await fetch(`${BACKEND_URL}/create-gift-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipient_name: recipient.name,
+          recipient_email: recipient.email || `${recipient.phone}@gift.manalistrays.org`,
+          recipient_phone: recipient.phone,
+          team: recipient.team || "BCBB",
+          giver_id: currentUser.uid,
+          giver_email: currentUser.email || "",
+          giver_name: currentUser.displayName || "",
+        }),
       });
-      setModeMessage("gift-message", isDevelopmentMode ? `Development gift payment recorded as successful for ${recipient.name}.` : `Gift request for ${recipient.name} saved as pending.`);
+      const data = await res.json();
+      if (!res.ok || !data.subscription_id) {
+        throw new Error(data?.error || "Gift subscription creation failed");
+      }
+
+      const options = {
+        key: data.razorpay_key,
+        subscription_id: data.subscription_id,
+        name: "Manali Strays",
+        description: `Gift ₹100/mo subscription for ${recipient.name}`,
+        image: "https://cleanindiadrive.github.io/Group%201.png",
+        prefill: {
+          name: currentUser.displayName || "",
+          email: currentUser.email || "",
+          contact: currentUserPhone || "",
+        },
+        theme: { color: "#FFDD00" },
+        handler: function (response) {
+          console.log("Gift subscription mandate created:", response);
+          setModeMessage("gift-message", `Gift subscription for ${recipient.name} activated! Thank you for gifting hope.`);
+        },
+        modal: {
+          ondismiss: function () {
+            setPosButtonDisabled(button, false);
+            setModeMessage("gift-message", "Payment window closed.");
+          },
+        },
+      };
+
+      if (typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          console.error("Gift subscription failed:", resp.error);
+          setModeMessage("gift-message", `Gift payment failed: ${resp.error.description || "Please try again."}`, true);
+          setPosButtonDisabled(button, false);
+        });
+        rzp.open();
+      } else {
+        throw new Error("Razorpay SDK is not loaded. Please refresh.");
+      }
     } catch (error) {
       console.error("Unable to save gift request:", error);
-      setModeMessage("gift-message", "Could not save the gift request. Please try again.", true);
+      setModeMessage("gift-message", error.message || "Could not start the gift subscription. Please try again.", true);
     } finally {
       setPosButtonDisabled(button, false);
     }
@@ -900,6 +1013,7 @@ onAuthStateChanged(auth, (user) => {
   detachMonthlyIntentListener = null;
   currentUser = user?.emailVerified ? user : null;
   monthlyRequestPending = false;
+  currentUserPhone = "";
 
   if (accountLink) {
     accountLink.href = currentUser ? "user-dashboard.html" : "user-login.html";
@@ -908,6 +1022,10 @@ onAuthStateChanged(auth, (user) => {
     if (label) label.textContent = currentUser ? "My account" : "Account";
   }
   if (currentUser) {
+    onValue(ref(database, `users/${currentUser.uid}`), (snapshot) => {
+      const data = snapshot.val() || {};
+      currentUserPhone = cleanIndianPhone(data.phone) || cleanIndianPhone(currentUser.phoneNumber) || "";
+    });
     // Check if account has an exclusive custom autopay plan configured
     get(ref(database, `customPlans/${currentUser.uid}`)).then((snapshot) => {
       const custom = snapshot.val();

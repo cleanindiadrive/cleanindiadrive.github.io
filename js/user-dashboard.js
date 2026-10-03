@@ -2,6 +2,8 @@ import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.
 import { onValue, push, ref, remove, set, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 import { auth, database, isDevelopmentMode } from "./firebase-client.js";
 
+const BACKEND_URL = window.BACKEND_API_URL || "https://69rnsfw9-3000.inc1.devtunnels.ms";
+let currentUserPhone = "";
 const get = (id) => document.getElementById(id);
 
 function playPosTransactionAnimation(container, onComplete, reverse = false) {
@@ -969,66 +971,61 @@ async function startMonthlySubscription() {
       return;
     }
 
-    if (isDevelopmentMode) {
-      const path = "testPayments";
-      const subRef = push(ref(database, path));
-      const subId = subRef.key;
-      await set(subRef, {
-        id: subId,
-        type: "monthly",
+    const res = await fetch(`${BACKEND_URL}/create-subscription`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        team: "BCBB",
         amount: effectiveAmount,
-        status: "active",
-        subscriptionStatus: "active",
-        isTest: true,
-        date: now,
-        createdAt: now,
-        paidAt: now,
-        nextPaymentDue: nextPayment,
+        user_id: currentUser.uid,
         email: currentUser.email || "",
         name: currentUser.displayName || "",
-        reference: `MS-SUB-${Math.floor(2000 + Math.random() * 8000)}`,
-        note: "Initial contribution",
-        team: "BCBB Dog Rescue",
-        isSubscriptionRoot: true,
-      });
+        phone: currentUserPhone || "",
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.subscription_id) {
+      throw new Error(data?.error || "Subscription creation failed");
+    }
 
-      const payRef = push(ref(database, path));
-      await set(payRef, {
-        type: "monthly",
-        amount: effectiveAmount,
-        status: "paid",
-        isTest: true,
+    const options = {
+      key: data.razorpay_key,
+      subscription_id: data.subscription_id,
+      name: "Manali Strays",
+      description: `₹${effectiveAmount.toLocaleString("en-IN")} Monthly Support`,
+      image: "https://cleanindiadrive.github.io/Group%201.png",
+      prefill: {
+        name: currentUser.displayName || "",
         email: currentUser.email || "",
-        createdAt: now,
-        paidAt: now,
-        date: now,
-        subscriptionId: subId,
-        reference: `MS-SUB-${Math.floor(2000 + Math.random() * 8000)}`,
-        note: "Initial contribution",
+        contact: currentUserPhone || "",
+      },
+      theme: { color: "#FFDD00" },
+      handler: function (response) {
+        console.log("Subscription mandate created in dashboard:", response);
+        if (message) message.textContent = "Mandate setup complete! Your recurring subscription is active. Thank you!";
+        renderRecords();
+      },
+      modal: {
+        ondismiss: function () {
+          if (button) setPosButtonDisabled(button, false);
+          if (message) message.textContent = "Payment window closed.";
+        },
+      },
+    };
+
+    if (typeof window.Razorpay === "function") {
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (resp) {
+        console.error("Dashboard subscription failed:", resp.error);
+        if (message) {
+          message.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
+          message.classList.add("error");
+        }
+        if (button) setPosButtonDisabled(button, false);
       });
-
-      if (monthlyIntent && monthlyIntent.id) {
-        try {
-          await remove(ref(database, `paymentIntents/${currentUser.uid}/${monthlyIntent.id}`));
-        } catch (_) {}
-        paymentIntents = paymentIntents.filter((item) => item.id !== monthlyIntent.id);
-        monthlyIntent = null;
-      }
-
-      if (message) message.textContent = "Monthly subscription activated successfully.";
+      rzp.open();
     } else {
-      const path = `paymentIntents/${currentUser.uid}`;
-      const intent = push(ref(database, path));
-      await set(intent, {
-        type: "monthly",
-        amount: effectiveAmount,
-        status: "pending",
-        createdAt: now,
-        email: currentUser.email || "",
-        name: currentUser.displayName || "",
-        reference: `REQ-SUB-${now}`,
-      });
-      if (message) message.textContent = "Subscription request saved. Payment confirmation is required to activate.";
+      throw new Error("Razorpay SDK is not loaded. Please refresh.");
     }
 
   } catch (error) {
@@ -1608,6 +1605,7 @@ if (isPreviewMode) {
     onValue(ref(database, `users/${user.uid}`), (snapshot) => {
       const userData = snapshot.val() || {};
       const savedPhone = cleanIndianPhone(userData.phone);
+      currentUserPhone = savedPhone || cleanIndianPhone(user.phoneNumber) || "";
       if (isValidIndianPhone(savedPhone)) {
         setText("dashboard-phone", formatIndianPhone(savedPhone));
         get("phone-modal")?.removeAttribute("data-compulsory");
