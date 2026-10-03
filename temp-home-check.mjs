@@ -1,6 +1,38 @@
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-import { onValue, push, ref, set, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-import { auth, database, isDevelopmentMode } from "./firebase-client.js";
+
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { getDatabase, onValue, push, ref, set, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+// Firebase Client Setup
+const firebaseConfig = {
+  apiKey: "AIzaSyDma_UrBD5XQICj5LOu214Fu3va_7VnvDg",
+  authDomain: "sillysensei-b251b.firebaseapp.com",
+  databaseURL: "https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "sillysensei-b251b",
+  storageBucket: "sillysensei-b251b.firebasestorage.app",
+  messagingSenderId: "859697431303",
+  appId: "1:859697431303:web:f91ce7535a3aff27cc7ba2",
+  measurementId: "G-XGR07BYBGN",
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+const devHosts = ["localhost", "127.0.0.1", "0.0.0.0", "::1"];
+const isDevelopmentMode =
+  devHosts.includes(window.location.hostname) ||
+  window.location.hostname.endsWith(".devtunnels.ms") ||
+  window.location.hostname.endsWith(".github.dev") ||
+  window.location.hostname.endsWith(".gitpod.io") ||
+  window.location.hostname.endsWith(".ngrok-free.app") ||
+  window.location.hostname.endsWith(".ngrok.io") ||
+  window.location.hostname.endsWith(".loca.lt") ||
+  window.location.hostname.endsWith(".preview.app") ||
+  new URLSearchParams(window.location.search).get("dev") === "1";
+
+
+
+
 
 const subscriberCount = document.getElementById("subscriber-count");
 const moneyRaised = document.getElementById("money-raised");
@@ -1062,7 +1094,7 @@ onAuthStateChanged(auth, (user) => {
   currentUserPhone = "";
 
   if (accountLink) {
-    accountLink.href = currentUser ? "user-dashboard.html" : "user-login.html";
+    accountLink.href = "#dashboard";
     accountLink.setAttribute("aria-label", currentUser ? "Open your account" : "Log in to your account");
     const label = accountLink.querySelector("span");
     if (label) label.textContent = currentUser ? "My account" : "Account";
@@ -1123,3 +1155,4 @@ subscriberSources.forEach((path) => {
     console.error(`Unable to load ${path}:`, error);
   });
 });
+
