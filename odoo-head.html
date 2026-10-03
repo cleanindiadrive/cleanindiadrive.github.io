@@ -2711,6 +2711,49 @@ footer .contact-details {
   gap: 0.6rem;
 }
 
+.cancel-modal-actions .mode-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.button-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: btnSpinnerRotate 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.button-spinner-dark {
+  border-color: rgba(0, 0, 0, 0.25);
+  border-top-color: #111111;
+}
+
+@keyframes btnSpinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+.change-plan-modal-icon {
+  background: #eaf6ee !important;
+  color: #137333 !important;
+}
+
+.mode-action-primary {
+  background: var(--yellow) !important;
+  color: var(--ink) !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+.mode-action-primary:hover {
+  background: var(--yellow-hover) !important;
+}
+
 .status-failed {
   background: #fbe0dd;
   color: #b3261e;

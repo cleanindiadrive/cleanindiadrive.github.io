@@ -696,7 +696,113 @@ async function toggleSubscription(event) {
     return;
   }
 
+  // If user already has an active subscription, prompt them to confirm plan change
+  if (currentSubscription && ["active", "paused"].includes(currentSubscription.status)) {
+    const currentSubAmount = Number(currentSubscription.amount) || 100;
+    promptChangePlan(currentSubscription, currentSubAmount, selectedMonthlyAmount, button, status);
+    return;
+  }
+
   if (monthlyRequestPending) return;
+  executeCreateMonthlySubscription(button, status);
+}
+
+function promptChangePlan(existingSub, currentAmt, newAmt, button, statusEl) {
+  const modal = document.getElementById("change-plan-modal");
+  const descEl = document.getElementById("change-plan-modal-desc");
+  const confirmBtn = document.getElementById("change-plan-modal-confirm");
+  const keepBtn = document.getElementById("change-plan-modal-keep");
+  const closeBtn = document.getElementById("change-plan-modal-close");
+  const errorEl = document.getElementById("change-plan-modal-error");
+  if (!modal) return;
+
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+
+  if (descEl) {
+    if (currentAmt === newAmt) {
+      descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to restart or change your plan? If you change, your existing subscription will be cancelled and the new plan will start.`;
+    } else {
+      descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to change to ₹${newAmt.toLocaleString("en-IN")} / month? If you change, your existing subscription will be cancelled and the new plan will start.`;
+    }
+  }
+
+  if (confirmBtn) {
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = "Yes, change plan";
+  }
+  if (keepBtn) keepBtn.disabled = false;
+  if (closeBtn) closeBtn.disabled = false;
+
+  modal.classList.remove("is-hidden");
+
+  let isChangingPlan = false;
+  const closeModal = () => {
+    if (isChangingPlan) return;
+    modal.classList.add("is-hidden");
+  };
+
+  confirmBtn.onclick = async () => {
+    if (isChangingPlan) return;
+    isChangingPlan = true;
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `<span class="button-spinner button-spinner-dark" aria-hidden="true"></span> Changing plan…`;
+    if (keepBtn) keepBtn.disabled = true;
+    if (closeBtn) closeBtn.disabled = true;
+
+    try {
+      // 1. Cancel old plan
+      const subId = String(existingSub.subscriptionId || existingSub.id || "").trim();
+      if (subId.startsWith("sub_")) {
+        const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription_id: subId }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.warn("Old plan cancel warning:", errData);
+        }
+      }
+      if (existingSub.path && existingSub.id) {
+        await update(ref(database, `${existingSub.path}/${existingSub.id}`), {
+          subscriptionStatus: "cancelled",
+          status: "cancelled",
+          cancelledAt: Date.now(),
+          endedAt: Date.now(),
+          nextPaymentDue: null,
+        });
+      }
+      currentSubscription = null;
+      isChangingPlan = false;
+      closeModal();
+
+      // 2. Start new plan
+      executeCreateMonthlySubscription(button, statusEl);
+    } catch (err) {
+      console.error("Failed to switch plan:", err);
+      isChangingPlan = false;
+      if (errorEl) {
+        errorEl.textContent = err.message || "Failed to change plan. Please try again.";
+        errorEl.classList.remove("is-hidden");
+      }
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = "Yes, change plan";
+      if (keepBtn) keepBtn.disabled = false;
+      if (closeBtn) closeBtn.disabled = false;
+    }
+  };
+
+  keepBtn.onclick = closeModal;
+  closeBtn.onclick = closeModal;
+  modal.onclick = (e) => {
+    if (e.target.hasAttribute("data-change-plan-dismiss")) closeModal();
+  };
+}
+
+function executeCreateMonthlySubscription(button, status) {
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
     status.textContent = "Connecting to payment gateway…";

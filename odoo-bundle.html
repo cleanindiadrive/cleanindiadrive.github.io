@@ -2714,6 +2714,49 @@ footer .contact-details {
   gap: 0.6rem;
 }
 
+.cancel-modal-actions .mode-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.button-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: btnSpinnerRotate 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.button-spinner-dark {
+  border-color: rgba(0, 0, 0, 0.25);
+  border-top-color: #111111;
+}
+
+@keyframes btnSpinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+.change-plan-modal-icon {
+  background: #eaf6ee !important;
+  color: #137333 !important;
+}
+
+.mode-action-primary {
+  background: var(--yellow) !important;
+  color: var(--ink) !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+.mode-action-primary:hover {
+  background: var(--yellow-hover) !important;
+}
+
 .status-failed {
   background: #fbe0dd;
   color: #b3261e;
@@ -4875,6 +4918,26 @@ footer .contact-details {
         </div>
       </div>
     </section>
+
+    <!-- Change Plan Confirmation Modal -->
+    <div class="cancel-modal is-hidden" id="change-plan-modal" role="dialog" aria-modal="true" aria-labelledby="change-plan-modal-title">
+      <div class="cancel-modal-backdrop" id="change-plan-modal-backdrop" data-change-plan-dismiss></div>
+      <section class="cancel-modal-card">
+        <button class="cancel-modal-close" id="change-plan-modal-close" type="button" aria-label="Close dialog">×</button>
+        <div class="cancel-modal-icon change-plan-modal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+        </div>
+        <h2 id="change-plan-modal-title">Change your subscription?</h2>
+        <p id="change-plan-modal-desc">You already have an active plan. Do you want to change to the selected plan? Your current plan will be cancelled and the new plan will start.</p>
+        <p class="modal-form-error is-hidden" id="change-plan-modal-error"></p>
+        <div class="cancel-modal-actions">
+          <button class="mode-action" id="change-plan-modal-keep" type="button">Keep current plan</button>
+          <button class="mode-action mode-action-primary" id="change-plan-modal-confirm" type="button">Yes, change plan</button>
+        </div>
+      </section>
+    </div>
   </main>
 
   <footer>
@@ -5177,9 +5240,30 @@ footer .contact-details {
         <div class="cancel-modal-icon" aria-hidden="true">!</div>
         <h2 id="cancel-modal-title">Cancel monthly subscription</h2>
         <p>Are you sure you want to cancel your monthly subscription? No further charges will be made. All your past contributions and receipts will remain safely saved in your account history.</p>
+        <p class="modal-form-error is-hidden" id="cancel-modal-error"></p>
         <div class="cancel-modal-actions">
           <button class="mode-action" id="cancel-modal-keep" type="button">Keep subscription</button>
           <button class="mode-action mode-action-danger" id="cancel-modal-confirm" type="button">Yes, cancel subscription</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Change Plan Confirmation Modal for Dashboard -->
+    <div class="cancel-modal is-hidden" id="dashboard-change-plan-modal" role="dialog" aria-modal="true" aria-labelledby="dashboard-change-plan-modal-title">
+      <div class="cancel-modal-backdrop" id="dashboard-change-plan-modal-backdrop" data-change-plan-dismiss></div>
+      <section class="cancel-modal-card">
+        <button class="cancel-modal-close" id="dashboard-change-plan-modal-close" type="button" aria-label="Close dialog">×</button>
+        <div class="cancel-modal-icon change-plan-modal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+        </div>
+        <h2 id="dashboard-change-plan-modal-title">Change your subscription?</h2>
+        <p id="dashboard-change-plan-modal-desc">You already have an active plan. Do you want to change to the selected plan? Your current plan will be cancelled and the new plan will start.</p>
+        <p class="modal-form-error is-hidden" id="dashboard-change-plan-modal-error"></p>
+        <div class="cancel-modal-actions">
+          <button class="mode-action" id="dashboard-change-plan-modal-keep" type="button">Keep current plan</button>
+          <button class="mode-action mode-action-primary" id="dashboard-change-plan-modal-confirm" type="button">Yes, change plan</button>
         </div>
       </section>
     </div>
@@ -6037,7 +6121,113 @@ async function toggleSubscription(event) {
     return;
   }
 
+  // If user already has an active subscription, prompt them to confirm plan change
+  if (currentSubscription && ["active", "paused"].includes(currentSubscription.status)) {
+    const currentSubAmount = Number(currentSubscription.amount) || 100;
+    promptChangePlan(currentSubscription, currentSubAmount, selectedMonthlyAmount, button, status);
+    return;
+  }
+
   if (monthlyRequestPending) return;
+  executeCreateMonthlySubscription(button, status);
+}
+
+function promptChangePlan(existingSub, currentAmt, newAmt, button, statusEl) {
+  const modal = document.getElementById("change-plan-modal");
+  const descEl = document.getElementById("change-plan-modal-desc");
+  const confirmBtn = document.getElementById("change-plan-modal-confirm");
+  const keepBtn = document.getElementById("change-plan-modal-keep");
+  const closeBtn = document.getElementById("change-plan-modal-close");
+  const errorEl = document.getElementById("change-plan-modal-error");
+  if (!modal) return;
+
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+
+  if (descEl) {
+    if (currentAmt === newAmt) {
+      descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to restart or change your plan? If you change, your existing subscription will be cancelled and the new plan will start.`;
+    } else {
+      descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to change to ₹${newAmt.toLocaleString("en-IN")} / month? If you change, your existing subscription will be cancelled and the new plan will start.`;
+    }
+  }
+
+  if (confirmBtn) {
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = "Yes, change plan";
+  }
+  if (keepBtn) keepBtn.disabled = false;
+  if (closeBtn) closeBtn.disabled = false;
+
+  modal.classList.remove("is-hidden");
+
+  let isChangingPlan = false;
+  const closeModal = () => {
+    if (isChangingPlan) return;
+    modal.classList.add("is-hidden");
+  };
+
+  confirmBtn.onclick = async () => {
+    if (isChangingPlan) return;
+    isChangingPlan = true;
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `<span class="button-spinner button-spinner-dark" aria-hidden="true"></span> Changing plan…`;
+    if (keepBtn) keepBtn.disabled = true;
+    if (closeBtn) closeBtn.disabled = true;
+
+    try {
+      // 1. Cancel old plan
+      const subId = String(existingSub.subscriptionId || existingSub.id || "").trim();
+      if (subId.startsWith("sub_")) {
+        const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription_id: subId }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.warn("Old plan cancel warning:", errData);
+        }
+      }
+      if (existingSub.path && existingSub.id) {
+        await update(ref(database, `${existingSub.path}/${existingSub.id}`), {
+          subscriptionStatus: "cancelled",
+          status: "cancelled",
+          cancelledAt: Date.now(),
+          endedAt: Date.now(),
+          nextPaymentDue: null,
+        });
+      }
+      currentSubscription = null;
+      isChangingPlan = false;
+      closeModal();
+
+      // 2. Start new plan
+      executeCreateMonthlySubscription(button, statusEl);
+    } catch (err) {
+      console.error("Failed to switch plan:", err);
+      isChangingPlan = false;
+      if (errorEl) {
+        errorEl.textContent = err.message || "Failed to change plan. Please try again.";
+        errorEl.classList.remove("is-hidden");
+      }
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = "Yes, change plan";
+      if (keepBtn) keepBtn.disabled = false;
+      if (closeBtn) closeBtn.disabled = false;
+    }
+  };
+
+  keepBtn.onclick = closeModal;
+  closeBtn.onclick = closeModal;
+  modal.onclick = (e) => {
+    if (e.target.hasAttribute("data-change-plan-dismiss")) closeModal();
+  };
+}
+
+function executeCreateMonthlySubscription(button, status) {
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
     status.textContent = "Connecting to payment gateway…";
@@ -7396,17 +7586,36 @@ function showDatabaseError(error) {
 
 document.querySelectorAll('input[name="dash-autopay-tier"]').forEach((input) => {
   input.addEventListener("change", (e) => {
-    selectedDashboardPlanAmount = Number(e.target.value) || 100;
-    const button = get("dashboard-subscription-toggle");
-    if (button && !isPosButtonDisabled(button) && (getPosButtonText(button).includes("Start") || getPosButtonText(button).includes("Transaction"))) {
-      setPosButtonText(button, "Subscribe");
+    const newAmt = Number(e.target.value) || 100;
+    selectedDashboardPlanAmount = newAmt;
+    const records = allRawRecords();
+    const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+    if (activeSub) {
+      const currentAmt = Number(activeSub.amount) || 100;
+      if (newAmt !== currentAmt) {
+        promptDashboardChangePlan(activeSub, currentAmt, newAmt);
+      }
+    } else {
+      const button = get("dashboard-subscription-toggle");
+      if (button && !isPosButtonDisabled(button) && (getPosButtonText(button).includes("Start") || getPosButtonText(button).includes("Transaction"))) {
+        setPosButtonText(button, "Subscribe");
+      }
     }
   });
 });
 
-async function startMonthlySubscription() {
-  const activeOrPending = allRawRecords().find((record) => isSubscriptionRootRecord(record) && ["active", "paused", "pending"].includes(normalizedStatus(record)));
-  if (!currentUser || activeOrPending) return;
+async function startMonthlySubscription(overrideAmount) {
+  const records = allRawRecords();
+  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+  const intentAmount = monthlyIntent && Number(monthlyIntent.amount) > 0 ? Number(monthlyIntent.amount) : null;
+  const effectiveAmount = overrideAmount || intentAmount || selectedDashboardPlanAmount || 100;
+
+  if (activeSub && !overrideAmount) {
+    const currentSubAmount = Number(activeSub.amount) || 100;
+    promptDashboardChangePlan(activeSub, currentSubAmount, effectiveAmount);
+    return;
+  }
+  if (!currentUser) return;
   const button = get("dashboard-subscription-toggle");
   const message = get("subscription-message");
   if (button) setPosButtonDisabled(button, true);
@@ -7416,8 +7625,6 @@ async function startMonthlySubscription() {
   }
   const now = Date.now();
   const nextPayment = nextMonthTimestamp(now);
-  const intentAmount = monthlyIntent && Number(monthlyIntent.amount) > 0 ? Number(monthlyIntent.amount) : null;
-  const effectiveAmount = intentAmount || selectedDashboardPlanAmount || 100;
 
   try {
     if (isPreviewMode) {
@@ -7610,12 +7817,54 @@ dashSubToggle?.addEventListener("keydown", (e) => {
 
 
 
-function closeCancelModal() { get("cancel-modal")?.classList.add("is-hidden"); }
+let isCancellingSubscription = false;
+
+function closeCancelModal() {
+  if (isCancellingSubscription) return;
+  get("cancel-modal")?.classList.add("is-hidden");
+}
+
+function openCancelModal() {
+  const errorEl = get("cancel-modal-error");
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+  const confirmBtn = get("cancel-modal-confirm");
+  if (confirmBtn) {
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = "Yes, cancel subscription";
+  }
+  const keepBtn = get("cancel-modal-keep");
+  if (keepBtn) keepBtn.disabled = false;
+  const closeBtn = get("cancel-modal-close");
+  if (closeBtn) closeBtn.disabled = false;
+  get("cancel-modal")?.classList.remove("is-hidden");
+}
 
 async function executeCancelSubscription() {
+  if (isCancellingSubscription) return; // Prevent multiple clicks!
+  const confirmBtn = get("cancel-modal-confirm");
+  const keepBtn = get("cancel-modal-keep");
+  const closeBtn = get("cancel-modal-close");
+  const errorEl = get("cancel-modal-error");
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
   if (!activeSub && !monthlyIntent) return;
+
+  isCancellingSubscription = true;
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `<span class="button-spinner" aria-hidden="true"></span> Cancelling…`;
+  }
+  if (keepBtn) keepBtn.disabled = true;
+  if (closeBtn) closeBtn.disabled = true;
+
   const message = get("subscription-message");
   if (message) {
     message.textContent = activeSub ? "Cancelling monthly subscription…" : "Cancelling subscription request…";
@@ -7631,6 +7880,7 @@ async function executeCancelSubscription() {
       }
       paymentIntents = paymentIntents.filter((item) => item.id !== monthlyIntent.id);
       monthlyIntent = null;
+      isCancellingSubscription = false;
       closeCancelModal();
       if (message) message.textContent = "Your pending subscription request has been cancelled.";
       renderRecords();
@@ -7668,6 +7918,7 @@ async function executeCancelSubscription() {
         subscriptionId: activeSub.id,
         note: "Subscription cancelled",
       });
+      isCancellingSubscription = false;
       closeCancelModal();
       if (message) message.textContent = "Your subscription has been cancelled. Your past contributions remain safely saved in your account history.";
       renderRecords();
@@ -7708,19 +7959,129 @@ async function executeCancelSubscription() {
       reference: "—",
       note: "Subscription cancelled",
     });
+    isCancellingSubscription = false;
     closeCancelModal();
     if (message) message.textContent = "Your subscription has been cancelled. Your past contributions remain safely saved in your account history.";
     renderRecords();
   } catch (error) {
     console.error("Unable to cancel subscription:", error);
+    isCancellingSubscription = false;
+    if (errorEl) {
+      errorEl.textContent = error.message || "Could not cancel your subscription. Please try again.";
+      errorEl.classList.remove("is-hidden");
+    }
     if (message) {
       message.textContent = "Could not cancel your subscription. Please try again.";
       message.classList.add("error");
     }
+  } finally {
+    isCancellingSubscription = false;
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = "Yes, cancel subscription";
+    }
+    if (keepBtn) keepBtn.disabled = false;
+    if (closeBtn) closeBtn.disabled = false;
   }
 }
 
-function openCancelModal() { get("cancel-modal")?.classList.remove("is-hidden"); }
+function promptDashboardChangePlan(existingSub, currentAmt, newAmt) {
+  const modal = get("dashboard-change-plan-modal") || get("change-plan-modal");
+  const descEl = get("dashboard-change-plan-modal-desc") || get("change-plan-modal-desc");
+  const confirmBtn = get("dashboard-change-plan-modal-confirm") || get("change-plan-modal-confirm");
+  const keepBtn = get("dashboard-change-plan-modal-keep") || get("change-plan-modal-keep");
+  const closeBtn = get("dashboard-change-plan-modal-close") || get("change-plan-modal-close");
+  const errorEl = get("dashboard-change-plan-modal-error") || get("change-plan-modal-error");
+  if (!modal) return;
+
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+
+  if (descEl) {
+    if (currentAmt === newAmt) {
+      descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to restart or change your plan? If you change, your existing subscription will be cancelled and the new plan will start.`;
+    } else {
+      descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to change to ₹${newAmt.toLocaleString("en-IN")} / month? If you change, your existing subscription will be cancelled and the new plan will start.`;
+    }
+  }
+
+  if (confirmBtn) {
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = "Yes, change plan";
+  }
+  if (keepBtn) keepBtn.disabled = false;
+  if (closeBtn) closeBtn.disabled = false;
+
+  modal.classList.remove("is-hidden");
+
+  let isChangingPlan = false;
+  const closeModal = () => {
+    if (isChangingPlan) return;
+    modal.classList.add("is-hidden");
+  };
+
+  confirmBtn.onclick = async () => {
+    if (isChangingPlan) return;
+    isChangingPlan = true;
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `<span class="button-spinner button-spinner-dark" aria-hidden="true"></span> Changing plan…`;
+    if (keepBtn) keepBtn.disabled = true;
+    if (closeBtn) closeBtn.disabled = true;
+
+    try {
+      // 1. Cancel old plan
+      const subId = String(existingSub.subscriptionId || existingSub.id || "").trim();
+      if (subId.startsWith("sub_")) {
+        const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription_id: subId }),
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.warn("Old plan cancel warning:", errData);
+        }
+      }
+      if (existingSub.path && existingSub.id) {
+        await update(ref(database, `${existingSub.path}/${existingSub.id}`), {
+          subscriptionStatus: "cancelled",
+          status: "cancelled",
+          cancelledAt: Date.now(),
+          endedAt: Date.now(),
+          nextPaymentDue: null,
+        });
+      }
+      isChangingPlan = false;
+      closeModal();
+
+      // 2. Start new plan
+      await startMonthlySubscription(newAmt);
+    } catch (err) {
+      console.error("Failed to change plan:", err);
+      isChangingPlan = false;
+      if (errorEl) {
+        errorEl.textContent = err.message || "Failed to change plan. Please try again.";
+        errorEl.classList.remove("is-hidden");
+      }
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = "Yes, change plan";
+      if (keepBtn) keepBtn.disabled = false;
+      if (closeBtn) closeBtn.disabled = false;
+    }
+  };
+
+  keepBtn.onclick = () => {
+    closeModal();
+    const activeTierInput = document.querySelector(`input[name="dash-autopay-tier"][value="${currentAmt}"]`);
+    if (activeTierInput) activeTierInput.checked = true;
+  };
+  closeBtn.onclick = closeModal;
+  modal.onclick = (e) => {
+    if (e.target.hasAttribute("data-change-plan-dismiss")) closeModal();
+  };
+}
 
 const cancelBtn = get("subscription-cancel");
 cancelBtn?.addEventListener("click", (e) => {
