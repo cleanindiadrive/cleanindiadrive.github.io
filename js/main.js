@@ -187,15 +187,15 @@ function updateSelectedMonthlyPlan(amount) {
   refreshSubscriptionMode();
 }
 
-function playPosTransactionAnimation(container, onComplete) {
+function playPosTransactionAnimation(container, onComplete, reverse = false) {
   if (!container) {
     if (typeof onComplete === "function") onComplete();
     return;
   }
-  if (container.classList.contains("is-disabled") || container.getAttribute("aria-disabled") === "true") {
+  if (container.classList.contains("is-animating") || container.classList.contains("is-animating-reverse")) {
     return;
   }
-  container.classList.remove("is-animating");
+  container.classList.remove("is-animating", "is-animating-reverse");
   const card = container.querySelector(".card");
   const post = container.querySelector(".post");
   const dollar = container.querySelector(".dollar");
@@ -207,9 +207,10 @@ function playPosTransactionAnimation(container, onComplete) {
   if (post) post.style.animation = "";
   if (dollar) dollar.style.animation = "";
 
-  container.classList.add("is-animating");
+  const animClass = reverse ? "is-animating-reverse" : "is-animating";
+  container.classList.add(animClass);
   setTimeout(() => {
-    container.classList.remove("is-animating");
+    container.classList.remove("is-animating", "is-animating-reverse");
     if (typeof onComplete === "function") {
       onComplete();
     }
@@ -327,56 +328,59 @@ async function toggleSubscription(event) {
 
   if (!currentSubscription || currentSubscription.status === "cancelled") {
     if (monthlyRequestPending) return;
-    setPosButtonDisabled(button, true);
-    playPosTransactionAnimation(button);
-    status.textContent = "Saving your subscription request…";
-    try {
-      const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
-      const intent = push(ref(database, path));
-      const now = Date.now();
-      await set(intent, {
-        type: "monthly",
-        amount: selectedMonthlyAmount,
-        anonymous: isAnonymousDonationSelected(),
-        status: isDevelopmentMode ? "active" : "pending",
-        ...(isDevelopmentMode ? { subscriptionStatus: "active", isTest: true, paidAt: now, reference: `DEV-SUBSCRIPTION-${now}` } : {}),
-        createdAt: now,
-        email: currentUser.email || "",
-      });
-      if (isDevelopmentMode) {
-        status.textContent = `Development subscription for ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo activated.`;
-        setPosButtonText(button, "Active subscription");
-        setPosButtonDisabled(button, true);
-      } else {
-        monthlyRequestPending = true;
-        status.textContent = "Request saved. Complete payment confirmation to activate it.";
+    playPosTransactionAnimation(button, async () => {
+      setPosButtonDisabled(button, true);
+      status.textContent = "Saving your subscription request…";
+      try {
+        const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
+        const intent = push(ref(database, path));
+        const now = Date.now();
+        await set(intent, {
+          type: "monthly",
+          amount: selectedMonthlyAmount,
+          anonymous: isAnonymousDonationSelected(),
+          status: isDevelopmentMode ? "active" : "pending",
+          ...(isDevelopmentMode ? { subscriptionStatus: "active", isTest: true, paidAt: now, reference: `DEV-SUBSCRIPTION-${now}` } : {}),
+          createdAt: now,
+          email: currentUser.email || "",
+        });
+        if (isDevelopmentMode) {
+          status.textContent = `Development subscription for ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo activated.`;
+          setPosButtonText(button, "Active subscription");
+          setPosButtonDisabled(button, true);
+        } else {
+          monthlyRequestPending = true;
+          status.textContent = "Request saved. Complete payment confirmation to activate it.";
+        }
+      } catch (error) {
+        console.error("Unable to start subscription:", error);
+        status.textContent = "Could not start the subscription request. Please try again.";
+        setPosButtonDisabled(button, false);
       }
-    } catch (error) {
-      console.error("Unable to start subscription:", error);
-      status.textContent = "Could not start the subscription request. Please try again.";
-      setPosButtonDisabled(button, false);
-    }
-    if (!isDevelopmentMode) refreshSubscriptionMode();
+      if (!isDevelopmentMode) refreshSubscriptionMode();
+    });
     return;
   }
 
   const nextStatus = currentSubscription.status === "paused" ? "active" : "paused";
-  setPosButtonDisabled(button, true);
-  playPosTransactionAnimation(button);
-  try {
-    await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
-      subscriptionStatus: nextStatus,
-      ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
-    });
-    currentSubscription.status = nextStatus;
-    status.textContent = nextStatus === "paused" ? "Your monthly subscription is paused." : "Your monthly subscription is active.";
-  } catch (error) {
-    console.error("Unable to update subscription:", error);
-    status.textContent = "Could not update your subscription. Please try again.";
-    setPosButtonDisabled(button, false);
-    return;
-  }
-  refreshSubscriptionMode();
+  const isPausing = nextStatus === "paused";
+  playPosTransactionAnimation(button, async () => {
+    setPosButtonDisabled(button, true);
+    try {
+      await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
+        subscriptionStatus: nextStatus,
+        ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
+      });
+      currentSubscription.status = nextStatus;
+      status.textContent = nextStatus === "paused" ? "Your monthly subscription is paused." : "Your monthly subscription is active.";
+    } catch (error) {
+      console.error("Unable to update subscription:", error);
+      status.textContent = "Could not update your subscription. Please try again.";
+      setPosButtonDisabled(button, false);
+      return;
+    }
+    refreshSubscriptionMode();
+  }, isPausing);
 }
 
 async function saveOneTimeIntent(event) {
@@ -396,29 +400,30 @@ async function saveOneTimeIntent(event) {
   }
   if (isPosButtonDisabled(button)) return;
 
-  setPosButtonDisabled(button, true);
-  playPosTransactionAnimation(button);
-  setModeMessage("one-time-message", "Saving your payment request…");
-  try {
-    const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
-    const intent = push(ref(database, path));
-    const now = Date.now();
-    await set(intent, {
-      type: "one-time",
-      amount,
-      anonymous: isAnonymousDonationSelected(),
-      status: isDevelopmentMode ? "paid" : "pending",
-      ...(isDevelopmentMode ? { isTest: true, paidAt: now, reference: `DEV-ONE-TIME-${now}` } : {}),
-      createdAt: now,
-      email: currentUser.email || "",
-    });
-    setModeMessage("one-time-message", isDevelopmentMode ? "Development payment recorded as successful." : "Payment request saved as pending. A payment gateway still needs to confirm it.");
-  } catch (error) {
-    console.error("Unable to save one-time payment request:", error);
-    setModeMessage("one-time-message", "Could not save the request. Please try again.", true);
-  } finally {
-    setPosButtonDisabled(button, false);
-  }
+  playPosTransactionAnimation(button, async () => {
+    setPosButtonDisabled(button, true);
+    setModeMessage("one-time-message", "Saving your payment request…");
+    try {
+      const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
+      const intent = push(ref(database, path));
+      const now = Date.now();
+      await set(intent, {
+        type: "one-time",
+        amount,
+        anonymous: isAnonymousDonationSelected(),
+        status: isDevelopmentMode ? "paid" : "pending",
+        ...(isDevelopmentMode ? { isTest: true, paidAt: now, reference: `DEV-ONE-TIME-${now}` } : {}),
+        createdAt: now,
+        email: currentUser.email || "",
+      });
+      setModeMessage("one-time-message", isDevelopmentMode ? "Development payment recorded as successful." : "Payment request saved as pending. A payment gateway still needs to confirm it.");
+    } catch (error) {
+      console.error("Unable to save one-time payment request:", error);
+      setModeMessage("one-time-message", "Could not save the request. Please try again.", true);
+    } finally {
+      setPosButtonDisabled(button, false);
+    }
+  });
 }
 
 async function saveGiftIntent(event) {
@@ -438,33 +443,34 @@ async function saveGiftIntent(event) {
   }
   if (isPosButtonDisabled(button)) return;
 
-  setPosButtonDisabled(button, true);
-  playPosTransactionAnimation(button);
-  setModeMessage("gift-message", "Saving your gift request…");
-  try {
-    const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
-    const intent = push(ref(database, path));
-    const now = Date.now();
-    await set(intent, {
-      type: "gift-monthly",
-      amount: 100,
-      anonymous: isAnonymousDonationSelected(),
-      status: isDevelopmentMode ? "paid" : "pending",
-      ...(isDevelopmentMode ? { isTest: true, paidAt: now, reference: `DEV-GIFT-${now}` } : {}),
-      createdAt: now,
-      email: currentUser.email || "",
-      recipientName: recipient.name,
-      recipientEmail: recipient.email,
-      recipientPhone: recipient.phone,
-      recipientTeam: recipient.team,
-    });
-    setModeMessage("gift-message", isDevelopmentMode ? `Development gift payment recorded as successful for ${recipient.name}.` : `Gift request for ${recipient.name} saved as pending.`);
-  } catch (error) {
-    console.error("Unable to save gift request:", error);
-    setModeMessage("gift-message", "Could not save the gift request. Please try again.", true);
-  } finally {
-    setPosButtonDisabled(button, false);
-  }
+  playPosTransactionAnimation(button, async () => {
+    setPosButtonDisabled(button, true);
+    setModeMessage("gift-message", "Saving your gift request…");
+    try {
+      const path = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
+      const intent = push(ref(database, path));
+      const now = Date.now();
+      await set(intent, {
+        type: "gift-monthly",
+        amount: 100,
+        anonymous: isAnonymousDonationSelected(),
+        status: isDevelopmentMode ? "paid" : "pending",
+        ...(isDevelopmentMode ? { isTest: true, paidAt: now, reference: `DEV-GIFT-${now}` } : {}),
+        createdAt: now,
+        email: currentUser.email || "",
+        recipientName: recipient.name,
+        recipientEmail: recipient.email,
+        recipientPhone: recipient.phone,
+        recipientTeam: recipient.team,
+      });
+      setModeMessage("gift-message", isDevelopmentMode ? `Development gift payment recorded as successful for ${recipient.name}.` : `Gift request for ${recipient.name} saved as pending.`);
+    } catch (error) {
+      console.error("Unable to save gift request:", error);
+      setModeMessage("gift-message", "Could not save the gift request. Please try again.", true);
+    } finally {
+      setPosButtonDisabled(button, false);
+    }
+  });
 }
 
 document.querySelectorAll(".mode-tab").forEach((tab) => {

@@ -760,17 +760,20 @@ nav {
   letter-spacing: -0.01em;
 }
 
+/* Debit/Credit Bank Card */
 .pos-transaction-container .card {
-  width: 40px;
-  height: 26px;
-  background-color: #c7ffbc;
+  width: 38px;
+  height: 24px;
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
   border-radius: 4px;
   position: absolute;
+  top: 15px;
+  left: calc(50% - 19px);
   display: flex;
   z-index: 10;
   flex-direction: column;
   align-items: center;
-  box-shadow: 4px 4px 6px -1px rgba(77, 200, 143, 0.65);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
   transition: transform 0.3s ease;
 }
 
@@ -779,22 +782,22 @@ nav {
 }
 
 .pos-transaction-container .card-line {
-  width: 36px;
-  height: 7px;
-  background-color: #80ea69;
+  width: 32px;
+  height: 5px;
+  background-color: #052e16;
   border-radius: 1px;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .pos-transaction-container .buttons {
-  width: 5px;
-  height: 5px;
-  background-color: #379e1f;
-  box-shadow: 0 -6px 0 0 #26850e, 0 6px 0 0 #56be3e;
+  width: 4px;
+  height: 4px;
+  background-color: #eab308;
+  box-shadow: 0 -5px 0 0 #f59e0b, 0 5px 0 0 #fbbf24;
   border-radius: 50%;
-  margin-top: 3px;
+  margin-top: 2px;
   transform: rotate(90deg);
-  margin: 5px 0 0 -17px;
+  margin: 4px 0 0 -14px;
 }
 
 /* Slower, smoother 2.0s card insertion */
@@ -802,108 +805,122 @@ nav {
   animation: slide-top 2s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-/* Reverse: same keyframes played backwards for pause — starts from final frame */
+/* Reverse: same keyframes played backwards for pause — starts from final inserted frame */
 .pos-transaction-container.is-animating-reverse .card {
   animation: slide-top 2s cubic-bezier(0.4, 0, 0.2, 1) both reverse;
 }
 
 .pos-transaction-container.is-animating .post {
-  animation: slide-post 1.75s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+  animation: slide-post 2s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 /* Reverse: same keyframes played backwards */
 .pos-transaction-container.is-animating-reverse .post {
-  animation: slide-post 1.75s cubic-bezier(0.165, 0.84, 0.44, 1) both reverse;
+  animation: slide-post 2s cubic-bezier(0.4, 0, 0.2, 1) both reverse;
 }
 
 @keyframes slide-top {
   0% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
 
-  45% {
-    transform: translateY(-40px) rotate(90deg);
+  22% {
+    transform: translateY(-6px) rotate(45deg);
   }
 
-  60% {
-    transform: translateY(-40px) rotate(90deg);
+  40% {
+    transform: translateY(-8px) rotate(90deg);
   }
 
+  55% {
+    transform: translateY(-8px) rotate(90deg);
+  }
+
+  82%,
   100% {
-    transform: translateY(-4px) rotate(90deg);
+    transform: translateY(16px) rotate(90deg);
   }
 }
 
+/* POS Terminal Reader Machine */
 .pos-transaction-container .post {
-  width: 36px;
-  height: 44px;
-  background-color: #dddde0;
+  width: 38px;
+  height: 42px;
+  background-color: #27272a;
+  border: 1px solid #3f3f46;
   position: absolute;
   z-index: 11;
-  bottom: 4px;
-  top: 60px;
-  border-radius: 4px;
+  top: 56px;
+  left: calc(50% - 19px);
+  border-radius: 5px;
   overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .pos-transaction-container .post-line {
-  width: 28px;
-  height: 6px;
-  background-color: #545354;
+  width: 30px;
+  height: 5px;
+  background-color: #09090b;
   position: absolute;
-  border-radius: 0px 0px 2px 2px;
-  right: 4px;
-  top: 4px;
+  border-radius: 0 0 2px 2px;
+  left: calc(50% - 15px);
+  top: 3px;
 }
 
 .pos-transaction-container .post-line:before {
   content: "";
   position: absolute;
-  width: 28px;
-  height: 6px;
-  background-color: #757375;
-  top: -5px;
+  width: 30px;
+  height: 5px;
+  background-color: #18181b;
+  top: -4px;
 }
 
 .pos-transaction-container .screen {
-  width: 28px;
+  width: 30px;
   height: 14px;
-  background-color: #ffffff;
+  background-color: #18181b;
+  border: 1px solid #3f3f46;
   position: absolute;
-  top: 13px;
-  right: 4px;
+  top: 11px;
+  left: calc(50% - 15px);
   border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pos-transaction-container .numbers {
-  width: 7px;
-  height: 7px;
-  background-color: #838183;
-  box-shadow: 0 -10px 0 0 #838183, 0 10px 0 0 #838183;
+  width: 6px;
+  height: 6px;
+  background-color: #52525b;
+  box-shadow: 0 -9px 0 0 #52525b, 0 9px 0 0 #52525b;
   border-radius: 1px;
   position: absolute;
   transform: rotate(90deg);
-  left: 15px;
-  top: 30px;
+  left: 16px;
+  top: 29px;
 }
 
 .pos-transaction-container .numbers-line2 {
-  width: 7px;
-  height: 7px;
-  background-color: #aaa9ab;
-  box-shadow: 0 -10px 0 0 #aaa9ab, 0 10px 0 0 #aaa9ab;
+  width: 6px;
+  height: 6px;
+  background-color: #71717a;
+  box-shadow: 0 -9px 0 0 #71717a, 0 9px 0 0 #71717a;
   border-radius: 1px;
   position: absolute;
   transform: rotate(90deg);
-  left: 15px;
-  top: 39px;
+  left: 16px;
+  top: 36px;
 }
 
 @keyframes slide-post {
-  0%, 45% {
+  0%,
+  12% {
     transform: translateY(0);
   }
 
+  45%,
   100% {
     transform: translateY(-40px);
   }
@@ -917,13 +934,14 @@ nav {
   width: 100%;
   left: 0;
   top: 0;
-  color: #4b953b;
+  color: #22c55e;
+  text-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
   text-align: center;
   line-height: 14px;
 }
 
 .pos-transaction-container.is-animating .dollar {
-  animation: fade-in-fwd 0.35s 1.5s backwards;
+  animation: fade-in-fwd 0.35s 1.45s backwards;
 }
 
 .pos-transaction-container.is-animating-reverse .dollar {
@@ -933,12 +951,12 @@ nav {
 @keyframes fade-in-fwd {
   0% {
     opacity: 0;
-    transform: translateY(-3px);
+    transform: scale(0.6);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
 }
 
@@ -1519,109 +1537,63 @@ footer .contact-details {
   white-space: nowrap;
 }
 
-.dashboard-nav-home {
+.dashboard-nav-home,
+.dashboard-logout {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  min-height: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 180ms ease;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.dashboard-nav-home {
   border: 1px solid var(--line);
-  border-radius: 999px;
   background: var(--surface);
   color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 160ms ease;
 }
 
 .dashboard-nav-home:hover {
   border-color: var(--yellow-hover);
   background: #fffef1;
   color: var(--ink);
+  transform: translateY(-1px);
 }
 
-/* Animated Expanding Circular Logout Button */
-.Btn,
-.dashboard-logout.Btn {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 42px;
-  height: 42px;
-  min-height: 42px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition-duration: .3s;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
-  background-color: rgb(255, 65, 65);
+.dashboard-logout {
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  background: #ffffff;
+  color: rgb(65, 63, 63);
+}
+
+.dashboard-logout svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
   flex-shrink: 0;
 }
 
-/* sign */
-.Btn .sign {
-  width: 100%;
-  transition-duration: .3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.dashboard-logout:hover {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #dc2626;
+  transform: translateY(-1px);
 }
 
-.Btn .sign svg {
-  width: 17px;
-  height: 17px;
-}
-
-.Btn .sign svg path {
-  fill: white;
-}
-
-/* text */
-.Btn .text {
-  position: absolute;
-  right: 0%;
-  width: 0%;
-  opacity: 0;
-  color: white;
-  font-size: 0.84rem;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  transition-duration: .3s;
-  white-space: nowrap;
-}
-
-/* hover effect on button width */
-.Btn:hover,
-.dashboard-logout.Btn:hover {
-  width: 120px;
-  border-radius: 40px;
-  transition-duration: .3s;
-  background-color: rgb(240, 50, 50);
-}
-
-.Btn:hover .sign {
-  width: 32%;
-  transition-duration: .3s;
-  padding-left: 10px;
-}
-
-/* hover effect button's text */
-.Btn:hover .text {
-  opacity: 1;
-  width: 68%;
-  transition-duration: .3s;
-  padding-right: 14px;
-  text-align: center;
-}
-
-/* button click effect */
-.Btn:active,
-.dashboard-logout.Btn:active {
-  transform: translate(2px, 2px);
+.dashboard-nav-home:active,
+.dashboard-logout:active {
+  transform: translateY(0);
 }
 
 .dashboard-main {
