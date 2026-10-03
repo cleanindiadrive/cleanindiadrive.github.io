@@ -8,7 +8,7 @@ const donorTotal = document.getElementById("donor-total");
 const donorList = document.getElementById("donor-list");
 const accountLink = document.getElementById("account-link");
 const sourceData = new Map();
-const subscriberSources = ["subscribers", "subscribers_velcrow"];
+const subscriberSources = ["subscribers", "subscribers_velcrow", "users"];
 let currentUser = null;
 let currentSubscription = null;
 let currentUserPaymentRecords = [];
@@ -34,6 +34,7 @@ function getActiveDonors() {
   const donors = new Map();
 
   sourceData.forEach((data, source) => {
+    if (source === "users") return;
     if (!data || typeof data !== "object") return;
     Object.entries(data).forEach(([id, record]) => {
       if (getRecordStatus(record) !== "active") return;
@@ -82,50 +83,216 @@ function renderDonors() {
   donorList.innerHTML = donors.map((donor) => `<span class="donor-name"><b aria-hidden="true">${escapeHtml(donor.avatar)}</b><span>${escapeHtml(donor.label)}</span></span>`).join("");
 }
 
-function renderGiftRecipients() {
-  const phoneInput = document.getElementById("gift-phone");
-  const recipientSelect = document.getElementById("gift-recipient");
-  const submitButton = document.getElementById("gift-submit");
-  if (!phoneInput || !recipientSelect || !submitButton) return;
+function cleanIndianPhone(val) {
+  if (!val) return "";
+  let digits = String(val).replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+  if (digits.length === 13 && digits.startsWith("091")) digits = digits.slice(3);
+  return digits;
+}
 
-  const query = String(phoneInput.value || "").replace(/\D/g, "");
-  const matches = [];
+function isValidIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  return digits.length === 10 && /^[6-9]\d{9}$/.test(digits);
+}
+
+function formatIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  if (digits.length === 10) {
+    return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  return val || "";
+}
+
+let selectedGiftRecipient = null;
+let activeGiftResults = [];
+let focusedResultIndex = -1;
+
+function highlightMatch(text, query) {
+  if (!text) return "";
+  const str = String(text);
+  const q = String(query || "").trim();
+  if (!q) return escapeHtml(str);
+
+  const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escapedQuery})`, "gi");
+  const parts = str.split(regex);
+
+  return parts.map((part) => {
+    if (part.toLowerCase() === q.toLowerCase()) {
+      return `<mark>${escapeHtml(part)}</mark>`;
+    }
+    return escapeHtml(part);
+  }).join("");
+}
+
+function getAllPotentialGiftRecipients() {
+  const recipients = [];
   const seen = new Set();
 
-  if (query.length >= 4) {
-    sourceData.forEach((data, source) => {
-      if (!data || typeof data !== "object") return;
-      Object.entries(data).forEach(([id, record]) => {
-        const phone = String(record?.phone || "").replace(/\D/g, "");
-        if (!phone || !(phone.endsWith(query) || phone.includes(query))) return;
-        const key = String(record?.email || phone || `${source}:${id}`).trim().toLowerCase();
-        if (seen.has(key)) return;
-        seen.add(key);
-        matches.push({
-          id,
-          source,
-          name: String(record?.name || "Anonymous supporter").trim() || "Anonymous supporter",
-          phone: String(record?.phone || "Not provided").trim(),
-          email: String(record?.email || "").trim(),
-          team: String(record?.team || source).trim(),
-        });
+  sourceData.forEach((data, source) => {
+    if (!data || typeof data !== "object") return;
+    Object.entries(data).forEach(([id, record]) => {
+      const rawPhone = String(record?.phone || "").trim();
+      const cleanPhone = cleanIndianPhone(rawPhone);
+      if (!cleanPhone || cleanPhone.length < 5) return;
+
+      const name = String(record?.fullName || record?.name || "").trim() || "Anonymous supporter";
+      const email = String(record?.email || "").trim().toLowerCase();
+      const dedupeKey = cleanPhone.length === 10 ? cleanPhone : (email || `${source}:${id}`);
+      if (seen.has(dedupeKey)) return;
+      seen.add(dedupeKey);
+
+      let team = "Supporter";
+      if (source === "subscribers_velcrow") team = "Velcrow";
+      else if (source === "subscribers") team = "BCBB";
+      else if (source === "users") team = "Member";
+
+      recipients.push({
+        id,
+        source,
+        name,
+        phone: cleanPhone,
+        displayPhone: formatIndianPhone(cleanPhone),
+        email,
+        team,
       });
     });
+  });
+
+  return recipients;
+}
+
+function searchGiftRecipients(query) {
+  const trimmed = String(query || "").trim();
+  if (!trimmed) return [];
+
+  const rawDigits = trimmed.replace(/\D/g, "");
+  const lowerText = trimmed.toLowerCase();
+  const allRecipients = getAllPotentialGiftRecipients();
+
+  return allRecipients.filter((r) => {
+    const matchesPhone = rawDigits.length > 0 && r.phone.includes(rawDigits);
+    const matchesName = r.name.toLowerCase().includes(lowerText);
+    return matchesPhone || matchesName;
+  }).sort((a, b) => {
+    if (rawDigits.length > 0) {
+      const aStarts = a.phone.startsWith(rawDigits);
+      const bStarts = b.phone.startsWith(rawDigits);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+    }
+    const aNameStarts = a.name.toLowerCase().startsWith(lowerText);
+    const bNameStarts = b.name.toLowerCase().startsWith(lowerText);
+    if (aNameStarts && !bNameStarts) return -1;
+    if (!aNameStarts && bNameStarts) return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function renderGiftSearchResults(query) {
+  const resultsContainer = document.getElementById("gift-search-results");
+  const clearBtn = document.getElementById("gift-search-clear");
+  if (!resultsContainer) return;
+
+  const trimmed = String(query || "").trim();
+  if (!trimmed) {
+    resultsContainer.innerHTML = "";
+    resultsContainer.classList.add("is-hidden");
+    clearBtn?.classList.add("is-hidden");
+    activeGiftResults = [];
+    focusedResultIndex = -1;
+    return;
   }
 
-  giftRecipients = matches;
-  if (!query) {
-    recipientSelect.innerHTML = '<option value="">Enter a phone number first</option>';
-  } else if (matches.length) {
-    recipientSelect.innerHTML = '<option value="">Select a donor</option>' + matches.map((recipient, index) => (
-      `<option value="${index}">${escapeHtml(recipient.name)} · ${escapeHtml(recipient.phone)}</option>`
-    )).join("");
-  } else {
-    recipientSelect.innerHTML = '<option value="">No donor found for this number</option>';
+  clearBtn?.classList.remove("is-hidden");
+  const matches = searchGiftRecipients(trimmed);
+  activeGiftResults = matches;
+  focusedResultIndex = -1;
+
+  if (matches.length === 0) {
+    resultsContainer.innerHTML = `
+      <div class="gift-search-empty">
+        <strong>No supporters found</strong>
+        <span>No registered supporter matches "${escapeHtml(trimmed)}". Try searching another number or name.</span>
+      </div>
+    `;
+    resultsContainer.classList.remove("is-hidden");
+    return;
   }
 
-  recipientSelect.disabled = !matches.length;
-  submitButton.disabled = true;
+  const rawDigits = trimmed.replace(/\D/g, "");
+  resultsContainer.innerHTML = matches.map((m, idx) => `
+    <button type="button" class="gift-result-item" data-index="${idx}" role="option" aria-selected="false">
+      <div class="gift-result-avatar">${escapeHtml((m.name[0] || "S").toUpperCase())}</div>
+      <div class="gift-result-details">
+        <span class="gift-result-name">${highlightMatch(m.name, trimmed)}</span>
+        <span class="gift-result-phone">${highlightMatch(m.displayPhone, rawDigits)}</span>
+      </div>
+      <span class="gift-result-badge">${escapeHtml(m.team)}</span>
+    </button>
+  `).join("");
+
+  resultsContainer.classList.remove("is-hidden");
+}
+
+function selectGiftRecipient(recipient) {
+  if (!recipient) return;
+  selectedGiftRecipient = recipient;
+
+  const selectedCard = document.getElementById("gift-selected-card");
+  const searchInputBox = document.querySelector(".gift-search-input-box");
+  const resultsContainer = document.getElementById("gift-search-results");
+  const avatarEl = document.getElementById("gift-selected-avatar");
+  const nameEl = document.getElementById("gift-selected-name");
+  const phoneEl = document.getElementById("gift-selected-phone");
+  const recipientSelect = document.getElementById("gift-recipient");
+  const giftSubmitBtn = document.getElementById("gift-submit");
+
+  if (avatarEl) avatarEl.textContent = (recipient.name[0] || "S").toUpperCase();
+  if (nameEl) nameEl.textContent = recipient.name;
+  if (phoneEl) phoneEl.textContent = recipient.displayPhone;
+
+  selectedCard?.classList.remove("is-hidden");
+  searchInputBox?.classList.add("is-hidden");
+  resultsContainer?.classList.add("is-hidden");
+
+  if (recipientSelect) {
+    recipientSelect.innerHTML = `<option value="${escapeHtml(recipient.phone)}" selected>${escapeHtml(recipient.name)}</option>`;
+  }
+
+  if (giftSubmitBtn) {
+    setPosButtonDisabled(giftSubmitBtn, false);
+  }
+  setModeMessage("gift-message", "");
+}
+
+function clearGiftSelection() {
+  selectedGiftRecipient = null;
+  const selectedCard = document.getElementById("gift-selected-card");
+  const searchInputBox = document.querySelector(".gift-search-input-box");
+  const searchInput = document.getElementById("gift-search-input");
+  const clearBtn = document.getElementById("gift-search-clear");
+  const resultsContainer = document.getElementById("gift-search-results");
+  const recipientSelect = document.getElementById("gift-recipient");
+  const giftSubmitBtn = document.getElementById("gift-submit");
+
+  selectedCard?.classList.add("is-hidden");
+  searchInputBox?.classList.remove("is-hidden");
+  if (searchInput) searchInput.value = "";
+  clearBtn?.classList.add("is-hidden");
+  if (resultsContainer) {
+    resultsContainer.innerHTML = "";
+    resultsContainer.classList.add("is-hidden");
+  }
+  if (recipientSelect) {
+    recipientSelect.innerHTML = '<option value="">No recipient selected</option>';
+  }
+  if (giftSubmitBtn) {
+    setPosButtonDisabled(giftSubmitBtn, true);
+  }
+  searchInput?.focus();
 }
 
 function setModeMessage(id, message, isError = false) {
@@ -151,6 +318,7 @@ function setMode(mode) {
 function findSubscriptionForUser(email) {
   const matches = [];
   for (const [path, data] of sourceData.entries()) {
+    if (path === "users") continue;
     if (!data || typeof data !== "object") continue;
     for (const [id, record] of Object.entries(data)) {
       if (String(record?.email || "").trim().toLowerCase() !== email) continue;
@@ -428,16 +596,15 @@ async function saveOneTimeIntent(event) {
 
 async function saveGiftIntent(event) {
   event?.preventDefault?.();
-  const recipientSelect = document.getElementById("gift-recipient");
   const button = document.getElementById("gift-submit");
-  const recipient = giftRecipients[Number(recipientSelect?.value)];
+  const recipient = selectedGiftRecipient;
   if (!recipient) {
-    setModeMessage("gift-message", "Select a donor first.", true);
+    setModeMessage("gift-message", "Please search and select a supporter first.", true);
     return;
   }
   if (!currentUser) {
     playPosTransactionAnimation(button, () => {
-      window.location.href = `user-login.html?mode=signup&plan=gift&phone=${encodeURIComponent(recipient.phone)}`;
+      window.location.href = `user-login.html?mode=signup&plan=gift&phone=${encodeURIComponent(recipient.phone)}&name=${encodeURIComponent(recipient.name)}`;
     });
     return;
   }
@@ -459,9 +626,9 @@ async function saveGiftIntent(event) {
         createdAt: now,
         email: currentUser.email || "",
         recipientName: recipient.name,
-        recipientEmail: recipient.email,
+        recipientEmail: recipient.email || "",
         recipientPhone: recipient.phone,
-        recipientTeam: recipient.team,
+        recipientTeam: recipient.team || "Supporter",
       });
       setModeMessage("gift-message", isDevelopmentMode ? `Development gift payment recorded as successful for ${recipient.name}.` : `Gift request for ${recipient.name} saved as pending.`);
     } catch (error) {
@@ -494,9 +661,72 @@ giftSubmitBtn?.addEventListener("click", saveGiftIntent);
   });
 });
 
-document.getElementById("gift-phone")?.addEventListener("input", renderGiftRecipients);
-document.getElementById("gift-recipient")?.addEventListener("change", (event) => {
-  if (giftSubmitBtn) setPosButtonDisabled(giftSubmitBtn, !giftRecipients[Number(event.target.value)]);
+const giftSearchInput = document.getElementById("gift-search-input") || document.getElementById("gift-phone");
+const giftSearchClear = document.getElementById("gift-search-clear");
+const giftSearchResults = document.getElementById("gift-search-results");
+const giftChangeBtn = document.getElementById("gift-change-btn");
+
+giftSearchInput?.addEventListener("input", (e) => {
+  renderGiftSearchResults(e.target.value);
+});
+
+giftSearchInput?.addEventListener("focus", (e) => {
+  if (e.target.value.trim() && !selectedGiftRecipient) {
+    renderGiftSearchResults(e.target.value);
+  }
+});
+
+giftSearchInput?.addEventListener("keydown", (e) => {
+  if (!activeGiftResults.length) return;
+  const items = giftSearchResults?.querySelectorAll(".gift-result-item");
+  if (!items || !items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    focusedResultIndex = (focusedResultIndex + 1) % items.length;
+    items.forEach((item, idx) => item.classList.toggle("is-focused", idx === focusedResultIndex));
+    items[focusedResultIndex]?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    focusedResultIndex = (focusedResultIndex - 1 + items.length) % items.length;
+    items.forEach((item, idx) => item.classList.toggle("is-focused", idx === focusedResultIndex));
+    items[focusedResultIndex]?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    if (focusedResultIndex >= 0 && activeGiftResults[focusedResultIndex]) {
+      selectGiftRecipient(activeGiftResults[focusedResultIndex]);
+    } else if (activeGiftResults[0]) {
+      selectGiftRecipient(activeGiftResults[0]);
+    }
+  } else if (e.key === "Escape") {
+    giftSearchResults?.classList.add("is-hidden");
+  }
+});
+
+giftSearchClear?.addEventListener("click", () => {
+  if (giftSearchInput) {
+    giftSearchInput.value = "";
+    renderGiftSearchResults("");
+    giftSearchInput.focus();
+  }
+});
+
+giftSearchResults?.addEventListener("click", (e) => {
+  const item = e.target.closest(".gift-result-item");
+  if (!item) return;
+  const idx = Number(item.dataset.index);
+  if (Number.isFinite(idx) && activeGiftResults[idx]) {
+    selectGiftRecipient(activeGiftResults[idx]);
+  }
+});
+
+giftChangeBtn?.addEventListener("click", clearGiftSelection);
+
+document.addEventListener("click", (e) => {
+  const wrap = document.getElementById("gift-search-wrap");
+  if (wrap && !wrap.contains(e.target)) {
+    giftSearchResults?.classList.add("is-hidden");
+  }
 });
 
 
@@ -521,7 +751,13 @@ document.querySelectorAll('input[name="home-autopay-tier"]').forEach((input) => 
 
 const requestedMode = new URLSearchParams(window.location.search).get("plan");
 setMode(requestedMode === "one-time" ? "one-time" : requestedMode === "gift" ? "gift" : "monthly");
-renderGiftRecipients();
+const initialGiftPhone = new URLSearchParams(window.location.search).get("phone");
+if (initialGiftPhone) {
+  setTimeout(() => {
+    const matches = searchGiftRecipients(initialGiftPhone);
+    if (matches[0]) selectGiftRecipient(matches[0]);
+  }, 350);
+}
 
 onAuthStateChanged(auth, (user) => {
   detachMonthlyIntentListener?.();
@@ -579,7 +815,9 @@ subscriberSources.forEach((path) => {
     sourceData.set(path, data);
     renderPublicTotals();
     renderDonors();
-    renderGiftRecipients();
+    if (giftSearchInput?.value && !selectedGiftRecipient) {
+      renderGiftSearchResults(giftSearchInput.value);
+    }
     refreshSubscriptionMode();
   }, (error) => {
     console.error(`Unable to load ${path}:`, error);

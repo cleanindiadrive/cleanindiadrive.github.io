@@ -409,7 +409,8 @@ nav {
     text-align: center;
   }
 
-  .gift-fields {
+  .gift-fields,
+  .gift-search-wrap {
     align-items: center;
     margin: 0.25rem auto 0;
   }
@@ -3822,3 +3823,525 @@ footer .contact-details {
   60%, 75% { transform: translateY(-0.3vmax); }
   80%, 85% { transform: translateY(0.15vmax); }
 }
+
+/* -------------------------------------------------------------
+ * Accessible Screen Reader Utility
+ * ----------------------------------------------------------- */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* -------------------------------------------------------------
+ * Compulsory Profile / Login Form Styling
+ * ----------------------------------------------------------- */
+.profile-name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 320px;
+  margin: 0.5rem auto 0;
+  text-align: left;
+}
+
+.auth-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.auth-field-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.required-star {
+  color: #d32f2f;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.auth-field-group input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #d6d6ce;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: #fafaf8;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.auth-field-group input:focus {
+  border-color: #2b2b2b;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.35);
+  background: #fff;
+}
+
+.phone-input-wrap {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid #d6d6ce;
+  border-radius: 8px;
+  background: #fafaf8;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.phone-input-wrap:focus-within {
+  border-color: #2b2b2b;
+  box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.35);
+  background: #fff;
+}
+
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #666;
+  background: rgba(0, 0, 0, 0.04);
+  border-right: 1.5px solid #d6d6ce;
+  user-select: none;
+}
+
+.phone-input-wrap input {
+  width: 100%;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0.6rem 0.75rem !important;
+  min-height: 44px;
+  flex: 1;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none !important;
+}
+
+.field-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin-top: 0.1rem;
+}
+
+.button-continue {
+  background: var(--yellow) !important;
+  color: #1a1a1a !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  margin-top: 0.4rem;
+  font-weight: 700 !important;
+  transition: all 0.25s ease !important;
+}
+
+.button-continue:hover {
+  background: var(--yellow-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 214, 0, 0.3);
+}
+
+/* -------------------------------------------------------------
+ * Dashboard Phone Contact & Compulsory Phone Modal
+ * ----------------------------------------------------------- */
+.dashboard-user-contact {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.8rem;
+}
+
+.dashboard-sep-dot {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.dashboard-phone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.55rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.dashboard-phone-chip svg {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.dashboard-edit-phone-btn {
+  background: none;
+  border: none;
+  padding: 0 0.2rem;
+  margin-left: 0.2rem;
+  color: #1a73e8;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.dashboard-edit-phone-btn:hover {
+  color: #0b57d0;
+}
+
+.phone-modal-card {
+  max-width: 420px;
+  text-align: center;
+}
+
+.phone-modal-icon {
+  background: var(--yellow-soft) !important;
+  color: #806800 !important;
+}
+
+.phone-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.phone-modal-form .phone-input-wrap {
+  width: 100%;
+}
+
+.modal-form-error {
+  color: #b3261e;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 0.2rem 0;
+}
+
+.phone-modal-form .cancel-modal-actions {
+  display: flex;
+  width: 100%;
+  margin-top: 0.35rem;
+}
+
+.phone-modal-form .cancel-modal-actions button {
+  width: 100%;
+  justify-content: center;
+}
+
+/* -------------------------------------------------------------
+ * Active Live Search for Gift Recipients (Homepage)
+ * ----------------------------------------------------------- */
+.gift-search-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 340px;
+  margin: 0.2rem 0 0;
+  text-align: left;
+}
+
+.gift-search-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.35rem;
+}
+
+.gift-search-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1.5px solid #d6d6ce;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.gift-search-input-box:focus-within {
+  border-color: #2b2b2b;
+  box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.35);
+}
+
+.gift-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #8e8e88;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+#gift-search-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0.55rem 2.2rem 0.55rem 2.45rem;
+  border: none;
+  background: transparent;
+  font-size: 0.86rem;
+  color: var(--ink);
+  font-family: inherit;
+  outline: none;
+}
+
+#gift-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.gift-search-clear {
+  position: absolute;
+  right: 0.5rem;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: #ecece7;
+  color: #555;
+  font-size: 1.15rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gift-search-clear:hover {
+  background: #deded8;
+  color: #111;
+}
+
+.gift-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1.5px solid #d6d6ce;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14);
+  z-index: 100;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.gift-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border: none;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+}
+
+.gift-result-item:hover,
+.gift-result-item.is-focused {
+  background: #f5f5f0;
+}
+
+.gift-result-item:active {
+  background: #ebebe5;
+}
+
+.gift-result-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffe066;
+  color: #3d3400;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.gift-result-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 0.1rem;
+}
+
+.gift-result-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gift-result-phone {
+  font-size: 0.75rem;
+  color: #6b6b63;
+  font-variant-numeric: tabular-nums;
+}
+
+.gift-result-badge {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #1b633e;
+  background: #eaf6ee;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.gift-result-item mark,
+.gift-search-results mark {
+  background: #ffec8b;
+  color: #1a1a1a;
+  font-weight: 700;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.gift-search-empty {
+  padding: 1rem 0.75rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.gift-search-empty strong {
+  display: block;
+  color: var(--ink);
+  margin-bottom: 0.2rem;
+  font-size: 0.84rem;
+}
+
+.gift-selected-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: #fbfbfa;
+  border: 1.5px solid #2b2b2b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  animation: giftCardPop 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes giftCardPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gift-selected-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffd600;
+  color: #222;
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.gift-selected-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 0.15rem;
+}
+
+.gift-selected-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.gift-selected-name-row strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gift-selected-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #e6f4ea;
+  color: #137333;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.gift-selected-phone {
+  font-size: 0.78rem;
+  color: #555550;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.gift-change-btn {
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #d6d6ce;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.gift-change-btn:hover {
+  background: #f0f0eb;
+  border-color: #999;
+}
+

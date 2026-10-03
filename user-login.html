@@ -31,10 +31,20 @@
           </svg>
           Continue with Google
         </button>
-        <form class="profile-name-form is-hidden" id="profile-name-form">
-          <label for="profile-name">Your name</label>
-          <input id="profile-name" type="text" autocomplete="given-name" maxlength="80" placeholder="Enter your name" required />
-          <button class="button" type="submit">Continue</button>
+        <form class="profile-name-form is-hidden" id="profile-name-form" novalidate>
+          <div class="auth-field-group">
+            <label for="profile-name">Full name <span class="required-star">*</span></label>
+            <input id="profile-name" type="text" autocomplete="name" maxlength="80" placeholder="Enter your full name" required />
+          </div>
+          <div class="auth-field-group">
+            <label for="profile-phone">Mobile number <span class="required-star">*</span></label>
+            <div class="phone-input-wrap">
+              <span class="phone-prefix">+91</span>
+              <input id="profile-phone" type="tel" inputmode="numeric" maxlength="14" placeholder="10-digit mobile number" autocomplete="tel" required />
+            </div>
+            <span class="field-hint">Required for subscriptions, receipts &amp; gift support</span>
+          </div>
+          <button class="button button-continue" type="submit">Save &amp; Continue</button>
         </form>
         <div class="auth-message" id="auth-message" role="status" aria-live="polite"></div>
       </section>

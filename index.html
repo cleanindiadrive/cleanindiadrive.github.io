@@ -1,254 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Subscribe to Manali Strays | Silly Sensei</title>
-    <meta name="description" content="Subscribe for ₹100 per month to support Manali Strays and track your support online." />
-    <meta name="author" content="Abhishek Reddy" />
-    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="site.css" />
-    <link rel="preload" as="image" href="assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
-  </head>
-  <body>
-    <!-- Page Loading Screen -->
-    <div id="page-loader" aria-hidden="true">
-      <div class="main">
-        <div class="dog">
-          <div class="dog__paws">
-            <div class="dog__bl-leg leg"><div class="dog__bl-paw paw"></div><div class="dog__bl-top top"></div></div>
-            <div class="dog__fl-leg leg"><div class="dog__fl-paw paw"></div><div class="dog__fl-top top"></div></div>
-            <div class="dog__fr-leg leg"><div class="dog__fr-paw paw"></div><div class="dog__fr-top top"></div></div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subscribe to Manali Strays | Silly Sensei</title>
+  <meta name="description"
+    content="Subscribe for ₹100 per month to support Manali Strays and track your support online." />
+  <meta name="author" content="Abhishek Reddy" />
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <link rel="preload" as="image" href="assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
+</head>
+
+<body>
+  <!-- Page Loading Screen -->
+  <div id="page-loader" aria-hidden="true">
+    <div class="main">
+      <div class="dog">
+        <div class="dog__paws">
+          <div class="dog__bl-leg leg">
+            <div class="dog__bl-paw paw"></div>
+            <div class="dog__bl-top top"></div>
           </div>
-          <div class="dog__body"><div class="dog__tail"></div></div>
-          <div class="dog__head">
-            <div class="dog__snout">
-              <div class="dog__eyes"><div class="dog__eye-l"></div><div class="dog__eye-r"></div></div>
+          <div class="dog__fl-leg leg">
+            <div class="dog__fl-paw paw"></div>
+            <div class="dog__fl-top top"></div>
+          </div>
+          <div class="dog__fr-leg leg">
+            <div class="dog__fr-paw paw"></div>
+            <div class="dog__fr-top top"></div>
+          </div>
+        </div>
+        <div class="dog__body">
+          <div class="dog__tail"></div>
+        </div>
+        <div class="dog__head">
+          <div class="dog__snout">
+            <div class="dog__eyes">
+              <div class="dog__eye-l"></div>
+              <div class="dog__eye-r"></div>
             </div>
           </div>
-          <div class="dog__head-c"><div class="dog__ear-r"></div><div class="dog__ear-l"></div></div>
+        </div>
+        <div class="dog__head-c">
+          <div class="dog__ear-r"></div>
+          <div class="dog__ear-l"></div>
         </div>
       </div>
-      <span class="loader-label">Loading…</span>
     </div>
-    <header class="site-header">
-      <nav class="site-nav">
-        <div class="logo">
-          <a href="index.html" aria-label="Manali Strays home">
-            <img src="Group%201.png" alt="Manali Strays Logo" width="120" height="30" />
-          </a>
-        </div>
-        <a class="account-link" id="account-link" href="user-login.html" aria-label="Open account">
-          <svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" />
-          </svg>
-          <span>Account</span>
+    <span class="loader-label">Loading…</span>
+  </div>
+  <header class="site-header">
+    <nav class="site-nav">
+      <div class="logo">
+        <a href="index.html" aria-label="Manali Strays home">
+          <img src="Group%201.png" alt="Manali Strays Logo" width="120" height="30" />
         </a>
-      </nav>
-    </header>
-
-    <main class="home-main">
-      <section class="hero-section" id="top">
-        <div class="hero-container">
-          <h1>Subscribe to<br />Manali Strays</h1>
-
-          <div class="hero-cta-group">
-            <a class="price-btn" id="subscribe-btn" href="#ways-to-support">
-              <strong id="hero-btn-amount">₹100 Per Month</strong>
-              <span id="subscriber-count">0 active subscribers</span>
-            </a>
-
-            <div id="money-counter" class="money-card">
-              <span class="money-label">Total Monthly Impact</span>
-              <strong>₹<span id="money-raised">0</span></strong>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      <section class="modes-section" id="ways-to-support" aria-labelledby="modes-title">
-        <div class="modes-card">
-          <h2 id="modes-title">Choose how you want to help</h2>
-          <div class="mode-tabs" role="tablist" aria-label="Support modes">
-            <button class="mode-tab active" type="button" data-mode="monthly" role="tab" aria-selected="true">Monthly</button>
-            <button class="mode-tab" type="button" data-mode="one-time" role="tab" aria-selected="false">One time</button>
-            <button class="mode-tab" type="button" data-mode="gift" role="tab" aria-selected="false">Gift</button>
-          </div>
-
-          <div class="mode-panel" id="monthly-mode" role="tabpanel">
-            <div class="mode-panel-details">
-              <div class="mode-panel-copy">
-                <strong id="monthly-plan-label">Monthly subscription · ₹100 / mo</strong>
-                <p id="subscription-mode-status">Choose an autopay plan to support Manali Strays monthly.</p>
-              </div>
-
-              <div class="cc-ios-tabs" id="home-autopay-tabs">
-                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-100" value="100" checked />
-                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-500" value="500" />
-                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1000" value="1000" />
-                <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1500" value="1500" />
-
-                <div class="cc-ios-tabs__control">
-                  <div class="cc-ios-tabs__thumb"></div>
-                  <label class="cc-ios-tabs__item" for="plan-tab-100">₹100</label>
-                  <label class="cc-ios-tabs__item" for="plan-tab-500">₹500</label>
-                  <label class="cc-ios-tabs__item" for="plan-tab-1000">₹1,000</label>
-                  <label class="cc-ios-tabs__item" for="plan-tab-1500">₹1,500</label>
-                </div>
-              </div>
-
-              <div class="mode-panel-actions">
-                <a class="mode-secondary-link is-hidden" id="subscription-account-link" href="user-dashboard.html">Manage account</a>
-              </div>
-            </div>
-
-            <div class="home-new-tx-wrap">
-              <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0" aria-label="Start monthly subscription">
-                <div class="left-side">
-                  <div class="card">
-                    <div class="card-line"></div>
-                    <div class="buttons"></div>
-                  </div>
-                  <div class="post">
-                    <div class="post-line"></div>
-                    <div class="screen">
-                      <div class="dollar">₹</div>
-                    </div>
-                    <div class="numbers"></div>
-                    <div class="numbers-line2"></div>
-                  </div>
-                </div>
-                <div class="right-side">
-                  <div class="new" id="subscription-toggle-text">Subscribe</div>
-                  <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mode-panel is-hidden" id="one-time-mode" role="tabpanel">
-            <div class="mode-panel-details">
-              <div class="mode-panel-copy">
-                <strong>One-time support</strong>
-                <p>Choose any custom amount to support Manali Strays.</p>
-              </div>
-              <div class="mode-form-row">
-                <label class="compact-amount" for="one-time-amount"><span>₹</span><input id="one-time-amount" type="number" min="1" max="1000000" step="1" value="500" inputmode="numeric" /></label>
-              </div>
-              <span class="mode-message" id="one-time-message" role="status"></span>
-            </div>
-
-            <div class="home-new-tx-wrap">
-              <div class="pos-transaction-container" id="one-time-submit" role="button" tabindex="0" aria-label="Submit one-time transaction">
-                <div class="left-side">
-                  <div class="card">
-                    <div class="card-line"></div>
-                    <div class="buttons"></div>
-                  </div>
-                  <div class="post">
-                    <div class="post-line"></div>
-                    <div class="screen">
-                      <div class="dollar">₹</div>
-                    </div>
-                    <div class="numbers"></div>
-                    <div class="numbers-line2"></div>
-                  </div>
-                </div>
-                <div class="right-side">
-                  <div class="new" id="one-time-submit-text">New Transaction</div>
-                  <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mode-panel is-hidden" id="gift-mode" role="tabpanel">
-            <div class="mode-panel-details">
-              <div class="mode-panel-copy">
-                <strong>Gift a subscription · ₹100</strong>
-                <p>Find a supporter by phone number and pay their monthly subscription.</p>
-              </div>
-              <div class="gift-fields">
-                <label for="gift-phone">Phone number</label>
-                <input id="gift-phone" type="tel" inputmode="tel" placeholder="Enter phone number" />
-                <label for="gift-recipient">Select from donors</label>
-                <select id="gift-recipient" disabled>
-                  <option value="">Enter a phone number first</option>
-                </select>
-              </div>
-              <span class="mode-message" id="gift-message" role="status"></span>
-            </div>
-
-            <div class="home-new-tx-wrap">
-              <div class="pos-transaction-container is-disabled" id="gift-submit" role="button" tabindex="0" aria-disabled="true" aria-label="Gift a transaction">
-                <div class="left-side">
-                  <div class="card">
-                    <div class="card-line"></div>
-                    <div class="buttons"></div>
-                  </div>
-                  <div class="post">
-                    <div class="post-line"></div>
-                    <div class="screen">
-                      <div class="dollar">₹</div>
-                    </div>
-                    <div class="numbers"></div>
-                    <div class="numbers-line2"></div>
-                  </div>
-                </div>
-                <div class="right-side">
-                  <div class="new" id="gift-submit-text">New Transaction</div>
-                  <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <section class="donors-section" aria-labelledby="donors-title">
-        <div class="donors-card">
-          <div class="donors-heading">
-            <strong id="donors-title">Our donors</strong>
-            <span class="donor-total-badge"><b id="donor-total">0</b> total</span>
-          </div>
-          <p class="donors-subtitle">People helping Manali Strays, one contribution at a time.</p>
-          <div id="donor-list" class="donor-list" aria-live="polite">
-            <span class="donor-placeholder">Loading donors…</span>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="contact-title">Contact me?</div>
-      <div class="contact-details">I'm in the group, you silly buffallo</div>
-      <div class="footer-links">
-        <a href="about.html">About Us</a>
-        <span class="footer-sep">·</span>
-        <a href="contact.html">Contact Us</a>
-        <span class="footer-sep">·</span>
-        <a href="cancellation.html">Cancellation Policy</a>
-        <span class="footer-sep">·</span>
-        <a href="terms.html">Terms &amp; Conditions</a>
-        <span class="footer-sep">·</span>
-        <a href="privacy.html">Privacy Policy</a>
       </div>
-    </footer>
+      <a class="account-link" id="account-link" href="user-login.html" aria-label="Open account">
+        <svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" />
+        </svg>
+        <span>Account</span>
+      </a>
+    </nav>
+  </header>
 
-    <script type="module" src="js/main.js"></script>
-    <script>
-      // Dismiss loading screen once page is interactive
-      window.addEventListener('load', function() {
-        var loader = document.getElementById('page-loader');
-        if (loader) {
-          setTimeout(function() { loader.classList.add('loader-hidden'); }, 1800);
-        }
-      });
-    </script>
-  </body>
+  <main class="home-main">
+    <section class="hero-section" id="top">
+      <div class="hero-container">
+        <h1>Subscribe to<br />Manali Strays</h1>
+
+        <div class="hero-cta-group">
+          <a class="price-btn" id="subscribe-btn" href="#ways-to-support">
+            <strong id="hero-btn-amount">₹100 Per Month</strong>
+            <span id="subscriber-count">0 active subscribers</span>
+          </a>
+
+          <div id="money-counter" class="money-card">
+            <span class="money-label">Total Monthly Impact</span>
+            <strong>₹<span id="money-raised">0</span></strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="modes-section" id="ways-to-support" aria-labelledby="modes-title">
+      <div class="modes-card">
+        <h2 id="modes-title">Choose how you want to help</h2>
+        <div class="mode-tabs" role="tablist" aria-label="Support modes">
+          <button class="mode-tab active" type="button" data-mode="monthly" role="tab"
+            aria-selected="true">Monthly</button>
+          <button class="mode-tab" type="button" data-mode="one-time" role="tab" aria-selected="false">One time</button>
+          <button class="mode-tab" type="button" data-mode="gift" role="tab" aria-selected="false">Gift</button>
+        </div>
+
+        <div class="mode-panel" id="monthly-mode" role="tabpanel">
+          <div class="mode-panel-details">
+            <div class="mode-panel-copy">
+              <strong id="monthly-plan-label">Monthly subscription · ₹100 / mo</strong>
+              <p id="subscription-mode-status">Choose an autopay plan to support Manali Strays monthly.</p>
+            </div>
+
+            <div class="cc-ios-tabs" id="home-autopay-tabs">
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-100" value="100"
+                checked />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-500" value="500" />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1000" value="1000" />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1500" value="1500" />
+
+              <div class="cc-ios-tabs__control">
+                <div class="cc-ios-tabs__thumb"></div>
+                <label class="cc-ios-tabs__item" for="plan-tab-100">₹100</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-500">₹500</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-1000">₹1,000</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-1500">₹1,500</label>
+              </div>
+            </div>
+
+            <div class="mode-panel-actions">
+              <a class="mode-secondary-link is-hidden" id="subscription-account-link" href="user-dashboard.html">Manage
+                account</a>
+            </div>
+          </div>
+
+          <div class="home-new-tx-wrap">
+            <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0"
+              aria-label="Start monthly subscription">
+              <div class="left-side">
+                <div class="card">
+                  <div class="card-line"></div>
+                  <div class="buttons"></div>
+                </div>
+                <div class="post">
+                  <div class="post-line"></div>
+                  <div class="screen">
+                    <div class="dollar">₹</div>
+                  </div>
+                  <div class="numbers"></div>
+                  <div class="numbers-line2"></div>
+                </div>
+              </div>
+              <div class="right-side">
+                <div class="new" id="subscription-toggle-text">Subscribe</div>
+                <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg"
+                  class="arrow">
+                  <path fill="#cfcfcf" class="active-path"
+                    d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mode-panel is-hidden" id="one-time-mode" role="tabpanel">
+          <div class="mode-panel-details">
+            <div class="mode-panel-copy">
+              <strong>One-time support</strong>
+              <p>Choose any custom amount to support Manali Strays.</p>
+            </div>
+            <div class="mode-form-row">
+              <label class="compact-amount" for="one-time-amount"><span>₹</span><input id="one-time-amount"
+                  type="number" min="1" max="1000000" step="1" value="500" inputmode="numeric" /></label>
+            </div>
+            <span class="mode-message" id="one-time-message" role="status"></span>
+          </div>
+
+          <div class="home-new-tx-wrap">
+            <div class="pos-transaction-container" id="one-time-submit" role="button" tabindex="0"
+              aria-label="Submit one-time transaction">
+              <div class="left-side">
+                <div class="card">
+                  <div class="card-line"></div>
+                  <div class="buttons"></div>
+                </div>
+                <div class="post">
+                  <div class="post-line"></div>
+                  <div class="screen">
+                    <div class="dollar">₹</div>
+                  </div>
+                  <div class="numbers"></div>
+                  <div class="numbers-line2"></div>
+                </div>
+              </div>
+              <div class="right-side">
+                <div class="new" id="one-time-submit-text">Support</div>
+                <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg"
+                  class="arrow">
+                  <path fill="#cfcfcf" class="active-path"
+                    d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mode-panel is-hidden" id="gift-mode" role="tabpanel">
+          <div class="mode-panel-details">
+            <div class="mode-panel-copy">
+              <strong>Gift a subscription · ₹100</strong>
+              <p>Search any supporter by phone number or name and pay their monthly subscription.</p>
+            </div>
+            <div class="gift-search-wrap">
+              <label for="gift-search-input">Search supporter</label>
+              <div class="gift-search-input-box">
+                <svg class="gift-search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input id="gift-search-input" type="text" inputmode="text" placeholder="Type mobile number or name…" autocomplete="off" aria-autocomplete="list" />
+                <button type="button" class="gift-search-clear is-hidden" id="gift-search-clear" aria-label="Clear search">×</button>
+              </div>
+
+              <!-- Active Live Search Dropdown -->
+              <div class="gift-search-results is-hidden" id="gift-search-results" role="listbox" aria-label="Supporters search results"></div>
+
+              <!-- Selected Supporter Card -->
+              <div class="gift-selected-card is-hidden" id="gift-selected-card">
+                <div class="gift-selected-avatar" id="gift-selected-avatar">A</div>
+                <div class="gift-selected-info">
+                  <div class="gift-selected-name-row">
+                    <strong id="gift-selected-name">Supporter Name</strong>
+                    <span class="gift-selected-pill">Gift Recipient</span>
+                  </div>
+                  <span class="gift-selected-phone" id="gift-selected-phone">+91 00000 00000</span>
+                </div>
+                <button type="button" class="gift-change-btn" id="gift-change-btn" title="Choose a different supporter">Change</button>
+              </div>
+
+              <select id="gift-recipient" class="sr-only" aria-hidden="true" tabindex="-1">
+                <option value="">No recipient selected</option>
+              </select>
+            </div>
+            <span class="mode-message" id="gift-message" role="status"></span>
+          </div>
+
+          <div class="home-new-tx-wrap">
+            <div class="pos-transaction-container is-disabled" id="gift-submit" role="button" tabindex="0"
+              aria-disabled="true" aria-label="Gift a transaction">
+              <div class="left-side">
+                <div class="card">
+                  <div class="card-line"></div>
+                  <div class="buttons"></div>
+                </div>
+                <div class="post">
+                  <div class="post-line"></div>
+                  <div class="screen">
+                    <div class="dollar">₹</div>
+                  </div>
+                  <div class="numbers"></div>
+                  <div class="numbers-line2"></div>
+                </div>
+              </div>
+              <div class="right-side">
+                <div class="new" id="gift-submit-text">Gift</div>
+                <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg"
+                  class="arrow">
+                  <path fill="#cfcfcf" class="active-path"
+                    d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="donors-section" aria-labelledby="donors-title">
+      <div class="donors-card">
+        <div class="donors-heading">
+          <strong id="donors-title">Our donors</strong>
+          <span class="donor-total-badge"><b id="donor-total">0</b> total</span>
+        </div>
+        <p class="donors-subtitle">People helping Manali Strays, one contribution at a time.</p>
+        <div id="donor-list" class="donor-list" aria-live="polite">
+          <span class="donor-placeholder">Loading donors…</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="contact-title">Contact me?</div>
+    <div class="contact-details">I'm in the group, you silly buffallo</div>
+    <div class="footer-links">
+      <a href="about.html">About Us</a>
+      <span class="footer-sep">·</span>
+      <a href="contact.html">Contact Us</a>
+      <span class="footer-sep">·</span>
+      <a href="cancellation.html">Cancellation Policy</a>
+      <span class="footer-sep">·</span>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <span class="footer-sep">·</span>
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    // Dismiss loading screen once page is interactive
+    window.addEventListener('load', function () {
+      var loader = document.getElementById('page-loader');
+      if (loader) {
+        setTimeout(function () { loader.classList.add('loader-hidden'); }, 1800);
+      }
+    });
+  </script>
+</body>
+
 </html>

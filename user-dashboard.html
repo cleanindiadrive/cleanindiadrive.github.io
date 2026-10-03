@@ -65,7 +65,15 @@
               <span class="dashboard-status-indicator status-active" id="dashboard-status-pill">Active Supporter</span>
             </div>
             <h1>Hello, <span id="dashboard-name">supporter</span>.</h1>
-            <p class="dashboard-email-text" id="dashboard-email"></p>
+            <div class="dashboard-user-contact">
+              <span class="dashboard-email-text" id="dashboard-email"></span>
+              <span class="dashboard-sep-dot" aria-hidden="true">·</span>
+              <span class="dashboard-phone-chip" id="dashboard-phone-chip">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span id="dashboard-phone">Loading mobile…</span>
+                <button type="button" class="dashboard-edit-phone-btn" id="dashboard-edit-phone-btn" title="Update mobile number">Edit</button>
+              </span>
+            </div>
           </div>
           <a class="dashboard-home-link" href="index.html" aria-label="Back to home page">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -282,6 +290,29 @@
           <button class="mode-action" id="cancel-modal-keep" type="button">Keep subscription</button>
           <button class="mode-action mode-action-danger" id="cancel-modal-confirm" type="button">Yes, cancel subscription</button>
         </div>
+      </section>
+    </div>
+
+    <!-- Compulsory Phone Modal for Existing Users without phone -->
+    <div class="cancel-modal is-hidden" id="phone-modal" role="dialog" aria-modal="true" aria-labelledby="phone-modal-title">
+      <div class="cancel-modal-backdrop" id="phone-modal-backdrop"></div>
+      <section class="cancel-modal-card phone-modal-card">
+        <button class="cancel-modal-close is-hidden" id="phone-modal-close" type="button" aria-label="Close dialog">×</button>
+        <div class="cancel-modal-icon phone-modal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <h2 id="phone-modal-title">Mobile number required</h2>
+        <p id="phone-modal-desc">Please enter your 10-digit mobile number. This is compulsory to verify your account, send contribution receipts, and enable friends to gift you subscriptions.</p>
+        <form id="phone-modal-form" class="phone-modal-form" novalidate>
+          <div class="phone-input-wrap">
+            <span class="phone-prefix">+91</span>
+            <input id="modal-phone-input" type="tel" inputmode="numeric" maxlength="14" placeholder="10-digit mobile number" autocomplete="tel" required />
+          </div>
+          <div class="modal-form-error is-hidden" id="modal-phone-error" role="alert"></div>
+          <div class="cancel-modal-actions">
+            <button class="mode-action mode-action-primary" id="modal-phone-submit" type="submit">Save mobile number</button>
+          </div>
+        </form>
       </section>
     </div>
 

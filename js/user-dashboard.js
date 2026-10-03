@@ -1298,6 +1298,154 @@ get("cancel-modal-confirm")?.addEventListener("click", async () => {
   }
 });
 
+function cleanIndianPhone(val) {
+  if (!val) return "";
+  let digits = String(val).replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+  if (digits.length === 13 && digits.startsWith("091")) digits = digits.slice(3);
+  return digits;
+}
+
+function isValidIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  return digits.length === 10 && /^[6-9]\d{9}$/.test(digits);
+}
+
+function formatIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  if (digits.length === 10) {
+    return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  return val || "Not provided";
+}
+
+function openPhoneModal(isCompulsory = false) {
+  const modal = get("phone-modal");
+  const closeBtn = get("phone-modal-close");
+  const errorEl = get("modal-phone-error");
+  const phoneInput = get("modal-phone-input");
+  if (!modal) return;
+
+  modal.dataset.compulsory = isCompulsory ? "true" : "false";
+
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+
+  if (closeBtn) {
+    closeBtn.classList.toggle("is-hidden", isCompulsory);
+  }
+
+  if (phoneInput) {
+    const cur = get("dashboard-phone")?.textContent || "";
+    const digits = cleanIndianPhone(cur);
+    phoneInput.value = digits.length === 10 ? digits : "";
+  }
+
+  modal.classList.remove("is-hidden");
+  phoneInput?.focus();
+}
+
+function closePhoneModal() {
+  const modal = get("phone-modal");
+  if (!modal) return;
+  const curText = get("dashboard-phone")?.textContent || "";
+  const digits = cleanIndianPhone(curText);
+  if (modal.dataset.compulsory === "true" && !isValidIndianPhone(digits)) {
+    return; // Compulsory: cannot close without entering a valid phone
+  }
+  modal.classList.add("is-hidden");
+}
+
+get("dashboard-edit-phone-btn")?.addEventListener("click", () => openPhoneModal(false));
+get("phone-modal-close")?.addEventListener("click", closePhoneModal);
+get("phone-modal-backdrop")?.addEventListener("click", () => {
+  const modal = get("phone-modal");
+  if (modal?.dataset.compulsory !== "true") {
+    closePhoneModal();
+  }
+});
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const modal = get("phone-modal");
+    if (modal && !modal.classList.contains("is-hidden") && modal.dataset.compulsory !== "true") {
+      closePhoneModal();
+    }
+  }
+});
+
+get("phone-modal-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const phoneInput = get("modal-phone-input");
+  const errorEl = get("modal-phone-error");
+  const submitBtn = get("modal-phone-submit");
+  const raw = String(phoneInput?.value || "").trim();
+  const clean = cleanIndianPhone(raw);
+
+  if (!clean) {
+    if (errorEl) {
+      errorEl.textContent = "Mobile number is compulsory. Please enter your 10-digit mobile number.";
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+  if (clean.length < 10) {
+    if (errorEl) {
+      errorEl.textContent = `Mobile number is too short (${clean.length}/10 digits). Please enter a full 10-digit number.`;
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+  if (clean.length > 10) {
+    if (errorEl) {
+      errorEl.textContent = `Mobile number is too long (${clean.length} digits). Please enter a 10-digit number.`;
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+  if (!/^[6-9]/.test(clean)) {
+    if (errorEl) {
+      errorEl.textContent = "Please enter a valid Indian mobile number starting with 6, 7, 8, or 9.";
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+
+  if (submitBtn) submitBtn.disabled = true;
+  try {
+    if (isPreviewMode) {
+      currentUser.phone = clean;
+      setText("dashboard-phone", formatIndianPhone(clean));
+      get("phone-modal")?.removeAttribute("data-compulsory");
+      closePhoneModal();
+    } else if (currentUser) {
+      await update(ref(database, `users/${currentUser.uid}`), {
+        phone: clean,
+        name: currentUser.displayName || "",
+        email: currentUser.email || "",
+        updatedAt: Date.now(),
+      });
+      setText("dashboard-phone", formatIndianPhone(clean));
+      get("phone-modal")?.removeAttribute("data-compulsory");
+      closePhoneModal();
+    }
+  } catch (err) {
+    console.error("Unable to save phone number:", err);
+    if (errorEl) {
+      errorEl.textContent = "Could not save phone number. Please try again.";
+      errorEl.classList.remove("is-hidden");
+    }
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
+
 const urlParams = new URLSearchParams(window.location.search);
 const isPreviewMode = urlParams.get("preview") === "1" || urlParams.get("demo") === "1";
 
@@ -1306,11 +1454,13 @@ if (isPreviewMode) {
     uid: "demo-supporter-1",
     email: "supporter@manalistrays.org",
     displayName: "Arjun Sharma",
+    phone: "9876543210",
     emailVerified: true,
   };
   setText("dashboard-user-email", currentUser.email);
   setText("dashboard-email", currentUser.email);
   setText("dashboard-name", "Arjun");
+  setText("dashboard-phone", formatIndianPhone(currentUser.phone));
   const avatar = get("account-avatar");
   if (avatar) avatar.textContent = "A";
 
@@ -1421,6 +1571,20 @@ if (isPreviewMode) {
         avatar.replaceChildren(image);
       }
     }
+
+    // Compulsory check: enforce mobile number for existing and upcoming users
+    onValue(ref(database, `users/${user.uid}`), (snapshot) => {
+      const userData = snapshot.val() || {};
+      const savedPhone = cleanIndianPhone(userData.phone);
+      if (isValidIndianPhone(savedPhone)) {
+        setText("dashboard-phone", formatIndianPhone(savedPhone));
+        get("phone-modal")?.removeAttribute("data-compulsory");
+        closePhoneModal();
+      } else {
+        setText("dashboard-phone", "Mobile not provided");
+        openPhoneModal(true); // Compulsory modal for existing accounts missing a valid phone
+      }
+    });
 
     onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "Velcrow", "subscribers_velcrow", email)); renderRecords(); }, showDatabaseError);
     onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "BCBB", "subscribers", email)); renderRecords(); }, showDatabaseError);

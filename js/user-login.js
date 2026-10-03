@@ -34,32 +34,59 @@ function readableAuthError(error) {
   return "Google sign-in could not be completed. Please try again.";
 }
 
-function showNameForm(user) {
-  if (googleButton) googleButton.classList.add("is-hidden");
-  nameForm?.classList.remove("is-hidden");
-  if (nameInput && !nameInput.value) nameInput.value = user.displayName || "";
-  showMessage("One last step: add your name for your account.");
-  nameInput?.focus();
+const phoneInput = document.getElementById("profile-phone");
+
+function cleanIndianPhone(val) {
+  if (!val) return "";
+  let digits = String(val).replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+  if (digits.length === 13 && digits.startsWith("091")) digits = digits.slice(3);
+  return digits;
 }
 
-async function saveUserProfile(user, name) {
+function isValidIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  return digits.length === 10 && /^[6-9]\d{9}$/.test(digits);
+}
+
+function showProfileForm(user, savedName = "", savedPhone = "") {
+  if (googleButton) googleButton.classList.add("is-hidden");
+  nameForm?.classList.remove("is-hidden");
+  if (nameInput) nameInput.value = savedName || user.displayName || "";
+  if (phoneInput) phoneInput.value = cleanIndianPhone(savedPhone);
+
+  if (!savedName && !savedPhone) {
+    showMessage("Please enter your name and 10-digit mobile number to set up your account.");
+    nameInput?.focus();
+  } else if (!savedPhone) {
+    showMessage("Please enter your 10-digit mobile number (compulsory).");
+    phoneInput?.focus();
+  } else {
+    showMessage("Please verify your name and mobile number.");
+    nameInput?.focus();
+  }
+}
+
+async function saveUserProfile(user, name, phone) {
   const cleanName = String(name || "").trim().replace(/\s+/g, " ");
+  const cleanPhone = cleanIndianPhone(phone);
   await update(ref(database, `users/${user.uid}`), {
     name: cleanName,
     fullName: cleanName,
     email: user.email || "",
+    phone: cleanPhone,
     provider: "google.com",
     updatedAt: Date.now(),
   });
   if (cleanName && user.displayName !== cleanName) await updateProfile(user, { displayName: cleanName });
 }
 
-
-async function continueWithUser(user, name) {
+async function continueWithUser(user, name, phone) {
   if (setupCompleted) return;
   setupCompleted = true;
   try {
-    await saveUserProfile(user, name);
+    await saveUserProfile(user, name, phone);
 
     // Save intended plan in sessionStorage so it preselects without auto-charging
     if (requestedPlan) {
@@ -101,15 +128,19 @@ async function inspectUser(user) {
   }
   try {
     const snapshot = await get(ref(database, `users/${user.uid}`));
-    const savedName = snapshot.val()?.name || snapshot.val()?.fullName || "";
-    if (savedName) {
-      await continueWithUser(user, savedName);
+    const userData = snapshot.val();
+    const savedName = userData?.name || userData?.fullName || "";
+    const savedPhone = cleanIndianPhone(userData?.phone);
+
+    // Both name and valid 10-digit mobile number are strictly compulsory!
+    if (savedName && isValidIndianPhone(savedPhone)) {
+      await continueWithUser(user, savedName, savedPhone);
     } else {
-      showNameForm(user);
+      showProfileForm(user, savedName, savedPhone);
     }
   } catch (error) {
     console.error("Could not inspect the user profile:", error);
-    showNameForm(user);
+    showProfileForm(user);
   }
 }
 
@@ -121,8 +152,6 @@ if (requestedPlan && planNote) {
       : `₹${requestedAmount.toLocaleString("en-IN")} one-time support selected.`;
   planNote.classList.remove("is-hidden");
 }
-
-
 
 onAuthStateChanged(auth, (user) => {
   if (!user || handlingGoogleSignIn || setupCompleted) return;
@@ -148,19 +177,49 @@ googleButton?.addEventListener("click", async () => {
 nameForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const user = auth.currentUser;
+  if (!user) {
+    showMessage("Please sign in with Google first.", true);
+    return;
+  }
   const name = String(nameInput?.value || "").trim().replace(/\s+/g, " ");
   if (name.length < 2) {
     showMessage("Enter at least two characters for your name.", true);
+    nameInput?.focus();
     return;
   }
+
+  const rawPhone = String(phoneInput?.value || "").trim();
+  const cleanPhone = cleanIndianPhone(rawPhone);
+
+  if (!cleanPhone) {
+    showMessage("Mobile number is compulsory. Please enter your 10-digit mobile number.", true);
+    phoneInput?.focus();
+    return;
+  }
+  if (cleanPhone.length < 10) {
+    showMessage(`Mobile number is too short (${cleanPhone.length}/10 digits). Please enter a full 10-digit number.`, true);
+    phoneInput?.focus();
+    return;
+  }
+  if (cleanPhone.length > 10) {
+    showMessage(`Mobile number is too long (${cleanPhone.length} digits). Please enter a 10-digit number.`, true);
+    phoneInput?.focus();
+    return;
+  }
+  if (!/^[6-9]/.test(cleanPhone)) {
+    showMessage("Please enter a valid Indian mobile number starting with 6, 7, 8, or 9.", true);
+    phoneInput?.focus();
+    return;
+  }
+
   const submitButton = nameForm.querySelector("button[type=submit]");
   if (submitButton) submitButton.disabled = true;
   showMessage("Saving your profile…");
   try {
-    await continueWithUser(user, name);
+    await continueWithUser(user, name, cleanPhone);
   } catch (error) {
     console.error(error);
-    showMessage("Could not save your name. Please try again.", true);
+    showMessage("Could not save your profile. Please try again.", true);
     if (submitButton) submitButton.disabled = false;
   }
 });
