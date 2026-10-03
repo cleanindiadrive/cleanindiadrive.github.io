@@ -31,7 +31,10 @@ function getRecordStatus(record) {
   if (!record || typeof record !== "object") return "unknown";
   if (record.isCancellation || record.type === "cancellation") return "cancelled";
   const status = String(record.subscriptionStatus || record.status || "").trim().toLowerCase();
-  return ["active", "paused", "cancelled", "pending"].includes(status) ? status : "unknown";
+  if (["active", "authenticated", "completed", "paid"].includes(status)) return "active";
+  if (["paused", "cancelled", "pending"].includes(status)) return status;
+  if (record.subscribedAt || record.createdAt || record.id || record.plan_id) return "active";
+  return "unknown";
 }
 
 const confirmedPaymentStatuses = new Set(["paid", "completed", "success", "active"]);
@@ -48,17 +51,50 @@ function getActiveSubscribers() {
     const data = sourceData.get(source);
     if (!data || typeof data !== "object") return;
     Object.entries(data).forEach(([id, record]) => {
+      if (!record || typeof record !== "object") return;
       if (getRecordStatus(record) !== "active") return;
       const email = String(record?.email || "").trim().toLowerCase();
-      const key = email || `${source}:${id}`;
+      const phone = cleanIndianPhone(record?.phone);
+      const key = (phone && phone.length === 10) ? phone : (email || `${source}:${id}`);
       if (!subscribers.has(key)) {
         subscribers.set(key, {
-          name: String(record?.name || "").trim(),
+          name: String(record?.name || record?.donorName || "").trim(),
           anonymous: record?.anonymous === true,
         });
       }
     });
   });
+
+  // Also include distinct subscriptions from payments table that are confirmed/recurring
+  const paymentSources = ["payments"];
+  if (isDevelopmentMode || sourceData.has("testPayments")) paymentSources.push("testPayments");
+  paymentSources.forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+    const processPaymentForSub = (rec, id) => {
+      if (!rec || typeof rec !== "object") return;
+      if ((rec.subscriptionId || rec.type === "monthly") && isConfirmedPaymentRecord(rec)) {
+        const email = String(rec?.email || "").trim().toLowerCase();
+        const phone = cleanIndianPhone(rec?.phone);
+        const key = rec.subscriptionId || (phone && phone.length === 10 ? phone : (email || `${source}:${id}`));
+        if (!subscribers.has(key)) {
+          subscribers.set(key, {
+            name: String(rec?.name || rec?.donorName || "").trim(),
+            anonymous: rec?.anonymous === true,
+          });
+        }
+      }
+    };
+    Object.entries(data).forEach(([uidOrId, recOrGroup]) => {
+      if (!recOrGroup || typeof recOrGroup !== "object") return;
+      if (recOrGroup.amount !== undefined) {
+        processPaymentForSub(recOrGroup, uidOrId);
+      } else {
+        Object.entries(recOrGroup).forEach(([payId, r]) => processPaymentForSub(r, payId));
+      }
+    });
+  });
+
   return subscribers;
 }
 
@@ -284,10 +320,7 @@ function getAllPotentialGiftRecipients() {
       if (seen.has(dedupeKey)) return;
       seen.add(dedupeKey);
 
-      let team = "Supporter";
-      if (source === "subscribers_velcrow") team = "Velcrow";
-      else if (source === "subscribers") team = "BCBB";
-      else if (source === "users") team = "Member";
+      const team = "Supporter";
 
       recipients.push({
         id,
@@ -370,7 +403,7 @@ function renderGiftSearchResults(query) {
         <span class="gift-result-name">${highlightMatch(m.name, trimmed)}</span>
         <span class="gift-result-phone">${highlightMatch(m.displayPhone, rawDigits)}</span>
       </div>
-      <span class="gift-result-badge">${escapeHtml(m.team)}</span>
+      <span class="gift-result-badge">Supporter</span>
     </button>
   `).join("");
 
@@ -580,7 +613,7 @@ function refreshSubscriptionMode() {
 
   currentSubscription = currentUser ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase()) : null;
   if (!currentUser) {
-    status.textContent = `Log in to start your ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
+    status.textContent = `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
     setPosButtonText(button, "Subscribe");
     setPosButtonDisabled(button, false);
     accountAction?.classList.add("is-hidden");
@@ -600,7 +633,7 @@ function refreshSubscriptionMode() {
   if (currentSubscription.status === "cancelled") {
     status.textContent = monthlyRequestPending
       ? "Your new subscription request is pending payment confirmation."
-      : `You can start a new subscription at ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo.`;
+      : `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
     setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "Subscribe");
     setPosButtonDisabled(button, monthlyRequestPending);
     accountAction?.classList.remove("is-hidden");
@@ -609,7 +642,7 @@ function refreshSubscriptionMode() {
 
   const paused = currentSubscription.status === "paused";
   if (paused) {
-    status.textContent = "Your subscription is paused. Resume it from your account.";
+    status.textContent = "Your subscription is paused. Click Resume to reactivate it.";
     setPosButtonText(button, "Resume");
     setPosButtonDisabled(button, false);
     accountAction?.classList.remove("is-hidden");
@@ -618,16 +651,16 @@ function refreshSubscriptionMode() {
 
   const currentSubAmount = Number(currentSubscription.amount) || 100;
   if (selectedMonthlyAmount === currentSubAmount) {
-    status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo.`;
-    setPosButtonText(button, "Active subscription");
-    setPosButtonDisabled(button, true);
+    status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Click Subscribe to renew or add a contribution.`;
   } else {
-    status.textContent = `Your active plan is ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Manage or switch in your dashboard.`;
-    setPosButtonText(button, "Manage in account");
-    setPosButtonDisabled(button, false);
+    status.textContent = `Current plan: ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Switch or start ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo below.`;
   }
+  setPosButtonText(button, "Subscribe");
+  setPosButtonDisabled(button, false);
   accountAction?.classList.remove("is-hidden");
 }
+
+let selectedGiftAmount = 100;
 
 async function toggleSubscription(event) {
   event?.preventDefault?.();
@@ -635,111 +668,101 @@ async function toggleSubscription(event) {
   const status = document.getElementById("subscription-mode-status");
   if (!button || !status || isPosButtonDisabled(button)) return;
 
-  if (!currentUser) {
-    playPosTransactionAnimation(button, () => {
-      window.location.href = `user-login.html?return=index.html&plan=monthly&amount=${selectedMonthlyAmount}`;
-    });
-    return;
-  }
-
-  if (currentSubscription && currentSubscription.status === "active") {
-    if (getPosButtonText(button) === "Manage in account") {
-      playPosTransactionAnimation(button, () => {
-        window.location.href = "user-dashboard.html";
-      });
-      return;
-    }
-  }
-
-  if (!currentSubscription || currentSubscription.status === "cancelled") {
-    if (monthlyRequestPending) return;
+  if (currentSubscription && currentSubscription.status === "paused") {
     playPosTransactionAnimation(button, async () => {
       setPosButtonDisabled(button, true);
-      status.textContent = "Connecting to payment gateway…";
       try {
-        const res = await fetch(`${BACKEND_URL}/create-subscription`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            team: "BCBB",
-            amount: selectedMonthlyAmount,
-            user_id: currentUser.uid,
-            email: currentUser.email || "",
-            name: currentUser.displayName || "",
-            phone: currentUserPhone || "",
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok || !data.subscription_id) {
-          throw new Error(data?.error || "Subscription creation failed");
-        }
-
-        const options = {
-          key: data.razorpay_key,
-          subscription_id: data.subscription_id,
-          name: "Manali Strays",
-          description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
-          image: "https://cleanindiadrive.github.io/Group%201.png",
-          prefill: {
-            name: currentUser.displayName || "",
-            email: currentUser.email || "",
-            contact: currentUserPhone || "",
-          },
-          theme: { color: "#FFDD00" },
-          handler: function (response) {
-            console.log("Subscription mandate created:", response);
-            status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
-            setPosButtonText(button, "Active subscription");
-            setPosButtonDisabled(button, true);
-            refreshSubscriptionMode();
-          },
-          modal: {
-            ondismiss: function () {
-              setPosButtonDisabled(button, false);
-              status.textContent = "Payment window closed.";
-            },
-          },
-        };
-
-        if (typeof window.Razorpay === "function") {
-          const rzp = new window.Razorpay(options);
-          rzp.on("payment.failed", function (resp) {
-            console.error("Subscription payment failed:", resp.error);
-            status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
-            setPosButtonDisabled(button, false);
+        const subId = String(currentSubscription.subscriptionId || currentSubscription.id || "").trim();
+        if (subId.startsWith("sub_")) {
+          await fetch(`${BACKEND_URL}/resume-subscription`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription_id: subId }),
           });
-          rzp.open();
-        } else {
-          throw new Error("Razorpay SDK is not loaded. Please refresh.");
         }
+        await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
+          subscriptionStatus: "active",
+          status: "active",
+          resumedAt: Date.now(),
+        });
+        currentSubscription.status = "active";
+        status.textContent = "Your monthly subscription is active.";
       } catch (error) {
-        console.error("Unable to start subscription:", error);
-        status.textContent = error.message || "Could not start the subscription. Please try again.";
+        console.error("Unable to resume subscription:", error);
+        status.textContent = "Could not resume your subscription. Please try again.";
         setPosButtonDisabled(button, false);
+        return;
       }
-    });
+      refreshSubscriptionMode();
+    }, false);
     return;
   }
 
-  const nextStatus = currentSubscription.status === "paused" ? "active" : "paused";
-  const isPausing = nextStatus === "paused";
+  if (monthlyRequestPending) return;
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
+    status.textContent = "Connecting to payment gateway…";
     try {
-      await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
-        subscriptionStatus: nextStatus,
-        ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
+      const res = await fetch(`${BACKEND_URL}/create-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: selectedMonthlyAmount,
+          user_id: currentUser ? currentUser.uid : "",
+          email: currentUser?.email || "",
+          name: currentUser?.displayName || "",
+          phone: currentUserPhone || "",
+        }),
       });
-      currentSubscription.status = nextStatus;
-      status.textContent = nextStatus === "paused" ? "Your monthly subscription is paused." : "Your monthly subscription is active.";
+      const data = await res.json();
+      if (!res.ok || !data.subscription_id) {
+        throw new Error(data?.error || "Subscription creation failed");
+      }
+
+      const options = {
+        key: data.razorpay_key,
+        subscription_id: data.subscription_id,
+        name: "Manali Strays",
+        description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
+        image: "https://cleanindiadrive.github.io/Group%201.png",
+        prefill: {
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
+          contact: currentUserPhone || "",
+        },
+        theme: { color: "#FFDD00" },
+        handler: function (response) {
+          console.log("Subscription mandate created:", response);
+          status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
+          setPosButtonText(button, "Active subscription");
+          setPosButtonDisabled(button, true);
+          refreshSubscriptionMode();
+        },
+        modal: {
+          ondismiss: function () {
+            setPosButtonDisabled(button, false);
+            status.textContent = "Payment window closed.";
+          },
+        },
+      };
+
+      if (typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          console.error("Subscription payment failed:", resp.error);
+          status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
+          setPosButtonDisabled(button, false);
+        });
+        rzp.open();
+      } else {
+        throw new Error("Razorpay SDK is not loaded. Please refresh.");
+      }
     } catch (error) {
-      console.error("Unable to update subscription:", error);
-      status.textContent = "Could not update your subscription. Please try again.";
+      console.error("Unable to start subscription:", error);
+      status.textContent = error.message || "Could not start the subscription. Please try again.";
       setPosButtonDisabled(button, false);
-      return;
     }
-    refreshSubscriptionMode();
-  }, isPausing);
+  });
 }
 
 async function saveOneTimeIntent(event) {
@@ -749,12 +772,6 @@ async function saveOneTimeIntent(event) {
   const amount = Number(amountInput?.value);
   if (!Number.isFinite(amount) || amount < 1 || amount > 1000000) {
     setModeMessage("one-time-message", "Enter an amount between ₹1 and ₹10,00,000.", true);
-    return;
-  }
-  if (!currentUser) {
-    playPosTransactionAnimation(button, () => {
-      window.location.href = `user-login.html?mode=signup&plan=one-time&amount=${encodeURIComponent(amount)}`;
-    });
     return;
   }
   if (isPosButtonDisabled(button)) return;
@@ -768,11 +785,10 @@ async function saveOneTimeIntent(event) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount,
-          team: "BCBB",
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
           phone: currentUserPhone || "",
-          user_id: currentUser.uid,
+          user_id: currentUser ? currentUser.uid : "",
         }),
       });
       const data = await res.json();
@@ -789,8 +805,8 @@ async function saveOneTimeIntent(event) {
         description: `₹${amount.toLocaleString("en-IN")} One-time Donation`,
         image: "https://cleanindiadrive.github.io/Group%201.png",
         prefill: {
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
           contact: currentUserPhone || "",
         },
         theme: { color: "#FFDD00" },
@@ -834,29 +850,23 @@ async function saveGiftIntent(event) {
     setModeMessage("gift-message", "Please search and select a supporter first.", true);
     return;
   }
-  if (!currentUser) {
-    playPosTransactionAnimation(button, () => {
-      window.location.href = `user-login.html?mode=signup&plan=gift&phone=${encodeURIComponent(recipient.phone)}&name=${encodeURIComponent(recipient.name)}`;
-    });
-    return;
-  }
   if (isPosButtonDisabled(button)) return;
 
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
-    setModeMessage("gift-message", `Setting up gift subscription for ${recipient.name}…`);
+    setModeMessage("gift-message", `Setting up ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo gift subscription for ${recipient.name}…`);
     try {
       const res = await fetch(`${BACKEND_URL}/create-gift-subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          amount: selectedGiftAmount,
           recipient_name: recipient.name,
           recipient_email: recipient.email || `${recipient.phone}@gift.manalistrays.org`,
           recipient_phone: recipient.phone,
-          team: recipient.team || "BCBB",
-          giver_id: currentUser.uid,
-          giver_email: currentUser.email || "",
-          giver_name: currentUser.displayName || "",
+          giver_id: currentUser ? currentUser.uid : "",
+          giver_email: currentUser?.email || "",
+          giver_name: currentUser?.displayName || "",
         }),
       });
       const data = await res.json();
@@ -868,11 +878,11 @@ async function saveGiftIntent(event) {
         key: data.razorpay_key,
         subscription_id: data.subscription_id,
         name: "Manali Strays",
-        description: `Gift ₹100/mo subscription for ${recipient.name}`,
+        description: `Gift ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo subscription for ${recipient.name}`,
         image: "https://cleanindiadrive.github.io/Group%201.png",
         prefill: {
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
           contact: currentUserPhone || "",
         },
         theme: { color: "#FFDD00" },
@@ -891,8 +901,8 @@ async function saveGiftIntent(event) {
       if (typeof window.Razorpay === "function") {
         const rzp = new window.Razorpay(options);
         rzp.on("payment.failed", function (resp) {
-          console.error("Gift subscription failed:", resp.error);
-          setModeMessage("gift-message", `Gift payment failed: ${resp.error.description || "Please try again."}`, true);
+          console.error("Gift subscription payment failed:", resp.error);
+          setModeMessage("gift-message", `Payment failed: ${resp.error.description || "Please try again."}`, true);
           setPosButtonDisabled(button, false);
         });
         rzp.open();
@@ -900,13 +910,32 @@ async function saveGiftIntent(event) {
         throw new Error("Razorpay SDK is not loaded. Please refresh.");
       }
     } catch (error) {
-      console.error("Unable to save gift request:", error);
-      setModeMessage("gift-message", error.message || "Could not start the gift subscription. Please try again.", true);
+      console.error("Unable to set up gift subscription:", error);
+      setModeMessage("gift-message", error.message || "Could not set up gift subscription. Please try again.", true);
     } finally {
       setPosButtonDisabled(button, false);
     }
   });
 }
+
+document.querySelectorAll('input[name="gift-autopay-tier"]').forEach((input) => {
+  input.addEventListener("change", (e) => {
+    selectedGiftAmount = Number(e.target.value) || 100;
+    const planLabel = document.getElementById("gift-plan-label");
+    if (planLabel) {
+      planLabel.textContent = `Gift a subscription · ₹${selectedGiftAmount.toLocaleString("en-IN")} / mo`;
+    }
+  });
+});
+
+const heroSubscribeBtn = document.getElementById("subscribe-btn");
+heroSubscribeBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  const subBtn = document.getElementById("subscription-toggle");
+  if (subBtn) {
+    subBtn.click();
+  }
+});
 
 document.querySelectorAll(".mode-tab").forEach((tab) => {
   tab.addEventListener("click", () => setMode(tab.dataset.mode));
@@ -1046,7 +1075,7 @@ onAuthStateChanged(auth, (user) => {
       currentUserPhone = cleanIndianPhone(data.phone) || cleanIndianPhone(currentUser.phoneNumber) || "";
     });
     // Check if account has an exclusive custom autopay plan configured
-    get(ref(database, `customPlans/${currentUser.uid}`)).then((snapshot) => {
+    onValue(ref(database, `customPlans/${currentUser.uid}`), (snapshot) => {
       const custom = snapshot.val();
       if (custom && Number(custom.amount) > 0) {
         let exclusivePill = document.getElementById("exclusive-home-pill");
@@ -1063,7 +1092,7 @@ onAuthStateChanged(auth, (user) => {
           document.getElementById("home-tier-pills")?.appendChild(exclusivePill);
         }
       }
-    }).catch(() => {});
+    }, { onlyOnce: true });
 
     const userPaymentPath = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
     detachMonthlyIntentListener = onValue(ref(database, userPaymentPath), (snapshot) => {

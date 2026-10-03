@@ -657,6 +657,19 @@ nav {
   color: #ffffff;
 }
 
+/* Gift tabs translation */
+#gift-tab-100:checked ~ .cc-ios-tabs__control .cc-ios-tabs__thumb { transform: translateX(0%); }
+#gift-tab-500:checked ~ .cc-ios-tabs__control .cc-ios-tabs__thumb { transform: translateX(100%); }
+#gift-tab-1000:checked ~ .cc-ios-tabs__control .cc-ios-tabs__thumb { transform: translateX(200%); }
+#gift-tab-1500:checked ~ .cc-ios-tabs__control .cc-ios-tabs__thumb { transform: translateX(300%); }
+
+#gift-tab-100:checked ~ .cc-ios-tabs__control label[for="gift-tab-100"],
+#gift-tab-500:checked ~ .cc-ios-tabs__control label[for="gift-tab-500"],
+#gift-tab-1000:checked ~ .cc-ios-tabs__control label[for="gift-tab-1000"],
+#gift-tab-1500:checked ~ .cc-ios-tabs__control label[for="gift-tab-1500"] {
+  color: #ffffff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cc-ios-tabs__thumb,
   .cc-ios-tabs__item {
@@ -1005,16 +1018,94 @@ nav {
 .subscription-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.75rem;
   justify-content: center;
   align-items: center;
   margin-top: 0;
+}
+
+.btn-cancel-subscription {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 999px;
+  border: 1.5px solid #ef4444;
+  background: #fef2f2;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 42px;
+}
+
+.btn-cancel-subscription:hover:not(:disabled) {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.28);
+  transform: translateY(-1px);
+}
+
+.btn-cancel-subscription:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+  background: #f3f4f6;
+  color: #9ca3af;
+  box-shadow: none;
+  transform: none;
 }
 
 .subscription-actions .mode-action {
   font-size: 0.76rem;
   padding: 0.4rem 0.85rem;
   min-height: 32px;
+}
+
+/* Centered Guest Auth Card */
+.dashboard-auth-card-centered {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 3.5rem auto !important;
+  max-width: 460px;
+  padding: 2.75rem 2rem !important;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-auth-card-centered h2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+  color: #1f1f1a;
+}
+
+.dashboard-auth-card-centered .form-intro {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #555550;
+  margin-bottom: 1.75rem;
+  max-width: 360px;
+}
+
+.dashboard-auth-card-centered .account-intro-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e8f0fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a73e8;
 }
 
 .subscription-action-group .mode-message {
@@ -4856,8 +4947,23 @@ footer .contact-details {
         <div class="mode-panel is-hidden" id="gift-mode" role="tabpanel">
           <div class="mode-panel-details">
             <div class="mode-panel-copy">
-              <strong>Gift a subscription · ₹100</strong>
+              <strong id="gift-plan-label">Gift a subscription · ₹100 / mo</strong>
               <p>Search any supporter by phone number or name and pay their monthly subscription.</p>
+            </div>
+
+            <div class="cc-ios-tabs" id="gift-autopay-tabs">
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-100" value="100" checked />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-500" value="500" />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-1000" value="1000" />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-1500" value="1500" />
+
+              <div class="cc-ios-tabs__control">
+                <div class="cc-ios-tabs__thumb"></div>
+                <label class="cc-ios-tabs__item" for="gift-tab-100">₹100</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-500">₹500</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-1000">₹1,000</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-1500">₹1,500</label>
+              </div>
             </div>
             <div class="gift-search-wrap coolinput" id="gift-search-wrap">
               <label class="text" for="gift-search-input">Search supporter:</label>
@@ -4986,22 +5092,22 @@ footer .contact-details {
     <main class="dashboard-main">
 
   <!-- Embedded Login Card for Guest Users in Dashboard View -->
-  <div id="dashboard-auth-card" class="auth-card" style="margin: 2.5rem auto; max-width: 440px; text-align: center;">
-    <div class="account-intro-icon" aria-hidden="true" style="margin: 0 auto 1rem; width: 48px; height: 48px; border-radius: 50%; background: #e8f0fe; display: flex; align-items: center; justify-content: center; color: #1a73e8;">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+  <div id="dashboard-auth-card" class="auth-card dashboard-auth-card-centered">
+    <div class="account-intro-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
         <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" />
       </svg>
     </div>
-    <h2 style="margin: 0.8rem 0 0.4rem; font-size: 1.4rem;">Continue to your tracker</h2>
-    <p class="form-intro" style="margin-bottom: 1.5rem; color: #555; font-size: 0.95rem;">Use your Google account to view and manage your support.</p>
-    <button class="button button-google" id="dashboard-google-login-btn" type="button" style="margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 600; border-radius: 8px; border: 1px solid #dadce0; background: #fff; cursor: pointer; transition: all 0.3s ease;">
+    <h2>Sign In to Your Account</h2>
+    <p class="form-intro">Sign in with Google to view your recurring subscriptions, update payment preferences, and track your donation history.</p>
+    <button class="button button-google" id="dashboard-google-login-btn" type="button" style="margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.75rem 1.6rem; font-size: 0.95rem; font-weight: 600; border-radius: 999px; border: 1.5px solid #dadce0; background: #fff; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
       <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" width="20" height="20">
         <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
         <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
         <path fill="#FBBC05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"></path>
         <path fill="#EB4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"></path>
       </svg>
-      <span>Continue with Google</span>
+      <span>Sign In with Google</span>
     </button>
     <div id="dashboard-login-msg" class="auth-message" style="margin-top: 1rem;" role="status"></div>
   </div>
@@ -5171,23 +5277,10 @@ footer .contact-details {
                 </div>
 
                 <div class="subscription-actions">
-                  <button class="double-delete-btn" id="subscription-cancel" type="button" disabled aria-label="Delete subscription">
-                    <div class="icon">
-                      <span class="fa fa-trash-o" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                      </span>
-                      <span class="fa fa-question" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                      </span>
-                      <span class="fa fa-check" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      </span>
-                    </div>
-                    <div class="text">
-                      <span>Delete</span>
-                    </div>
+                  <button class="btn-cancel-subscription" id="subscription-cancel" type="button" disabled aria-label="Cancel subscription">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <span>Cancel Subscription</span>
                   </button>
-                  <button class="mode-action mode-action-dev is-hidden" id="dev-charge-button" type="button">Simulate monthly renewal</button>
                 </div>
                 <span class="mode-message" id="subscription-message" role="status"></span>
               </div>
@@ -5427,7 +5520,10 @@ function getRecordStatus(record) {
   if (!record || typeof record !== "object") return "unknown";
   if (record.isCancellation || record.type === "cancellation") return "cancelled";
   const status = String(record.subscriptionStatus || record.status || "").trim().toLowerCase();
-  return ["active", "paused", "cancelled", "pending"].includes(status) ? status : "unknown";
+  if (["active", "authenticated", "completed", "paid"].includes(status)) return "active";
+  if (["paused", "cancelled", "pending"].includes(status)) return status;
+  if (record.subscribedAt || record.createdAt || record.id || record.plan_id) return "active";
+  return "unknown";
 }
 
 const confirmedPaymentStatuses = new Set(["paid", "completed", "success", "active"]);
@@ -5444,17 +5540,50 @@ function getActiveSubscribers() {
     const data = sourceData.get(source);
     if (!data || typeof data !== "object") return;
     Object.entries(data).forEach(([id, record]) => {
+      if (!record || typeof record !== "object") return;
       if (getRecordStatus(record) !== "active") return;
       const email = String(record?.email || "").trim().toLowerCase();
-      const key = email || `${source}:${id}`;
+      const phone = cleanIndianPhone(record?.phone);
+      const key = (phone && phone.length === 10) ? phone : (email || `${source}:${id}`);
       if (!subscribers.has(key)) {
         subscribers.set(key, {
-          name: String(record?.name || "").trim(),
+          name: String(record?.name || record?.donorName || "").trim(),
           anonymous: record?.anonymous === true,
         });
       }
     });
   });
+
+  // Also include distinct subscriptions from payments table that are confirmed/recurring
+  const paymentSources = ["payments"];
+  if (isDevelopmentMode || sourceData.has("testPayments")) paymentSources.push("testPayments");
+  paymentSources.forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+    const processPaymentForSub = (rec, id) => {
+      if (!rec || typeof rec !== "object") return;
+      if ((rec.subscriptionId || rec.type === "monthly") && isConfirmedPaymentRecord(rec)) {
+        const email = String(rec?.email || "").trim().toLowerCase();
+        const phone = cleanIndianPhone(rec?.phone);
+        const key = rec.subscriptionId || (phone && phone.length === 10 ? phone : (email || `${source}:${id}`));
+        if (!subscribers.has(key)) {
+          subscribers.set(key, {
+            name: String(rec?.name || rec?.donorName || "").trim(),
+            anonymous: rec?.anonymous === true,
+          });
+        }
+      }
+    };
+    Object.entries(data).forEach(([uidOrId, recOrGroup]) => {
+      if (!recOrGroup || typeof recOrGroup !== "object") return;
+      if (recOrGroup.amount !== undefined) {
+        processPaymentForSub(recOrGroup, uidOrId);
+      } else {
+        Object.entries(recOrGroup).forEach(([payId, r]) => processPaymentForSub(r, payId));
+      }
+    });
+  });
+
   return subscribers;
 }
 
@@ -5680,10 +5809,7 @@ function getAllPotentialGiftRecipients() {
       if (seen.has(dedupeKey)) return;
       seen.add(dedupeKey);
 
-      let team = "Supporter";
-      if (source === "subscribers_velcrow") team = "Velcrow";
-      else if (source === "subscribers") team = "BCBB";
-      else if (source === "users") team = "Member";
+      const team = "Supporter";
 
       recipients.push({
         id,
@@ -5766,7 +5892,7 @@ function renderGiftSearchResults(query) {
         <span class="gift-result-name">${highlightMatch(m.name, trimmed)}</span>
         <span class="gift-result-phone">${highlightMatch(m.displayPhone, rawDigits)}</span>
       </div>
-      <span class="gift-result-badge">${escapeHtml(m.team)}</span>
+      <span class="gift-result-badge">Supporter</span>
     </button>
   `).join("");
 
@@ -5976,7 +6102,7 @@ function refreshSubscriptionMode() {
 
   currentSubscription = currentUser ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase()) : null;
   if (!currentUser) {
-    status.textContent = `Log in to start your ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
+    status.textContent = `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
     setPosButtonText(button, "Subscribe");
     setPosButtonDisabled(button, false);
     accountAction?.classList.add("is-hidden");
@@ -5996,7 +6122,7 @@ function refreshSubscriptionMode() {
   if (currentSubscription.status === "cancelled") {
     status.textContent = monthlyRequestPending
       ? "Your new subscription request is pending payment confirmation."
-      : `You can start a new subscription at ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo.`;
+      : `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
     setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "Subscribe");
     setPosButtonDisabled(button, monthlyRequestPending);
     accountAction?.classList.remove("is-hidden");
@@ -6005,7 +6131,7 @@ function refreshSubscriptionMode() {
 
   const paused = currentSubscription.status === "paused";
   if (paused) {
-    status.textContent = "Your subscription is paused. Resume it from your account.";
+    status.textContent = "Your subscription is paused. Click Resume to reactivate it.";
     setPosButtonText(button, "Resume");
     setPosButtonDisabled(button, false);
     accountAction?.classList.remove("is-hidden");
@@ -6014,16 +6140,16 @@ function refreshSubscriptionMode() {
 
   const currentSubAmount = Number(currentSubscription.amount) || 100;
   if (selectedMonthlyAmount === currentSubAmount) {
-    status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo.`;
-    setPosButtonText(button, "Active subscription");
-    setPosButtonDisabled(button, true);
+    status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Click Subscribe to renew or add a contribution.`;
   } else {
-    status.textContent = `Your active plan is ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Manage or switch in your dashboard.`;
-    setPosButtonText(button, "Manage in account");
-    setPosButtonDisabled(button, false);
+    status.textContent = `Current plan: ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Switch or start ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo below.`;
   }
+  setPosButtonText(button, "Subscribe");
+  setPosButtonDisabled(button, false);
   accountAction?.classList.remove("is-hidden");
 }
+
+let selectedGiftAmount = 100;
 
 async function toggleSubscription(event) {
   event?.preventDefault?.();
@@ -6031,111 +6157,101 @@ async function toggleSubscription(event) {
   const status = document.getElementById("subscription-mode-status");
   if (!button || !status || isPosButtonDisabled(button)) return;
 
-  if (!currentUser) {
-    playPosTransactionAnimation(button, () => {
-      window.location.href = `user-login.html?return=index.html&plan=monthly&amount=${selectedMonthlyAmount}`;
-    });
-    return;
-  }
-
-  if (currentSubscription && currentSubscription.status === "active") {
-    if (getPosButtonText(button) === "Manage in account") {
-      playPosTransactionAnimation(button, () => {
-        window.location.href = "user-dashboard.html";
-      });
-      return;
-    }
-  }
-
-  if (!currentSubscription || currentSubscription.status === "cancelled") {
-    if (monthlyRequestPending) return;
+  if (currentSubscription && currentSubscription.status === "paused") {
     playPosTransactionAnimation(button, async () => {
       setPosButtonDisabled(button, true);
-      status.textContent = "Connecting to payment gateway…";
       try {
-        const res = await fetch(`${BACKEND_URL}/create-subscription`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            team: "BCBB",
-            amount: selectedMonthlyAmount,
-            user_id: currentUser.uid,
-            email: currentUser.email || "",
-            name: currentUser.displayName || "",
-            phone: currentUserPhone || "",
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok || !data.subscription_id) {
-          throw new Error(data?.error || "Subscription creation failed");
-        }
-
-        const options = {
-          key: data.razorpay_key,
-          subscription_id: data.subscription_id,
-          name: "Manali Strays",
-          description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
-          image: "https://cleanindiadrive.github.io/Group%201.png",
-          prefill: {
-            name: currentUser.displayName || "",
-            email: currentUser.email || "",
-            contact: currentUserPhone || "",
-          },
-          theme: { color: "#FFDD00" },
-          handler: function (response) {
-            console.log("Subscription mandate created:", response);
-            status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
-            setPosButtonText(button, "Active subscription");
-            setPosButtonDisabled(button, true);
-            refreshSubscriptionMode();
-          },
-          modal: {
-            ondismiss: function () {
-              setPosButtonDisabled(button, false);
-              status.textContent = "Payment window closed.";
-            },
-          },
-        };
-
-        if (typeof window.Razorpay === "function") {
-          const rzp = new window.Razorpay(options);
-          rzp.on("payment.failed", function (resp) {
-            console.error("Subscription payment failed:", resp.error);
-            status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
-            setPosButtonDisabled(button, false);
+        const subId = String(currentSubscription.subscriptionId || currentSubscription.id || "").trim();
+        if (subId.startsWith("sub_")) {
+          await fetch(`${BACKEND_URL}/resume-subscription`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription_id: subId }),
           });
-          rzp.open();
-        } else {
-          throw new Error("Razorpay SDK is not loaded. Please refresh.");
         }
+        await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
+          subscriptionStatus: "active",
+          status: "active",
+          resumedAt: Date.now(),
+        });
+        currentSubscription.status = "active";
+        status.textContent = "Your monthly subscription is active.";
       } catch (error) {
-        console.error("Unable to start subscription:", error);
-        status.textContent = error.message || "Could not start the subscription. Please try again.";
+        console.error("Unable to resume subscription:", error);
+        status.textContent = "Could not resume your subscription. Please try again.";
         setPosButtonDisabled(button, false);
+        return;
       }
-    });
+      refreshSubscriptionMode();
+    }, false);
     return;
   }
 
-  const nextStatus = currentSubscription.status === "paused" ? "active" : "paused";
-  const isPausing = nextStatus === "paused";
+  if (monthlyRequestPending) return;
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
+    status.textContent = "Connecting to payment gateway…";
     try {
-      await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
-        subscriptionStatus: nextStatus,
-        ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
+      const res = await fetch(`${BACKEND_URL}/create-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: selectedMonthlyAmount,
+          user_id: currentUser ? currentUser.uid : "",
+          email: currentUser?.email || "",
+          name: currentUser?.displayName || "",
+          phone: currentUserPhone || "",
+        }),
       });
-      currentSubscription.status = nextStatus;
-      status.textContent = nextStatus === "paused" ? "Your monthly subscription is paused." : "Your monthly subscription is active.";
+      const data = await res.json();
+      if (!res.ok || !data.subscription_id) {
+        throw new Error(data?.error || "Subscription creation failed");
+      }
+
+      const options = {
+        key: data.razorpay_key,
+        subscription_id: data.subscription_id,
+        name: "Manali Strays",
+        description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
+        image: "https://cleanindiadrive.github.io/Group%201.png",
+        prefill: {
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
+          contact: currentUserPhone || "",
+        },
+        theme: { color: "#FFDD00" },
+        handler: function (response) {
+          console.log("Subscription mandate created:", response);
+          status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
+          setPosButtonText(button, "Active subscription");
+          setPosButtonDisabled(button, true);
+          refreshSubscriptionMode();
+        },
+        modal: {
+          ondismiss: function () {
+            setPosButtonDisabled(button, false);
+            status.textContent = "Payment window closed.";
+          },
+        },
+      };
+
+      if (typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          console.error("Subscription payment failed:", resp.error);
+          status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
+          setPosButtonDisabled(button, false);
+        });
+        rzp.open();
+      } else {
+        throw new Error("Razorpay SDK is not loaded. Please refresh.");
+      }
     } catch (error) {
-      console.error("Unable to update subscription:", error);
-      status.textContent = "Could not update your subscription. Please try again.";
+      console.error("Unable to start subscription:", error);
+      status.textContent = error.message || "Could not start the subscription. Please try again.";
       setPosButtonDisabled(button, false);
-      return;
     }
-    refreshSubscriptionMode();
-  }, isPausing);
+  });
 }
 
 async function saveOneTimeIntent(event) {
@@ -6145,12 +6261,6 @@ async function saveOneTimeIntent(event) {
   const amount = Number(amountInput?.value);
   if (!Number.isFinite(amount) || amount < 1 || amount > 1000000) {
     setModeMessage("one-time-message", "Enter an amount between ₹1 and ₹10,00,000.", true);
-    return;
-  }
-  if (!currentUser) {
-    playPosTransactionAnimation(button, () => {
-      window.location.href = `user-login.html?mode=signup&plan=one-time&amount=${encodeURIComponent(amount)}`;
-    });
     return;
   }
   if (isPosButtonDisabled(button)) return;
@@ -6164,11 +6274,10 @@ async function saveOneTimeIntent(event) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount,
-          team: "BCBB",
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
           phone: currentUserPhone || "",
-          user_id: currentUser.uid,
+          user_id: currentUser ? currentUser.uid : "",
         }),
       });
       const data = await res.json();
@@ -6185,8 +6294,8 @@ async function saveOneTimeIntent(event) {
         description: `₹${amount.toLocaleString("en-IN")} One-time Donation`,
         image: "https://cleanindiadrive.github.io/Group%201.png",
         prefill: {
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
           contact: currentUserPhone || "",
         },
         theme: { color: "#FFDD00" },
@@ -6230,29 +6339,23 @@ async function saveGiftIntent(event) {
     setModeMessage("gift-message", "Please search and select a supporter first.", true);
     return;
   }
-  if (!currentUser) {
-    playPosTransactionAnimation(button, () => {
-      window.location.href = `user-login.html?mode=signup&plan=gift&phone=${encodeURIComponent(recipient.phone)}&name=${encodeURIComponent(recipient.name)}`;
-    });
-    return;
-  }
   if (isPosButtonDisabled(button)) return;
 
   playPosTransactionAnimation(button, async () => {
     setPosButtonDisabled(button, true);
-    setModeMessage("gift-message", `Setting up gift subscription for ${recipient.name}…`);
+    setModeMessage("gift-message", `Setting up ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo gift subscription for ${recipient.name}…`);
     try {
       const res = await fetch(`${BACKEND_URL}/create-gift-subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          amount: selectedGiftAmount,
           recipient_name: recipient.name,
           recipient_email: recipient.email || `${recipient.phone}@gift.manalistrays.org`,
           recipient_phone: recipient.phone,
-          team: recipient.team || "BCBB",
-          giver_id: currentUser.uid,
-          giver_email: currentUser.email || "",
-          giver_name: currentUser.displayName || "",
+          giver_id: currentUser ? currentUser.uid : "",
+          giver_email: currentUser?.email || "",
+          giver_name: currentUser?.displayName || "",
         }),
       });
       const data = await res.json();
@@ -6264,11 +6367,11 @@ async function saveGiftIntent(event) {
         key: data.razorpay_key,
         subscription_id: data.subscription_id,
         name: "Manali Strays",
-        description: `Gift ₹100/mo subscription for ${recipient.name}`,
+        description: `Gift ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo subscription for ${recipient.name}`,
         image: "https://cleanindiadrive.github.io/Group%201.png",
         prefill: {
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
           contact: currentUserPhone || "",
         },
         theme: { color: "#FFDD00" },
@@ -6287,8 +6390,8 @@ async function saveGiftIntent(event) {
       if (typeof window.Razorpay === "function") {
         const rzp = new window.Razorpay(options);
         rzp.on("payment.failed", function (resp) {
-          console.error("Gift subscription failed:", resp.error);
-          setModeMessage("gift-message", `Gift payment failed: ${resp.error.description || "Please try again."}`, true);
+          console.error("Gift subscription payment failed:", resp.error);
+          setModeMessage("gift-message", `Payment failed: ${resp.error.description || "Please try again."}`, true);
           setPosButtonDisabled(button, false);
         });
         rzp.open();
@@ -6296,13 +6399,32 @@ async function saveGiftIntent(event) {
         throw new Error("Razorpay SDK is not loaded. Please refresh.");
       }
     } catch (error) {
-      console.error("Unable to save gift request:", error);
-      setModeMessage("gift-message", error.message || "Could not start the gift subscription. Please try again.", true);
+      console.error("Unable to set up gift subscription:", error);
+      setModeMessage("gift-message", error.message || "Could not set up gift subscription. Please try again.", true);
     } finally {
       setPosButtonDisabled(button, false);
     }
   });
 }
+
+document.querySelectorAll('input[name="gift-autopay-tier"]').forEach((input) => {
+  input.addEventListener("change", (e) => {
+    selectedGiftAmount = Number(e.target.value) || 100;
+    const planLabel = document.getElementById("gift-plan-label");
+    if (planLabel) {
+      planLabel.textContent = `Gift a subscription · ₹${selectedGiftAmount.toLocaleString("en-IN")} / mo`;
+    }
+  });
+});
+
+const heroSubscribeBtn = document.getElementById("subscribe-btn");
+heroSubscribeBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  const subBtn = document.getElementById("subscription-toggle");
+  if (subBtn) {
+    subBtn.click();
+  }
+});
 
 document.querySelectorAll(".mode-tab").forEach((tab) => {
   tab.addEventListener("click", () => setMode(tab.dataset.mode));
@@ -6442,7 +6564,7 @@ onAuthStateChanged(auth, (user) => {
       currentUserPhone = cleanIndianPhone(data.phone) || cleanIndianPhone(currentUser.phoneNumber) || "";
     });
     // Check if account has an exclusive custom autopay plan configured
-    get(ref(database, `customPlans/${currentUser.uid}`)).then((snapshot) => {
+    onValue(ref(database, `customPlans/${currentUser.uid}`), (snapshot) => {
       const custom = snapshot.val();
       if (custom && Number(custom.amount) > 0) {
         let exclusivePill = document.getElementById("exclusive-home-pill");
@@ -6459,7 +6581,7 @@ onAuthStateChanged(auth, (user) => {
           document.getElementById("home-tier-pills")?.appendChild(exclusivePill);
         }
       }
-    }).catch(() => {});
+    }, { onlyOnce: true });
 
     const userPaymentPath = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
     detachMonthlyIntentListener = onValue(ref(database, userPaymentPath), (snapshot) => {
@@ -6728,7 +6850,6 @@ function normalizeSubscriberRecords(data, source, path, email) {
         status,
         date: normalizedRecord.subscribedAt || normalizedRecord.createdAt || normalizedRecord.lastPaymentAt,
         reference: normalizedRecord.orderId || normalizedRecord.reference || id,
-        team: normalizedRecord.team || source,
         isSubscriptionRoot: true,
       };
     });
@@ -6940,7 +7061,7 @@ function statusLabel(status) {
 
 function paymentTypeLabel(record) {
   if (record.isCancellation || record.type === "cancellation") return "Subscription cancellation";
-  if (isSubscriptionRecord(record)) return `Monthly subscription${record.team ? ` · ${record.team}` : ""}`;
+  if (isSubscriptionRecord(record)) return `Monthly subscription · ${formatAmount(record.amount || 100)}/mo`;
   if (["one-time", "one_time"].includes(record.type)) return "One-time support";
   if (["gift-monthly", "gift-subscription"].includes(record.type)) return `Gift subscription${record.recipientName ? ` · ${record.recipientName}` : ""}`;
   return "Other payment";
@@ -7096,7 +7217,7 @@ function renderSubscriptionPayments(records) {
                   : `Active · Started ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`;
 
             return `<tr class="subscription-summary-row${isCancelled ? " is-cancelled" : ""}" data-subscription-toggle="${key}" tabindex="0" role="button" aria-expanded="${expanded}">
-              <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(subscription.team || "Monthly support")}</strong><small>${subMetaText}</small></span></td>
+              <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</strong><small>${subMetaText}</small></span></td>
               <td><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
               <td>${escapeHtml(String(charges.length))}</td>
               <td><strong>${escapeHtml(formatAmount(total))}</strong></td>
@@ -7106,7 +7227,7 @@ function renderSubscriptionPayments(records) {
               <td colspan="5">
                 <div class="subscription-charges-panel">
                   <div class="card__title card__title--nested">
-                    <span>Payment history · ${escapeHtml(subscription.team || "Monthly support")}${subStatusSuffix}</span>
+                    <span>Payment history · ${escapeHtml(formatAmount(subscription.amount || 100))} / mo${subStatusSuffix}</span>
                     <span class="card__badge">${charges.length} confirmed contribution${charges.length === 1 ? "" : "s"}</span>
                   </div>
                   <div class="subscription-charges-table-wrap">
@@ -7146,7 +7267,7 @@ function renderSubscriptionPayments(records) {
 
         return `<div class="card uiverse-table-card${isCancelled ? " is-cancelled" : ""}">
           <div class="card__title">
-            <span class="card__title-main">${escapeHtml(subscription.team || "Monthly support")}</span>
+            <span class="card__title-main">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</span>
             <span class="card__badge">${escapeHtml(formatAmount(total))}</span>
           </div>
           <div class="card__data">
@@ -7159,7 +7280,7 @@ function renderSubscriptionPayments(records) {
               <div class="item">${isCancelled ? "Cancelled on" : status === "pending" ? "Renewal" : "Next renewal"}</div>
             </div>
             <div class="card__left">
-              <div class="item">${escapeHtml(subscription.team || "Monthly support")}</div>
+              <div class="item">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</div>
               <div class="item"><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></div>
               <div class="item">${escapeHtml(planStatusLabel)}</div>
               <div class="item">${charges.length} contribution${charges.length === 1 ? "" : "s"}</div>
@@ -7349,7 +7470,7 @@ function renderRecords() {
 
   let subscriptionSummary = "";
   if (activeSub) {
-    subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · ${activeSub.team || "Monthly support"} · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
+    subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
   } else if (cancelledSubscription) {
     const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
     subscriptionSummary = `Your monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
@@ -7383,17 +7504,6 @@ function renderRecords() {
   if (cancel) {
     const isCancelable = (!activeSub && monthlyIntent) || (activeSub && ["active", "paused"].includes(normalizedStatus(activeSub)));
     cancel.disabled = !isCancelable;
-    const textSpan = cancel.querySelector(".text span") || cancel;
-    if (!cancel.classList.contains("confirm") && !cancel.classList.contains("done")) {
-      textSpan.textContent = "Delete";
-    }
-  }
-
-  const devButton = get("dev-charge-button");
-  const canSimulate = (isDevelopmentMode || isPreviewMode) && Boolean(currentUser) && status === "active";
-  if (devButton) {
-    devButton.classList.toggle("is-hidden", !canSimulate);
-    devButton.disabled = !canSimulate;
   }
 
   setText("gift-summary", giftRecords.length ? `${giftPaid.length} confirmed gift${giftPaid.length === 1 ? "" : "s"} for other supporters.` : "Gift payments made for another supporter will appear here.");
@@ -7465,9 +7575,8 @@ async function startMonthlySubscription() {
       const newRoot = {
         id: newSubId,
         path: "subscribers",
-        source: "BCBB",
+        source: "subscribers",
         type: "monthly",
-        team: "BCBB Dog Rescue",
         amount: effectiveAmount,
         subscriptionStatus: "active",
         status: "active",
@@ -7507,7 +7616,6 @@ async function startMonthlySubscription() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        team: "BCBB",
         amount: effectiveAmount,
         user_id: currentUser.uid,
         email: currentUser.email || "",
@@ -7650,70 +7758,7 @@ dashSubToggle?.addEventListener("keydown", (e) => {
   }
 });
 
-get("dev-charge-button")?.addEventListener("click", async () => {
-  const records = allRawRecords();
-  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && normalizedStatus(record) === "active");
-  if (!activeSub) return;
-  if (!isDevelopmentMode && !isPreviewMode) return;
-  const button = get("dev-charge-button");
-  const message = get("subscription-message");
-  const now = Date.now();
-  const nextPaymentDue = nextMonthTimestamp(activeSub.nextPaymentDue || now);
-  if (button) button.disabled = true;
-  if (message) message.textContent = "Processing monthly renewal…";
-  try {
-    if (isPreviewMode) {
-      const chargeId = `pay-${now}`;
-      paymentRecords.unshift({
-        id: chargeId,
-        path: `payments/${currentUser.uid}`,
-        type: "monthly",
-        reference: `MS-REC-${Math.floor(1000 + Math.random() * 9000)}`,
-        amount: activeSub.amount || 100,
-        status: "paid",
-        subscriptionStatus: "active",
-        date: now,
-        paidAt: now,
-        createdAt: now,
-        subscriptionId: activeSub.id,
-        nextPaymentDue,
-        note: "Monthly renewal",
-      });
-      activeSub.nextPaymentDue = nextPaymentDue;
-      activeSub.lastPaymentAt = now;
-      if (message) message.textContent = "Monthly renewal recorded successfully.";
-      renderRecords();
-    } else {
-      const chargeRef = push(ref(database, "testPayments"));
-      await set(chargeRef, {
-        type: "monthly",
-        amount: activeSub.amount || 100,
-        status: "paid",
-        isTest: true,
-        email: currentUser.email || "",
-        createdAt: now,
-        paidAt: now,
-        date: now,
-        nextPaymentDue,
-        subscriptionId: activeSub.id,
-        reference: `MS-REC-${Math.floor(1000 + Math.random() * 9000)}`,
-        note: "Monthly renewal",
-      });
-      await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
-        subscriptionStatus: "active",
-        status: "active",
-        lastPaymentAt: now,
-        nextPaymentDue,
-      });
-      if (message) message.textContent = "Monthly renewal recorded successfully.";
-    }
-  } catch (error) {
-    console.error("Unable to record monthly renewal:", error);
-    if (message) { message.textContent = "Could not record the monthly renewal. Please try again."; message.classList.add("error"); }
-  } finally {
-    if (button) button.disabled = false;
-  }
-});
+
 
 function closeCancelModal() { get("cancel-modal")?.classList.add("is-hidden"); }
 
@@ -7825,57 +7870,16 @@ async function executeCancelSubscription() {
   }
 }
 
-// Double Delete Button Implementation for #subscription-cancel (Adam Whitcroft Dribbble)
+function openCancelModal() { get("cancel-modal")?.classList.remove("is-hidden"); }
+
 const cancelBtn = get("subscription-cancel");
-let cancelResetTimer = null;
-
-function resetCancelBtn() {
-  if (!cancelBtn) return;
-  cancelBtn.classList.remove("confirm", "done");
-  const textSpan = cancelBtn.querySelector(".text span");
-  if (textSpan) textSpan.textContent = "Delete";
-}
-
-cancelBtn?.addEventListener("click", async (e) => {
+cancelBtn?.addEventListener("click", (e) => {
   e.preventDefault();
   if (cancelBtn.disabled) return;
-
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
   if (!activeSub && !monthlyIntent) return;
-
-  const textSpan = cancelBtn.querySelector(".text span");
-
-  if (cancelBtn.classList.contains("confirm")) {
-    clearTimeout(cancelResetTimer);
-    cancelBtn.classList.remove("confirm");
-    cancelBtn.classList.add("done");
-    if (textSpan) textSpan.textContent = "Deleted";
-
-    await executeCancelSubscription();
-
-    cancelResetTimer = setTimeout(() => {
-      resetCancelBtn();
-    }, 3000);
-  } else {
-    cancelBtn.classList.add("confirm");
-    if (textSpan) textSpan.textContent = "Are you sure?";
-
-    clearTimeout(cancelResetTimer);
-    cancelResetTimer = setTimeout(() => {
-      resetCancelBtn();
-    }, 3000);
-  }
-});
-
-// Reset on mouseout as specified in Dribbble snippet
-cancelBtn?.addEventListener("mouseout", () => {
-  if (cancelBtn.classList.contains("confirm") || cancelBtn.classList.contains("done")) {
-    clearTimeout(cancelResetTimer);
-    cancelResetTimer = setTimeout(() => {
-      resetCancelBtn();
-    }, 3000);
-  }
+  openCancelModal();
 });
 
 get("cancel-modal-close")?.addEventListener("click", closeCancelModal);
@@ -8057,9 +8061,8 @@ if (isPreviewMode) {
   subscriberRecords.set("subscribers", [{
     id: "sub-101",
     path: "subscribers",
-    source: "BCBB",
+    source: "subscribers",
     type: "monthly",
-    team: "BCBB Dog Rescue",
     amount: 100,
     subscriptionStatus: "active",
     status: "active",
@@ -8188,8 +8191,8 @@ if (isPreviewMode) {
       }
     });
 
-    onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "Velcrow", "subscribers_velcrow", email)); renderRecords(); }, showDatabaseError);
-    onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "BCBB", "subscribers", email)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers_velcrow", email)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers", email)); renderRecords(); }, showDatabaseError);
     onValue(ref(database, `payments/${user.uid}`), (snapshot) => { paymentRecords = normalizeUidRecords(snapshot.val(), "payment", `payments/${user.uid}`); renderRecords(); }, () => {});
     onValue(ref(database, "testPayments"), (snapshot) => { testPaymentRecords = normalizeUidRecords(snapshot.val(), "test-payment", "testPayments").filter((record) => String(record.email || "").trim().toLowerCase() === email); renderRecords(); }, () => {});
     onValue(ref(database, `paymentIntents/${user.uid}`), (snapshot) => { paymentIntents = normalizeUidRecords(snapshot.val(), "intent", `paymentIntents/${user.uid}`); renderRecords(); }, () => {});

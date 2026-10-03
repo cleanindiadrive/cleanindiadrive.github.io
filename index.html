@@ -210,8 +210,23 @@
         <div class="mode-panel is-hidden" id="gift-mode" role="tabpanel">
           <div class="mode-panel-details">
             <div class="mode-panel-copy">
-              <strong>Gift a subscription · ₹100</strong>
+              <strong id="gift-plan-label">Gift a subscription · ₹100 / mo</strong>
               <p>Search any supporter by phone number or name and pay their monthly subscription.</p>
+            </div>
+
+            <div class="cc-ios-tabs" id="gift-autopay-tabs">
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-100" value="100" checked />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-500" value="500" />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-1000" value="1000" />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-1500" value="1500" />
+
+              <div class="cc-ios-tabs__control">
+                <div class="cc-ios-tabs__thumb"></div>
+                <label class="cc-ios-tabs__item" for="gift-tab-100">₹100</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-500">₹500</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-1000">₹1,000</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-1500">₹1,500</label>
+              </div>
             </div>
             <div class="gift-search-wrap coolinput" id="gift-search-wrap">
               <label class="text" for="gift-search-input">Search supporter:</label>

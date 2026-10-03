@@ -85,22 +85,22 @@ const loaderMarkup = `
 // Insert inline login card for guest visitors on Dashboard
 const dashboardAuthCardMarkup = `
   <!-- Embedded Login Card for Guest Users in Dashboard View -->
-  <div id="dashboard-auth-card" class="auth-card" style="margin: 2.5rem auto; max-width: 440px; text-align: center;">
-    <div class="account-intro-icon" aria-hidden="true" style="margin: 0 auto 1rem; width: 48px; height: 48px; border-radius: 50%; background: #e8f0fe; display: flex; align-items: center; justify-content: center; color: #1a73e8;">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+  <div id="dashboard-auth-card" class="auth-card dashboard-auth-card-centered">
+    <div class="account-intro-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
         <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" />
       </svg>
     </div>
-    <h2 style="margin: 0.8rem 0 0.4rem; font-size: 1.4rem;">Continue to your tracker</h2>
-    <p class="form-intro" style="margin-bottom: 1.5rem; color: #555; font-size: 0.95rem;">Use your Google account to view and manage your support.</p>
-    <button class="button button-google" id="dashboard-google-login-btn" type="button" style="margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 600; border-radius: 8px; border: 1px solid #dadce0; background: #fff; cursor: pointer; transition: all 0.3s ease;">
+    <h2>Sign In to Your Account</h2>
+    <p class="form-intro">Sign in with Google to view your recurring subscriptions, update payment preferences, and track your donation history.</p>
+    <button class="button button-google" id="dashboard-google-login-btn" type="button" style="margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.75rem 1.6rem; font-size: 0.95rem; font-weight: 600; border-radius: 999px; border: 1.5px solid #dadce0; background: #fff; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
       <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" width="20" height="20">
         <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
         <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
         <path fill="#FBBC05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"></path>
         <path fill="#EB4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"></path>
       </svg>
-      <span>Continue with Google</span>
+      <span>Sign In with Google</span>
     </button>
     <div id="dashboard-login-msg" class="auth-message" style="margin-top: 1rem;" role="status"></div>
   </div>

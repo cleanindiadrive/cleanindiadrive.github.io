@@ -196,7 +196,6 @@ function normalizeSubscriberRecords(data, source, path, email) {
         status,
         date: normalizedRecord.subscribedAt || normalizedRecord.createdAt || normalizedRecord.lastPaymentAt,
         reference: normalizedRecord.orderId || normalizedRecord.reference || id,
-        team: normalizedRecord.team || source,
         isSubscriptionRoot: true,
       };
     });
@@ -408,7 +407,7 @@ function statusLabel(status) {
 
 function paymentTypeLabel(record) {
   if (record.isCancellation || record.type === "cancellation") return "Subscription cancellation";
-  if (isSubscriptionRecord(record)) return `Monthly subscription${record.team ? ` · ${record.team}` : ""}`;
+  if (isSubscriptionRecord(record)) return `Monthly subscription · ${formatAmount(record.amount || 100)}/mo`;
   if (["one-time", "one_time"].includes(record.type)) return "One-time support";
   if (["gift-monthly", "gift-subscription"].includes(record.type)) return `Gift subscription${record.recipientName ? ` · ${record.recipientName}` : ""}`;
   return "Other payment";
@@ -564,7 +563,7 @@ function renderSubscriptionPayments(records) {
                   : `Active · Started ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`;
 
             return `<tr class="subscription-summary-row${isCancelled ? " is-cancelled" : ""}" data-subscription-toggle="${key}" tabindex="0" role="button" aria-expanded="${expanded}">
-              <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(subscription.team || "Monthly support")}</strong><small>${subMetaText}</small></span></td>
+              <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</strong><small>${subMetaText}</small></span></td>
               <td><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
               <td>${escapeHtml(String(charges.length))}</td>
               <td><strong>${escapeHtml(formatAmount(total))}</strong></td>
@@ -574,7 +573,7 @@ function renderSubscriptionPayments(records) {
               <td colspan="5">
                 <div class="subscription-charges-panel">
                   <div class="card__title card__title--nested">
-                    <span>Payment history · ${escapeHtml(subscription.team || "Monthly support")}${subStatusSuffix}</span>
+                    <span>Payment history · ${escapeHtml(formatAmount(subscription.amount || 100))} / mo${subStatusSuffix}</span>
                     <span class="card__badge">${charges.length} confirmed contribution${charges.length === 1 ? "" : "s"}</span>
                   </div>
                   <div class="subscription-charges-table-wrap">
@@ -614,7 +613,7 @@ function renderSubscriptionPayments(records) {
 
         return `<div class="card uiverse-table-card${isCancelled ? " is-cancelled" : ""}">
           <div class="card__title">
-            <span class="card__title-main">${escapeHtml(subscription.team || "Monthly support")}</span>
+            <span class="card__title-main">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</span>
             <span class="card__badge">${escapeHtml(formatAmount(total))}</span>
           </div>
           <div class="card__data">
@@ -627,7 +626,7 @@ function renderSubscriptionPayments(records) {
               <div class="item">${isCancelled ? "Cancelled on" : status === "pending" ? "Renewal" : "Next renewal"}</div>
             </div>
             <div class="card__left">
-              <div class="item">${escapeHtml(subscription.team || "Monthly support")}</div>
+              <div class="item">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</div>
               <div class="item"><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></div>
               <div class="item">${escapeHtml(planStatusLabel)}</div>
               <div class="item">${charges.length} contribution${charges.length === 1 ? "" : "s"}</div>
@@ -817,7 +816,7 @@ function renderRecords() {
 
   let subscriptionSummary = "";
   if (activeSub) {
-    subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · ${activeSub.team || "Monthly support"} · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
+    subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
   } else if (cancelledSubscription) {
     const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
     subscriptionSummary = `Your monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
@@ -851,17 +850,6 @@ function renderRecords() {
   if (cancel) {
     const isCancelable = (!activeSub && monthlyIntent) || (activeSub && ["active", "paused"].includes(normalizedStatus(activeSub)));
     cancel.disabled = !isCancelable;
-    const textSpan = cancel.querySelector(".text span") || cancel;
-    if (!cancel.classList.contains("confirm") && !cancel.classList.contains("done")) {
-      textSpan.textContent = "Delete";
-    }
-  }
-
-  const devButton = get("dev-charge-button");
-  const canSimulate = (isDevelopmentMode || isPreviewMode) && Boolean(currentUser) && status === "active";
-  if (devButton) {
-    devButton.classList.toggle("is-hidden", !canSimulate);
-    devButton.disabled = !canSimulate;
   }
 
   setText("gift-summary", giftRecords.length ? `${giftPaid.length} confirmed gift${giftPaid.length === 1 ? "" : "s"} for other supporters.` : "Gift payments made for another supporter will appear here.");
@@ -933,9 +921,8 @@ async function startMonthlySubscription() {
       const newRoot = {
         id: newSubId,
         path: "subscribers",
-        source: "BCBB",
+        source: "subscribers",
         type: "monthly",
-        team: "BCBB Dog Rescue",
         amount: effectiveAmount,
         subscriptionStatus: "active",
         status: "active",
@@ -975,7 +962,6 @@ async function startMonthlySubscription() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        team: "BCBB",
         amount: effectiveAmount,
         user_id: currentUser.uid,
         email: currentUser.email || "",
@@ -1118,70 +1104,7 @@ dashSubToggle?.addEventListener("keydown", (e) => {
   }
 });
 
-get("dev-charge-button")?.addEventListener("click", async () => {
-  const records = allRawRecords();
-  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && normalizedStatus(record) === "active");
-  if (!activeSub) return;
-  if (!isDevelopmentMode && !isPreviewMode) return;
-  const button = get("dev-charge-button");
-  const message = get("subscription-message");
-  const now = Date.now();
-  const nextPaymentDue = nextMonthTimestamp(activeSub.nextPaymentDue || now);
-  if (button) button.disabled = true;
-  if (message) message.textContent = "Processing monthly renewal…";
-  try {
-    if (isPreviewMode) {
-      const chargeId = `pay-${now}`;
-      paymentRecords.unshift({
-        id: chargeId,
-        path: `payments/${currentUser.uid}`,
-        type: "monthly",
-        reference: `MS-REC-${Math.floor(1000 + Math.random() * 9000)}`,
-        amount: activeSub.amount || 100,
-        status: "paid",
-        subscriptionStatus: "active",
-        date: now,
-        paidAt: now,
-        createdAt: now,
-        subscriptionId: activeSub.id,
-        nextPaymentDue,
-        note: "Monthly renewal",
-      });
-      activeSub.nextPaymentDue = nextPaymentDue;
-      activeSub.lastPaymentAt = now;
-      if (message) message.textContent = "Monthly renewal recorded successfully.";
-      renderRecords();
-    } else {
-      const chargeRef = push(ref(database, "testPayments"));
-      await set(chargeRef, {
-        type: "monthly",
-        amount: activeSub.amount || 100,
-        status: "paid",
-        isTest: true,
-        email: currentUser.email || "",
-        createdAt: now,
-        paidAt: now,
-        date: now,
-        nextPaymentDue,
-        subscriptionId: activeSub.id,
-        reference: `MS-REC-${Math.floor(1000 + Math.random() * 9000)}`,
-        note: "Monthly renewal",
-      });
-      await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
-        subscriptionStatus: "active",
-        status: "active",
-        lastPaymentAt: now,
-        nextPaymentDue,
-      });
-      if (message) message.textContent = "Monthly renewal recorded successfully.";
-    }
-  } catch (error) {
-    console.error("Unable to record monthly renewal:", error);
-    if (message) { message.textContent = "Could not record the monthly renewal. Please try again."; message.classList.add("error"); }
-  } finally {
-    if (button) button.disabled = false;
-  }
-});
+
 
 function closeCancelModal() { get("cancel-modal")?.classList.add("is-hidden"); }
 
@@ -1293,57 +1216,16 @@ async function executeCancelSubscription() {
   }
 }
 
-// Double Delete Button Implementation for #subscription-cancel (Adam Whitcroft Dribbble)
+function openCancelModal() { get("cancel-modal")?.classList.remove("is-hidden"); }
+
 const cancelBtn = get("subscription-cancel");
-let cancelResetTimer = null;
-
-function resetCancelBtn() {
-  if (!cancelBtn) return;
-  cancelBtn.classList.remove("confirm", "done");
-  const textSpan = cancelBtn.querySelector(".text span");
-  if (textSpan) textSpan.textContent = "Delete";
-}
-
-cancelBtn?.addEventListener("click", async (e) => {
+cancelBtn?.addEventListener("click", (e) => {
   e.preventDefault();
   if (cancelBtn.disabled) return;
-
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
   if (!activeSub && !monthlyIntent) return;
-
-  const textSpan = cancelBtn.querySelector(".text span");
-
-  if (cancelBtn.classList.contains("confirm")) {
-    clearTimeout(cancelResetTimer);
-    cancelBtn.classList.remove("confirm");
-    cancelBtn.classList.add("done");
-    if (textSpan) textSpan.textContent = "Deleted";
-
-    await executeCancelSubscription();
-
-    cancelResetTimer = setTimeout(() => {
-      resetCancelBtn();
-    }, 3000);
-  } else {
-    cancelBtn.classList.add("confirm");
-    if (textSpan) textSpan.textContent = "Are you sure?";
-
-    clearTimeout(cancelResetTimer);
-    cancelResetTimer = setTimeout(() => {
-      resetCancelBtn();
-    }, 3000);
-  }
-});
-
-// Reset on mouseout as specified in Dribbble snippet
-cancelBtn?.addEventListener("mouseout", () => {
-  if (cancelBtn.classList.contains("confirm") || cancelBtn.classList.contains("done")) {
-    clearTimeout(cancelResetTimer);
-    cancelResetTimer = setTimeout(() => {
-      resetCancelBtn();
-    }, 3000);
-  }
+  openCancelModal();
 });
 
 get("cancel-modal-close")?.addEventListener("click", closeCancelModal);
@@ -1525,9 +1407,8 @@ if (isPreviewMode) {
   subscriberRecords.set("subscribers", [{
     id: "sub-101",
     path: "subscribers",
-    source: "BCBB",
+    source: "subscribers",
     type: "monthly",
-    team: "BCBB Dog Rescue",
     amount: 100,
     subscriptionStatus: "active",
     status: "active",
@@ -1642,8 +1523,8 @@ if (isPreviewMode) {
       }
     });
 
-    onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "Velcrow", "subscribers_velcrow", email)); renderRecords(); }, showDatabaseError);
-    onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "BCBB", "subscribers", email)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers_velcrow", email)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers", email)); renderRecords(); }, showDatabaseError);
     onValue(ref(database, `payments/${user.uid}`), (snapshot) => { paymentRecords = normalizeUidRecords(snapshot.val(), "payment", `payments/${user.uid}`); renderRecords(); }, () => {});
     onValue(ref(database, "testPayments"), (snapshot) => { testPaymentRecords = normalizeUidRecords(snapshot.val(), "test-payment", "testPayments").filter((record) => String(record.email || "").trim().toLowerCase() === email); renderRecords(); }, () => {});
     onValue(ref(database, `paymentIntents/${user.uid}`), (snapshot) => { paymentIntents = normalizeUidRecords(snapshot.val(), "intent", `paymentIntents/${user.uid}`); renderRecords(); }, () => {});
