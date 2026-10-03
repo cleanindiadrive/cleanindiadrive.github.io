@@ -174,42 +174,113 @@ function normalizedStatus(record, fallback = "unknown") {
   return status || fallback;
 }
 
-function normalizeSubscriberRecords(data, source, path, email) {
+function isGiftRecord(record) {
+  if (!record || typeof record !== "object") return false;
+  const type = String(record.type || "").trim().toLowerCase().replaceAll("_", "-");
+  if (type === "gift-monthly" || type === "gift-subscription" || type === "gift") return true;
+  if (record.membershipType === "gift" || record.is_gift === true || record.is_gift === "true" || record.isGift === true) return true;
+  if (Boolean(record.recipientName || record.recipient_name || record.gift_recipient_name) && Boolean(record.giver_email || record.donor_email || record.giver_name || record.giver_id)) return true;
+  return false;
+}
+
+function normalizeSubscriberRecords(data, source, path, email, phone = "", userId = "") {
   if (!data || typeof data !== "object") return [];
-  return Object.entries(data)
-    .filter(([, record]) => String(record?.email || "").trim().toLowerCase() === email)
-    .map(([id, record]) => {
-      const normalizedRecord = record && typeof record === "object" ? record : {};
-      const explicitStatus = normalizedStatus(normalizedRecord);
-      const status = ["active", "paused", "cancelled", "pending"].includes(explicitStatus)
-        ? explicitStatus
-        : normalizedRecord.lastPaymentAt || normalizedRecord.subscribedAt
-          ? "active"
-          : "pending";
-      return {
-        ...normalizedRecord,
-        id,
-        source,
-        path,
-        type: "monthly",
-        amount: Number(normalizedRecord.amount) || 100,
-        status,
-        date: normalizedRecord.subscribedAt || normalizedRecord.createdAt || normalizedRecord.lastPaymentAt,
-        reference: normalizedRecord.orderId || normalizedRecord.reference || id,
-        isSubscriptionRoot: true,
-      };
-    });
+  const normEmail = String(email || "").trim().toLowerCase();
+  const normPhone = cleanIndianPhone(phone);
+
+  return Object.entries(data).flatMap(([id, record]) => {
+    if (!record || typeof record !== "object") return [];
+    const recEmail = String(record.email || "").trim().toLowerCase();
+    const giverEmail = String(record.giver_email || record.donor_email || record.giverEmail || record.donorEmail || "").trim().toLowerCase();
+    const giverId = String(record.giver_id || record.donor_id || record.giverId || record.donorId || record.userId || "").trim();
+
+    const recipientPhone = cleanIndianPhone(record.recipient_phone || record.gift_recipient_phone || record.phone);
+    const recipientEmail = String(record.recipient_email || record.gift_recipient_email || record.email || "").trim().toLowerCase();
+
+    const isGift = isGiftRecord(record);
+
+    let isMatch = false;
+    let giftRole = null;
+
+    if (isGift) {
+      const isDonor = Boolean((normEmail && giverEmail === normEmail) || (userId && giverId === userId));
+      const isReceiver = Boolean((normEmail && (recipientEmail === normEmail || recEmail === normEmail)) || (normPhone && recipientPhone === normPhone));
+
+      if (isDonor && isReceiver) {
+        giftRole = "both";
+        isMatch = true;
+      } else if (isDonor) {
+        giftRole = "donor";
+        isMatch = true;
+      } else if (isReceiver) {
+        giftRole = "receiver";
+        isMatch = true;
+      }
+    } else {
+      if (normEmail && recEmail === normEmail) {
+        isMatch = true;
+      }
+    }
+
+    if (!isMatch) return [];
+
+    const normalizedRecord = record && typeof record === "object" ? record : {};
+    const explicitStatus = normalizedStatus(normalizedRecord);
+    const status = ["active", "paused", "cancelled", "pending"].includes(explicitStatus)
+      ? explicitStatus
+      : normalizedRecord.lastPaymentAt || normalizedRecord.subscribedAt
+        ? "active"
+        : "pending";
+
+    const baseObj = {
+      ...normalizedRecord,
+      id,
+      source,
+      path,
+      type: isGift ? "gift-monthly" : "monthly",
+      amount: Number(normalizedRecord.amount) || 100,
+      status,
+      subscriptionStatus: status,
+      date: normalizedRecord.subscribedAt || normalizedRecord.createdAt || normalizedRecord.lastPaymentAt || Date.now(),
+      reference: normalizedRecord.orderId || normalizedRecord.reference || normalizedRecord.subscriptionId || id,
+      subscriptionId: normalizedRecord.subscriptionId || id,
+      isSubscriptionRoot: true,
+      isGift,
+      recipientName: normalizedRecord.recipient_name || normalizedRecord.gift_recipient_name || normalizedRecord.recipientName || (isGift ? "Supporter" : (currentUser?.displayName || "Supporter")),
+      recipientEmail: normalizedRecord.recipient_email || normalizedRecord.gift_recipient_email || normalizedRecord.email || "",
+      recipientPhone: normalizedRecord.recipient_phone || normalizedRecord.gift_recipient_phone || normalizedRecord.phone || "",
+      donorName: normalizedRecord.giver_name || normalizedRecord.donor_name || (giverEmail ? giverEmail.split("@")[0] : "Kind Supporter"),
+      donorEmail: giverEmail,
+    };
+
+    if (giftRole === "both") {
+      return [
+        { ...baseObj, id: `${id}-given`, giftRole: "donor" },
+        { ...baseObj, id: `${id}-received`, giftRole: "receiver" },
+      ];
+    }
+
+    return [{
+      ...baseObj,
+      giftRole: giftRole || (isGift ? "donor" : null),
+    }];
+  });
 }
 
 function normalizeUidRecords(data, source, path = "") {
   if (!data || typeof data !== "object") return [];
   return Object.entries(data).map(([id, record]) => {
     const normalizedRecord = record && typeof record === "object" ? record : {};
+    const isGift = isGiftRecord(normalizedRecord);
     return {
       id,
       source,
       path,
       ...normalizedRecord,
+      type: isGift ? "gift-monthly" : (normalizedRecord.type || "monthly"),
+      isGift,
+      giftRole: normalizedRecord.giftRole || (isGift ? "donor" : null),
+      recipientName: normalizedRecord.recipientName || normalizedRecord.recipient_name || normalizedRecord.gift_recipient_name || "Supporter",
       status: normalizedStatus(normalizedRecord, source === "intent" ? "pending" : "unknown"),
       date: normalizedRecord.paidAt || normalizedRecord.createdAt || normalizedRecord.subscribedAt || normalizedRecord.lastPaymentAt,
       reference: normalizedRecord.reference || normalizedRecord.transactionId || normalizedRecord.orderId || id,
@@ -220,7 +291,7 @@ function normalizeUidRecords(data, source, path = "") {
 
 function isSubscriptionRecord(record) {
   const type = String(record?.type || "").trim().toLowerCase().replaceAll("_", "-");
-  if (type === "gift-monthly" || type === "gift-subscription") return false;
+  if (type === "gift-monthly" || type === "gift-subscription" || record?.isGift) return false;
   const billingReason = String(record?.billingReason || record?.billing_type || "").toLowerCase();
   const metadata = [record?.reference, record?.orderId, record?.note, record?.description, record?.paymentType, record?.category]
     .filter(Boolean).join(" ").toLowerCase();
@@ -660,40 +731,158 @@ function renderSubscriptionPayments(records) {
   };
 }
 
-function renderGiftHistory(records) {
-  const list = get("gift-list");
-  if (!list) return;
-  if (!records.length) {
-    list.innerHTML = '<p class="empty-state">No gift payments yet.</p>';
+function renderGiftHistory(rawGiftRecords) {
+  // Deduplicate gift records by subscriptionId or reference or id to get one clean entry per gifted membership
+  const uniqueGifts = new Map();
+  (rawGiftRecords || []).forEach((record) => {
+    const key = record.subscriptionId || record.reference || record.id || `${record.recipientEmail || record.recipientName}-${record.date}`;
+    const existing = uniqueGifts.get(key);
+    if (!existing) {
+      uniqueGifts.set(key, record);
+    } else {
+      if (normalizedStatus(record) === "active" || record.isSubscriptionRoot) {
+        uniqueGifts.set(key, { ...existing, ...record });
+      }
+    }
+  });
+
+  const gifts = [...uniqueGifts.values()].sort((a, b) => Number(b.date || b.createdAt || 0) - Number(a.date || a.createdAt || 0));
+
+  const tableBody = get("gift-table-body");
+  const cardsList = get("gift-cards-list") || get("gift-list");
+  const badge = get("gift-badge");
+  const countEl = get("gift-count");
+  const summaryEl = get("gift-summary");
+
+  if (badge) {
+    badge.textContent = `${gifts.length} record${gifts.length === 1 ? "" : "s"}`;
+  }
+
+  const givenGifts = gifts.filter((g) => g.giftRole === "donor");
+  const receivedGifts = gifts.filter((g) => g.giftRole === "receiver");
+  const totalGivenAmount = givenGifts.reduce((sum, g) => sum + (Number(g.amount) || 0), 0);
+
+  if (countEl) {
+    countEl.textContent = `${gifts.length} membership${gifts.length === 1 ? "" : "s"} · ${formatAmount(totalGivenAmount)}`;
+  }
+
+  if (summaryEl) {
+    if (gifts.length === 0) {
+      summaryEl.textContent = "Gifted memberships given to or received from other supporters will appear here.";
+    } else {
+      const parts = [];
+      if (givenGifts.length) parts.push(`${givenGifts.length} gifted by you`);
+      if (receivedGifts.length) parts.push(`${receivedGifts.length} gifted to you`);
+      summaryEl.textContent = `Gifted memberships: ${parts.join(" · ")}.`;
+    }
+  }
+
+  if (!gifts.length) {
+    if (tableBody) {
+      tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">No gifted memberships yet.</td></tr>';
+    }
+    if (cardsList) {
+      cardsList.innerHTML = '<p class="empty-state">No gifted memberships yet.</p>';
+    }
     return;
   }
-  list.innerHTML = `<div class="uiverse-card-list">${records.map((record) => {
-    const status = normalizedStatus(record);
-    const amount = formatAmount(record.amount);
-    const date = formatDate(record.date || record.createdAt);
-    return `<div class="card uiverse-table-card">
-      <div class="card__title">
-        <span class="card__title-main">Gift for ${escapeHtml(record.recipientName || "Supporter")}</span>
-        <span class="card__badge">${escapeHtml(amount)}</span>
-      </div>
-      <div class="card__data">
-        <div class="card__right">
-          <div class="item">Recipient</div>
-          <div class="item">Date</div>
-          <div class="item">Reference</div>
-          <div class="item">Amount</div>
-          <div class="item">Status</div>
+
+  // Render Table Rows
+  if (tableBody) {
+    tableBody.innerHTML = gifts.map((record) => {
+      const isDonor = record.giftRole === "donor";
+      const status = normalizedStatus(record);
+      const isCancelled = status === "cancelled";
+      const amount = formatAmount(record.amount || 100);
+      const dateStr = formatDate(record.date || record.createdAt);
+      const refCode = cleanReference(record.reference || record.subscriptionId || record.id || "—");
+      const personTitle = isDonor
+        ? `Gift for ${escapeHtml(record.recipientName || "Supporter")}`
+        : `Gift from ${escapeHtml(record.donorName || "Kind Supporter")}`;
+      const otherPersonName = isDonor
+        ? (record.recipientName || "Supporter")
+        : (record.donorName || "Kind Supporter");
+      const personMeta = isDonor
+        ? `${escapeHtml(record.recipientEmail || record.recipientPhone || "Supporter")} · Started ${escapeHtml(dateStr)}`
+        : `Gifted to your account · Started ${escapeHtml(dateStr)}`;
+
+      const roleBadge = isDonor
+        ? `<span class="status-pill status-pill-given">Gifted by you</span>`
+        : `<span class="status-pill status-pill-received">Gifted to you</span>`;
+
+      const subId = record.subscriptionId || record.id || "";
+      const canCancel = ["active", "paused"].includes(status);
+      const giftRole = record.giftRole || (isDonor ? "donor" : "receiver");
+
+      const actionHtml = canCancel
+        ? `<button type="button" class="btn-cancel-gifted-membership" data-gift-sub-id="${escapeHtml(subId)}" data-gift-person="${escapeHtml(otherPersonName)}" data-gift-role="${escapeHtml(giftRole)}" data-gift-amount="${record.amount || 100}">Cancel Gifted Membership</button>`
+        : isCancelled
+          ? `<span class="text-muted"><small>Cancelled</small></span>`
+          : `<span class="text-muted"><small>—</small></span>`;
+
+      return `<tr class="gift-row${isCancelled ? " charge-row-cancelled" : ""}">
+        <td>
+          <strong>${personTitle}</strong>
+          <br><small class="record-note">${personMeta}</small>
+        </td>
+        <td>${roleBadge}</td>
+        <td><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
+        <td><strong>${escapeHtml(amount)} / mo</strong></td>
+        <td><span class="table-ref-code">${escapeHtml(refCode)}</span></td>
+        <td>${actionHtml}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  // Render Card View
+  if (cardsList) {
+    cardsList.innerHTML = gifts.map((record) => {
+      const isDonor = record.giftRole === "donor";
+      const status = normalizedStatus(record);
+      const isCancelled = status === "cancelled";
+      const amount = formatAmount(record.amount || 100);
+      const dateStr = formatDate(record.date || record.createdAt);
+      const refCode = cleanReference(record.reference || record.subscriptionId || record.id || "—");
+      const personTitle = isDonor
+        ? `Gift for ${escapeHtml(record.recipientName || "Supporter")}`
+        : `Gift from ${escapeHtml(record.donorName || "Kind Supporter")}`;
+      const otherPersonName = isDonor
+        ? (record.recipientName || "Supporter")
+        : (record.donorName || "Kind Supporter");
+
+      const roleLabel = isDonor ? "Gifted by you" : "Gifted to you";
+      const roleBadgeClass = isDonor ? "status-pill-given" : "status-pill-received";
+
+      const subId = record.subscriptionId || record.id || "";
+      const canCancel = ["active", "paused"].includes(status);
+      const giftRole = record.giftRole || (isDonor ? "donor" : "receiver");
+
+      return `<div class="card uiverse-table-card gift-card-item${isCancelled ? " card-cancelled" : ""}">
+        <div class="card__title">
+          <span class="card__title-main">${personTitle}</span>
+          <span class="card__badge">${escapeHtml(amount)} / mo</span>
         </div>
-        <div class="card__left">
-          <div class="item">${escapeHtml(record.recipientName || "Supporter")}</div>
-          <div class="item">${escapeHtml(date)}</div>
-          <div class="item"><span class="table-ref-code">${escapeHtml(record.reference || record.id || "—")}</span></div>
-          <div class="item"><strong>${escapeHtml(amount)}</strong></div>
-          <div class="item"><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></div>
+        <div class="card__data">
+          <div class="card__right">
+            <div class="item">Role</div>
+            <div class="item">${isDonor ? "Recipient" : "Donor"}</div>
+            <div class="item">Date</div>
+            <div class="item">Reference</div>
+            <div class="item">Status</div>
+            ${canCancel ? '<div class="item">Action</div>' : ''}
+          </div>
+          <div class="card__left">
+            <div class="item"><span class="status-pill ${roleBadgeClass}">${roleLabel}</span></div>
+            <div class="item">${escapeHtml(otherPersonName)}</div>
+            <div class="item">${escapeHtml(dateStr)}</div>
+            <div class="item"><span class="table-ref-code">${escapeHtml(refCode)}</span></div>
+            <div class="item"><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></div>
+            ${canCancel ? `<div class="item"><button type="button" class="btn-cancel-gifted-membership" data-gift-sub-id="${escapeHtml(subId)}" data-gift-person="${escapeHtml(otherPersonName)}" data-gift-role="${escapeHtml(giftRole)}" data-gift-amount="${record.amount || 100}">Cancel Gifted Membership</button></div>` : ''}
+          </div>
         </div>
-      </div>
-    </div>`;
-  }).join("")}</div>`;
+      </div>`;
+    }).join("");
+  }
 }
 
 function allRawRecords() {
@@ -756,6 +945,9 @@ function renderRecords() {
   const otherTotal = otherPaid.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
 
   const activeSub = findActiveSubscription(raw);
+  const activeReceivedGift = raw.find((r) => isGiftRecord(r) && r.giftRole === "receiver" && ["active", "paused"].includes(normalizedStatus(r)));
+  const activeGivenGift = raw.find((r) => isGiftRecord(r) && r.giftRole === "donor" && ["active", "paused"].includes(normalizedStatus(r)));
+  const anyActiveGift = activeReceivedGift || activeGivenGift;
   cancelledSubscription = findLatestCancelledSubscription(raw);
   monthlyIntent = raw.find((record) => isSubscriptionRecord(record) && normalizedStatus(record) === "pending") || null;
   primarySubscription = activeSub || cancelledSubscription || null;
@@ -767,28 +959,63 @@ function renderRecords() {
   setText("gift-count", `${giftRecords.length} contribution${giftRecords.length === 1 ? "" : "s"} · ${formatAmount(giftTotal)}`);
   setText("record-count", `${records.length} record${records.length === 1 ? "" : "s"}`);
 
-  const status = activeSub
-    ? normalizedStatus(activeSub)
-    : cancelledSubscription
-      ? "cancelled"
-      : monthlyIntent
-        ? "pending"
-        : "none";
-  const stateText = status === "active" ? "Active" : status === "paused" ? "Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Pending" : "No active subscription";
+  // Supporter Profile Status
+  const statusPill = get("dashboard-status-pill");
+  if (statusPill) {
+    if (activeSub) {
+      const s = normalizedStatus(activeSub);
+      statusPill.textContent = s === "active" ? "Active Supporter" : "Subscription Paused";
+      statusPill.className = "dashboard-status-indicator status-active";
+    } else if (activeReceivedGift) {
+      statusPill.textContent = "Active Supporter (Gifted)";
+      statusPill.className = "dashboard-status-indicator status-active";
+    } else if (activeGivenGift) {
+      statusPill.textContent = "Active Supporter (Gift Donor)";
+      statusPill.className = "dashboard-status-indicator status-active";
+    } else if (cancelledSubscription) {
+      statusPill.textContent = "Cancelled";
+      statusPill.className = "dashboard-status-indicator status-cancelled";
+    } else if (monthlyIntent) {
+      statusPill.textContent = "Payment Pending";
+      statusPill.className = "dashboard-status-indicator status-pending";
+    } else {
+      statusPill.textContent = "No Active Plan";
+      statusPill.className = "dashboard-status-indicator status-none";
+    }
+  }
 
+  // Quick Stat Cards
   setText("quick-stat-total", formatAmount(total));
   setText("quick-stat-count", `${paidRecords.length} confirmed contribution${paidRecords.length === 1 ? "" : "s"}`);
-  setText("quick-stat-plan", activeSub ? `${formatAmount(activeSub.amount || 100)} / mo` : (status === "pending" ? `${formatAmount(monthlyIntent?.amount || 100)} / mo` : (cancelledSubscription ? "None" : `${formatAmount(selectedDashboardPlanAmount)} / mo`)));
-  setText("quick-stat-plan-status", activeSub ? "Active supporter" : (status === "pending" ? "Payment pending" : (cancelledSubscription ? "Subscription ended" : "Not subscribed")));
+
+  if (activeSub) {
+    setText("quick-stat-plan", `${formatAmount(activeSub.amount || 100)} / mo`);
+    setText("quick-stat-plan-status", "Active supporter");
+  } else if (activeReceivedGift) {
+    setText("quick-stat-plan", `${formatAmount(activeReceivedGift.amount || 100)} / mo`);
+    setText("quick-stat-plan-status", `Gift from ${activeReceivedGift.donorName || "Kind Supporter"}`);
+  } else if (monthlyIntent) {
+    setText("quick-stat-plan", `${formatAmount(monthlyIntent?.amount || 100)} / mo`);
+    setText("quick-stat-plan-status", "Payment pending");
+  } else if (cancelledSubscription) {
+    setText("quick-stat-plan", "None");
+    setText("quick-stat-plan-status", "Subscription ended");
+  } else {
+    setText("quick-stat-plan", `${formatAmount(selectedDashboardPlanAmount)} / mo`);
+    setText("quick-stat-plan-status", "Not subscribed");
+  }
 
   if (activeSub && activeSub.nextPaymentDue) {
     setText("quick-stat-renewal", formatDateOnly(activeSub.nextPaymentDue));
     setText("quick-stat-renewal-sub", "Next scheduled renewal");
+  } else if (activeReceivedGift) {
+    setText("quick-stat-renewal", activeReceivedGift.nextPaymentDue ? formatDateOnly(activeReceivedGift.nextPaymentDue) : "Active Gift");
+    setText("quick-stat-renewal-sub", `Gift from ${activeReceivedGift.donorName || "Kind Supporter"}`);
   } else if (cancelledSubscription) {
     const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
     setText("quick-stat-renewal", "Cancelled");
     setText("quick-stat-renewal-sub", `Ended ${formatDateOnly(ended)}`);
-  } else if (status === "pending") {
+  } else if (monthlyIntent) {
     setText("quick-stat-renewal", "Pending");
     setText("quick-stat-renewal-sub", "Awaiting confirmation");
   } else {
@@ -796,16 +1023,84 @@ function renderRecords() {
     setText("quick-stat-renewal-sub", "Start subscription anytime");
   }
 
-  const statusPill = get("dashboard-status-pill");
-  if (statusPill) {
-    statusPill.textContent = status === "active" ? "Active Supporter" : status === "paused" ? "Subscription Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Payment Pending" : "No Active Plan";
-    statusPill.className = `dashboard-status-indicator status-${status}`;
+  // Dedicated Gifted Membership Card in Monthly Section
+  const dashGiftedCard = get("dash-gifted-card");
+  const dashGiftedAmount = get("dash-gifted-amount");
+  const dashGiftedTitle = get("dash-gifted-title");
+  const dashGiftedNote = get("dash-gifted-note");
+  const dashGiftedCancelBtn = get("dash-gifted-cancel-btn");
+
+  if (dashGiftedCard) {
+    if (activeReceivedGift) {
+      dashGiftedCard.classList.remove("is-hidden");
+      if (dashGiftedAmount) dashGiftedAmount.textContent = `${formatAmount(activeReceivedGift.amount || 100)} / mo`;
+      if (dashGiftedTitle) dashGiftedTitle.textContent = "Gifted Membership";
+      if (dashGiftedNote) dashGiftedNote.textContent = `You are receiving an active recurring membership generously gifted by ${activeReceivedGift.donorName || "a kind supporter"}.`;
+      if (dashGiftedCancelBtn) {
+        dashGiftedCancelBtn.setAttribute("data-gift-sub-id", activeReceivedGift.subscriptionId || activeReceivedGift.id || "");
+        dashGiftedCancelBtn.setAttribute("data-gift-person", activeReceivedGift.donorName || "Kind Supporter");
+        dashGiftedCancelBtn.setAttribute("data-gift-role", "receiver");
+        dashGiftedCancelBtn.setAttribute("data-gift-amount", activeReceivedGift.amount || 100);
+      }
+    } else if (activeGivenGift && !activeSub) {
+      dashGiftedCard.classList.remove("is-hidden");
+      if (dashGiftedAmount) dashGiftedAmount.textContent = `${formatAmount(activeGivenGift.amount || 100)} / mo`;
+      if (dashGiftedTitle) dashGiftedTitle.textContent = "Gifted Membership Given by You";
+      if (dashGiftedNote) dashGiftedNote.textContent = `You have an active recurring gift membership for ${activeGivenGift.recipientName || "a supporter"}.`;
+      if (dashGiftedCancelBtn) {
+        dashGiftedCancelBtn.setAttribute("data-gift-sub-id", activeGivenGift.subscriptionId || activeGivenGift.id || "");
+        dashGiftedCancelBtn.setAttribute("data-gift-person", activeGivenGift.recipientName || "Supporter");
+        dashGiftedCancelBtn.setAttribute("data-gift-role", "donor");
+        dashGiftedCancelBtn.setAttribute("data-gift-amount", activeGivenGift.amount || 100);
+      }
+    } else {
+      dashGiftedCard.classList.add("is-hidden");
+    }
   }
+
+  // Active Gift Quick Banner in Gifted Accordion
+  const activeGiftBanner = get("active-gift-banner");
+  const activeGiftText = get("active-gift-banner-text");
+  const activeGiftCancelBtn = get("active-gift-banner-cancel-btn");
+  if (activeGiftBanner) {
+    if (anyActiveGift) {
+      activeGiftBanner.classList.remove("is-hidden");
+      const isRecv = anyActiveGift.giftRole === "receiver";
+      const personName = isRecv ? (anyActiveGift.donorName || "Kind Supporter") : (anyActiveGift.recipientName || "Supporter");
+      if (activeGiftText) {
+        activeGiftText.textContent = isRecv
+          ? `${formatAmount(anyActiveGift.amount || 100)} / mo gifted by ${personName}`
+          : `${formatAmount(anyActiveGift.amount || 100)} / mo gifted to ${personName}`;
+      }
+      if (activeGiftCancelBtn) {
+        activeGiftCancelBtn.setAttribute("data-gift-sub-id", anyActiveGift.subscriptionId || anyActiveGift.id || "");
+        activeGiftCancelBtn.setAttribute("data-gift-person", personName);
+        activeGiftCancelBtn.setAttribute("data-gift-role", anyActiveGift.giftRole || (isRecv ? "receiver" : "donor"));
+        activeGiftCancelBtn.setAttribute("data-gift-amount", anyActiveGift.amount || 100);
+      }
+    } else {
+      activeGiftBanner.classList.add("is-hidden");
+    }
+  }
+
+  // Personal Monthly Subscription Status
+  const personalStatus = activeSub
+    ? normalizedStatus(activeSub)
+    : cancelledSubscription
+      ? "cancelled"
+      : monthlyIntent
+        ? "pending"
+        : "none";
 
   const subBadgePill = get("subscription-badge-pill");
   if (subBadgePill) {
-    subBadgePill.textContent = status === "active" ? "Active Plan" : status === "paused" ? "Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Pending" : "Inactive";
-    subBadgePill.className = `status-pill ${paymentStatusClass(status)}`;
+    if (activeSub) {
+      subBadgePill.textContent = personalStatus === "active" ? "Active Plan" : "Paused";
+      subBadgePill.className = `status-pill ${paymentStatusClass(personalStatus)}`;
+    } else {
+      subBadgePill.textContent = "No Personal Plan";
+      subBadgePill.className = "status-pill status-none";
+    }
   }
 
   const planPickerWrap = get("dash-plan-picker-wrap");
@@ -817,42 +1112,38 @@ function renderRecords() {
   let subscriptionSummary = "";
   if (activeSub) {
     subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
+  } else if (activeReceivedGift) {
+    subscriptionSummary = `You do not have a separate personal recurring subscription. Your supporter membership is active via a gifted membership.`;
   } else if (cancelledSubscription) {
     const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
-    subscriptionSummary = `Your monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
-  } else if (status === "pending") {
+    subscriptionSummary = `Your personal monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
+  } else if (personalStatus === "pending") {
     subscriptionSummary = (isDevelopmentMode || isPreviewMode)
       ? "Subscription request pending. Click 'Activate subscription (Test)' to confirm and activate."
       : "Subscription request pending. Payment confirmation is still required to activate it.";
   } else {
-    subscriptionSummary = `No monthly subscription yet. Start with ₹${selectedDashboardPlanAmount.toLocaleString("en-IN")} per month.`;
+    subscriptionSummary = `No personal monthly subscription yet. Start with ₹${selectedDashboardPlanAmount.toLocaleString("en-IN")} per month.`;
   }
   setText("subscription-summary", subscriptionSummary);
-
 
   const toggle = get("subscription-toggle");
   if (toggle) {
     const isTestablePending = Boolean(monthlyIntent) && !activeSub && (isDevelopmentMode || isPreviewMode);
     setPosButtonDisabled(toggle, Boolean(monthlyIntent) && !activeSub && !isTestablePending);
-    const label = status === "active"
-      ? "Pause"
-      : status === "paused"
-        ? "Resume"
-        : status === "pending"
-          ? (isTestablePending ? "Activate (Test)" : "Payment pending")
-          : status === "cancelled"
-            ? "Subscribe"
-            : "Subscribe";
+    const label = activeSub
+      ? (personalStatus === "active" ? "Pause" : personalStatus === "paused" ? "Resume" : "Subscribe")
+      : (personalStatus === "pending" ? (isTestablePending ? "Activate (Test)" : "Payment pending") : "Subscribe");
     setPosButtonText(toggle, label);
-    toggle.setAttribute("data-state", status === "active" ? "pause" : status === "paused" ? "resume" : "subscribe");
+    toggle.setAttribute("data-state", activeSub ? (personalStatus === "active" ? "pause" : "resume") : "subscribe");
   }
+
   const cancel = get("subscription-cancel");
   if (cancel) {
     const isCancelable = (!activeSub && monthlyIntent) || (activeSub && ["active", "paused"].includes(normalizedStatus(activeSub)));
     cancel.disabled = !isCancelable;
   }
 
-  setText("gift-summary", giftRecords.length ? `${giftPaid.length} confirmed gift${giftPaid.length === 1 ? "" : "s"} for other supporters.` : "Gift payments made for another supporter will appear here.");
+  setText("gift-summary", giftRecords.length ? `${giftPaid.length} confirmed gift${giftPaid.length === 1 ? "" : "s"} recorded.` : "Gift payments made for another supporter or received will appear here.");
   renderGiftHistory(giftRecords);
   renderSubscriptionPayments(raw);
   renderTableSection(records, "all-payments-body", "all-payments-cards", "all-payments-badge", "No transactions recorded yet.");
@@ -1406,6 +1697,203 @@ get("cancel-modal")?.addEventListener("click", (event) => {
 });
 get("cancel-modal-confirm")?.addEventListener("click", executeCancelSubscription);
 
+let targetGiftToCancel = null;
+let isCancellingGift = false;
+
+function openCancelGiftModal(subId, personName, amount, role = "donor") {
+  const modal = get("cancel-gift-modal");
+  const nameEl = get("cancel-gift-recipient-name");
+  const descEl = get("cancel-gift-modal-desc");
+  const confirmBtn = get("cancel-gift-modal-confirm");
+  const keepBtn = get("cancel-gift-modal-keep");
+  const closeBtn = get("cancel-gift-modal-close");
+  const errorEl = get("cancel-gift-modal-error");
+  if (!modal) return;
+
+  targetGiftToCancel = { subId, personName, amount, role };
+
+  if (nameEl) nameEl.textContent = personName || "Supporter";
+  if (descEl) {
+    if (role === "receiver") {
+      descEl.innerHTML = `Are you sure you want to cancel the gifted membership from <strong>${escapeHtml(personName || "Kind Supporter")}</strong>? No further recurring charges will be made. The past gift records will remain safely saved in both accounts.`;
+    } else {
+      descEl.innerHTML = `Are you sure you want to cancel the gifted membership for <strong>${escapeHtml(personName || "Supporter")}</strong>? No further recurring charges will be made. The past gift records will remain safely saved in both accounts.`;
+    }
+  }
+
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+
+  if (confirmBtn) {
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = "Yes, cancel gifted membership";
+  }
+  if (keepBtn) keepBtn.disabled = false;
+  if (closeBtn) closeBtn.disabled = false;
+
+  modal.classList.remove("is-hidden");
+}
+
+function closeCancelGiftModal() {
+  if (isCancellingGift) return;
+  const modal = get("cancel-gift-modal");
+  modal?.classList.add("is-hidden");
+  targetGiftToCancel = null;
+}
+
+async function executeCancelGiftSubscription() {
+  if (isCancellingGift || !targetGiftToCancel) return;
+  const confirmBtn = get("cancel-gift-modal-confirm");
+  const keepBtn = get("cancel-gift-modal-keep");
+  const closeBtn = get("cancel-gift-modal-close");
+  const errorEl = get("cancel-gift-modal-error");
+
+  isCancellingGift = true;
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = `<span class="button-spinner button-spinner-dark" aria-hidden="true"></span> Cancelling…`;
+  }
+  if (keepBtn) keepBtn.disabled = true;
+  if (closeBtn) closeBtn.disabled = true;
+
+  const now = Date.now();
+  const subId = String(targetGiftToCancel.subId || "").trim();
+  const role = targetGiftToCancel.role || "donor";
+  const personName = targetGiftToCancel.personName || "Supporter";
+
+  try {
+    if (isPreviewMode) {
+      const records = allRawRecords();
+      const giftRecord = records.find((r) => r.subscriptionId === subId || r.id === subId);
+      if (giftRecord) {
+        giftRecord.status = "cancelled";
+        giftRecord.subscriptionStatus = "cancelled";
+        giftRecord.cancelledAt = now;
+        giftRecord.endedAt = now;
+        giftRecord.nextPaymentDue = null;
+      }
+      for (const list of subscriberRecords.values()) {
+        const item = list.find((s) => s.subscriptionId === subId || s.id === subId);
+        if (item) {
+          item.status = "cancelled";
+          item.subscriptionStatus = "cancelled";
+          item.cancelledAt = now;
+          item.endedAt = now;
+          item.nextPaymentDue = null;
+        }
+      }
+      paymentRecords.unshift({
+        id: `cancel-${now}`,
+        path: `payments/${currentUser.uid}`,
+        type: "cancellation",
+        isCancellation: true,
+        reference: "—",
+        amount: null,
+        status: "cancelled",
+        subscriptionStatus: "cancelled",
+        date: now,
+        paidAt: now,
+        createdAt: now,
+        subscriptionId: subId,
+        note: `Cancelled gifted membership ${role === "receiver" ? `from ${personName}` : `for ${personName}`}`,
+      });
+      isCancellingGift = false;
+      closeCancelGiftModal();
+      renderRecords();
+      return;
+    }
+
+    if (subId.startsWith("sub_")) {
+      const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription_id: subId }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to cancel gifted subscription in Razorpay");
+      }
+    }
+
+    await update(ref(database, `subscribers/${subId}`), {
+      status: "cancelled",
+      subscriptionStatus: "cancelled",
+      cancelledAt: now,
+      endedAt: now,
+      nextPaymentDue: null,
+    }).catch(() => {});
+
+    await update(ref(database, `subscribers_velcrow/${subId}`), {
+      status: "cancelled",
+      subscriptionStatus: "cancelled",
+      cancelledAt: now,
+      endedAt: now,
+      nextPaymentDue: null,
+    }).catch(() => {});
+
+    if (currentUser) {
+      const cancelRef = push(ref(database, `payments/${currentUser.uid}`));
+      await set(cancelRef, {
+        type: "cancellation",
+        isCancellation: true,
+        amount: null,
+        status: "cancelled",
+        email: currentUser.email || "",
+        createdAt: now,
+        date: now,
+        subscriptionId: subId,
+        personName: personName,
+        reference: "—",
+        note: `Cancelled gifted membership ${role === "receiver" ? `from ${personName}` : `for ${personName}`}`,
+      }).catch(() => {});
+    }
+
+    isCancellingGift = false;
+    closeCancelGiftModal();
+    renderRecords();
+  } catch (error) {
+    console.error("Unable to cancel gifted subscription:", error);
+    isCancellingGift = false;
+    if (errorEl) {
+      errorEl.textContent = error.message || "Could not cancel gifted subscription. Please try again.";
+      errorEl.classList.remove("is-hidden");
+    }
+  } finally {
+    isCancellingGift = false;
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = "Yes, cancel gifted membership";
+    }
+    if (keepBtn) keepBtn.disabled = false;
+    if (closeBtn) closeBtn.disabled = false;
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const cancelGiftBtn = event.target.closest?.(".btn-cancel-gift, .btn-cancel-gifted-membership");
+  if (cancelGiftBtn && cancelGiftBtn.id !== "subscription-cancel") {
+    event.preventDefault();
+    const subId = cancelGiftBtn.getAttribute("data-gift-sub-id");
+    const person = cancelGiftBtn.getAttribute("data-gift-person") || cancelGiftBtn.getAttribute("data-gift-recipient");
+    const amount = cancelGiftBtn.getAttribute("data-gift-amount");
+    const role = cancelGiftBtn.getAttribute("data-gift-role") || "donor";
+    if (subId) {
+      openCancelGiftModal(subId, person, amount, role);
+    }
+  }
+});
+
+get("cancel-gift-modal-close")?.addEventListener("click", closeCancelGiftModal);
+get("cancel-gift-modal-keep")?.addEventListener("click", closeCancelGiftModal);
+get("cancel-gift-modal")?.addEventListener("click", (e) => {
+  if (e.target instanceof HTMLElement && e.target.hasAttribute("data-cancel-gift-dismiss")) {
+    closeCancelGiftModal();
+  }
+});
+get("cancel-gift-modal-confirm")?.addEventListener("click", executeCancelGiftSubscription);
+
 function cleanIndianPhone(val) {
   if (!val) return "";
   let digits = String(val).replace(/\D/g, "");
@@ -1575,21 +2063,71 @@ if (isPreviewMode) {
   const now = Date.now();
   const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
-  subscriberRecords.set("subscribers", [{
-    id: "sub-101",
-    path: "subscribers",
-    source: "subscribers",
-    type: "monthly",
-    amount: 100,
-    subscriptionStatus: "active",
-    status: "active",
-    email: currentUser.email,
-    name: currentUser.displayName,
-    date: now - thirtyDays * 2,
-    createdAt: now - thirtyDays * 2,
-    nextPaymentDue: now + thirtyDays,
-    isSubscriptionRoot: true,
-  }]);
+  subscriberRecords.set("subscribers", [
+    {
+      id: "sub-101",
+      path: "subscribers",
+      source: "subscribers",
+      type: "monthly",
+      amount: 100,
+      subscriptionStatus: "active",
+      status: "active",
+      email: currentUser.email,
+      name: currentUser.displayName,
+      date: now - thirtyDays * 2,
+      createdAt: now - thirtyDays * 2,
+      nextPaymentDue: now + thirtyDays,
+      isSubscriptionRoot: true,
+    },
+    {
+      id: "sub-gift-given-1",
+      path: "subscribers",
+      source: "subscribers",
+      type: "gift-monthly",
+      amount: 100,
+      subscriptionStatus: "active",
+      status: "active",
+      isGift: true,
+      giftRole: "donor",
+      giver_id: currentUser.uid,
+      giver_email: currentUser.email,
+      giver_name: currentUser.displayName,
+      donorEmail: currentUser.email,
+      donorName: currentUser.displayName,
+      recipientName: "Neha Patel",
+      recipientEmail: "neha.patel@example.com",
+      recipientPhone: "9876543211",
+      subscriptionId: "sub_gift_neha_01",
+      reference: "MS-GIFT-4490",
+      date: now - 5 * 24 * 60 * 60 * 1000,
+      createdAt: now - 5 * 24 * 60 * 60 * 1000,
+      isSubscriptionRoot: true,
+    },
+    {
+      id: "sub-gift-received-1",
+      path: "subscribers",
+      source: "subscribers",
+      type: "gift-monthly",
+      amount: 500,
+      subscriptionStatus: "active",
+      status: "active",
+      isGift: true,
+      giftRole: "receiver",
+      giver_email: "priya.mehra@example.com",
+      giver_name: "Priya Mehra",
+      donorEmail: "priya.mehra@example.com",
+      donorName: "Priya Mehra",
+      recipientName: currentUser.displayName,
+      recipientEmail: currentUser.email,
+      recipientPhone: currentUser.phone,
+      subscriptionId: "sub_gift_priya_02",
+      reference: "MS-GIFT-9120",
+      date: now - 12 * 24 * 60 * 60 * 1000,
+      createdAt: now - 12 * 24 * 60 * 60 * 1000,
+      nextPaymentDue: now + 18 * 24 * 60 * 60 * 1000,
+      isSubscriptionRoot: true,
+    }
+  ]);
 
   paymentRecords = [
     {
@@ -1635,12 +2173,16 @@ if (isPreviewMode) {
       path: "payments/demo-supporter-1",
       type: "gift-monthly",
       reference: "MS-GIFT-4490",
+      subscriptionId: "sub_gift_neha_01",
+      isGift: true,
+      giftRole: "donor",
       amount: 100,
       status: "paid",
       recipientName: "Neha Patel",
+      recipientEmail: "neha.patel@example.com",
       date: now - 5 * 24 * 60 * 60 * 1000,
       createdAt: now - 5 * 24 * 60 * 60 * 1000,
-      note: "Gifted subscription for Neha",
+      note: "Gifted subscription for Neha Patel",
     }
   ];
 
@@ -1653,6 +2195,12 @@ if (isPreviewMode) {
       enabled: true
     };
   }
+  const authCard = get("dashboard-auth-card");
+  const memberContent = get("dashboard-member-content");
+  const logoutBtn = get("logout-button");
+  if (authCard) authCard.classList.add("is-hidden");
+  if (memberContent) memberContent.classList.remove("is-hidden-auth");
+  if (logoutBtn) logoutBtn.classList.remove("is-hidden");
 
   renderRecords();
 } else {
@@ -1692,10 +2240,11 @@ if (isPreviewMode) {
         setText("dashboard-phone", "Mobile not provided");
         openPhoneModal(true); // Compulsory modal for existing accounts missing a valid phone
       }
+      renderRecords();
     });
 
-    onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers_velcrow", email)); renderRecords(); }, showDatabaseError);
-    onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers", email)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "subscribers_velcrow", "subscribers_velcrow", email, currentUserPhone, user.uid)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers", email, currentUserPhone, user.uid)); renderRecords(); }, showDatabaseError);
     onValue(ref(database, `payments/${user.uid}`), (snapshot) => { paymentRecords = normalizeUidRecords(snapshot.val(), "payment", `payments/${user.uid}`); renderRecords(); }, () => {});
     onValue(ref(database, "testPayments"), (snapshot) => { testPaymentRecords = normalizeUidRecords(snapshot.val(), "test-payment", "testPayments").filter((record) => String(record.email || "").trim().toLowerCase() === email); renderRecords(); }, () => {});
     onValue(ref(database, `paymentIntents/${user.uid}`), (snapshot) => { paymentIntents = normalizeUidRecords(snapshot.val(), "intent", `paymentIntents/${user.uid}`); renderRecords(); }, () => {});

@@ -1057,6 +1057,58 @@ nav {
   transform: none;
 }
 
+.btn-cancel-gift {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid #ef4444;
+  background: #fef2f2;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.btn-cancel-gift:hover:not(:disabled) {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.btn-cancel-gift:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.status-pill-given {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.status-pill-received {
+  background: #fdf4ff;
+  color: #a21caf;
+  border: 1px solid #f5d0fe;
+}
+
+.cancel-gift-modal-icon {
+  background: #fdf4ff !important;
+  color: #a21caf !important;
+  border-color: #f5d0fe !important;
+}
+
 .subscription-actions .mode-action {
   font-size: 0.76rem;
   padding: 0.4rem 0.85rem;
@@ -4625,6 +4677,330 @@ footer .contact-details {
   opacity: 1;
   top: 0;
 }
+
+/* -------------------------------------------------------------
+ * Dedicated Gifted Membership Card & Banner
+ * ----------------------------------------------------------- */
+.dashboard-gifted-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.15rem 1.3rem;
+  border-radius: 14px;
+  border: 1.5px solid #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 60%, #fff7ed 100%);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);
+  margin-bottom: 1.1rem;
+  text-align: left !important;
+}
+
+.gifted-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.gifted-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background: #d97706;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.gifted-card-amount {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #92400e;
+}
+
+.gifted-card-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #78350f;
+  margin-bottom: 0.25rem;
+}
+
+.gifted-card-note {
+  font-size: 0.8rem;
+  color: #92400e;
+  line-height: 1.45;
+  margin: 0 0 0.85rem 0;
+}
+
+.gifted-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.active-gift-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid #f59e0b;
+  background: #fffbeb;
+  margin-bottom: 0.85rem;
+  text-align: left !important;
+}
+
+.active-gift-banner-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.gift-banner-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #d97706;
+  color: #ffffff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.gift-banner-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #78350f;
+}
+
+.btn-cancel-gifted-membership,
+.btn-cancel-gift {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  padding: 0.45rem 0.9rem !important;
+  border-radius: 8px !important;
+  border: 1.5px solid #dc2626 !important;
+  background: #ffffff !important;
+  color: #dc2626 !important;
+  font-family: inherit !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+  white-space: nowrap !important;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.12) !important;
+  line-height: 1.4 !important;
+}
+
+.btn-cancel-gifted-membership:hover,
+.btn-cancel-gift:hover {
+  background: #fee2e2 !important;
+  border-color: #b91c1c !important;
+  color: #b91c1c !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.2) !important;
+}
+
+.btn-cancel-gifted-membership:active,
+.btn-cancel-gift:active {
+  transform: translateY(0) !important;
+}
+
+.btn-cancel-gifted-membership:disabled,
+.btn-cancel-gift:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.status-pill-given {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+}
+
+.status-pill-received {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+}
+
+.cancel-gift-modal-icon {
+  background: #fef3c7 !important;
+  color: #d97706 !important;
+}
+
+/* -------------------------------------------------------------
+ * Odoo CMS & Bootstrap 5 Compatibility Resets
+ * Prevents theme & Bootstrap classes from breaking layout/styles
+ * ----------------------------------------------------------- */
+.s_embed_code,
+.dashboard-main,
+.home-main,
+.page-view,
+.dashboard-welcome,
+.dashboard-profile,
+.dashboard-stats-grid,
+.tracker-accordions {
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+
+/* Reset Bootstrap .table padding, backgrounds, and inset box-shadow */
+.payments-table,
+.subscription-table,
+.subscription-charges-table,
+.gift-memberships-table {
+  --bs-table-bg: transparent !important;
+  --bs-table-accent-bg: transparent !important;
+  --bs-table-striped-bg: transparent !important;
+  box-shadow: none !important;
+  border-collapse: collapse !important;
+  margin-bottom: 0 !important;
+  width: 100% !important;
+  background-color: transparent !important;
+}
+
+.payments-table > :not(caption) > * > *,
+.subscription-table > :not(caption) > * > *,
+.subscription-charges-table > :not(caption) > * > *,
+.gift-memberships-table > :not(caption) > * > * {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.payments-table th,
+.subscription-table th,
+.subscription-charges-table th,
+.gift-memberships-table th {
+  background: rgb(44, 44, 44) !important;
+  color: #ffffff !important;
+  padding: 8px 12px !important;
+  font-size: 0.7rem !important;
+  text-align: left !important;
+  box-shadow: none !important;
+  border-right: 1px solid rgba(203, 203, 203, 0.35) !important;
+  border-bottom: 1px solid rgb(167, 159, 159) !important;
+  vertical-align: middle !important;
+}
+
+.payments-table td,
+.subscription-table td,
+.subscription-charges-table td,
+.gift-memberships-table td {
+  padding: 7px 12px !important;
+  font-size: 0.74rem !important;
+  vertical-align: middle !important;
+  box-shadow: none !important;
+  border-right: 1px solid rgb(203, 203, 203) !important;
+  border-bottom: 1px solid rgb(203, 203, 203) !important;
+}
+
+.payments-table tr:nth-child(even) td,
+.subscription-table tbody tr:nth-child(even) td,
+.subscription-charges-table tbody tr:nth-child(even) td,
+.gift-memberships-table tbody tr:nth-child(even) td {
+  background-color: rgb(234, 235, 234) !important;
+}
+
+.payments-table tr:nth-child(odd) td,
+.subscription-table tbody tr:nth-child(odd) td,
+.subscription-charges-table tbody tr:nth-child(odd) td,
+.gift-memberships-table tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
+}
+
+.payments-table tr:hover td,
+.subscription-table tbody tr:hover td,
+.subscription-charges-table tbody tr:hover td,
+.gift-memberships-table tbody tr:hover td {
+  background-color: #fffbe6 !important;
+}
+
+/* Reset Bootstrap .card overrides */
+.left-side .card {
+  position: absolute !important;
+  width: 70px !important;
+  height: 46px !important;
+  background-color: #c7ffbc !important;
+  border-radius: 4px !important;
+  border: none !important;
+  display: block !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  min-width: 70px !important;
+}
+
+.uiverse-table-card.card,
+.uiverse-table-card {
+  background: rgb(44, 44, 44) !important;
+  border: 1px solid rgb(203, 203, 203) !important;
+  border-radius: 10px !important;
+  color: #ffffff !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: none !important;
+  min-width: 0 !important;
+}
+
+.stat-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--surface) !important;
+}
+
+.stat-meta .stat-label,
+.stat-meta .stat-value,
+.stat-meta .stat-sub {
+  margin: 0 !important;
+  line-height: 1.25 !important;
+}
+
+.stat-meta strong.stat-value {
+  font-size: 1.28rem !important;
+  font-weight: 800 !important;
+  color: var(--ink) !important;
+}
+
+/* Details and Summary reset for Odoo / Bootstrap */
+.tracker-accordion summary,
+.nested-accordion summary {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  list-style: none !important;
+  cursor: pointer !important;
+  text-align: left !important;
+}
+
+.tracker-accordion summary::-webkit-details-marker,
+.nested-accordion summary::-webkit-details-marker,
+.tracker-accordion summary::marker,
+.nested-accordion summary::marker {
+  display: none !important;
+  content: "" !important;
+}
+
+details:not([open]) > :not(summary) {
+  display: none !important;
+}
+
 
 
 

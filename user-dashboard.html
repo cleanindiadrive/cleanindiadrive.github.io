@@ -161,6 +161,28 @@
                 <span class="status-pill status-pill-active" id="subscription-badge-pill">Active</span>
               </div>
 
+              <!-- Dedicated Gifted Membership Card (shown when user has an active/paused gifted membership) -->
+              <div class="dashboard-gifted-card is-hidden" id="dash-gifted-card">
+                <div class="gifted-card-header">
+                  <span class="gifted-card-badge">🎁 ACTIVE GIFTED MEMBERSHIP</span>
+                  <span class="gifted-card-amount" id="dash-gifted-amount">₹100 / mo</span>
+                </div>
+                <strong class="gifted-card-title" id="dash-gifted-title">Gifted Membership</strong>
+                <p class="gifted-card-note" id="dash-gifted-note">You are receiving a gifted membership from Kind Supporter.</p>
+                <div class="gifted-card-actions">
+                  <button type="button" class="btn-cancel-gifted-membership" id="dash-gifted-cancel-btn">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                      <rect x="2" y="7" width="20" height="5"></rect>
+                      <line x1="12" y1="22" x2="12" y2="7"></line>
+                      <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                      <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                    </svg>
+                    <span>Cancel Gifted Membership</span>
+                  </button>
+                </div>
+              </div>
+
               <!-- Exclusive Custom Autopay Plan Card (Rendered when admin configured a custom plan for this account) -->
               <div class="dashboard-exclusive-card is-hidden" id="dash-exclusive-card">
                 <div class="exclusive-header">
@@ -268,10 +290,53 @@
         </details>
 
         <details class="tracker-accordion">
-          <summary><span>Gifted support</span><strong class="accordion-value" id="gift-count">0 transactions · ₹0</strong></summary>
+          <summary><span>Gifted memberships &amp; support</span><strong class="accordion-value" id="gift-count">0 memberships · ₹0</strong></summary>
           <div class="accordion-content">
-            <p class="accordion-lead" id="gift-summary">Gift payments made for another supporter.</p>
-            <div id="gift-list" class="gift-history-list"></div>
+            <!-- Active Gift Quick Banner inside Gifted Accordion -->
+            <div class="active-gift-banner is-hidden" id="active-gift-banner">
+              <div class="active-gift-banner-info">
+                <span class="gift-banner-badge">Active Gift</span>
+                <span class="gift-banner-text" id="active-gift-banner-text">₹100/mo gifted by Kind Supporter</span>
+              </div>
+              <button type="button" class="btn-cancel-gifted-membership" id="active-gift-banner-cancel-btn">
+                <span>Cancel Gifted Membership</span>
+              </button>
+            </div>
+            <p class="accordion-lead" id="gift-summary">Gifted memberships given to or received from other supporters.</p>
+            <div class="subscription-table-wrap" id="gift-table-wrap">
+              <div class="card__title">
+                <span class="card__title-main">Gifted Memberships Overview</span>
+                <div class="table-view-controls">
+                  <span class="card__badge" id="gift-badge">0 records</span>
+                  <div class="view-toggle" role="group" aria-label="Gifted memberships view format">
+                    <button type="button" class="view-toggle-btn is-active" data-view-target="gift-memberships" data-view="table">Table</button>
+                    <button type="button" class="view-toggle-btn" data-view-target="gift-memberships" data-view="cards">Cards</button>
+                  </div>
+                </div>
+              </div>
+              <div class="table-view-container" id="gift-memberships-table-container">
+                <div class="table-scroll-wrap">
+                  <table class="subscription-table gift-memberships-table">
+                    <thead>
+                      <tr>
+                        <th>Gift Details</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th>Reference / ID</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="gift-table-body">
+                      <tr><td colspan="6" class="empty-state">No gifted memberships yet.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-view-container is-hidden" id="gift-memberships-cards-container">
+                <div class="uiverse-card-list" id="gift-cards-list"></div>
+              </div>
+            </div>
           </div>
         </details>
 
@@ -290,6 +355,30 @@
         <div class="cancel-modal-actions">
           <button class="mode-action" id="cancel-modal-keep" type="button">Keep subscription</button>
           <button class="mode-action mode-action-danger" id="cancel-modal-confirm" type="button">Yes, cancel subscription</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Cancel Gifted Membership Confirmation Modal -->
+    <div class="cancel-modal is-hidden" id="cancel-gift-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-gift-modal-title">
+      <div class="cancel-modal-backdrop" id="cancel-gift-modal-backdrop" data-cancel-gift-dismiss></div>
+      <section class="cancel-modal-card">
+        <button class="cancel-modal-close" id="cancel-gift-modal-close" type="button" aria-label="Close dialog">×</button>
+        <div class="cancel-modal-icon cancel-gift-modal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 12 20 22 4 22 4 12"></polyline>
+            <rect x="2" y="7" width="20" height="5"></rect>
+            <line x1="12" y1="22" x2="12" y2="7"></line>
+            <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+            <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+          </svg>
+        </div>
+        <h2 id="cancel-gift-modal-title">Cancel gifted membership</h2>
+        <p id="cancel-gift-modal-desc">Are you sure you want to cancel the gifted membership for <strong id="cancel-gift-recipient-name">Supporter</strong>? No further recurring charges will be made. The past gift records will remain safely saved in both accounts.</p>
+        <p class="modal-form-error is-hidden" id="cancel-gift-modal-error"></p>
+        <div class="cancel-modal-actions">
+          <button class="mode-action" id="cancel-gift-modal-keep" type="button">Keep gifted membership</button>
+          <button class="mode-action mode-action-danger" id="cancel-gift-modal-confirm" type="button">Yes, cancel gifted membership</button>
         </div>
       </section>
     </div>
@@ -337,7 +426,7 @@
       </section>
     </div>
 
-    <script type="module" src="js/user-dashboard.js?v=20261003_5"></script>
+    <script type="module" src="js/user-dashboard.js?v=20261004_1"></script>
     <script>
       function dismissLoader() {
         var loader = document.getElementById('page-loader');

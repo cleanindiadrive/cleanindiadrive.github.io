@@ -990,9 +990,63 @@ async function saveGiftIntent(event) {
           contact: currentUserPhone || "",
         },
         theme: { color: "#FFDD00" },
-        handler: function (response) {
+        handler: async function (response) {
           console.log("Gift subscription mandate created:", response);
           setModeMessage("gift-message", `Gift subscription for ${recipient.name} activated! Thank you for gifting hope.`);
+          try {
+            const now = Date.now();
+            const recEmail = recipient.email || `${recipient.phone}@gift.manalistrays.org`;
+            await update(ref(database, `subscribers/${data.subscription_id}`), {
+              id: data.subscription_id,
+              name: recipient.name,
+              email: recEmail,
+              phone: recipient.phone || "",
+              team: "BCBB",
+              membershipType: "gift",
+              is_gift: true,
+              isGift: true,
+              amount: selectedGiftAmount,
+              subscriptionId: data.subscription_id,
+              status: "active",
+              subscriptionStatus: "active",
+              subscribedAt: now,
+              createdAt: now,
+              recipient_name: recipient.name,
+              recipient_email: recEmail,
+              recipient_phone: recipient.phone || "",
+              giver_id: currentUser?.uid || "",
+              giver_email: currentUser?.email || "",
+              giver_name: currentUser?.displayName || "",
+              reference: response.razorpay_payment_id || response.razorpay_subscription_id || data.subscription_id,
+            }).catch((err) => console.warn("Could not write gift to subscribers:", err));
+
+            if (currentUser?.uid) {
+              const giftPayRef = push(ref(database, `payments/${currentUser.uid}`));
+              await set(giftPayRef, {
+                id: giftPayRef.key,
+                type: "gift-monthly",
+                isGift: true,
+                giftRole: "donor",
+                amount: selectedGiftAmount,
+                status: "active",
+                subscriptionStatus: "active",
+                recipientName: recipient.name,
+                recipientEmail: recEmail,
+                recipientPhone: recipient.phone || "",
+                giver_email: currentUser.email || "",
+                giver_name: currentUser.displayName || "",
+                giver_id: currentUser.uid,
+                subscriptionId: data.subscription_id,
+                reference: response.razorpay_payment_id || response.razorpay_subscription_id || data.subscription_id,
+                date: now,
+                paidAt: now,
+                createdAt: now,
+                note: `Gifted ₹${selectedGiftAmount}/mo subscription for ${recipient.name}`,
+              }).catch((err) => console.warn("Could not write gift to user payments:", err));
+            }
+          } catch (e) {
+            console.warn("Gift post-creation sync error:", e);
+          }
         },
         modal: {
           ondismiss: function () {

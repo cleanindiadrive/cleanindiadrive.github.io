@@ -174,6 +174,13 @@ const replacementAuthCheck = `  onAuthStateChanged(auth, (user) => {
     const memberContent = get("dashboard-member-content");
     const logoutBtn = get("logout-button");
 
+    if (isPreviewMode) {
+      if (authCard) authCard.classList.add("is-hidden");
+      if (memberContent) memberContent.classList.remove("is-hidden-auth");
+      if (logoutBtn) logoutBtn.classList.remove("is-hidden");
+      return;
+    }
+
     if (!user || !user.emailVerified) {
       currentUser = null;
       if (authCard) authCard.classList.remove("is-hidden");
@@ -414,9 +421,39 @@ ${bodyContent}
 </html>
 `;
 
+// Self-contained embed snippet specifically formatted for Odoo's Embed Code block
+// Contains fonts, full styles with Bootstrap compatibility resets, view containers, and scripts
+// without enclosing <!DOCTYPE html>, <html>, <head>, or <body> tags that break Odoo's DOM tree
+const odooEmbedHtml = `<!-- Manali Strays Embed Code Block for Odoo -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+
+<style>
+${siteCss}
+
+  /* Bundle SPA Views */
+  .page-view {
+    width: 100%;
+    transition: opacity 0.25s ease;
+  }
+  .page-view.is-hidden {
+    display: none !important;
+  }
+  .is-hidden-auth {
+    display: none !important;
+  }
+</style>
+
+<div class="s_embed_code_manali_wrap" style="width: 100%; max-width: 100%; margin: 0; padding: 0; box-sizing: border-box; text-align: left;">
+${bodyContent}
+</div>
+`;
+
 fs.writeFileSync('bundle.html', bundleHtml, 'utf8');
-fs.writeFileSync('odoo-bundle.html', bundleHtml, 'utf8');
+fs.writeFileSync('odoo-bundle.html', odooEmbedHtml, 'utf8');
+fs.writeFileSync('odoo-code-block.html', odooEmbedHtml, 'utf8');
 fs.writeFileSync('odoo-head.html', headContent, 'utf8');
 fs.writeFileSync('odoo-body.html', bodyContent, 'utf8');
 
-console.log('Successfully generated bundle.html, odoo-bundle.html, odoo-head.html, and odoo-body.html!');
+console.log('Successfully generated bundle.html, odoo-bundle.html, odoo-code-block.html, odoo-head.html, and odoo-body.html!');
