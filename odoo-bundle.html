@@ -5072,9 +5072,6 @@ footer .contact-details {
           <img src="https://cleanindiadrive.github.io/Group%201.png" alt="Manali Strays" width="120" height="30" />
         </a>
         <div class="dashboard-user">
-          <div class="dashboard-user-badge is-hidden">
-            <span class="dashboard-user-email" id="dashboard-user-email"></span>
-          </div>
           <a class="dashboard-nav-home" href="#home" title="Back to homepage">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <span>Home</span>
@@ -8140,21 +8137,18 @@ if (isPreviewMode) {
   onAuthStateChanged(auth, (user) => {
     const authCard = get("dashboard-auth-card");
     const memberContent = get("dashboard-member-content");
-    const userBadge = document.querySelector(".dashboard-user-badge");
     const logoutBtn = get("logout-button");
 
     if (!user || !user.emailVerified) {
       currentUser = null;
       if (authCard) authCard.classList.remove("is-hidden");
       if (memberContent) memberContent.classList.add("is-hidden-auth");
-      if (userBadge) userBadge.classList.add("is-hidden");
       if (logoutBtn) logoutBtn.classList.add("is-hidden");
       return;
     }
 
     if (authCard) authCard.classList.add("is-hidden");
     if (memberContent) memberContent.classList.remove("is-hidden-auth");
-    if (userBadge) userBadge.classList.remove("is-hidden");
     if (logoutBtn) logoutBtn.classList.remove("is-hidden");
     currentUser = user;
     const email = String(user.email || "").trim().toLowerCase();

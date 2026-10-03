@@ -55,7 +55,6 @@ dashBody = dashBody.replace(
   '<div id="dashboard-member-content" class="dashboard-member-content is-hidden-auth">\n<section class="dashboard-welcome">'
 );
 dashBody = dashBody.replace('</main>', '</div>\n</main>');
-dashBody = dashBody.replace('<div class="dashboard-user-badge">', '<div class="dashboard-user-badge is-hidden">');
 dashBody = dashBody.replace('<button class="dashboard-logout"', '<button class="dashboard-logout is-hidden"');
 
 // Common loader markup
@@ -167,21 +166,18 @@ const targetAuthCheck = `  onAuthStateChanged(auth, (user) => {
 const replacementAuthCheck = `  onAuthStateChanged(auth, (user) => {
     const authCard = get("dashboard-auth-card");
     const memberContent = get("dashboard-member-content");
-    const userBadge = document.querySelector(".dashboard-user-badge");
     const logoutBtn = get("logout-button");
 
     if (!user || !user.emailVerified) {
       currentUser = null;
       if (authCard) authCard.classList.remove("is-hidden");
       if (memberContent) memberContent.classList.add("is-hidden-auth");
-      if (userBadge) userBadge.classList.add("is-hidden");
       if (logoutBtn) logoutBtn.classList.add("is-hidden");
       return;
     }
 
     if (authCard) authCard.classList.add("is-hidden");
     if (memberContent) memberContent.classList.remove("is-hidden-auth");
-    if (userBadge) userBadge.classList.remove("is-hidden");
     if (logoutBtn) logoutBtn.classList.remove("is-hidden");`;
 
 preparedDashJs = preparedDashJs.replace(targetAuthCheck, replacementAuthCheck);
