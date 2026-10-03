@@ -851,7 +851,7 @@ function renderRecords() {
     cancel.disabled = !isCancelable;
     const textSpan = cancel.querySelector(".text span") || cancel;
     if (!cancel.classList.contains("confirm") && !cancel.classList.contains("done")) {
-      textSpan.textContent = (!activeSub && monthlyIntent) ? "Cancel request" : "Cancel subscription";
+      textSpan.textContent = "Delete";
     }
   }
 
@@ -1270,9 +1270,16 @@ async function executeCancelSubscription() {
   }
 }
 
-// Double Delete Button Implementation for #subscription-cancel
+// Double Delete Button Implementation for #subscription-cancel (Adam Whitcroft Dribbble)
 const cancelBtn = get("subscription-cancel");
 let cancelResetTimer = null;
+
+function resetCancelBtn() {
+  if (!cancelBtn) return;
+  cancelBtn.classList.remove("confirm", "done");
+  const textSpan = cancelBtn.querySelector(".text span");
+  if (textSpan) textSpan.textContent = "Delete";
+}
 
 cancelBtn?.addEventListener("click", async (e) => {
   e.preventDefault();
@@ -1285,43 +1292,34 @@ cancelBtn?.addEventListener("click", async (e) => {
   const textSpan = cancelBtn.querySelector(".text span");
 
   if (cancelBtn.classList.contains("confirm")) {
-    // 2nd Click: Confirmed! Execute cancellation
     clearTimeout(cancelResetTimer);
     cancelBtn.classList.remove("confirm");
     cancelBtn.classList.add("done");
-    if (textSpan) textSpan.textContent = "Cancelled";
+    if (textSpan) textSpan.textContent = "Deleted";
 
     await executeCancelSubscription();
 
-    setTimeout(() => {
-      cancelBtn.classList.remove("done");
-      const currentActive = allRawRecords().find((r) => isSubscriptionRootRecord(r) && ["active", "paused"].includes(normalizedStatus(r)));
-      if (textSpan) textSpan.textContent = currentActive ? "Cancel subscription" : "Cancel request";
-    }, 2800);
+    cancelResetTimer = setTimeout(() => {
+      resetCancelBtn();
+    }, 3000);
   } else {
-    // 1st Click: Ask confirmation ("Are you sure?")
     cancelBtn.classList.add("confirm");
     if (textSpan) textSpan.textContent = "Are you sure?";
 
     clearTimeout(cancelResetTimer);
     cancelResetTimer = setTimeout(() => {
-      cancelBtn.classList.remove("confirm", "done");
-      const currentActive = allRawRecords().find((r) => isSubscriptionRootRecord(r) && ["active", "paused"].includes(normalizedStatus(r)));
-      if (textSpan) textSpan.textContent = currentActive ? "Cancel subscription" : "Cancel request";
-    }, 3500);
+      resetCancelBtn();
+    }, 3000);
   }
 });
 
-// Auto-reset when mouse leaves after confirm state
-cancelBtn?.addEventListener("mouseleave", () => {
-  if (cancelBtn.classList.contains("confirm")) {
+// Reset on mouseout as specified in Dribbble snippet
+cancelBtn?.addEventListener("mouseout", () => {
+  if (cancelBtn.classList.contains("confirm") || cancelBtn.classList.contains("done")) {
     clearTimeout(cancelResetTimer);
     cancelResetTimer = setTimeout(() => {
-      cancelBtn.classList.remove("confirm", "done");
-      const currentActive = allRawRecords().find((r) => isSubscriptionRootRecord(r) && ["active", "paused"].includes(normalizedStatus(r)));
-      const textSpan = cancelBtn.querySelector(".text span");
-      if (textSpan) textSpan.textContent = currentActive ? "Cancel subscription" : "Cancel request";
-    }, 2000);
+      resetCancelBtn();
+    }, 3000);
   }
 });
 

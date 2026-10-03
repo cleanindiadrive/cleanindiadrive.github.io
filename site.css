@@ -981,9 +981,9 @@ nav {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  padding-top: 1.15rem;
-  margin-top: 1.15rem;
+  gap: 0.75rem;
+  padding-top: 0.85rem;
+  margin-top: 0.85rem;
   border-top: 1px dashed #e2e0d2;
   width: 100%;
 }
@@ -994,13 +994,13 @@ nav {
   gap: 0.65rem;
   justify-content: center;
   align-items: center;
-  margin-top: 0.15rem;
+  margin-top: 0;
 }
 
 .subscription-actions .mode-action {
   font-size: 0.76rem;
-  padding: 0.46rem 0.85rem;
-  min-height: 36px;
+  padding: 0.4rem 0.85rem;
+  min-height: 32px;
 }
 
 .subscription-action-group .mode-message {
@@ -3266,15 +3266,15 @@ footer .contact-details {
   .subscription-actions {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
   }
 
   .subscription-actions .mode-action {
     flex: 0 0 auto;
-    width: 100%;
-    min-height: 42px;
-    max-height: 46px;
-    padding: 0.55rem 0.85rem;
+    width: auto;
+    min-height: 34px;
+    padding: 0.45rem 0.85rem;
   }
 
   .card__title {
@@ -4352,7 +4352,7 @@ footer .contact-details {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 340px;
+  max-width: 320px;
   position: relative;
   text-align: left;
 }
@@ -4364,7 +4364,7 @@ footer .contact-details {
   position: relative;
   top: 0.5rem;
   margin: 0 0 0 9px;
-  padding: 0 5px;
+  padding: 0 4px;
   background: #ffffff;
   width: fit-content;
   z-index: 3;
@@ -4372,11 +4372,15 @@ footer .contact-details {
   user-select: none;
 }
 
+.mode-panel .coolinput label.text {
+  background: #fcfcfa;
+}
+
 .coolinput input.input {
-  padding: 10px 12px;
+  padding: 9px 11px;
   font-size: 0.85rem;
   border: 2px #000000 solid;
-  border-radius: 6px;
+  border-radius: 5px;
   background: #fbfbfa;
   font-family: inherit;
   transition: all 0.2s ease;
@@ -4392,18 +4396,18 @@ footer .contact-details {
 /* Coolinput Amount (One-time support) */
 .coolinput-amount {
   max-width: 220px;
-  margin: 0.2rem 0 0;
+  margin: 0.15rem 0 0;
 }
 
 .coolinput-field {
   display: flex;
   align-items: center;
   border: 2px #000000 solid;
-  border-radius: 6px;
+  border-radius: 5px;
   background: #fbfbfa;
   overflow: hidden;
   transition: all 0.2s ease;
-  min-height: 42px;
+  min-height: 40px;
 }
 
 .coolinput-field:focus-within {
@@ -4413,19 +4417,20 @@ footer .contact-details {
 }
 
 .coolinput-prefix {
-  padding-left: 11px;
+  padding-left: 10px;
   font-size: 0.95rem;
   font-weight: 800;
   color: #000000;
   user-select: none;
+  line-height: 1;
 }
 
 .coolinput-field input.input {
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
-  padding: 9px 10px !important;
-  font-size: 0.92rem;
+  padding: 8px 10px !important;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #000000;
   width: 100%;
@@ -4435,13 +4440,13 @@ footer .contact-details {
 /* Coolinput Gift Search */
 .gift-search-wrap.coolinput {
   width: 100%;
-  max-width: 340px;
+  max-width: 320px;
   margin: 0.1rem 0 0;
 }
 
 .gift-search-wrap.coolinput .gift-search-input-box {
   border: 2px #000000 solid !important;
-  border-radius: 6px !important;
+  border-radius: 5px !important;
   background: #fbfbfa;
 }
 
@@ -4463,22 +4468,22 @@ footer .contact-details {
 }
 
 /* -------------------------------------------------------------
- * The Double Delete Button (Dribbble / Adam Whitcroft Style)
+ * The Double Delete Button (Exact Adam Whitcroft Dribbble UI)
  * ----------------------------------------------------------- */
 .double-delete-btn {
   display: inline-flex;
-  align-items: center;
   cursor: pointer;
   border: 0;
   background: transparent;
   outline: 0;
   overflow: hidden;
   padding: 0;
-  border-radius: 6px;
-  height: 34px;
+  margin: 0;
+  height: 30px;
   vertical-align: middle;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   user-select: none;
+  border-radius: 2px;
 }
 
 .double-delete-btn:disabled {
@@ -4490,76 +4495,69 @@ footer .contact-details {
 .double-delete-btn .icon {
   position: relative;
   background: #1D242B;
-  width: 34px;
-  height: 34px;
+  line-height: 30px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 16px;
+  transition: 0.2s color, 0.2s border-radius;
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.double-delete-btn .icon .fa {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  color: #ffffff;
-  border-radius: 6px;
-  transition: border-radius 0.2s ease, background 0.2s ease;
   flex-shrink: 0;
-  z-index: 2;
+  transition: 0.2s all;
+  color: #ffffff;
+}
+
+.double-delete-btn .icon .fa-check {
+  color: #38B87C;
+}
+
+.double-delete-btn .icon .fa-question {
+  color: #2492FF;
 }
 
 .double-delete-btn .icon:after {
-  content: '';
+  content: ' ';
   display: block;
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   transform: rotate(45deg);
   background: #1D242B;
-  top: 14px;
+  top: 12.5px;
   right: 1px;
-  transition: right 0.2s ease;
+  transition: 0.2s right;
   z-index: 1;
-}
-
-.double-delete-btn .icon-track {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.double-delete-btn .icon-item {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  padding: 8px;
-  color: #ffffff;
-  transition: color 0.2s ease;
-}
-
-.double-delete-btn .icon-question {
-  color: #60a5fa;
-}
-
-.double-delete-btn .icon-check {
-  color: #4ade80;
 }
 
 .double-delete-btn .text {
   position: relative;
   width: 0;
-  height: 34px;
+  height: 30px;
   overflow: hidden;
+  font-family: "Roboto", sans-serif;
   background: #F34541;
   text-align: center;
-  line-height: 34px;
+  line-height: 30px;
   color: #ffffff;
-  font-weight: 600;
-  font-size: 0.78rem;
-  letter-spacing: -0.01em;
-  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
+  font-weight: 300;
+  font-size: 13px;
+  transition: 0.2s all;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
   white-space: nowrap;
 }
 
@@ -4567,28 +4565,31 @@ footer .contact-details {
   width: 100%;
   opacity: 0;
   position: absolute;
-  top: -34px;
+  top: -30px;
   left: 50%;
   transform: translateX(-50%);
-  transition: top 0.25s ease, opacity 0.25s ease;
-  padding: 0 10px;
+  transition: 0.3s all;
+  font-size: 13px;
 }
 
 /* Hover State */
 .double-delete-btn:not(:disabled):hover .icon {
-  border-radius: 6px 0 0 6px;
+  color: #F34541;
+  border-radius: 0;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
 }
 
-.double-delete-btn:not(:disabled):hover .icon:after {
-  right: -3px;
-}
-
-.double-delete-btn:not(:disabled):hover .icon-trash {
+.double-delete-btn:not(:disabled):hover .icon .fa-trash-o {
   color: #F34541;
 }
 
+.double-delete-btn:not(:disabled):hover .icon:after {
+  right: -2px;
+}
+
 .double-delete-btn:not(:disabled):hover .text {
-  width: 155px;
+  width: 120px;
 }
 
 .double-delete-btn:not(:disabled):hover .text span {
@@ -4598,20 +4599,22 @@ footer .contact-details {
 
 /* Confirm State (First Click) */
 .double-delete-btn.confirm .icon {
-  border-radius: 6px 0 0 6px;
+  border-radius: 0;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+.double-delete-btn.confirm .icon .fa {
+  transform: translateY(-30px);
 }
 
 .double-delete-btn.confirm .icon:after {
-  right: -3px;
-}
-
-.double-delete-btn.confirm .icon-track {
-  transform: translateY(-34px);
+  right: -2px;
 }
 
 .double-delete-btn.confirm .text {
   background: #2492FF;
-  width: 135px;
+  width: 120px;
 }
 
 .double-delete-btn.confirm .text span {
@@ -4621,20 +4624,22 @@ footer .contact-details {
 
 /* Done State (Second Click) */
 .double-delete-btn.done .icon {
-  border-radius: 6px 0 0 6px;
+  border-radius: 0;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+.double-delete-btn.done .icon .fa {
+  transform: translateY(-60px);
 }
 
 .double-delete-btn.done .icon:after {
-  right: -3px;
-}
-
-.double-delete-btn.done .icon-track {
-  transform: translateY(-68px);
+  right: -2px;
 }
 
 .double-delete-btn.done .text {
   background: #38B87C;
-  width: 125px;
+  width: 120px;
 }
 
 .double-delete-btn.done .text span {
