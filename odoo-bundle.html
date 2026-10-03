@@ -5424,8 +5424,10 @@ function escapeHtml(value) {
 }
 
 function getRecordStatus(record) {
-  const status = String(record?.subscriptionStatus || record?.status || "").trim().toLowerCase();
-  return ["active", "paused", "cancelled", "pending"].includes(status) ? status : "active";
+  if (!record || typeof record !== "object") return "unknown";
+  if (record.isCancellation || record.type === "cancellation") return "cancelled";
+  const status = String(record.subscriptionStatus || record.status || "").trim().toLowerCase();
+  return ["active", "paused", "cancelled", "pending"].includes(status) ? status : "unknown";
 }
 
 const confirmedPaymentStatuses = new Set(["paid", "completed", "success", "active"]);
@@ -5850,21 +5852,38 @@ function setMode(mode) {
 }
 
 function findSubscriptionForUser(email) {
+  if (!email) return null;
+  const normalizedEmail = email.trim().toLowerCase();
   const matches = [];
-  for (const [path, data] of sourceData.entries()) {
-    if (path === "users") continue;
+
+  // ONLY check actual subscription nodes, NEVER raw payments/charges!
+  for (const path of ["subscribers", "subscribers_velcrow"]) {
+    const data = sourceData.get(path);
     if (!data || typeof data !== "object") continue;
     for (const [id, record] of Object.entries(data)) {
-      if (String(record?.email || "").trim().toLowerCase() !== email) continue;
-      matches.push({ id, path, ...record, status: getRecordStatus(record) });
+      if (!record || typeof record !== "object") continue;
+      if (String(record.email || "").trim().toLowerCase() !== normalizedEmail) continue;
+      const status = getRecordStatus(record);
+      if (status === "unknown") continue;
+      matches.push({
+        id,
+        path,
+        ...record,
+        status,
+        timestamp: Number(record.updatedAt || record.cancelledAt || record.lastPaymentAt || record.subscribedAt || record.createdAt || 0),
+      });
     }
   }
+
   if (matches.length) {
     const priority = { active: 0, paused: 1, pending: 2, cancelled: 3 };
-    return matches.sort((a, b) => (priority[a.status] ?? 4) - (priority[b.status] ?? 4))[0];
+    return matches.sort((a, b) => {
+      const pDiff = (priority[a.status] ?? 4) - (priority[b.status] ?? 4);
+      if (pDiff !== 0) return pDiff;
+      return b.timestamp - a.timestamp;
+    })[0];
   }
-  const devSubscription = currentUserPaymentRecords.find((record) => record.type === "monthly" && ["active", "paused", "cancelled"].includes(getRecordStatus(record)));
-  if (devSubscription) return { ...devSubscription, path: "testPayments", status: getRecordStatus(devSubscription) };
+
   return null;
 }
 
