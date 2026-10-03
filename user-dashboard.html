@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="site.css?v=20261003_7" />
-    <link rel="preload" as="image" href="assets/bg-texture.png" type="image/png" fetchpriority="high" />
+    <link rel="stylesheet" href="site.css?v=20261003_8" />
+    <link rel="preload" as="image" href="assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
   </head>
   <body class="dashboard-page">
     <!-- Page Loading Screen -->
@@ -30,7 +30,7 @@
           <div class="dog__head-c"><div class="dog__ear-r"></div><div class="dog__ear-l"></div></div>
         </div>
       </div>
-      <span class="loader-label">Loading your account…</span>
+      <span class="loader-label">Loading your accountâ€¦</span>
     </div>
     <header class="dashboard-header">
       <div class="dashboard-nav">
@@ -67,10 +67,10 @@
             <h1>Hello, <span id="dashboard-name">supporter</span>.</h1>
             <div class="dashboard-user-contact">
               <span class="dashboard-email-text" id="dashboard-email"></span>
-              <span class="dashboard-sep-dot" aria-hidden="true">·</span>
+              <span class="dashboard-sep-dot" aria-hidden="true">Â·</span>
               <span class="dashboard-phone-chip" id="dashboard-phone-chip">
                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span id="dashboard-phone">Loading mobile…</span>
+                <span id="dashboard-phone">Loading mobileâ€¦</span>
                 <button type="button" class="dashboard-edit-phone-btn" id="dashboard-edit-phone-btn" title="Update mobile number">Edit</button>
               </span>
             </div>
@@ -90,7 +90,7 @@
           </div>
           <div class="stat-meta">
             <span class="stat-label">Total Contributed</span>
-            <strong class="stat-value" id="quick-stat-total">₹0</strong>
+            <strong class="stat-value" id="quick-stat-total">â‚¹0</strong>
             <span class="stat-sub" id="quick-stat-count">0 contributions</span>
           </div>
         </div>
@@ -101,7 +101,7 @@
           </div>
           <div class="stat-meta">
             <span class="stat-label">Monthly Plan</span>
-            <strong class="stat-value" id="quick-stat-plan">₹100 / mo</strong>
+            <strong class="stat-value" id="quick-stat-plan">â‚¹100 / mo</strong>
             <span class="stat-sub" id="quick-stat-plan-status">Active supporter</span>
           </div>
         </div>
@@ -112,7 +112,7 @@
           </div>
           <div class="stat-meta">
             <span class="stat-label">Next Renewal</span>
-            <strong class="stat-value" id="quick-stat-renewal">—</strong>
+            <strong class="stat-value" id="quick-stat-renewal">â€”</strong>
             <span class="stat-sub" id="quick-stat-renewal-sub">Automatic monthly support</span>
           </div>
         </div>
@@ -120,7 +120,7 @@
 
       <section class="tracker-accordions" aria-label="Support details">
         <details class="tracker-accordion">
-          <summary><span>All payments</span><strong class="accordion-value" id="total-paid">0 transactions · ₹0</strong></summary>
+          <summary><span>All payments</span><strong class="accordion-value" id="total-paid">0 transactions Â· â‚¹0</strong></summary>
           <div class="accordion-content">
             <div class="accordion-info-bar">
               <p class="accordion-lead">Confirmed and recorded payments connected to this account (<span id="record-count">0 records</span>).</p>
@@ -140,7 +140,7 @@
                 <div class="table-scroll-wrap">
                   <table class="payments-table">
                     <thead><tr><th>Date &amp; Time</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
-                    <tbody id="all-payments-body"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+                    <tbody id="all-payments-body"><tr><td colspan="5" class="empty-state">Loadingâ€¦</td></tr></tbody>
                   </table>
                 </div>
               </div>
@@ -152,7 +152,7 @@
         </details>
 
         <details class="tracker-accordion" open>
-          <summary><span>Monthly subscription</span><strong class="accordion-value" id="active-monthly">0 transactions · ₹0</strong></summary>
+          <summary><span>Monthly subscription</span><strong class="accordion-value" id="active-monthly">0 transactions Â· â‚¹0</strong></summary>
           <div class="accordion-content">
             <div class="subscription-status-card" id="subscription-status-banner">
               <div class="status-banner-header">
@@ -166,13 +166,13 @@
               <!-- Exclusive Custom Autopay Plan Card (Rendered when admin configured a custom plan for this account) -->
               <div class="dashboard-exclusive-card is-hidden" id="dash-exclusive-card">
                 <div class="exclusive-header">
-                  <span class="exclusive-badge">⭐ EXCLUSIVE TO YOUR ACCOUNT</span>
-                  <span class="exclusive-amount" id="dash-exclusive-amount">₹2,500 / mo</span>
+                  <span class="exclusive-badge">â­ EXCLUSIVE TO YOUR ACCOUNT</span>
+                  <span class="exclusive-amount" id="dash-exclusive-amount">â‚¹2,500 / mo</span>
                 </div>
                 <strong class="exclusive-title" id="dash-exclusive-title">Special Patron Autopay</strong>
                 <p class="exclusive-note" id="dash-exclusive-note">Custom recurring support tier configured exclusively for your account.</p>
                 <button type="button" class="btn-activate-exclusive" id="dash-exclusive-btn">
-                  ⚡ Activate Exclusive ₹<span id="dash-exclusive-btn-amount">2,500</span>/mo Autopay
+                  âš¡ Activate Exclusive â‚¹<span id="dash-exclusive-btn-amount">2,500</span>/mo Autopay
                 </button>
               </div>
 
@@ -187,10 +187,10 @@
 
                   <div class="cc-ios-tabs__control">
                     <div class="cc-ios-tabs__thumb"></div>
-                    <label class="cc-ios-tabs__item" for="dash-tab-100">₹100</label>
-                    <label class="cc-ios-tabs__item" for="dash-tab-500">₹500</label>
-                    <label class="cc-ios-tabs__item" for="dash-tab-1000">₹1,000</label>
-                    <label class="cc-ios-tabs__item" for="dash-tab-1500">₹1,500</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-100">â‚¹100</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-500">â‚¹500</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-1000">â‚¹1,000</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-1500">â‚¹1,500</label>
                   </div>
                 </div>
               </div>
@@ -206,7 +206,7 @@
                       <div class="post">
                         <div class="post-line"></div>
                         <div class="screen">
-                          <div class="dollar">₹</div>
+                          <div class="dollar">â‚¹</div>
                         </div>
                         <div class="numbers"></div>
                         <div class="numbers-line2"></div>
@@ -242,7 +242,7 @@
               </div>
             </div>
             <details class="nested-accordion">
-              <summary><span>Subscription payments</span><strong class="accordion-value" id="subscription-payment-count">0 transactions · ₹0</strong></summary>
+              <summary><span>Subscription payments</span><strong class="accordion-value" id="subscription-payment-count">0 transactions Â· â‚¹0</strong></summary>
               <div class="nested-content">
                 <div id="subscription-payments-list" class="subscription-payment-list" aria-live="polite">
                   <p class="empty-state">No subscription payments yet.</p>
@@ -253,7 +253,7 @@
         </details>
 
         <details class="tracker-accordion">
-          <summary><span>One-time support</span><strong class="accordion-value" id="one-time-count">0 transactions · ₹0</strong></summary>
+          <summary><span>One-time support</span><strong class="accordion-value" id="one-time-count">0 transactions Â· â‚¹0</strong></summary>
           <div class="accordion-content">
             <p class="accordion-lead">One-time payments made from this account.</p>
             <div class="payments-table-wrap" id="one-time-payments-wrap">
@@ -283,7 +283,7 @@
         </details>
 
         <details class="tracker-accordion">
-          <summary><span>Gifted support</span><strong class="accordion-value" id="gift-count">0 transactions · ₹0</strong></summary>
+          <summary><span>Gifted support</span><strong class="accordion-value" id="gift-count">0 transactions Â· â‚¹0</strong></summary>
           <div class="accordion-content">
             <p class="accordion-lead" id="gift-summary">Gift payments made for another supporter.</p>
             <div id="gift-list" class="gift-history-list"></div>
@@ -297,7 +297,7 @@
     <div class="cancel-modal is-hidden" id="cancel-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
       <div class="cancel-modal-backdrop" data-cancel-dismiss></div>
       <section class="cancel-modal-card">
-        <button class="cancel-modal-close" id="cancel-modal-close" type="button" aria-label="Close cancellation dialog">×</button>
+        <button class="cancel-modal-close" id="cancel-modal-close" type="button" aria-label="Close cancellation dialog">Ã—</button>
         <div class="cancel-modal-icon" aria-hidden="true">!</div>
         <h2 id="cancel-modal-title">Cancel monthly subscription</h2>
         <p>Are you sure you want to cancel your monthly subscription? No further charges will be made. All your past contributions and receipts will remain safely saved in your account history.</p>
@@ -312,7 +312,7 @@
     <div class="cancel-modal is-hidden" id="phone-modal" role="dialog" aria-modal="true" aria-labelledby="phone-modal-title">
       <div class="cancel-modal-backdrop" id="phone-modal-backdrop"></div>
       <section class="cancel-modal-card phone-modal-card">
-        <button class="cancel-modal-close is-hidden" id="phone-modal-close" type="button" aria-label="Close dialog">×</button>
+        <button class="cancel-modal-close is-hidden" id="phone-modal-close" type="button" aria-label="Close dialog">Ã—</button>
         <div class="cancel-modal-icon phone-modal-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
