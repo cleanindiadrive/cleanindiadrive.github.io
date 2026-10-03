@@ -326,10 +326,7 @@ window.addEventListener("load", function() {
 });
 `;
 
-const bundleHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
+const headContent = `  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Subscribe to Manali Strays | Silly Sensei</title>
   <meta name="description" content="Subscribe to support Manali Strays and track your support online." />
@@ -353,10 +350,9 @@ ${siteCss}
   .is-hidden-auth {
     display: none !important;
   }
-  </style>
-</head>
-<body>
-  ${loaderMarkup}
+  </style>`;
+
+const bodyContent = `  ${loaderMarkup}
 
   <!-- View 1: Homepage -->
   <div id="view-home" class="page-view">
@@ -384,12 +380,22 @@ ${homeJs}
   <!-- Dashboard Logic Module -->
   <script type="module" id="dashboard-module">
 ${dashboardJs}
-  </script>
+  </script>`;
+
+const bundleHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+${headContent}
+</head>
+<body>
+${bodyContent}
 </body>
 </html>
 `;
 
 fs.writeFileSync('bundle.html', bundleHtml, 'utf8');
 fs.writeFileSync('odoo-bundle.html', bundleHtml, 'utf8');
+fs.writeFileSync('odoo-head.html', headContent, 'utf8');
+fs.writeFileSync('odoo-body.html', bodyContent, 'utf8');
 
-console.log('Successfully generated bundle.html and odoo-bundle.html!');
+console.log('Successfully generated bundle.html, odoo-bundle.html, odoo-head.html, and odoo-body.html!');

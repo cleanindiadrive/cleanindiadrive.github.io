@@ -1,0 +1,3479 @@
+  
+  <!-- Page Loading Screen -->
+  <div id="page-loader" aria-hidden="true">
+    <div class="main">
+      <div class="dog">
+        <div class="dog__paws">
+          <div class="dog__bl-leg leg"><div class="dog__bl-paw paw"></div><div class="dog__bl-top top"></div></div>
+          <div class="dog__fl-leg leg"><div class="dog__fl-paw paw"></div><div class="dog__fl-top top"></div></div>
+          <div class="dog__fr-leg leg"><div class="dog__fr-paw paw"></div><div class="dog__fr-top top"></div></div>
+        </div>
+        <div class="dog__body"><div class="dog__tail"></div></div>
+        <div class="dog__head">
+          <div class="dog__snout">
+            <div class="dog__eyes"><div class="dog__eye-l"></div><div class="dog__eye-r"></div></div>
+          </div>
+        </div>
+        <div class="dog__head-c"><div class="dog__ear-r"></div><div class="dog__ear-l"></div></div>
+      </div>
+    </div>
+    <span class="loader-label">Loading Manali Strays…</span>
+  </div>
+
+
+  <!-- View 1: Homepage -->
+  <div id="view-home" class="page-view">
+    <header class="site-header">
+    <nav class="site-nav">
+      <div class="logo">
+        <a href="index.html" aria-label="Manali Strays home">
+          <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Manali Strays Logo" width="120" height="30" />
+        </a>
+      </div>
+      <a class="account-link" id="account-link" href="#dashboard" aria-label="Open account">
+        <svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" />
+        </svg>
+        <span>Account</span>
+      </a>
+    </nav>
+  </header>
+
+  <main class="home-main">
+    <section class="hero-section" id="top">
+      <div class="hero-container">
+        <h1>Subscribe to<br />Manali Strays</h1>
+
+        <div class="hero-cta-group">
+          <a class="price-btn" id="subscribe-btn" href="#ways-to-support">
+            <strong id="hero-btn-amount">₹100 Per Month</strong>
+            <span id="subscriber-count">0 active subscribers</span>
+          </a>
+
+          <div id="money-counter" class="money-card">
+            <span class="money-label">Total Raised</span>
+            <strong>₹<span id="money-raised">0</span></strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="modes-section" id="ways-to-support" aria-labelledby="modes-title">
+      <div class="modes-card">
+        <h2 id="modes-title">Choose how you want to help</h2>
+        <div class="mode-tabs" role="tablist" aria-label="Support modes">
+          <button class="mode-tab active" type="button" data-mode="monthly" role="tab"
+            aria-selected="true">Monthly</button>
+          <button class="mode-tab" type="button" data-mode="one-time" role="tab" aria-selected="false">One time</button>
+          <button class="mode-tab" type="button" data-mode="gift" role="tab" aria-selected="false">Gift</button>
+        </div>
+
+        <div class="mode-panel" id="monthly-mode" role="tabpanel">
+          <div class="mode-panel-details">
+            <div class="mode-panel-copy">
+              <strong id="monthly-plan-label">Monthly subscription · ₹100 / mo</strong>
+              <p id="subscription-mode-status">Choose an autopay plan to support Manali Strays monthly.</p>
+            </div>
+
+            <div class="cc-ios-tabs" id="home-autopay-tabs">
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-100" value="100"
+                checked />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-500" value="500" />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1000" value="1000" />
+              <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1500" value="1500" />
+
+              <div class="cc-ios-tabs__control">
+                <div class="cc-ios-tabs__thumb"></div>
+                <label class="cc-ios-tabs__item" for="plan-tab-100">₹100</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-500">₹500</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-1000">₹1,000</label>
+                <label class="cc-ios-tabs__item" for="plan-tab-1500">₹1,500</label>
+              </div>
+            </div>
+
+            <div class="mode-panel-actions">
+              <a class="mode-secondary-link is-hidden" id="subscription-account-link" href="#dashboard">Manage
+                account</a>
+            </div>
+          </div>
+
+          <div class="home-new-tx-wrap">
+            <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0"
+              aria-label="Start monthly subscription">
+              <div class="left-side">
+                <div class="card">
+                  <div class="card-line"></div>
+                  <div class="buttons"></div>
+                </div>
+                <div class="post">
+                  <div class="post-line"></div>
+                  <div class="screen">
+                    <div class="dollar">₹</div>
+                  </div>
+                  <div class="numbers"></div>
+                  <div class="numbers-line2"></div>
+                </div>
+              </div>
+              <div class="right-side">
+                <div class="new" id="subscription-toggle-text">Subscribe</div>
+                <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg"
+                  class="arrow">
+                  <path fill="#cfcfcf" class="active-path"
+                    d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mode-panel is-hidden" id="one-time-mode" role="tabpanel">
+          <div class="mode-panel-details">
+            <div class="mode-panel-copy">
+              <strong>One-time support</strong>
+              <p>Choose any custom amount to support Manali Strays.</p>
+            </div>
+            <div class="coolinput coolinput-amount">
+              <label class="text" for="one-time-amount">Amount:</label>
+              <div class="coolinput-field">
+                <span class="coolinput-prefix">₹</span>
+                <input class="input" id="one-time-amount" type="number" min="1" max="1000000" step="1" value="500" inputmode="numeric" placeholder="500" />
+              </div>
+            </div>
+            <span class="mode-message" id="one-time-message" role="status"></span>
+          </div>
+
+          <div class="home-new-tx-wrap">
+            <div class="pos-transaction-container" id="one-time-submit" role="button" tabindex="0"
+              aria-label="Submit one-time transaction">
+              <div class="left-side">
+                <div class="card">
+                  <div class="card-line"></div>
+                  <div class="buttons"></div>
+                </div>
+                <div class="post">
+                  <div class="post-line"></div>
+                  <div class="screen">
+                    <div class="dollar">₹</div>
+                  </div>
+                  <div class="numbers"></div>
+                  <div class="numbers-line2"></div>
+                </div>
+              </div>
+              <div class="right-side">
+                <div class="new" id="one-time-submit-text">Support</div>
+                <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg"
+                  class="arrow">
+                  <path fill="#cfcfcf" class="active-path"
+                    d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mode-panel is-hidden" id="gift-mode" role="tabpanel">
+          <div class="mode-panel-details">
+            <div class="mode-panel-copy">
+              <strong id="gift-plan-label">Gift a subscription · ₹100 / mo</strong>
+              <p>Search any supporter by phone number or name and pay their monthly subscription.</p>
+            </div>
+
+            <div class="cc-ios-tabs" id="gift-autopay-tabs">
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-100" value="100" checked />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-500" value="500" />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-1000" value="1000" />
+              <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-1500" value="1500" />
+
+              <div class="cc-ios-tabs__control">
+                <div class="cc-ios-tabs__thumb"></div>
+                <label class="cc-ios-tabs__item" for="gift-tab-100">₹100</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-500">₹500</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-1000">₹1,000</label>
+                <label class="cc-ios-tabs__item" for="gift-tab-1500">₹1,500</label>
+              </div>
+            </div>
+            <div class="gift-search-wrap coolinput" id="gift-search-wrap">
+              <label class="text" for="gift-search-input">Search supporter:</label>
+              <div class="gift-search-input-box coolinput-box">
+                <svg class="gift-search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input class="input" id="gift-search-input" type="text" inputmode="text" placeholder="Type mobile number or name…" autocomplete="off" aria-autocomplete="list" />
+                <button type="button" class="gift-search-clear is-hidden" id="gift-search-clear" aria-label="Clear search">×</button>
+              </div>
+
+              <!-- Active Live Search Dropdown -->
+              <div class="gift-search-results is-hidden" id="gift-search-results" role="listbox" aria-label="Supporters search results"></div>
+
+              <!-- Selected Supporter Card -->
+              <div class="gift-selected-card is-hidden" id="gift-selected-card">
+                <div class="gift-selected-avatar" id="gift-selected-avatar">A</div>
+                <div class="gift-selected-info">
+                  <div class="gift-selected-name-row">
+                    <strong id="gift-selected-name">Supporter Name</strong>
+                    <span class="gift-selected-pill">Gift Recipient</span>
+                  </div>
+                  <span class="gift-selected-phone" id="gift-selected-phone">+91 00000 00000</span>
+                </div>
+                <button type="button" class="gift-change-btn" id="gift-change-btn" title="Choose a different supporter">Change</button>
+              </div>
+
+              <select id="gift-recipient" class="sr-only" aria-hidden="true" tabindex="-1">
+                <option value="">No recipient selected</option>
+              </select>
+            </div>
+            <span class="mode-message" id="gift-message" role="status"></span>
+          </div>
+
+          <div class="home-new-tx-wrap">
+            <div class="pos-transaction-container is-disabled" id="gift-submit" role="button" tabindex="0"
+              aria-disabled="true" aria-label="Gift a transaction">
+              <div class="left-side">
+                <div class="card">
+                  <div class="card-line"></div>
+                  <div class="buttons"></div>
+                </div>
+                <div class="post">
+                  <div class="post-line"></div>
+                  <div class="screen">
+                    <div class="dollar">₹</div>
+                  </div>
+                  <div class="numbers"></div>
+                  <div class="numbers-line2"></div>
+                </div>
+              </div>
+              <div class="right-side">
+                <div class="new" id="gift-submit-text">Gift</div>
+                <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg"
+                  class="arrow">
+                  <path fill="#cfcfcf" class="active-path"
+                    d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="donors-section" aria-labelledby="donors-title">
+      <div class="donors-card">
+        <div class="donors-heading">
+          <strong id="donors-title">Our donors</strong>
+          <span class="donor-total-badge"><b id="donor-total">0</b> total</span>
+        </div>
+        <p class="donors-subtitle">People helping Manali Strays, one contribution at a time.</p>
+        <div id="donor-list" class="donor-list" aria-live="polite">
+          <span class="donor-placeholder">Loading donors…</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="contact-title">Contact me?</div>
+    <div class="contact-details">I'm in the group, you silly buffallo</div>
+    <div class="footer-links">
+      <a href="https://cleanindiadrive.github.io/about.html">About Us</a>
+      <span class="footer-sep">·</span>
+      <a href="https://cleanindiadrive.github.io/contact.html">Contact Us</a>
+      <span class="footer-sep">·</span>
+      <a href="https://cleanindiadrive.github.io/cancellation.html">Cancellation Policy</a>
+      <span class="footer-sep">·</span>
+      <a href="https://cleanindiadrive.github.io/terms.html">Terms &amp; Conditions</a>
+      <span class="footer-sep">·</span>
+      <a href="https://cleanindiadrive.github.io/privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+
+  
+  
+
+  </div>
+
+  <!-- View 2: User Dashboard -->
+  <div id="view-dashboard" class="page-view is-hidden">
+    <header class="dashboard-header">
+      <div class="dashboard-nav">
+        <a class="logo" href="#home" aria-label="Manali Strays home">
+          <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Manali Strays" width="120" height="30" />
+        </a>
+        <div class="dashboard-user">
+          <a class="dashboard-nav-home" href="#home" title="Back to homepage">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+          </a>
+          <button class="dashboard-logout is-hidden" id="logout-button" type="button" aria-label="Log out" title="Log out">
+            <svg viewBox="0 0 512 512" width="13" height="13" fill="currentColor" aria-hidden="true">
+              <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
+            </svg>
+            <span>Log out</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+
+  <!-- Embedded Login Card for Guest Users in Dashboard View -->
+  <div id="dashboard-auth-card" class="auth-card dashboard-auth-card-centered">
+    <div class="account-intro-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" />
+      </svg>
+    </div>
+    <h2>Sign In to Your Account</h2>
+    <p class="form-intro">Sign in with Google to view your recurring subscriptions, update payment preferences, and track your donation history.</p>
+    <button class="button button-google" id="dashboard-google-login-btn" type="button" style="margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.75rem 1.6rem; font-size: 0.95rem; font-weight: 600; border-radius: 999px; border: 1.5px solid #dadce0; background: #fff; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+      <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" width="20" height="20">
+        <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
+        <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
+        <path fill="#FBBC05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"></path>
+        <path fill="#EB4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"></path>
+      </svg>
+      <span>Sign In with Google</span>
+    </button>
+    <div id="dashboard-login-msg" class="auth-message" style="margin-top: 1rem;" role="status"></div>
+  </div>
+
+      <div id="dashboard-member-content" class="dashboard-member-content is-hidden-auth">
+<section class="dashboard-welcome">
+        <div class="dashboard-profile">
+          <div class="account-avatar" id="account-avatar" aria-hidden="true">S</div>
+          <div class="dashboard-welcome-copy">
+            <div class="dashboard-eyebrow-row">
+              <span class="dashboard-eyebrow">SUPPORTER ACCOUNT</span>
+              <span class="dashboard-status-indicator status-active" id="dashboard-status-pill">Active Supporter</span>
+            </div>
+            <h1>Hello, <span id="dashboard-name">supporter</span>.</h1>
+            <div class="dashboard-user-contact">
+              <span class="dashboard-email-text" id="dashboard-email"></span>
+              <span class="dashboard-sep-dot" aria-hidden="true">·</span>
+              <span class="dashboard-phone-chip" id="dashboard-phone-chip">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span id="dashboard-phone">Loading mobile…</span>
+                <button type="button" class="dashboard-edit-phone-btn" id="dashboard-edit-phone-btn" title="Update mobile number">Edit</button>
+              </span>
+            </div>
+          </div>
+          <a class="dashboard-home-link" href="#home" aria-label="Back to home page">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span>Back to site</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Quick Supporter Highlights -->
+      <section class="dashboard-stats-grid" aria-label="Account highlights">
+        <div class="stat-card">
+          <div class="stat-icon-wrap" aria-hidden="true">
+            <img class="stat-icon-img stat-icon-rupee" src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/icon-rupee.png" alt="" width="26" height="26" />
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Total Contributed</span>
+            <strong class="stat-value" id="quick-stat-total">₹0</strong>
+            <span class="stat-sub" id="quick-stat-count">0 contributions</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap stat-icon-plan" aria-hidden="true">
+            <img class="stat-icon-img stat-icon-payment" src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/icon-payment.png" alt="" width="25" height="25" />
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Monthly Plan</span>
+            <strong class="stat-value" id="quick-stat-plan">₹100 / mo</strong>
+            <span class="stat-sub" id="quick-stat-plan-status">Active supporter</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap stat-icon-renewal" aria-hidden="true">
+            <img class="stat-icon-img stat-icon-calendar" src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/icon-recurring.png" alt="" width="34" height="34" />
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Next Renewal</span>
+            <strong class="stat-value" id="quick-stat-renewal">—</strong>
+            <span class="stat-sub" id="quick-stat-renewal-sub">Automatic monthly support</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="tracker-accordions" aria-label="Support details">
+        <details class="tracker-accordion">
+          <summary><span>All payments</span><strong class="accordion-value" id="total-paid">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <div class="accordion-info-bar">
+              <p class="accordion-lead">Confirmed and recorded payments connected to this account (<span id="record-count">0 records</span>).</p>
+            </div>
+            <div class="payments-table-wrap" id="all-payments-wrap">
+              <div class="card__title">
+                <span class="card__title-main">All Transactions</span>
+                <div class="table-view-controls">
+                  <span class="card__badge" id="all-payments-badge">0 records</span>
+                  <div class="view-toggle" role="group" aria-label="Transaction view format">
+                    <button type="button" class="view-toggle-btn is-active" data-view-target="all-payments" data-view="table">Table</button>
+                    <button type="button" class="view-toggle-btn" data-view-target="all-payments" data-view="cards">Cards</button>
+                  </div>
+                </div>
+              </div>
+              <div class="table-view-container" id="all-payments-table-container">
+                <div class="table-scroll-wrap">
+                  <table class="payments-table">
+                    <thead><tr><th>Date &amp; Time</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="all-payments-body"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-view-container is-hidden" id="all-payments-cards-container">
+                <div class="uiverse-card-list" id="all-payments-cards"></div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="tracker-accordion" open>
+          <summary><span>Monthly subscription</span><strong class="accordion-value" id="active-monthly">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <div class="subscription-status-card" id="subscription-status-banner">
+              <div class="status-banner-header">
+                <div>
+                  <span class="status-banner-title">Monthly Support Status</span>
+                  <p id="subscription-summary" class="status-banner-sub">Your monthly subscription status will appear here.</p>
+                </div>
+                <span class="status-pill status-pill-active" id="subscription-badge-pill">Active</span>
+              </div>
+
+              <!-- Exclusive Custom Autopay Plan Card (Rendered when admin configured a custom plan for this account) -->
+              <div class="dashboard-exclusive-card is-hidden" id="dash-exclusive-card">
+                <div class="exclusive-header">
+                  <span class="exclusive-badge">⭐ EXCLUSIVE TO YOUR ACCOUNT</span>
+                  <span class="exclusive-amount" id="dash-exclusive-amount">₹2,500 / mo</span>
+                </div>
+                <strong class="exclusive-title" id="dash-exclusive-title">Special Patron Autopay</strong>
+                <p class="exclusive-note" id="dash-exclusive-note">Custom recurring support tier configured exclusively for your account.</p>
+                <button type="button" class="btn-activate-exclusive" id="dash-exclusive-btn">
+                  ⚡ Activate Exclusive ₹<span id="dash-exclusive-btn-amount">2,500</span>/mo Autopay
+                </button>
+              </div>
+
+              <!-- Standard Autopay Plan Picker (when user wants to choose/change tier) -->
+              <div class="dash-plan-picker-wrap" id="dash-plan-picker-wrap">
+                <div class="dash-plan-picker-label">Select monthly autopay tier:</div>
+                <div class="cc-ios-tabs" id="dash-autopay-tabs">
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-100" value="100" checked />
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-500" value="500" />
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-1000" value="1000" />
+                  <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-1500" value="1500" />
+
+                  <div class="cc-ios-tabs__control">
+                    <div class="cc-ios-tabs__thumb"></div>
+                    <label class="cc-ios-tabs__item" for="dash-tab-100">₹100</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-500">₹500</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-1000">₹1,000</label>
+                    <label class="cc-ios-tabs__item" for="dash-tab-1500">₹1,500</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subscription-action-group">
+                <div class="dashboard-subscription-tx-wrap">
+                  <div class="pos-transaction-container" id="dashboard-subscription-toggle" role="button" tabindex="0" aria-label="Start subscription transaction">
+                    <div class="left-side">
+                      <div class="card">
+                        <div class="card-line"></div>
+                        <div class="buttons"></div>
+                      </div>
+                      <div class="post">
+                        <div class="post-line"></div>
+                        <div class="screen">
+                          <div class="dollar">₹</div>
+                        </div>
+                        <div class="numbers"></div>
+                        <div class="numbers-line2"></div>
+                      </div>
+                    </div>
+                    <div class="right-side">
+                      <div class="new" id="dashboard-subscription-toggle-text">Subscribe</div>
+                      <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="arrow"><path fill="#cfcfcf" class="active-path" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="subscription-actions">
+                  <button class="btn-cancel-subscription" id="subscription-cancel" type="button" disabled aria-label="Cancel subscription">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <span>Cancel Subscription</span>
+                  </button>
+                </div>
+                <span class="mode-message" id="subscription-message" role="status"></span>
+              </div>
+            </div>
+            <details class="nested-accordion">
+              <summary><span>Subscription payments</span><strong class="accordion-value" id="subscription-payment-count">0 transactions · ₹0</strong></summary>
+              <div class="nested-content">
+                <div id="subscription-payments-list" class="subscription-payment-list" aria-live="polite">
+                  <p class="empty-state">No subscription payments yet.</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </details>
+
+        <details class="tracker-accordion">
+          <summary><span>One-time support</span><strong class="accordion-value" id="one-time-count">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <p class="accordion-lead">One-time payments made from this account.</p>
+            <div class="payments-table-wrap" id="one-time-payments-wrap">
+              <div class="card__title">
+                <span class="card__title-main">One-Time Contributions</span>
+                <div class="table-view-controls">
+                  <span class="card__badge" id="one-time-badge">0 records</span>
+                  <div class="view-toggle" role="group" aria-label="One-time payments view format">
+                    <button type="button" class="view-toggle-btn is-active" data-view-target="one-time" data-view="table">Table</button>
+                    <button type="button" class="view-toggle-btn" data-view-target="one-time" data-view="cards">Cards</button>
+                  </div>
+                </div>
+              </div>
+              <div class="table-view-container" id="one-time-table-container">
+                <div class="table-scroll-wrap">
+                  <table class="payments-table">
+                    <thead><tr><th>Date &amp; Time</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="one-time-body"><tr><td colspan="5" class="empty-state">No one-time payments yet.</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-view-container is-hidden" id="one-time-cards-container">
+                <div class="uiverse-card-list" id="one-time-cards"></div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="tracker-accordion">
+          <summary><span>Gifted support</span><strong class="accordion-value" id="gift-count">0 transactions · ₹0</strong></summary>
+          <div class="accordion-content">
+            <p class="accordion-lead" id="gift-summary">Gift payments made for another supporter.</p>
+            <div id="gift-list" class="gift-history-list"></div>
+          </div>
+        </details>
+
+      </section>
+      <p class="dashboard-note" id="dashboard-note">Confirmed payments count toward totals. Pending requests stay visible until payment is confirmed.</p>
+    </div>
+</main>
+
+    <div class="cancel-modal is-hidden" id="cancel-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+      <div class="cancel-modal-backdrop" data-cancel-dismiss></div>
+      <section class="cancel-modal-card">
+        <button class="cancel-modal-close" id="cancel-modal-close" type="button" aria-label="Close cancellation dialog">×</button>
+        <div class="cancel-modal-icon" aria-hidden="true">!</div>
+        <h2 id="cancel-modal-title">Cancel monthly subscription</h2>
+        <p>Are you sure you want to cancel your monthly subscription? No further charges will be made. All your past contributions and receipts will remain safely saved in your account history.</p>
+        <div class="cancel-modal-actions">
+          <button class="mode-action" id="cancel-modal-keep" type="button">Keep subscription</button>
+          <button class="mode-action mode-action-danger" id="cancel-modal-confirm" type="button">Yes, cancel subscription</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Compulsory Phone Modal for Existing Users without phone -->
+    <div class="cancel-modal is-hidden" id="phone-modal" role="dialog" aria-modal="true" aria-labelledby="phone-modal-title">
+      <div class="cancel-modal-backdrop" id="phone-modal-backdrop"></div>
+      <section class="cancel-modal-card phone-modal-card">
+        <button class="cancel-modal-close is-hidden" id="phone-modal-close" type="button" aria-label="Close dialog">×</button>
+        <div class="cancel-modal-icon phone-modal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <h2 id="phone-modal-title">Mobile number required</h2>
+        <p id="phone-modal-desc">Please enter your 10-digit mobile number. This is compulsory to verify your account, send contribution receipts, and enable friends to gift you subscriptions.</p>
+        <form id="phone-modal-form" class="phone-modal-form" novalidate>
+          <div class="phone-input-wrap">
+            <span class="phone-prefix">+91</span>
+            <input id="modal-phone-input" type="tel" inputmode="numeric" maxlength="14" placeholder="10-digit mobile number" autocomplete="tel" required />
+          </div>
+          <div class="modal-form-error is-hidden" id="modal-phone-error" role="alert"></div>
+          <div class="cancel-modal-actions">
+            <button class="mode-action mode-action-primary" id="modal-phone-submit" type="submit">Save mobile number</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    
+    
+  
+  </div>
+
+  <!-- Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Router Script -->
+  <script>
+
+function showView(viewName) {
+  const homeView = document.getElementById("view-home");
+  const dashView = document.getElementById("view-dashboard");
+  if (!homeView || !dashView) return;
+
+  if (viewName === "dashboard") {
+    homeView.classList.add("is-hidden");
+    dashView.classList.remove("is-hidden");
+    document.body.classList.add("dashboard-page");
+    if (window.location.hash !== "#dashboard") {
+      window.location.hash = "#dashboard";
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
+    dashView.classList.add("is-hidden");
+    homeView.classList.remove("is-hidden");
+    document.body.classList.remove("dashboard-page");
+    if (window.location.hash === "#dashboard") {
+      history.pushState("", document.title, window.location.pathname + window.location.search);
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+window.showView = showView;
+
+window.addEventListener("hashchange", () => {
+  if (window.location.hash === "#dashboard") {
+    showView("dashboard");
+  } else {
+    showView("home");
+  }
+});
+
+// Intercept navigation links between home & dashboard inside the bundle
+document.addEventListener("click", (e) => {
+  const target = e.target.closest("a, button");
+  if (!target) return;
+  const href = target.getAttribute("href") || "";
+
+  if (target.id === "account-link" || target.id === "subscription-account-link" || href === "#dashboard" || href === "user-dashboard.html" || href.includes("#dashboard")) {
+    e.preventDefault();
+    showView("dashboard");
+  } else if (target.classList.contains("dashboard-home-link") || target.classList.contains("dashboard-nav-home") || (target.closest(".dashboard-header") && target.classList.contains("logo")) || href === "#home" || href === "index.html" || href.includes("#home")) {
+    e.preventDefault();
+    showView("home");
+  }
+});
+
+// Initial Route Check
+const initialParams = new URLSearchParams(window.location.search);
+if (window.location.hash === "#dashboard" || initialParams.get("view") === "dashboard" || initialParams.get("preview") === "1") {
+  showView("dashboard");
+} else {
+  showView("home");
+}
+
+// Loader dismissal
+window.addEventListener("load", function() {
+  const loader = document.getElementById("page-loader");
+  if (loader) {
+    setTimeout(function() { loader.classList.add("loader-hidden"); }, 1400);
+  }
+});
+
+  </script>
+
+  <!-- Homepage Logic Module -->
+  <script type="module" id="home-module">
+
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { getDatabase, onValue, push, ref, set, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+// Firebase Client Setup
+const firebaseConfig = {
+  apiKey: "AIzaSyDma_UrBD5XQICj5LOu214Fu3va_7VnvDg",
+  authDomain: "sillysensei-b251b.firebaseapp.com",
+  databaseURL: "https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "sillysensei-b251b",
+  storageBucket: "sillysensei-b251b.firebasestorage.app",
+  messagingSenderId: "859697431303",
+  appId: "1:859697431303:web:f91ce7535a3aff27cc7ba2",
+  measurementId: "G-XGR07BYBGN",
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+const devHosts = ["localhost", "127.0.0.1", "0.0.0.0", "::1"];
+const isDevelopmentMode =
+  devHosts.includes(window.location.hostname) ||
+  window.location.hostname.endsWith(".devtunnels.ms") ||
+  window.location.hostname.endsWith(".github.dev") ||
+  window.location.hostname.endsWith(".gitpod.io") ||
+  window.location.hostname.endsWith(".ngrok-free.app") ||
+  window.location.hostname.endsWith(".ngrok.io") ||
+  window.location.hostname.endsWith(".loca.lt") ||
+  window.location.hostname.endsWith(".preview.app") ||
+  new URLSearchParams(window.location.search).get("dev") === "1";
+
+
+
+
+
+const subscriberCount = document.getElementById("subscriber-count");
+const moneyRaised = document.getElementById("money-raised");
+const donorTotal = document.getElementById("donor-total");
+const donorList = document.getElementById("donor-list");
+const accountLink = document.getElementById("account-link");
+const sourceData = new Map();
+const subscriberSources = ["subscribers", "subscribers_velcrow", "users", "payments", "testPayments"];
+let currentUser = null;
+let currentUserPhone = "";
+const BACKEND_URL = window.BACKEND_API_URL || "https://69rnsfw9-3000.inc1.devtunnels.ms";
+let currentSubscription = null;
+let currentUserPaymentRecords = [];
+let monthlyRequestPending = false;
+let detachMonthlyIntentListener = null;
+let giftRecipients = [];
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function getRecordStatus(record) {
+  if (!record || typeof record !== "object") return "unknown";
+  if (record.isCancellation || record.type === "cancellation" || record.cancelledAt || record.endedAt) {
+    return "cancelled";
+  }
+  const status = String(record.subscriptionStatus || record.status || "").trim().toLowerCase();
+  if (["active", "authenticated"].includes(status)) return "active";
+  if (["paused", "cancelled", "pending"].includes(status)) return status;
+  return "unknown";
+}
+
+const confirmedPaymentStatuses = new Set(["paid", "completed", "success", "active"]);
+
+function isConfirmedPaymentRecord(record) {
+  if (!record || typeof record !== "object") return false;
+  const status = String(record.status || record.subscriptionStatus || "").trim().toLowerCase();
+  return confirmedPaymentStatuses.has(status);
+}
+
+function getActiveSubscribers() {
+  const userSubs = new Map();
+
+  // ONLY check actual subscription registries: subscribers (and subscribers_velcrow)
+  ["subscribers", "subscribers_velcrow"].forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+    Object.entries(data).forEach(([id, record]) => {
+      if (!record || typeof record !== "object") return;
+
+      const email = String(record?.email || "").trim().toLowerCase();
+      const phone = cleanIndianPhone(record?.phone);
+      const userKey = (phone && phone.length === 10) ? phone : (email || `${source}:${id}`);
+
+      const status = getRecordStatus(record);
+      const timestamp = Number(record.updatedAt || record.cancelledAt || record.lastPaymentAt || record.subscribedAt || record.createdAt || 0);
+
+      if (!userSubs.has(userKey)) {
+        userSubs.set(userKey, []);
+      }
+      userSubs.get(userKey).push({
+        id,
+        source,
+        name: String(record?.name || record?.donorName || "").trim(),
+        anonymous: record?.anonymous === true,
+        status,
+        timestamp,
+      });
+    });
+  });
+
+  const activeSubscribers = new Map();
+
+  // For each distinct subscriber, inspect their latest status
+  userSubs.forEach((records, userKey) => {
+    records.sort((a, b) => b.timestamp - a.timestamp);
+    const latest = records[0];
+
+    // Count strictly if they currently have an active subscription
+    if (latest && latest.status === "active") {
+      activeSubscribers.set(userKey, {
+        name: latest.name,
+        anonymous: latest.anonymous,
+      });
+    }
+  });
+
+  return activeSubscribers;
+}
+
+function calculateTotalRaised() {
+  let total = 0;
+  const processedPaymentKeys = new Set();
+  const processedSubscribers = new Set();
+
+  // 1. Process all payment transactions (payments & testPayments)
+  const paymentSources = ["payments"];
+  if (isDevelopmentMode || sourceData.has("testPayments")) {
+    paymentSources.push("testPayments");
+  }
+
+  paymentSources.forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+
+    Object.entries(data).forEach(([uidOrId, recordOrGroup]) => {
+      if (!recordOrGroup || typeof recordOrGroup !== "object") return;
+
+      // Handle flat structure (e.g. testPayments/{id} or direct payment record)
+      if (recordOrGroup.amount !== undefined && isConfirmedPaymentRecord(recordOrGroup)) {
+        const key = `${source}/${uidOrId}`;
+        if (!processedPaymentKeys.has(key)) {
+          processedPaymentKeys.add(key);
+          total += Number(recordOrGroup.amount) || 0;
+          if (recordOrGroup.subscriptionId) {
+            processedSubscribers.add(recordOrGroup.subscriptionId);
+          }
+        }
+        return;
+      }
+
+      // Handle nested UID structure (e.g. payments/{uid}/{paymentId})
+      Object.entries(recordOrGroup).forEach(([payId, record]) => {
+        if (!record || typeof record !== "object") return;
+        if (isConfirmedPaymentRecord(record)) {
+          const key = `${source}/${uidOrId}/${payId}`;
+          if (!processedPaymentKeys.has(key)) {
+            processedPaymentKeys.add(key);
+            total += Number(record.amount) || 0;
+            if (record.subscriptionId) {
+              processedSubscribers.add(record.subscriptionId);
+            }
+          }
+        }
+      });
+    });
+  });
+
+  // 2. Also include subscribers from "subscribers" and "subscribers_velcrow"
+  // For subscribers whose payments are not individually recorded in payments table
+  ["subscribers", "subscribers_velcrow"].forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+    Object.entries(data).forEach(([id, record]) => {
+      if (!record || typeof record !== "object") return;
+      if (getRecordStatus(record) !== "active") return;
+      if (!processedSubscribers.has(id)) {
+        const amt = Number(record.amount) || 100;
+        total += amt;
+      }
+    });
+  });
+
+  return total;
+}
+
+function getActiveDonors() {
+  const donors = new Map();
+
+  // Active subscribers
+  ["subscribers", "subscribers_velcrow"].forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+    Object.entries(data).forEach(([id, record]) => {
+      if (getRecordStatus(record) !== "active") return;
+      const email = String(record?.email || "").trim().toLowerCase();
+      const key = email || `${source}:${id}`;
+      if (!donors.has(key)) donors.set(key, {
+        name: String(record?.name || "").trim(),
+        anonymous: record?.anonymous === true,
+      });
+    });
+  });
+
+  // Also include confirmed one-time & gift supporters
+  const paymentSources = ["payments"];
+  if (isDevelopmentMode || sourceData.has("testPayments")) {
+    paymentSources.push("testPayments");
+  }
+
+  paymentSources.forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+
+    const processDonorRecord = (record, id) => {
+      if (!record || typeof record !== "object") return;
+      if (!isConfirmedPaymentRecord(record)) return;
+      const name = String(record?.name || record?.donorName || record?.recipientName || record?.email?.split?.("@")?.[0] || "").trim();
+      if (!name) return;
+      const email = String(record?.email || "").trim().toLowerCase();
+      const key = email || `${source}:${id}`;
+      if (!donors.has(key)) {
+        donors.set(key, {
+          name,
+          anonymous: record?.anonymous === true,
+        });
+      }
+    };
+
+    Object.entries(data).forEach(([uidOrId, recordOrGroup]) => {
+      if (!recordOrGroup || typeof recordOrGroup !== "object") return;
+      if (recordOrGroup.amount !== undefined) {
+        processDonorRecord(recordOrGroup, uidOrId);
+      } else {
+        Object.entries(recordOrGroup).forEach(([payId, record]) => {
+          processDonorRecord(record, payId);
+        });
+      }
+    });
+  });
+
+  return donors;
+}
+
+function formatPublicDonorName(name, anonymous = false) {
+  if (anonymous) return "Anonymous supporter";
+  const cleaned = String(name || "").trim();
+  if (!cleaned || /^(anonymous|anon|private|supporter)$/i.test(cleaned)) return "Anonymous supporter";
+  return cleaned;
+}
+
+function renderPublicTotals() {
+  const activeSubs = getActiveSubscribers().size;
+  if (subscriberCount) subscriberCount.textContent = `${activeSubs} active subscribers`;
+
+  const total = calculateTotalRaised();
+  if (moneyRaised) {
+    moneyRaised.textContent = total.toLocaleString("en-IN");
+  }
+}
+
+function renderDonors() {
+  const donors = [...getActiveDonors().values()]
+    .map((donor) => {
+      const label = formatPublicDonorName(donor.name, donor.anonymous);
+      const isAnon = donor.anonymous || label === "Anonymous supporter";
+      const avatar = isAnon ? "•" : (label.charAt(0) || "•").toUpperCase();
+      return { label, avatar };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+  if (donorTotal) donorTotal.textContent = String(donors.length);
+  if (!donorList) return;
+
+  if (!donors.length) {
+    donorList.innerHTML = '<span class="donor-placeholder">No donor names available yet.</span>';
+    return;
+  }
+
+  donorList.innerHTML = donors.map((donor) => `<span class="donor-name"><b aria-hidden="true">${escapeHtml(donor.avatar)}</b><span>${escapeHtml(donor.label)}</span></span>`).join("");
+}
+
+function cleanIndianPhone(val) {
+  if (!val) return "";
+  let digits = String(val).replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+  if (digits.length === 13 && digits.startsWith("091")) digits = digits.slice(3);
+  return digits;
+}
+
+function isValidIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  return digits.length === 10 && /^[6-9]\d{9}$/.test(digits);
+}
+
+function formatIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  if (digits.length === 10) {
+    return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  return val || "";
+}
+
+let selectedGiftRecipient = null;
+let activeGiftResults = [];
+let focusedResultIndex = -1;
+
+function highlightMatch(text, query) {
+  if (!text) return "";
+  const str = String(text);
+  const q = String(query || "").trim();
+  if (!q) return escapeHtml(str);
+
+  const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escapedQuery})`, "gi");
+  const parts = str.split(regex);
+
+  return parts.map((part) => {
+    if (part.toLowerCase() === q.toLowerCase()) {
+      return `<mark>${escapeHtml(part)}</mark>`;
+    }
+    return escapeHtml(part);
+  }).join("");
+}
+
+function getAllPotentialGiftRecipients() {
+  const recipients = [];
+  const seen = new Set();
+
+  sourceData.forEach((data, source) => {
+    if (!data || typeof data !== "object") return;
+    Object.entries(data).forEach(([id, record]) => {
+      const rawPhone = String(record?.phone || "").trim();
+      const cleanPhone = cleanIndianPhone(rawPhone);
+      if (!cleanPhone || cleanPhone.length < 5) return;
+
+      const name = String(record?.fullName || record?.name || "").trim() || "Anonymous supporter";
+      const email = String(record?.email || "").trim().toLowerCase();
+      const dedupeKey = cleanPhone.length === 10 ? cleanPhone : (email || `${source}:${id}`);
+      if (seen.has(dedupeKey)) return;
+      seen.add(dedupeKey);
+
+      const team = "Supporter";
+
+      recipients.push({
+        id,
+        source,
+        name,
+        phone: cleanPhone,
+        displayPhone: formatIndianPhone(cleanPhone),
+        email,
+        team,
+      });
+    });
+  });
+
+  return recipients;
+}
+
+function searchGiftRecipients(query) {
+  const trimmed = String(query || "").trim();
+  if (!trimmed) return [];
+
+  const rawDigits = trimmed.replace(/\D/g, "");
+  const lowerText = trimmed.toLowerCase();
+  const allRecipients = getAllPotentialGiftRecipients();
+
+  return allRecipients.filter((r) => {
+    const matchesPhone = rawDigits.length > 0 && r.phone.includes(rawDigits);
+    const matchesName = r.name.toLowerCase().includes(lowerText);
+    return matchesPhone || matchesName;
+  }).sort((a, b) => {
+    if (rawDigits.length > 0) {
+      const aStarts = a.phone.startsWith(rawDigits);
+      const bStarts = b.phone.startsWith(rawDigits);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+    }
+    const aNameStarts = a.name.toLowerCase().startsWith(lowerText);
+    const bNameStarts = b.name.toLowerCase().startsWith(lowerText);
+    if (aNameStarts && !bNameStarts) return -1;
+    if (!aNameStarts && bNameStarts) return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function renderGiftSearchResults(query) {
+  const resultsContainer = document.getElementById("gift-search-results");
+  const clearBtn = document.getElementById("gift-search-clear");
+  if (!resultsContainer) return;
+
+  const trimmed = String(query || "").trim();
+  if (!trimmed) {
+    resultsContainer.innerHTML = "";
+    resultsContainer.classList.add("is-hidden");
+    clearBtn?.classList.add("is-hidden");
+    activeGiftResults = [];
+    focusedResultIndex = -1;
+    return;
+  }
+
+  clearBtn?.classList.remove("is-hidden");
+  const matches = searchGiftRecipients(trimmed);
+  activeGiftResults = matches;
+  focusedResultIndex = -1;
+
+  if (matches.length === 0) {
+    resultsContainer.innerHTML = `
+      <div class="gift-search-empty">
+        <strong>No supporters found</strong>
+        <span>No registered supporter matches "${escapeHtml(trimmed)}". Try searching another number or name.</span>
+      </div>
+    `;
+    resultsContainer.classList.remove("is-hidden");
+    return;
+  }
+
+  const rawDigits = trimmed.replace(/\D/g, "");
+  resultsContainer.innerHTML = matches.map((m, idx) => `
+    <button type="button" class="gift-result-item" data-index="${idx}" role="option" aria-selected="false">
+      <div class="gift-result-avatar">${escapeHtml((m.name[0] || "S").toUpperCase())}</div>
+      <div class="gift-result-details">
+        <span class="gift-result-name">${highlightMatch(m.name, trimmed)}</span>
+        <span class="gift-result-phone">${highlightMatch(m.displayPhone, rawDigits)}</span>
+      </div>
+      <span class="gift-result-badge">Supporter</span>
+    </button>
+  `).join("");
+
+  resultsContainer.classList.remove("is-hidden");
+}
+
+function selectGiftRecipient(recipient) {
+  if (!recipient) return;
+  selectedGiftRecipient = recipient;
+
+  const selectedCard = document.getElementById("gift-selected-card");
+  const searchInputBox = document.querySelector(".gift-search-input-box");
+  const resultsContainer = document.getElementById("gift-search-results");
+  const avatarEl = document.getElementById("gift-selected-avatar");
+  const nameEl = document.getElementById("gift-selected-name");
+  const phoneEl = document.getElementById("gift-selected-phone");
+  const recipientSelect = document.getElementById("gift-recipient");
+  const giftSubmitBtn = document.getElementById("gift-submit");
+
+  if (avatarEl) avatarEl.textContent = (recipient.name[0] || "S").toUpperCase();
+  if (nameEl) nameEl.textContent = recipient.name;
+  if (phoneEl) phoneEl.textContent = recipient.displayPhone;
+
+  selectedCard?.classList.remove("is-hidden");
+  searchInputBox?.classList.add("is-hidden");
+  resultsContainer?.classList.add("is-hidden");
+
+  if (recipientSelect) {
+    recipientSelect.innerHTML = `<option value="${escapeHtml(recipient.phone)}" selected>${escapeHtml(recipient.name)}</option>`;
+  }
+
+  if (giftSubmitBtn) {
+    setPosButtonDisabled(giftSubmitBtn, false);
+  }
+  setModeMessage("gift-message", "");
+}
+
+function clearGiftSelection() {
+  selectedGiftRecipient = null;
+  const selectedCard = document.getElementById("gift-selected-card");
+  const searchInputBox = document.querySelector(".gift-search-input-box");
+  const searchInput = document.getElementById("gift-search-input");
+  const clearBtn = document.getElementById("gift-search-clear");
+  const resultsContainer = document.getElementById("gift-search-results");
+  const recipientSelect = document.getElementById("gift-recipient");
+  const giftSubmitBtn = document.getElementById("gift-submit");
+
+  selectedCard?.classList.add("is-hidden");
+  searchInputBox?.classList.remove("is-hidden");
+  if (searchInput) searchInput.value = "";
+  clearBtn?.classList.add("is-hidden");
+  if (resultsContainer) {
+    resultsContainer.innerHTML = "";
+    resultsContainer.classList.add("is-hidden");
+  }
+  if (recipientSelect) {
+    recipientSelect.innerHTML = '<option value="">No recipient selected</option>';
+  }
+  if (giftSubmitBtn) {
+    setPosButtonDisabled(giftSubmitBtn, true);
+  }
+  searchInput?.focus();
+}
+
+function setModeMessage(id, message, isError = false) {
+  const element = document.getElementById(id);
+  if (!element) return;
+  element.textContent = message;
+  element.classList.toggle("error", isError);
+}
+
+function setMode(mode) {
+  const validModes = ["monthly", "one-time", "gift"];
+  const selectedMode = validModes.includes(mode) ? mode : "monthly";
+  document.querySelectorAll(".mode-tab").forEach((tab) => {
+    const active = tab.dataset.mode === selectedMode;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", String(active));
+  });
+  validModes.forEach((name) => {
+    document.getElementById(`${name}-mode`)?.classList.toggle("is-hidden", name !== selectedMode);
+  });
+}
+
+function findSubscriptionForUser(email) {
+  if (!email) return null;
+  const normalizedEmail = email.trim().toLowerCase();
+  const matches = [];
+
+  // ONLY check actual subscription nodes, NEVER raw payments/charges!
+  for (const path of ["subscribers", "subscribers_velcrow"]) {
+    const data = sourceData.get(path);
+    if (!data || typeof data !== "object") continue;
+    for (const [id, record] of Object.entries(data)) {
+      if (!record || typeof record !== "object") continue;
+      if (String(record.email || "").trim().toLowerCase() !== normalizedEmail) continue;
+      const status = getRecordStatus(record);
+      if (status === "unknown") continue;
+      matches.push({
+        id,
+        path,
+        ...record,
+        status,
+        timestamp: Number(record.updatedAt || record.cancelledAt || record.lastPaymentAt || record.subscribedAt || record.createdAt || 0),
+      });
+    }
+  }
+
+  if (matches.length) {
+    const priority = { active: 0, paused: 1, pending: 2, cancelled: 3 };
+    return matches.sort((a, b) => {
+      const pDiff = (priority[a.status] ?? 4) - (priority[b.status] ?? 4);
+      if (pDiff !== 0) return pDiff;
+      return b.timestamp - a.timestamp;
+    })[0];
+  }
+
+  return null;
+}
+
+function isAnonymousDonationSelected() {
+  return document.getElementById("anonymous-donation")?.checked === true;
+}
+
+let selectedMonthlyAmount = 100;
+
+function updateSelectedMonthlyPlan(amount) {
+  selectedMonthlyAmount = Number(amount) || 100;
+
+  const heroAmount = document.getElementById("hero-btn-amount");
+  if (heroAmount) heroAmount.textContent = `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Per Month`;
+
+  const planLabel = document.getElementById("monthly-plan-label");
+  if (planLabel) planLabel.textContent = `Monthly subscription · ₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
+
+  const radio = document.getElementById(`plan-tab-${selectedMonthlyAmount}`);
+  if (radio) radio.checked = true;
+
+  refreshSubscriptionMode();
+}
+
+function playPosTransactionAnimation(container, onComplete, reverse = false) {
+  if (!container) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  if (container.classList.contains("is-animating") || container.classList.contains("is-animating-reverse")) {
+    return;
+  }
+  container.classList.remove("is-animating", "is-animating-reverse");
+  const card = container.querySelector(".card");
+  const post = container.querySelector(".post");
+  const dollar = container.querySelector(".dollar");
+  if (card) card.style.animation = "none";
+  if (post) post.style.animation = "none";
+  if (dollar) dollar.style.animation = "none";
+  void container.offsetWidth; // force reflow
+  if (card) card.style.animation = "";
+  if (post) post.style.animation = "";
+  if (dollar) dollar.style.animation = "";
+
+  const animClass = reverse ? "is-animating-reverse" : "is-animating";
+  container.classList.add(animClass);
+  setTimeout(() => {
+    container.classList.remove("is-animating", "is-animating-reverse");
+    if (typeof onComplete === "function") {
+      onComplete();
+    }
+  }, 2100);
+}
+
+function setPosButtonDisabled(button, isDisabled) {
+  if (!button) return;
+  button.classList.toggle("is-disabled", Boolean(isDisabled));
+  button.setAttribute("aria-disabled", String(Boolean(isDisabled)));
+  if (button.tagName === "BUTTON") {
+    button.disabled = Boolean(isDisabled);
+  }
+}
+
+function isPosButtonDisabled(button) {
+  if (!button) return true;
+  return button.classList.contains("is-disabled") || button.getAttribute("aria-disabled") === "true" || button.disabled === true;
+}
+
+function setPosButtonText(button, text) {
+  if (!button) return;
+  const label = button.querySelector(".new") || button;
+  label.textContent = text;
+}
+
+function getPosButtonText(button) {
+  if (!button) return "";
+  const label = button.querySelector(".new") || button;
+  return label.textContent.trim();
+}
+
+function refreshSubscriptionMode() {
+  const status = document.getElementById("subscription-mode-status");
+  const button = document.getElementById("subscription-toggle");
+  const accountAction = document.getElementById("subscription-account-link");
+  const planLabel = document.getElementById("monthly-plan-label");
+  if (planLabel) {
+    planLabel.textContent = `Monthly subscription · ₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
+  }
+  if (!status || !button) return;
+
+  currentSubscription = currentUser ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase()) : null;
+  if (!currentUser) {
+    status.textContent = `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
+    setPosButtonText(button, "Subscribe");
+    setPosButtonDisabled(button, false);
+    accountAction?.classList.add("is-hidden");
+    return;
+  }
+
+  if (!currentSubscription) {
+    status.textContent = monthlyRequestPending
+      ? "Your subscription request is pending payment confirmation."
+      : `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
+    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "Subscribe");
+    setPosButtonDisabled(button, monthlyRequestPending);
+    accountAction?.classList.add("is-hidden");
+    return;
+  }
+
+  if (currentSubscription.status === "cancelled") {
+    status.textContent = monthlyRequestPending
+      ? "Your new subscription request is pending payment confirmation."
+      : `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo support.`;
+    setPosButtonText(button, monthlyRequestPending ? "Payment pending" : "Subscribe");
+    setPosButtonDisabled(button, monthlyRequestPending);
+    accountAction?.classList.remove("is-hidden");
+    return;
+  }
+
+  const paused = currentSubscription.status === "paused";
+  if (paused) {
+    status.textContent = "Your subscription is paused. Click Resume to reactivate it.";
+    setPosButtonText(button, "Resume");
+    setPosButtonDisabled(button, false);
+    accountAction?.classList.remove("is-hidden");
+    return;
+  }
+
+  const currentSubAmount = Number(currentSubscription.amount) || 100;
+  if (selectedMonthlyAmount === currentSubAmount) {
+    status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Click Subscribe to renew or add a contribution.`;
+  } else {
+    status.textContent = `Current plan: ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Switch or start ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo below.`;
+  }
+  setPosButtonText(button, "Subscribe");
+  setPosButtonDisabled(button, false);
+  accountAction?.classList.remove("is-hidden");
+}
+
+let selectedGiftAmount = 100;
+
+async function toggleSubscription(event) {
+  event?.preventDefault?.();
+  const button = document.getElementById("subscription-toggle");
+  const status = document.getElementById("subscription-mode-status");
+  if (!button || !status || isPosButtonDisabled(button)) return;
+
+  if (currentSubscription && currentSubscription.status === "paused") {
+    playPosTransactionAnimation(button, async () => {
+      setPosButtonDisabled(button, true);
+      try {
+        const subId = String(currentSubscription.subscriptionId || currentSubscription.id || "").trim();
+        if (subId.startsWith("sub_")) {
+          await fetch(`${BACKEND_URL}/resume-subscription`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription_id: subId }),
+          });
+        }
+        await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
+          subscriptionStatus: "active",
+          status: "active",
+          resumedAt: Date.now(),
+        });
+        currentSubscription.status = "active";
+        status.textContent = "Your monthly subscription is active.";
+      } catch (error) {
+        console.error("Unable to resume subscription:", error);
+        status.textContent = "Could not resume your subscription. Please try again.";
+        setPosButtonDisabled(button, false);
+        return;
+      }
+      refreshSubscriptionMode();
+    }, false);
+    return;
+  }
+
+  if (monthlyRequestPending) return;
+  playPosTransactionAnimation(button, async () => {
+    setPosButtonDisabled(button, true);
+    status.textContent = "Connecting to payment gateway…";
+    try {
+      const res = await fetch(`${BACKEND_URL}/create-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: selectedMonthlyAmount,
+          user_id: currentUser ? currentUser.uid : "",
+          email: currentUser?.email || "",
+          name: currentUser?.displayName || "",
+          phone: currentUserPhone || "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.subscription_id) {
+        throw new Error(data?.error || "Subscription creation failed");
+      }
+
+      const options = {
+        key: data.razorpay_key,
+        subscription_id: data.subscription_id,
+        name: "Manali Strays",
+        description: `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Monthly Support`,
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
+        prefill: {
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
+          contact: currentUserPhone || "",
+        },
+        theme: { color: "#FFDD00" },
+        handler: function (response) {
+          console.log("Subscription mandate created:", response);
+          status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
+          setPosButtonText(button, "Active subscription");
+          setPosButtonDisabled(button, true);
+          refreshSubscriptionMode();
+        },
+        modal: {
+          ondismiss: function () {
+            setPosButtonDisabled(button, false);
+            status.textContent = "Payment window closed.";
+          },
+        },
+      };
+
+      if (typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          console.error("Subscription payment failed:", resp.error);
+          status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
+          setPosButtonDisabled(button, false);
+        });
+        rzp.open();
+      } else {
+        throw new Error("Razorpay SDK is not loaded. Please refresh.");
+      }
+    } catch (error) {
+      console.error("Unable to start subscription:", error);
+      status.textContent = error.message || "Could not start the subscription. Please try again.";
+      setPosButtonDisabled(button, false);
+    }
+  });
+}
+
+async function saveOneTimeIntent(event) {
+  event?.preventDefault?.();
+  const amountInput = document.getElementById("one-time-amount");
+  const button = document.getElementById("one-time-submit");
+  const amount = Number(amountInput?.value);
+  if (!Number.isFinite(amount) || amount < 1 || amount > 1000000) {
+    setModeMessage("one-time-message", "Enter an amount between ₹1 and ₹10,00,000.", true);
+    return;
+  }
+  if (isPosButtonDisabled(button)) return;
+
+  playPosTransactionAnimation(button, async () => {
+    setPosButtonDisabled(button, true);
+    setModeMessage("one-time-message", "Creating one-time payment order…");
+    try {
+      const res = await fetch(`${BACKEND_URL}/create-one-time-payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount,
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
+          phone: currentUserPhone || "",
+          user_id: currentUser ? currentUser.uid : "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.order_id) {
+        throw new Error(data?.error || "Payment order creation failed");
+      }
+
+      const options = {
+        key: data.razorpay_key,
+        amount: data.amount,
+        currency: data.currency || "INR",
+        order_id: data.order_id,
+        name: "Manali Strays",
+        description: `₹${amount.toLocaleString("en-IN")} One-time Donation`,
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
+        prefill: {
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
+          contact: currentUserPhone || "",
+        },
+        theme: { color: "#FFDD00" },
+        handler: function (response) {
+          console.log("One-time payment completed:", response);
+          setModeMessage("one-time-message", `Payment of ₹${amount.toLocaleString("en-IN")} received! Thank you for your generous contribution.`);
+        },
+        modal: {
+          ondismiss: function () {
+            setPosButtonDisabled(button, false);
+            setModeMessage("one-time-message", "Payment window closed.");
+          },
+        },
+      };
+
+      if (typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          console.error("One-time payment failed:", resp.error);
+          setModeMessage("one-time-message", `Payment failed: ${resp.error.description || "Please try again."}`, true);
+          setPosButtonDisabled(button, false);
+        });
+        rzp.open();
+      } else {
+        throw new Error("Razorpay SDK is not loaded. Please refresh.");
+      }
+    } catch (error) {
+      console.error("Unable to start one-time payment:", error);
+      setModeMessage("one-time-message", error.message || "Could not process payment. Please try again.", true);
+    } finally {
+      setPosButtonDisabled(button, false);
+    }
+  });
+}
+
+async function saveGiftIntent(event) {
+  event?.preventDefault?.();
+  const button = document.getElementById("gift-submit");
+  const recipient = selectedGiftRecipient;
+  if (!recipient) {
+    setModeMessage("gift-message", "Please search and select a supporter first.", true);
+    return;
+  }
+  if (isPosButtonDisabled(button)) return;
+
+  playPosTransactionAnimation(button, async () => {
+    setPosButtonDisabled(button, true);
+    setModeMessage("gift-message", `Setting up ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo gift subscription for ${recipient.name}…`);
+    try {
+      const res = await fetch(`${BACKEND_URL}/create-gift-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: selectedGiftAmount,
+          recipient_name: recipient.name,
+          recipient_email: recipient.email || `${recipient.phone}@gift.manalistrays.org`,
+          recipient_phone: recipient.phone,
+          giver_id: currentUser ? currentUser.uid : "",
+          giver_email: currentUser?.email || "",
+          giver_name: currentUser?.displayName || "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.subscription_id) {
+        throw new Error(data?.error || "Gift subscription creation failed");
+      }
+
+      const options = {
+        key: data.razorpay_key,
+        subscription_id: data.subscription_id,
+        name: "Manali Strays",
+        description: `Gift ₹${selectedGiftAmount.toLocaleString("en-IN")}/mo subscription for ${recipient.name}`,
+        image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
+        prefill: {
+          name: currentUser?.displayName || "",
+          email: currentUser?.email || "",
+          contact: currentUserPhone || "",
+        },
+        theme: { color: "#FFDD00" },
+        handler: function (response) {
+          console.log("Gift subscription mandate created:", response);
+          setModeMessage("gift-message", `Gift subscription for ${recipient.name} activated! Thank you for gifting hope.`);
+        },
+        modal: {
+          ondismiss: function () {
+            setPosButtonDisabled(button, false);
+            setModeMessage("gift-message", "Payment window closed.");
+          },
+        },
+      };
+
+      if (typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          console.error("Gift subscription payment failed:", resp.error);
+          setModeMessage("gift-message", `Payment failed: ${resp.error.description || "Please try again."}`, true);
+          setPosButtonDisabled(button, false);
+        });
+        rzp.open();
+      } else {
+        throw new Error("Razorpay SDK is not loaded. Please refresh.");
+      }
+    } catch (error) {
+      console.error("Unable to set up gift subscription:", error);
+      setModeMessage("gift-message", error.message || "Could not set up gift subscription. Please try again.", true);
+    } finally {
+      setPosButtonDisabled(button, false);
+    }
+  });
+}
+
+document.querySelectorAll('input[name="gift-autopay-tier"]').forEach((input) => {
+  input.addEventListener("change", (e) => {
+    selectedGiftAmount = Number(e.target.value) || 100;
+    const planLabel = document.getElementById("gift-plan-label");
+    if (planLabel) {
+      planLabel.textContent = `Gift a subscription · ₹${selectedGiftAmount.toLocaleString("en-IN")} / mo`;
+    }
+  });
+});
+
+const heroSubscribeBtn = document.getElementById("subscribe-btn");
+heroSubscribeBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  const subBtn = document.getElementById("subscription-toggle");
+  if (subBtn) {
+    subBtn.click();
+  }
+});
+
+document.querySelectorAll(".mode-tab").forEach((tab) => {
+  tab.addEventListener("click", () => setMode(tab.dataset.mode));
+});
+
+const subToggleBtn = document.getElementById("subscription-toggle");
+const oneTimeSubmitBtn = document.getElementById("one-time-submit");
+const giftSubmitBtn = document.getElementById("gift-submit");
+
+subToggleBtn?.addEventListener("click", toggleSubscription);
+oneTimeSubmitBtn?.addEventListener("click", saveOneTimeIntent);
+giftSubmitBtn?.addEventListener("click", saveGiftIntent);
+
+[subToggleBtn, oneTimeSubmitBtn, giftSubmitBtn].forEach((btn) => {
+  btn?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+});
+
+const giftSearchInput = document.getElementById("gift-search-input") || document.getElementById("gift-phone");
+const giftSearchClear = document.getElementById("gift-search-clear");
+const giftSearchResults = document.getElementById("gift-search-results");
+const giftChangeBtn = document.getElementById("gift-change-btn");
+
+giftSearchInput?.addEventListener("input", (e) => {
+  renderGiftSearchResults(e.target.value);
+});
+
+giftSearchInput?.addEventListener("focus", (e) => {
+  if (e.target.value.trim() && !selectedGiftRecipient) {
+    renderGiftSearchResults(e.target.value);
+  }
+});
+
+giftSearchInput?.addEventListener("keydown", (e) => {
+  if (!activeGiftResults.length) return;
+  const items = giftSearchResults?.querySelectorAll(".gift-result-item");
+  if (!items || !items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    focusedResultIndex = (focusedResultIndex + 1) % items.length;
+    items.forEach((item, idx) => item.classList.toggle("is-focused", idx === focusedResultIndex));
+    items[focusedResultIndex]?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    focusedResultIndex = (focusedResultIndex - 1 + items.length) % items.length;
+    items.forEach((item, idx) => item.classList.toggle("is-focused", idx === focusedResultIndex));
+    items[focusedResultIndex]?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    if (focusedResultIndex >= 0 && activeGiftResults[focusedResultIndex]) {
+      selectGiftRecipient(activeGiftResults[focusedResultIndex]);
+    } else if (activeGiftResults[0]) {
+      selectGiftRecipient(activeGiftResults[0]);
+    }
+  } else if (e.key === "Escape") {
+    giftSearchResults?.classList.add("is-hidden");
+  }
+});
+
+giftSearchClear?.addEventListener("click", () => {
+  if (giftSearchInput) {
+    giftSearchInput.value = "";
+    renderGiftSearchResults("");
+    giftSearchInput.focus();
+  }
+});
+
+giftSearchResults?.addEventListener("click", (e) => {
+  const item = e.target.closest(".gift-result-item");
+  if (!item) return;
+  const idx = Number(item.dataset.index);
+  if (Number.isFinite(idx) && activeGiftResults[idx]) {
+    selectGiftRecipient(activeGiftResults[idx]);
+  }
+});
+
+giftChangeBtn?.addEventListener("click", clearGiftSelection);
+
+document.addEventListener("click", (e) => {
+  const wrap = document.getElementById("gift-search-wrap");
+  if (wrap && !wrap.contains(e.target)) {
+    giftSearchResults?.classList.add("is-hidden");
+  }
+});
+
+
+// Check initial plan amount from URL or sessionStorage
+const initialUrlAmount = Number.parseInt(new URLSearchParams(window.location.search).get("amount"), 10);
+if (Number.isFinite(initialUrlAmount) && initialUrlAmount > 0) {
+  updateSelectedMonthlyPlan(initialUrlAmount);
+} else {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem("sillysensei_intended_plan") || "{}");
+    if (saved?.plan === "monthly" && Number(saved.amount) > 0) {
+      updateSelectedMonthlyPlan(Number(saved.amount));
+    }
+  } catch (_) {}
+}
+
+document.querySelectorAll('input[name="home-autopay-tier"]').forEach((input) => {
+  input.addEventListener("change", (e) => {
+    updateSelectedMonthlyPlan(Number(e.target.value));
+  });
+});
+
+const requestedMode = new URLSearchParams(window.location.search).get("plan");
+setMode(requestedMode === "one-time" ? "one-time" : requestedMode === "gift" ? "gift" : "monthly");
+const initialGiftPhone = new URLSearchParams(window.location.search).get("phone");
+if (initialGiftPhone) {
+  setTimeout(() => {
+    const matches = searchGiftRecipients(initialGiftPhone);
+    if (matches[0]) selectGiftRecipient(matches[0]);
+  }, 350);
+}
+
+onAuthStateChanged(auth, (user) => {
+  detachMonthlyIntentListener?.();
+  detachMonthlyIntentListener = null;
+  currentUser = user?.emailVerified ? user : null;
+  monthlyRequestPending = false;
+  currentUserPhone = "";
+
+  if (accountLink) {
+    accountLink.href = "#dashboard";
+    accountLink.setAttribute("aria-label", currentUser ? "Open your account" : "Log in to your account");
+    const label = accountLink.querySelector("span");
+    if (label) label.textContent = currentUser ? "My account" : "Account";
+  }
+  if (currentUser) {
+    onValue(ref(database, `users/${currentUser.uid}`), (snapshot) => {
+      const data = snapshot.val() || {};
+      currentUserPhone = cleanIndianPhone(data.phone) || cleanIndianPhone(currentUser.phoneNumber) || "";
+    });
+    // Check if account has an exclusive custom autopay plan configured
+    onValue(ref(database, `customPlans/${currentUser.uid}`), (snapshot) => {
+      const custom = snapshot.val();
+      if (custom && Number(custom.amount) > 0) {
+        let exclusivePill = document.getElementById("exclusive-home-pill");
+        if (!exclusivePill) {
+          exclusivePill = document.createElement("button");
+          exclusivePill.type = "button";
+          exclusivePill.id = "exclusive-home-pill";
+          exclusivePill.className = "tier-pill tier-pill-exclusive";
+          exclusivePill.dataset.amount = String(custom.amount);
+          exclusivePill.textContent = `⭐ ₹${Number(custom.amount).toLocaleString("en-IN")}/mo Exclusive`;
+          exclusivePill.addEventListener("click", () => {
+            updateSelectedMonthlyPlan(Number(custom.amount));
+          });
+          document.getElementById("home-tier-pills")?.appendChild(exclusivePill);
+        }
+      }
+    }, { onlyOnce: true });
+
+    const userPaymentPath = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
+    detachMonthlyIntentListener = onValue(ref(database, userPaymentPath), (snapshot) => {
+      const data = snapshot.val();
+      currentUserPaymentRecords = data && typeof data === "object"
+        ? Object.entries(data)
+          .filter(([, record]) => String(record?.email || "").trim().toLowerCase() === String(currentUser.email || "").trim().toLowerCase())
+          .map(([id, record]) => ({ id, ...(record || {}) }))
+        : [];
+      monthlyRequestPending = currentUserPaymentRecords.some((record) => record.type === "monthly" && record.status === "pending");
+      refreshSubscriptionMode();
+    }, () => {});
+  }
+  refreshSubscriptionMode();
+});
+
+
+
+subscriberSources.forEach((path) => {
+  onValue(ref(database, path), (snapshot) => {
+    const data = snapshot.val();
+    sourceData.set(path, data);
+    renderPublicTotals();
+    renderDonors();
+    if (giftSearchInput?.value && !selectedGiftRecipient) {
+      renderGiftSearchResults(giftSearchInput.value);
+    }
+    refreshSubscriptionMode();
+  }, (error) => {
+    console.error(`Unable to load ${path}:`, error);
+  });
+});
+
+
+  </script>
+
+  <!-- Dashboard Logic Module -->
+  <script type="module" id="dashboard-module">
+
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+import { getDatabase, onValue, push, ref, remove, set, update, get as fbGet } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+// Firebase Client Setup
+const firebaseConfig = {
+  apiKey: "AIzaSyDma_UrBD5XQICj5LOu214Fu3va_7VnvDg",
+  authDomain: "sillysensei-b251b.firebaseapp.com",
+  databaseURL: "https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "sillysensei-b251b",
+  storageBucket: "sillysensei-b251b.firebasestorage.app",
+  messagingSenderId: "859697431303",
+  appId: "1:859697431303:web:f91ce7535a3aff27cc7ba2",
+  measurementId: "G-XGR07BYBGN",
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
+const devHosts = ["localhost", "127.0.0.1", "0.0.0.0", "::1"];
+const isDevelopmentMode =
+  devHosts.includes(window.location.hostname) ||
+  window.location.hostname.endsWith(".devtunnels.ms") ||
+  window.location.hostname.endsWith(".github.dev") ||
+  window.location.hostname.endsWith(".gitpod.io") ||
+  window.location.hostname.endsWith(".ngrok-free.app") ||
+  window.location.hostname.endsWith(".ngrok.io") ||
+  window.location.hostname.endsWith(".loca.lt") ||
+  window.location.hostname.endsWith(".preview.app") ||
+  new URLSearchParams(window.location.search).get("dev") === "1";
+
+
+
+
+
+const BACKEND_URL = window.BACKEND_API_URL || "https://69rnsfw9-3000.inc1.devtunnels.ms";
+let currentUserPhone = "";
+const get = (id) => document.getElementById(id);
+
+function playPosTransactionAnimation(container, onComplete, reverse = false) {
+  if (!container) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  if (container.classList.contains("is-disabled") || container.getAttribute("aria-disabled") === "true") {
+    return;
+  }
+  container.classList.remove("is-animating");
+  container.classList.remove("is-animating-reverse");
+  const card = container.querySelector(".card");
+  const post = container.querySelector(".post");
+  const dollar = container.querySelector(".dollar");
+  if (card) card.style.animation = "none";
+  if (post) post.style.animation = "none";
+  if (dollar) dollar.style.animation = "none";
+  void container.offsetWidth; // force reflow
+  if (card) card.style.animation = "";
+  if (post) post.style.animation = "";
+  if (dollar) dollar.style.animation = "";
+
+  container.classList.add(reverse ? "is-animating-reverse" : "is-animating");
+  setTimeout(() => {
+    container.classList.remove("is-animating");
+    container.classList.remove("is-animating-reverse");
+    if (typeof onComplete === "function") {
+      onComplete();
+    }
+  }, 2100);
+}
+
+function setPosButtonDisabled(button, isDisabled) {
+  if (!button) return;
+  button.classList.toggle("is-disabled", Boolean(isDisabled));
+  button.setAttribute("aria-disabled", String(Boolean(isDisabled)));
+  if (button.tagName === "BUTTON") {
+    button.disabled = Boolean(isDisabled);
+  }
+}
+
+function isPosButtonDisabled(button) {
+  if (!button) return true;
+  return button.classList.contains("is-disabled") || button.getAttribute("aria-disabled") === "true" || button.disabled === true;
+}
+
+function setPosButtonText(button, text) {
+  if (!button) return;
+  const label = button.querySelector(".new") || button;
+  label.textContent = text;
+}
+
+function getPosButtonText(button) {
+  if (!button) return "";
+  const label = button.querySelector(".new") || button;
+  return label.textContent.trim();
+}
+
+const subscriberRecords = new Map();
+let paymentRecords = [];
+let testPaymentRecords = [];
+let paymentIntents = [];
+let primarySubscription = null;
+let cancelledSubscription = null;
+let monthlyIntent = null;
+let currentUser = null;
+let selectedDashboardPlanAmount = 100;
+let userCustomPlan = null;
+
+function renderCustomPlanBanner() {
+  const card = get("dash-exclusive-card");
+  if (!card) return;
+  if (userCustomPlan && Number(userCustomPlan.amount) > 0 && userCustomPlan.enabled !== false) {
+    card.classList.remove("is-hidden");
+    setText("dash-exclusive-amount", `₹${Number(userCustomPlan.amount).toLocaleString("en-IN")} / mo`);
+    setText("dash-exclusive-title", userCustomPlan.title || "Special Patron Autopay");
+    setText("dash-exclusive-note", userCustomPlan.note || "Custom recurring support tier configured exclusively for your account.");
+    setText("dash-exclusive-btn-amount", Number(userCustomPlan.amount).toLocaleString("en-IN"));
+  } else {
+    card.classList.add("is-hidden");
+  }
+}
+
+const confirmedStatuses = new Set(["paid", "completed", "success", "active"]);
+
+
+function setText(id, value) {
+  const element = get(id);
+  if (element) element.textContent = value;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatAmount(value) {
+  const num = Number(value);
+  if (value === null || value === undefined || value === "" || !Number.isFinite(num) || num <= 0) {
+    return "—";
+  }
+  return `₹${num.toLocaleString("en-IN")}`;
+}
+
+function formatDateTime(value) {
+  if (!value) return "—";
+  const numericValue = Number(value);
+  const date = new Date(numericValue && numericValue < 100000000000 ? numericValue * 1000 : value);
+  if (Number.isNaN(date.getTime())) return "—";
+  const datePart = date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  const timePart = date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+  return `${datePart}, ${timePart.toUpperCase()}`;
+}
+
+function formatDateOnly(value) {
+  if (!value) return "—";
+  const numericValue = Number(value);
+  const date = new Date(numericValue && numericValue < 100000000000 ? numericValue * 1000 : value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function formatDate(value) {
+  return formatDateTime(value);
+}
+
+function cleanNote(record) {
+  if (!record) return "";
+  if (record.isCancellation || record.type === "cancellation") return "Subscription cancelled";
+  const note = String(record.note || "").trim();
+  if (!note) return "";
+  if (/development-mode.*simulation|simulated recurring/i.test(note)) return "Monthly renewal";
+  if (/development-mode.*sphere|initial charge/i.test(note)) return "Initial contribution";
+  if (/recurring/i.test(note)) return "Monthly renewal";
+  if (/sphere/i.test(note)) return note.replace(/sphere/gi, "subscription");
+  return note;
+}
+
+function cleanReference(ref) {
+  if (!ref || ref === "—") return "—";
+  const str = String(ref).trim();
+  if (str.startsWith("DEV-MONTHLY-")) return `MS-REC-${str.slice(-4)}`;
+  if (str.startsWith("DEV-SUBSCRIPTION-")) return `MS-SUB-${str.slice(-4)}`;
+  if (str.startsWith("REQ-SUB-")) return `REQ-${str.slice(-4)}`;
+  if (str.startsWith("-") && str.length >= 10) return `REQ-${str.slice(-4).toUpperCase()}`;
+  return str;
+}
+
+function nextMonthTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  date.setMonth(date.getMonth() + 1);
+  return date.getTime();
+}
+
+function normalizedStatus(record, fallback = "unknown") {
+  if (!record) return fallback;
+  if (record.isCancellation || record.type === "cancellation") return "cancelled";
+  if (record.isSubscriptionRoot) {
+    const rootStatus = String(record.subscriptionStatus || record.status || "").trim().toLowerCase();
+    return rootStatus || fallback;
+  }
+  const status = String(record.status || record.subscriptionStatus || "").trim().toLowerCase();
+  return status || fallback;
+}
+
+function normalizeSubscriberRecords(data, source, path, email) {
+  if (!data || typeof data !== "object") return [];
+  return Object.entries(data)
+    .filter(([, record]) => String(record?.email || "").trim().toLowerCase() === email)
+    .map(([id, record]) => {
+      const normalizedRecord = record && typeof record === "object" ? record : {};
+      const explicitStatus = normalizedStatus(normalizedRecord);
+      const status = ["active", "paused", "cancelled", "pending"].includes(explicitStatus)
+        ? explicitStatus
+        : normalizedRecord.lastPaymentAt || normalizedRecord.subscribedAt
+          ? "active"
+          : "pending";
+      return {
+        ...normalizedRecord,
+        id,
+        source,
+        path,
+        type: "monthly",
+        amount: Number(normalizedRecord.amount) || 100,
+        status,
+        date: normalizedRecord.subscribedAt || normalizedRecord.createdAt || normalizedRecord.lastPaymentAt,
+        reference: normalizedRecord.orderId || normalizedRecord.reference || id,
+        isSubscriptionRoot: true,
+      };
+    });
+}
+
+function normalizeUidRecords(data, source, path = "") {
+  if (!data || typeof data !== "object") return [];
+  return Object.entries(data).map(([id, record]) => {
+    const normalizedRecord = record && typeof record === "object" ? record : {};
+    return {
+      id,
+      source,
+      path,
+      ...normalizedRecord,
+      status: normalizedStatus(normalizedRecord, source === "intent" ? "pending" : "unknown"),
+      date: normalizedRecord.paidAt || normalizedRecord.createdAt || normalizedRecord.subscribedAt || normalizedRecord.lastPaymentAt,
+      reference: normalizedRecord.reference || normalizedRecord.transactionId || normalizedRecord.orderId || id,
+      isSubscriptionRoot: Boolean(normalizedRecord.subscriptionStatus) && !normalizedRecord.subscriptionId,
+    };
+  });
+}
+
+function isSubscriptionRecord(record) {
+  const type = String(record?.type || "").trim().toLowerCase().replaceAll("_", "-");
+  if (type === "gift-monthly" || type === "gift-subscription") return false;
+  const billingReason = String(record?.billingReason || record?.billing_type || "").toLowerCase();
+  const metadata = [record?.reference, record?.orderId, record?.note, record?.description, record?.paymentType, record?.category]
+    .filter(Boolean).join(" ").toLowerCase();
+  return type === "monthly"
+    || type === "cancellation"
+    || Boolean(record?.isCancellation)
+    || type.includes("subscription")
+    || type.includes("renewal")
+    || type.includes("recurring")
+    || billingReason.includes("subscription")
+    || billingReason.includes("recurring")
+    || /subscription|recurring|renewal|chargeback/.test(metadata)
+    || Boolean(record?.subscriptionId || record?.subscriptionPath || record?.parentSubscriptionId || record?.subscriptionStatus || record?.isSubscription || record?.recurring);
+}
+
+function isSubscriptionRootRecord(record) {
+  if (!isSubscriptionRecord(record)) return false;
+  if (record?.isSubscriptionRoot) return true;
+  if (record?.subscriptionId || record?.parentSubscriptionId || record?.subscriptionPath) return false;
+  return ["active", "paused", "cancelled", "pending"].includes(normalizedStatus(record));
+}
+
+function isConfirmedPayment(record) {
+  if (!record) return false;
+  if (record.isCancellation || record.type === "cancellation") return false;
+  if (record.isSubscriptionRoot) return false;
+  const amount = Number(record.amount);
+  if (amount <= 0 || Number.isNaN(amount) || record.amount == null) return false;
+  const status = normalizedStatus(record);
+  if (status === "cancelled" || status === "failed" || status === "pending") return false;
+  return ["paid", "completed", "success", "active"].includes(status);
+}
+
+function getSubscriptionReference(record) {
+  return String(record?.subscriptionId || record?.parentSubscriptionId || record?.subscriptionPath || "").trim();
+}
+
+function subscriptionRootCandidates(record) {
+  return [record?.id, record?.reference, record?.orderId, record?.path && record?.id ? `${record.path}/${record.id}` : ""]
+    .filter(Boolean).map(String);
+}
+
+function buildSubscriptionGroups(records) {
+  const subscriptionRecords = records.filter(isSubscriptionRecord);
+  const roots = subscriptionRecords.filter(isSubscriptionRootRecord);
+  const groups = roots.map((subscription, index) => ({
+    key: `subscription:${subscription.path || subscription.source || "record"}:${subscription.id || subscription.reference || index}`,
+    subscription,
+    charges: [],
+  }));
+
+  const findGroup = (record) => {
+    const reference = getSubscriptionReference(record);
+    if (reference) {
+      const matching = groups.find((group) => subscriptionRootCandidates(group.subscription)
+        .some((candidate) => candidate === reference || candidate.endsWith(`/${reference}`) || reference.endsWith(`/${candidate}`)));
+      if (matching) return matching;
+    }
+    if (record?.subscriptionId) {
+      const matching = groups.find((group) => String(group.subscription.id) === String(record.subscriptionId));
+      if (matching) return matching;
+    }
+    if (groups.length === 1) return groups[0];
+    const recordTime = Number(record?.date || record?.createdAt || record?.paidAt || 0);
+    if (recordTime > 0) {
+      const matching = groups.find((group) => {
+        const startTime = Number(group.subscription.date || group.subscription.createdAt || 0);
+        const endTime = Number(group.subscription.cancelledAt || group.subscription.endedAt || Infinity);
+        return recordTime >= startTime - 60000 && recordTime <= endTime + 60000;
+      });
+      if (matching) return matching;
+    }
+    return null;
+  };
+
+  subscriptionRecords.filter((record) => !roots.includes(record)).forEach((record) => {
+    const group = findGroup(record);
+    if (group) {
+      group.charges.push(record);
+      return;
+    }
+    const reference = getSubscriptionReference(record);
+    groups.push({
+      key: `subscription:${reference || record.path || record.source || "record"}:${record.id || record.reference || groups.length}`,
+      subscription: record,
+      charges: [record],
+    });
+  });
+
+  groups.forEach((group) => {
+    const root = group.subscription;
+    const isCancelled = normalizedStatus(root) === "cancelled";
+    const isPending = normalizedStatus(root) === "pending";
+    const rootTime = Number(root.date || root.createdAt || 0);
+    const cancelledTime = Number(root.cancelledAt || root.endedAt || 0);
+
+    // 1. Initial deduction / request entry:
+    // If pending, payment has not been confirmed yet (status: pending, not paid).
+    // If active, paused, or cancelled, ₹100 was deducted (status: paid).
+    const hasInitialPayment = group.charges.some((c) => {
+      if (c.isCancellation || c.type === "cancellation") return false;
+      const cTime = Number(c.date || c.paidAt || c.createdAt || 0);
+      return Math.abs(cTime - rootTime) < 60000 || /initial|first/i.test(c.note || "");
+    });
+
+    if (!hasInitialPayment) {
+      group.charges.push({
+        id: `${root.id || root.reference}-initial`,
+        subscriptionId: root.id,
+        type: "monthly",
+        reference: cleanReference(root.reference) || (isPending ? `REQ-${String(root.id || "").slice(-4).toUpperCase()}` : "MS-SUB-1001"),
+        amount: Number(root.amount) || 100,
+        status: isPending ? "pending" : "paid",
+        date: rootTime || Date.now(),
+        paidAt: isPending ? null : (rootTime || Date.now()),
+        createdAt: rootTime || Date.now(),
+        note: isPending ? "Subscription request (Payment pending)" : "Initial contribution",
+      });
+    }
+
+    // 2. Cancellation entry: if they cancel, create an entry with no price and status cancelled
+    if (isCancelled) {
+      const hasCancellationEntry = group.charges.some((c) => c.isCancellation || c.type === "cancellation");
+      if (!hasCancellationEntry) {
+        group.charges.push({
+          id: `${root.id || root.reference}-cancellation`,
+          subscriptionId: root.id,
+          type: "cancellation",
+          isCancellation: true,
+          reference: "—",
+          amount: null,
+          status: "cancelled",
+          date: cancelledTime || rootTime || Date.now(),
+          createdAt: cancelledTime || rootTime || Date.now(),
+          note: "Subscription cancelled",
+        });
+      }
+    }
+
+    // 3. Remove raw root container from charges
+    group.charges = group.charges.filter((c) => {
+      if (c === root) return false;
+      if (c.id === root.id && c.isSubscriptionRoot) return false;
+      return true;
+    });
+
+    // 4. Sort charges newest to oldest
+    group.charges.sort((a, b) => Number(b.date || b.paidAt || b.createdAt || 0) - Number(a.date || a.paidAt || a.createdAt || 0));
+  });
+
+  const statusPriority = { active: 0, paused: 1, pending: 2, cancelled: 3 };
+  return groups.sort((a, b) => {
+    const priorityDiff = (statusPriority[normalizedStatus(a.subscription)] ?? 4) - (statusPriority[normalizedStatus(b.subscription)] ?? 4);
+    if (priorityDiff !== 0) return priorityDiff;
+    return Number(b.subscription.date || b.subscription.createdAt || 0) - Number(a.subscription.date || a.subscription.createdAt || 0);
+  });
+}
+
+function paymentStatusClass(status) {
+  if (["active", "paid", "completed", "success"].includes(status)) return "status-active";
+  if (status === "paused") return "status-paused";
+  if (status === "cancelled") return "status-cancelled";
+  if (["chargeback", "refunded", "reversed", "failed"].includes(status)) return "status-failed";
+  if (status === "pending") return "status-pending";
+  return "status-failed";
+}
+
+function statusLabel(status) {
+  const labels = {
+    active: "Active",
+    paused: "Paused",
+    cancelled: "Cancelled",
+    paid: "Paid",
+    completed: "Paid",
+    success: "Paid",
+    pending: "Pending",
+    failed: "Failed",
+    refunded: "Refunded",
+    reversed: "Reversed",
+    chargeback: "Chargeback",
+  };
+  return labels[status] || "Unconfirmed";
+}
+
+function paymentTypeLabel(record) {
+  if (record.isCancellation || record.type === "cancellation") return "Subscription cancellation";
+  if (isSubscriptionRecord(record)) return `Monthly subscription · ${formatAmount(record.amount || 100)}/mo`;
+  if (["one-time", "one_time"].includes(record.type)) return "One-time support";
+  if (["gift-monthly", "gift-subscription"].includes(record.type)) return `Gift subscription${record.recipientName ? ` · ${record.recipientName}` : ""}`;
+  return "Other payment";
+}
+
+function renderRecordCard(record) {
+  const status = normalizedStatus(record);
+  const type = paymentTypeLabel(record);
+  const date = formatDateTime(record.date || record.paidAt || record.createdAt);
+  const ref = cleanReference(record.reference || record.orderId || record.id || "—");
+  const amount = formatAmount(record.amount);
+  const note = cleanNote(record);
+  const statusHtml = `<span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span>`;
+
+  return `<div class="card uiverse-table-card">
+    <div class="card__title">
+      <span class="card__title-main">${escapeHtml(type)}</span>
+      <span class="card__badge">${escapeHtml(amount)}</span>
+    </div>
+    <div class="card__data">
+      <div class="card__right">
+        <div class="item">Date &amp; Time</div>
+        <div class="item">Type</div>
+        <div class="item">Reference</div>
+        <div class="item">Amount</div>
+        <div class="item">Status</div>
+      </div>
+      <div class="card__left">
+        <div class="item">${escapeHtml(date)}</div>
+        <div class="item">${escapeHtml(type)}</div>
+        <div class="item"><span class="table-ref-code">${escapeHtml(ref)}</span>${note ? `<br><small class="record-note">${escapeHtml(note)}</small>` : ""}</div>
+        <div class="item"><strong>${escapeHtml(amount)}</strong></div>
+        <div class="item">${statusHtml}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderRecordRow(record) {
+  const status = normalizedStatus(record);
+  const isCancel = record.isCancellation || record.type === "cancellation" || status === "cancelled";
+  const ref = cleanReference(record.reference || record.orderId || record.id || "—");
+  const note = cleanNote(record);
+  return `<tr${isCancel ? ' class="charge-row-cancelled"' : ''}>
+    <td>${escapeHtml(formatDateTime(record.date || record.paidAt || record.createdAt))}</td>
+    <td>${escapeHtml(paymentTypeLabel(record))}</td>
+    <td><span class="table-ref-code">${escapeHtml(ref)}</span>${note ? `<br><small class="record-note">${escapeHtml(note)}</small>` : ""}</td>
+    <td><strong>${escapeHtml(formatAmount(record.amount))}</strong></td>
+    <td><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
+  </tr>`;
+}
+
+function renderTableSection(records, tableBodyId, cardsContainerId, badgeId, emptyMessage) {
+  const body = get(tableBodyId);
+  const cards = get(cardsContainerId);
+  const badge = get(badgeId);
+
+  if (badge) {
+    badge.textContent = `${records.length} record${records.length === 1 ? "" : "s"}`;
+  }
+
+  if (body) {
+    if (!records.length) {
+      body.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(emptyMessage)}</td></tr>`;
+    } else {
+      body.innerHTML = records.map(renderRecordRow).join("");
+    }
+  }
+
+  if (cards) {
+    if (!records.length) {
+      cards.innerHTML = `<p class="empty-state">${escapeHtml(emptyMessage)}</p>`;
+    } else {
+      cards.innerHTML = records.map(renderRecordCard).join("");
+    }
+  }
+}
+
+function renderPaymentTable(records) {
+  renderTableSection(records, "payments-body", "other-payments-cards", "other-payments-badge", "No other payments yet.");
+}
+
+function renderSubscriptionPayments(records) {
+  const list = get("subscription-payments-list");
+  if (!list) return;
+  const groups = buildSubscriptionGroups(records);
+  if (!groups.length) {
+    list.innerHTML = '<p class="empty-state">No subscription payments yet.</p>';
+    return;
+  }
+
+  list.innerHTML = `<div class="subscription-table-wrap">
+    <div class="card__title">
+      <span class="card__title-main">Subscription Overview</span>
+      <div class="table-view-controls">
+        <span class="card__badge">${groups.length} subscription${groups.length === 1 ? "" : "s"}</span>
+        <div class="view-toggle" role="group" aria-label="Subscription view format">
+          <button type="button" class="view-toggle-btn is-active" data-view-target="subscription-payments" data-view="table">Table</button>
+          <button type="button" class="view-toggle-btn" data-view-target="subscription-payments" data-view="cards">Cards</button>
+        </div>
+      </div>
+    </div>
+    <div class="table-view-container" id="subscription-payments-table-container">
+      <div class="table-scroll-wrap">
+        <table class="subscription-table">
+          <thead><tr><th>Subscription</th><th>Status</th><th>Charges</th><th>Total paid</th><th>Next renewal</th></tr></thead>
+          <tbody>${groups.map((group, index) => {
+            const key = `subscription-row-${index}`;
+            const expanded = false;
+            const subscription = group.subscription;
+            const charges = group.charges.filter(isConfirmedPayment);
+            const total = charges.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+            const status = normalizedStatus(subscription);
+            const isCancelled = status === "cancelled";
+            const endedDate = subscription.endedAt || subscription.cancelledAt || subscription.date;
+            const nextPayment = subscription.nextPaymentDue || group.charges.find((record) => record.nextPaymentDue)?.nextPaymentDue;
+            const nextPaymentCell = isCancelled
+              ? `<span class="subscription-ended-badge">Cancelled on ${escapeHtml(formatDateTime(endedDate))}</span>`
+              : status === "pending"
+                ? '<span class="status-pill status-pending">Confirmation required</span>'
+                : escapeHtml(nextPayment ? formatDateOnly(nextPayment) : "—");
+
+            const chargeRows = group.charges.map((record) => {
+              const chargeStatus = normalizedStatus(record);
+              const isCancel = record.isCancellation || record.type === "cancellation" || chargeStatus === "cancelled";
+              const dateStr = formatDateTime(record.date || record.paidAt || record.createdAt);
+              const refStr = isCancel && (!record.reference || record.reference.startsWith("DEV-") || record.reference === "—") ? "—" : cleanReference(record.reference || record.orderId || record.id || "—");
+              const noteStr = cleanNote(record);
+              const nextPaymentVal = isCancel || isCancelled || status === "pending" || !record.nextPaymentDue ? "—" : formatDateOnly(record.nextPaymentDue);
+
+              return `<tr${isCancel ? ' class="charge-row-cancelled"' : ''}>
+                <td>${escapeHtml(dateStr)}</td>
+                <td><span class="subscription-reference">${escapeHtml(refStr)}</span>${noteStr ? `<small>${escapeHtml(noteStr)}</small>` : ""}</td>
+                <td><strong>${escapeHtml(formatAmount(record.amount))}</strong></td>
+                <td><span class="status-pill ${paymentStatusClass(chargeStatus)}">${escapeHtml(statusLabel(chargeStatus))}</span></td>
+                <td>${escapeHtml(nextPaymentVal)}</td>
+              </tr>`;
+            }).join("");
+
+            const subStatusSuffix = isCancelled
+              ? " (Cancelled)"
+              : status === "paused"
+                ? " (Paused)"
+                : status === "pending"
+                  ? " (Pending)"
+                  : " (Active)";
+            const subMetaText = isCancelled
+              ? `Cancelled · Ended ${escapeHtml(formatDateTime(endedDate))}`
+              : status === "paused"
+                ? `Paused · Started ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`
+                : status === "pending"
+                  ? `Pending request · Submitted ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`
+                  : `Active · Started ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`;
+
+            return `<tr class="subscription-summary-row${isCancelled ? " is-cancelled" : ""}" data-subscription-toggle="${key}" tabindex="0" role="button" aria-expanded="${expanded}">
+              <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</strong><small>${subMetaText}</small></span></td>
+              <td><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
+              <td>${escapeHtml(String(charges.length))}</td>
+              <td><strong>${escapeHtml(formatAmount(total))}</strong></td>
+              <td>${nextPaymentCell}</td>
+            </tr>
+            <tr class="subscription-charges-row${expanded ? "" : " is-hidden"}" data-subscription-details="${key}">
+              <td colspan="5">
+                <div class="subscription-charges-panel">
+                  <div class="card__title card__title--nested">
+                    <span>Payment history · ${escapeHtml(formatAmount(subscription.amount || 100))} / mo${subStatusSuffix}</span>
+                    <span class="card__badge">${charges.length} confirmed contribution${charges.length === 1 ? "" : "s"}</span>
+                  </div>
+                  <div class="subscription-charges-table-wrap">
+                    <table class="subscription-charges-table">
+                      <thead><tr><th>Date &amp; Time</th><th>Reference</th><th>Amount</th><th>Status</th><th>Next renewal</th></tr></thead>
+                      <tbody>${chargeRows || '<tr><td colspan="5" class="empty-state">No charges yet.</td></tr>'}</tbody>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>`;
+          }).join("")}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-view-container is-hidden" id="subscription-payments-cards-container">
+      <div class="uiverse-card-list">${groups.map((group) => {
+        const subscription = group.subscription;
+        const charges = group.charges.filter(isConfirmedPayment);
+        const total = charges.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+        const status = normalizedStatus(subscription);
+        const isCancelled = status === "cancelled";
+        const endedDate = subscription.endedAt || subscription.cancelledAt || subscription.date;
+        const nextPayment = subscription.nextPaymentDue || group.charges.find((record) => record.nextPaymentDue)?.nextPaymentDue;
+        const planStatusLabel = isCancelled
+          ? "Cancelled"
+          : status === "paused"
+            ? "Paused"
+            : status === "pending"
+              ? "Pending confirmation"
+              : "Active";
+        const nextPaymentVal = isCancelled
+          ? `<span class="subscription-ended-badge">Cancelled on ${escapeHtml(formatDateTime(endedDate))}</span>`
+          : status === "pending"
+            ? '<span class="status-pill status-pending">Confirmation required</span>'
+            : escapeHtml(nextPayment ? formatDateOnly(nextPayment) : "—");
+
+        return `<div class="card uiverse-table-card${isCancelled ? " is-cancelled" : ""}">
+          <div class="card__title">
+            <span class="card__title-main">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</span>
+            <span class="card__badge">${escapeHtml(formatAmount(total))}</span>
+          </div>
+          <div class="card__data">
+            <div class="card__right">
+              <div class="item">Subscription</div>
+              <div class="item">Status</div>
+              <div class="item">Plan status</div>
+              <div class="item">Charges</div>
+              <div class="item">Total paid</div>
+              <div class="item">${isCancelled ? "Cancelled on" : status === "pending" ? "Renewal" : "Next renewal"}</div>
+            </div>
+            <div class="card__left">
+              <div class="item">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</div>
+              <div class="item"><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></div>
+              <div class="item">${escapeHtml(planStatusLabel)}</div>
+              <div class="item">${charges.length} contribution${charges.length === 1 ? "" : "s"}</div>
+              <div class="item"><strong>${escapeHtml(formatAmount(total))}</strong></div>
+              <div class="item">${nextPaymentVal}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join("")}</div>
+    </div>
+  </div>`;
+
+  const toggleRow = (row) => {
+    const key = row.getAttribute("data-subscription-toggle");
+    const details = list.querySelector(`[data-subscription-details="${key}"]`);
+    if (!details) return;
+    const expanded = row.getAttribute("aria-expanded") === "true";
+    row.setAttribute("aria-expanded", String(!expanded));
+    details.classList.toggle("is-hidden", expanded);
+  };
+  list.onclick = (event) => {
+    const row = event.target.closest?.("[data-subscription-toggle]");
+    if (row) toggleRow(row);
+  };
+  list.onkeydown = (event) => {
+    const row = event.target.closest?.("[data-subscription-toggle]");
+    if (row && (event.key === "Enter" || event.key === " ")) {
+      event.preventDefault();
+      toggleRow(row);
+    }
+  };
+}
+
+function renderGiftHistory(records) {
+  const list = get("gift-list");
+  if (!list) return;
+  if (!records.length) {
+    list.innerHTML = '<p class="empty-state">No gift payments yet.</p>';
+    return;
+  }
+  list.innerHTML = `<div class="uiverse-card-list">${records.map((record) => {
+    const status = normalizedStatus(record);
+    const amount = formatAmount(record.amount);
+    const date = formatDate(record.date || record.createdAt);
+    return `<div class="card uiverse-table-card">
+      <div class="card__title">
+        <span class="card__title-main">Gift for ${escapeHtml(record.recipientName || "Supporter")}</span>
+        <span class="card__badge">${escapeHtml(amount)}</span>
+      </div>
+      <div class="card__data">
+        <div class="card__right">
+          <div class="item">Recipient</div>
+          <div class="item">Date</div>
+          <div class="item">Reference</div>
+          <div class="item">Amount</div>
+          <div class="item">Status</div>
+        </div>
+        <div class="card__left">
+          <div class="item">${escapeHtml(record.recipientName || "Supporter")}</div>
+          <div class="item">${escapeHtml(date)}</div>
+          <div class="item"><span class="table-ref-code">${escapeHtml(record.reference || record.id || "—")}</span></div>
+          <div class="item"><strong>${escapeHtml(amount)}</strong></div>
+          <div class="item"><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></div>
+        </div>
+      </div>
+    </div>`;
+  }).join("")}</div>`;
+}
+
+function allRawRecords() {
+  const records = [...subscriberRecords.values(), paymentRecords, testPaymentRecords, paymentIntents].flat();
+  const unique = new Map();
+  records.forEach((record) => {
+    const key = `${record.path || record.source || "record"}/${record.id || record.reference || `${record.date}-${record.amount}`}`;
+    if (!unique.has(key)) unique.set(key, record);
+  });
+  return [...unique.values()].sort((a, b) => Number(b.date || 0) - Number(a.date || 0));
+}
+
+function allRecords() {
+  const raw = allRawRecords();
+  const subGroups = buildSubscriptionGroups(raw);
+  const subCharges = subGroups.flatMap((group) => group.charges);
+  const nonSubRecords = raw.filter((record) => !isSubscriptionRecord(record));
+  const combined = [...subCharges, ...nonSubRecords];
+  const unique = new Map();
+  combined.forEach((record) => {
+    const key = `${record.path || record.source || "record"}/${record.id || record.reference || `${record.date}-${record.amount}-${record.status}`}`;
+    if (!unique.has(key)) unique.set(key, record);
+  });
+  return [...unique.values()].sort((a, b) => Number(b.date || b.paidAt || b.createdAt || 0) - Number(a.date || a.paidAt || a.createdAt || 0));
+}
+
+function findActiveSubscription(records) {
+  const roots = records.filter(isSubscriptionRootRecord);
+  return roots.find((r) => ["active", "paused"].includes(normalizedStatus(r))) || null;
+}
+
+function findLatestCancelledSubscription(records) {
+  const roots = records.filter(isSubscriptionRootRecord);
+  return roots
+    .filter((r) => normalizedStatus(r) === "cancelled")
+    .sort((a, b) => Number(b.cancelledAt || b.endedAt || b.date || 0) - Number(a.cancelledAt || a.endedAt || a.date || 0))[0] || null;
+}
+
+function findPrimarySubscription(records) {
+  const roots = records.filter(isSubscriptionRootRecord);
+  const priority = { active: 0, paused: 1, pending: 2, cancelled: 3 };
+  return roots.sort((a, b) => (priority[normalizedStatus(a)] ?? 4) - (priority[normalizedStatus(b)] ?? 4) || Number(b.date || 0) - Number(a.date || 0))[0] || null;
+}
+
+function renderRecords() {
+  const raw = allRawRecords();
+  const records = allRecords();
+  const paidRecords = records.filter(isConfirmedPayment);
+  const subscriptionRecords = records.filter(isSubscriptionRecord);
+  const monthlyPaid = subscriptionRecords.filter(isConfirmedPayment);
+  const oneTimePaid = paidRecords.filter((record) => ["one-time", "one_time"].includes(record.type));
+  const giftRecords = records.filter((record) => ["gift-monthly", "gift-subscription"].includes(record.type));
+  const giftPaid = giftRecords.filter(isConfirmedPayment);
+  const otherRecords = records.filter((record) => !isSubscriptionRecord(record));
+  const otherPaid = otherRecords.filter(isConfirmedPayment);
+  const total = paidRecords.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+  const monthlyTotal = monthlyPaid.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+  const oneTimeTotal = oneTimePaid.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+  const giftTotal = giftPaid.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+  const otherTotal = otherPaid.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+
+  const activeSub = findActiveSubscription(raw);
+  cancelledSubscription = findLatestCancelledSubscription(raw);
+  monthlyIntent = raw.find((record) => isSubscriptionRecord(record) && normalizedStatus(record) === "pending") || null;
+  primarySubscription = activeSub || cancelledSubscription || null;
+
+  setText("total-paid", `${paidRecords.length} contribution${paidRecords.length === 1 ? "" : "s"} · ${formatAmount(total)}`);
+  setText("active-monthly", `${monthlyPaid.length} contribution${monthlyPaid.length === 1 ? "" : "s"} · ${formatAmount(monthlyTotal)}`);
+  setText("subscription-payment-count", `${monthlyPaid.length} contribution${monthlyPaid.length === 1 ? "" : "s"} · ${formatAmount(monthlyTotal)}`);
+  setText("one-time-count", `${oneTimePaid.length} contribution${oneTimePaid.length === 1 ? "" : "s"} · ${formatAmount(oneTimeTotal)}`);
+  setText("gift-count", `${giftRecords.length} contribution${giftRecords.length === 1 ? "" : "s"} · ${formatAmount(giftTotal)}`);
+  setText("record-count", `${records.length} record${records.length === 1 ? "" : "s"}`);
+
+  const status = activeSub
+    ? normalizedStatus(activeSub)
+    : cancelledSubscription
+      ? "cancelled"
+      : monthlyIntent
+        ? "pending"
+        : "none";
+  const stateText = status === "active" ? "Active" : status === "paused" ? "Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Pending" : "No active subscription";
+
+  setText("quick-stat-total", formatAmount(total));
+  setText("quick-stat-count", `${paidRecords.length} confirmed contribution${paidRecords.length === 1 ? "" : "s"}`);
+  setText("quick-stat-plan", activeSub ? `${formatAmount(activeSub.amount || 100)} / mo` : (status === "pending" ? `${formatAmount(monthlyIntent?.amount || 100)} / mo` : (cancelledSubscription ? "None" : `${formatAmount(selectedDashboardPlanAmount)} / mo`)));
+  setText("quick-stat-plan-status", activeSub ? "Active supporter" : (status === "pending" ? "Payment pending" : (cancelledSubscription ? "Subscription ended" : "Not subscribed")));
+
+  if (activeSub && activeSub.nextPaymentDue) {
+    setText("quick-stat-renewal", formatDateOnly(activeSub.nextPaymentDue));
+    setText("quick-stat-renewal-sub", "Next scheduled renewal");
+  } else if (cancelledSubscription) {
+    const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
+    setText("quick-stat-renewal", "Cancelled");
+    setText("quick-stat-renewal-sub", `Ended ${formatDateOnly(ended)}`);
+  } else if (status === "pending") {
+    setText("quick-stat-renewal", "Pending");
+    setText("quick-stat-renewal-sub", "Awaiting confirmation");
+  } else {
+    setText("quick-stat-renewal", "—");
+    setText("quick-stat-renewal-sub", "Start subscription anytime");
+  }
+
+  const statusPill = get("dashboard-status-pill");
+  if (statusPill) {
+    statusPill.textContent = status === "active" ? "Active Supporter" : status === "paused" ? "Subscription Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Payment Pending" : "Supporter Account";
+    statusPill.className = `dashboard-status-indicator status-${status}`;
+  }
+
+  const subBadgePill = get("subscription-badge-pill");
+  if (subBadgePill) {
+    subBadgePill.textContent = status === "active" ? "Active Plan" : status === "paused" ? "Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Pending" : "Inactive";
+    subBadgePill.className = `status-pill ${paymentStatusClass(status)}`;
+  }
+
+  const planPickerWrap = get("dash-plan-picker-wrap");
+  if (planPickerWrap) {
+    planPickerWrap.classList.toggle("is-hidden", Boolean(activeSub));
+  }
+  renderCustomPlanBanner();
+
+  let subscriptionSummary = "";
+  if (activeSub) {
+    subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
+  } else if (cancelledSubscription) {
+    const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
+    subscriptionSummary = `Your monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
+  } else if (status === "pending") {
+    subscriptionSummary = (isDevelopmentMode || isPreviewMode)
+      ? "Subscription request pending. Click 'Activate subscription (Test)' to confirm and activate."
+      : "Subscription request pending. Payment confirmation is still required to activate it.";
+  } else {
+    subscriptionSummary = `No monthly subscription yet. Start with ₹${selectedDashboardPlanAmount.toLocaleString("en-IN")} per month.`;
+  }
+  setText("subscription-summary", subscriptionSummary);
+
+
+  const toggle = get("dashboard-subscription-toggle");
+  if (toggle) {
+    const isTestablePending = Boolean(monthlyIntent) && !activeSub && (isDevelopmentMode || isPreviewMode);
+    setPosButtonDisabled(toggle, Boolean(monthlyIntent) && !activeSub && !isTestablePending);
+    const label = status === "active"
+      ? "Pause"
+      : status === "paused"
+        ? "Resume"
+        : status === "pending"
+          ? (isTestablePending ? "Activate (Test)" : "Payment pending")
+          : status === "cancelled"
+            ? "Subscribe"
+            : "Subscribe";
+    setPosButtonText(toggle, label);
+    toggle.setAttribute("data-state", status === "active" ? "pause" : status === "paused" ? "resume" : "subscribe");
+  }
+  const cancel = get("subscription-cancel");
+  if (cancel) {
+    const isCancelable = (!activeSub && monthlyIntent) || (activeSub && ["active", "paused"].includes(normalizedStatus(activeSub)));
+    cancel.disabled = !isCancelable;
+  }
+
+  setText("gift-summary", giftRecords.length ? `${giftPaid.length} confirmed gift${giftPaid.length === 1 ? "" : "s"} for other supporters.` : "Gift payments made for another supporter will appear here.");
+  renderGiftHistory(giftRecords);
+  renderSubscriptionPayments(raw);
+  renderTableSection(records, "all-payments-body", "all-payments-cards", "all-payments-badge", "No transactions recorded yet.");
+  renderTableSection(oneTimePaid, "one-time-body", "one-time-cards", "one-time-badge", "No one-time payments yet.");
+  setText("dashboard-note", records.length ? "Confirmed payments count toward totals. Pending requests stay visible until payment is confirmed." : "Your confirmed and pending payments will appear here.");
+}
+
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest?.(".view-toggle-btn");
+  if (!btn) return;
+  const target = btn.getAttribute("data-view-target");
+  const view = btn.getAttribute("data-view");
+  if (!target || !view) return;
+
+  const wrap = btn.closest(".payments-table-wrap, .subscription-table-wrap");
+  if (!wrap) return;
+
+  wrap.querySelectorAll(".view-toggle-btn").forEach((b) => b.classList.remove("is-active"));
+  btn.classList.add("is-active");
+
+  const tableContainer = wrap.querySelector(".table-view-container");
+  const cardContainer = wrap.querySelector(".card-view-container");
+
+  if (view === "cards") {
+    tableContainer?.classList.add("is-hidden");
+    cardContainer?.classList.remove("is-hidden");
+  } else {
+    tableContainer?.classList.remove("is-hidden");
+    cardContainer?.classList.add("is-hidden");
+  }
+});
+
+function showDatabaseError(error) {
+  console.error("Unable to load supporter records:", error);
+  setText("dashboard-note", "Your account is ready, but the supporter records could not be loaded.");
+}
+
+document.querySelectorAll('input[name="dash-autopay-tier"]').forEach((input) => {
+  input.addEventListener("change", (e) => {
+    selectedDashboardPlanAmount = Number(e.target.value) || 100;
+    const button = get("dashboard-subscription-toggle");
+    if (button && !isPosButtonDisabled(button) && (getPosButtonText(button).includes("Start") || getPosButtonText(button).includes("Transaction"))) {
+      setPosButtonText(button, "Subscribe");
+    }
+  });
+});
+
+async function startMonthlySubscription() {
+  const activeOrPending = allRawRecords().find((record) => isSubscriptionRootRecord(record) && ["active", "paused", "pending"].includes(normalizedStatus(record)));
+  if (!currentUser || activeOrPending) return;
+  const button = get("dashboard-subscription-toggle");
+  const message = get("subscription-message");
+  if (button) setPosButtonDisabled(button, true);
+  if (message) {
+    message.textContent = "Setting up monthly subscription…";
+    message.classList.remove("error");
+  }
+  const now = Date.now();
+  const nextPayment = nextMonthTimestamp(now);
+  const intentAmount = monthlyIntent && Number(monthlyIntent.amount) > 0 ? Number(monthlyIntent.amount) : null;
+  const effectiveAmount = intentAmount || selectedDashboardPlanAmount || 100;
+
+  try {
+    if (isPreviewMode) {
+      const newSubId = `sub-${now}`;
+      const newRoot = {
+        id: newSubId,
+        path: "subscribers",
+        source: "subscribers",
+        type: "monthly",
+        amount: effectiveAmount,
+        subscriptionStatus: "active",
+        status: "active",
+        email: currentUser.email,
+        name: currentUser.displayName,
+        date: now,
+        createdAt: now,
+        nextPaymentDue: nextPayment,
+        isSubscriptionRoot: true,
+      };
+      const existingSubs = subscriberRecords.get("subscribers") || [];
+      subscriberRecords.set("subscribers", [newRoot, ...existingSubs]);
+
+      const newPaymentId = `pay-${now}`;
+      paymentRecords.unshift({
+        id: newPaymentId,
+        path: `payments/${currentUser.uid}`,
+        type: "monthly",
+        reference: `MS-SUB-${Math.floor(2000 + Math.random() * 8000)}`,
+        amount: effectiveAmount,
+        status: "paid",
+        subscriptionStatus: "active",
+        date: now,
+        paidAt: now,
+        createdAt: now,
+        subscriptionId: newSubId,
+        nextPaymentDue: nextPayment,
+        note: "Initial contribution",
+      });
+
+      if (message) message.textContent = "Monthly subscription is now active!";
+      renderRecords();
+      return;
+    }
+
+    const res = await fetch(`${BACKEND_URL}/create-subscription`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: effectiveAmount,
+        user_id: currentUser.uid,
+        email: currentUser.email || "",
+        name: currentUser.displayName || "",
+        phone: currentUserPhone || "",
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.subscription_id) {
+      throw new Error(data?.error || "Subscription creation failed");
+    }
+
+    const options = {
+      key: data.razorpay_key,
+      subscription_id: data.subscription_id,
+      name: "Manali Strays",
+      description: `₹${effectiveAmount.toLocaleString("en-IN")} Monthly Support`,
+      image: "https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png",
+      prefill: {
+        name: currentUser.displayName || "",
+        email: currentUser.email || "",
+        contact: currentUserPhone || "",
+      },
+      theme: { color: "#FFDD00" },
+      handler: function (response) {
+        console.log("Subscription mandate created in dashboard:", response);
+        if (message) message.textContent = "Mandate setup complete! Your recurring subscription is active. Thank you!";
+        renderRecords();
+      },
+      modal: {
+        ondismiss: function () {
+          if (button) setPosButtonDisabled(button, false);
+          if (message) message.textContent = "Payment window closed.";
+        },
+      },
+    };
+
+    if (typeof window.Razorpay === "function") {
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (resp) {
+        console.error("Dashboard subscription failed:", resp.error);
+        if (message) {
+          message.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
+          message.classList.add("error");
+        }
+        if (button) setPosButtonDisabled(button, false);
+      });
+      rzp.open();
+    } else {
+      throw new Error("Razorpay SDK is not loaded. Please refresh.");
+    }
+
+  } catch (error) {
+    console.error("Unable to start monthly subscription:", error);
+    if (message) {
+      message.textContent = "Could not start your monthly subscription. Please try again.";
+      message.classList.add("error");
+    }
+  } finally {
+    if (button) setPosButtonDisabled(button, false);
+  }
+}
+
+const dashSubToggle = get("dashboard-subscription-toggle");
+let isSubToggling = false;
+dashSubToggle?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (isSubToggling || !currentUser || isPosButtonDisabled(dashSubToggle)) return;
+  const records = allRawRecords();
+  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+  const isPausing = Boolean(activeSub && normalizedStatus(activeSub) === "active");
+
+  if (!activeSub) {
+    isSubToggling = true;
+    playPosTransactionAnimation(dashSubToggle, async () => {
+      try {
+        await startMonthlySubscription();
+      } finally {
+        isSubToggling = false;
+      }
+    }, false);
+    return;
+  }
+
+  isSubToggling = true;
+  const message = get("subscription-message");
+  if (message) {
+    message.textContent = isPausing ? "Pausing subscription…" : "Resuming subscription…";
+    message.classList.remove("error");
+  }
+
+  // Play animation (reverse if pausing, forward if resuming) and execute state change on complete
+  playPosTransactionAnimation(dashSubToggle, async () => {
+    try {
+      const nextStatus = isPausing ? "paused" : "active";
+      if (isPreviewMode) {
+        activeSub.subscriptionStatus = nextStatus;
+        activeSub.status = nextStatus;
+        if (nextStatus === "paused") activeSub.pausedAt = Date.now();
+        else activeSub.resumedAt = Date.now();
+        if (message) message.textContent = `Subscription ${nextStatus}.`;
+        renderRecords();
+      } else {
+        const subId = String(activeSub.subscriptionId || activeSub.id || "").trim();
+        if (subId.startsWith("sub_")) {
+          const endpoint = isPausing ? "pause-subscription" : "resume-subscription";
+          const res = await fetch(`${BACKEND_URL}/${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription_id: subId }),
+          });
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `Failed to ${isPausing ? "pause" : "resume"} subscription in Razorpay`);
+          }
+        }
+        await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
+          subscriptionStatus: nextStatus,
+          status: nextStatus,
+          ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
+        });
+        if (message) message.textContent = `Subscription ${nextStatus}.`;
+      }
+    } catch (error) {
+      console.error("Unable to update subscription:", error);
+      if (message) {
+        message.textContent = "Could not update your subscription. Please try again.";
+        message.classList.add("error");
+      }
+    } finally {
+      isSubToggling = false;
+    }
+  }, isPausing);
+});
+
+dashSubToggle?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    dashSubToggle.click();
+  }
+});
+
+
+
+function closeCancelModal() { get("cancel-modal")?.classList.add("is-hidden"); }
+
+async function executeCancelSubscription() {
+  const records = allRawRecords();
+  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+  if (!activeSub && !monthlyIntent) return;
+  const message = get("subscription-message");
+  if (message) {
+    message.textContent = activeSub ? "Cancelling monthly subscription…" : "Cancelling subscription request…";
+    message.classList.remove("error");
+  }
+  const now = Date.now();
+  try {
+    if (!activeSub && monthlyIntent) {
+      if (monthlyIntent.path && monthlyIntent.id) {
+        try {
+          await remove(ref(database, `${monthlyIntent.path}/${monthlyIntent.id}`));
+        } catch (_) {}
+      }
+      paymentIntents = paymentIntents.filter((item) => item.id !== monthlyIntent.id);
+      monthlyIntent = null;
+      closeCancelModal();
+      if (message) message.textContent = "Your pending subscription request has been cancelled.";
+      renderRecords();
+      return;
+    }
+
+    if (isPreviewMode) {
+      activeSub.subscriptionStatus = "cancelled";
+      activeSub.status = "cancelled";
+      activeSub.cancelledAt = now;
+      activeSub.endedAt = now;
+      activeSub.nextPaymentDue = null;
+      for (const list of subscriberRecords.values()) {
+        const item = list.find((s) => s.id === activeSub.id);
+        if (item) {
+          item.subscriptionStatus = "cancelled";
+          item.status = "cancelled";
+          item.cancelledAt = now;
+          item.endedAt = now;
+          item.nextPaymentDue = null;
+        }
+      }
+      paymentRecords.unshift({
+        id: `cancel-${now}`,
+        path: `payments/${currentUser.uid}`,
+        type: "cancellation",
+        isCancellation: true,
+        reference: "—",
+        amount: null,
+        status: "cancelled",
+        subscriptionStatus: "cancelled",
+        date: now,
+        paidAt: now,
+        createdAt: now,
+        subscriptionId: activeSub.id,
+        note: "Subscription cancelled",
+      });
+      closeCancelModal();
+      if (message) message.textContent = "Your subscription has been cancelled. Your past contributions remain safely saved in your account history.";
+      renderRecords();
+      return;
+    }
+
+    const subId = String(activeSub.subscriptionId || activeSub.id || "").trim();
+    if (subId.startsWith("sub_")) {
+      const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription_id: subId }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to cancel subscription in Razorpay");
+      }
+    }
+
+    await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
+      subscriptionStatus: "cancelled",
+      status: "cancelled",
+      cancelledAt: now,
+      endedAt: now,
+      nextPaymentDue: null,
+    });
+    const cancelRef = push(ref(database, activeSub.isTest ? "testPayments" : `payments/${currentUser.uid}`));
+    await set(cancelRef, {
+      type: "cancellation",
+      isCancellation: true,
+      amount: null,
+      status: "cancelled",
+      isTest: Boolean(activeSub.isTest),
+      email: currentUser.email || "",
+      createdAt: now,
+      date: now,
+      subscriptionId: activeSub.id,
+      reference: "—",
+      note: "Subscription cancelled",
+    });
+    closeCancelModal();
+    if (message) message.textContent = "Your subscription has been cancelled. Your past contributions remain safely saved in your account history.";
+    renderRecords();
+  } catch (error) {
+    console.error("Unable to cancel subscription:", error);
+    if (message) {
+      message.textContent = "Could not cancel your subscription. Please try again.";
+      message.classList.add("error");
+    }
+  }
+}
+
+function openCancelModal() { get("cancel-modal")?.classList.remove("is-hidden"); }
+
+const cancelBtn = get("subscription-cancel");
+cancelBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (cancelBtn.disabled) return;
+  const records = allRawRecords();
+  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+  if (!activeSub && !monthlyIntent) return;
+  openCancelModal();
+});
+
+get("cancel-modal-close")?.addEventListener("click", closeCancelModal);
+get("cancel-modal-keep")?.addEventListener("click", closeCancelModal);
+get("cancel-modal")?.addEventListener("click", (event) => {
+  if (event.target instanceof HTMLElement && event.target.hasAttribute("data-cancel-dismiss")) closeCancelModal();
+});
+get("cancel-modal-confirm")?.addEventListener("click", executeCancelSubscription);
+
+function cleanIndianPhone(val) {
+  if (!val) return "";
+  let digits = String(val).replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+  if (digits.length === 13 && digits.startsWith("091")) digits = digits.slice(3);
+  return digits;
+}
+
+function isValidIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  return digits.length === 10 && /^[6-9]\d{9}$/.test(digits);
+}
+
+function formatIndianPhone(val) {
+  const digits = cleanIndianPhone(val);
+  if (digits.length === 10) {
+    return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  return val || "Not provided";
+}
+
+function openPhoneModal(isCompulsory = false) {
+  const modal = get("phone-modal");
+  const closeBtn = get("phone-modal-close");
+  const errorEl = get("modal-phone-error");
+  const phoneInput = get("modal-phone-input");
+  if (!modal) return;
+
+  modal.dataset.compulsory = isCompulsory ? "true" : "false";
+
+  if (errorEl) {
+    errorEl.textContent = "";
+    errorEl.classList.add("is-hidden");
+  }
+
+  if (closeBtn) {
+    closeBtn.classList.toggle("is-hidden", isCompulsory);
+  }
+
+  if (phoneInput) {
+    const cur = get("dashboard-phone")?.textContent || "";
+    const digits = cleanIndianPhone(cur);
+    phoneInput.value = digits.length === 10 ? digits : "";
+  }
+
+  modal.classList.remove("is-hidden");
+  phoneInput?.focus();
+}
+
+function closePhoneModal() {
+  const modal = get("phone-modal");
+  if (!modal) return;
+  const curText = get("dashboard-phone")?.textContent || "";
+  const digits = cleanIndianPhone(curText);
+  if (modal.dataset.compulsory === "true" && !isValidIndianPhone(digits)) {
+    return; // Compulsory: cannot close without entering a valid phone
+  }
+  modal.classList.add("is-hidden");
+}
+
+get("dashboard-edit-phone-btn")?.addEventListener("click", () => openPhoneModal(false));
+get("phone-modal-close")?.addEventListener("click", closePhoneModal);
+get("phone-modal-backdrop")?.addEventListener("click", () => {
+  const modal = get("phone-modal");
+  if (modal?.dataset.compulsory !== "true") {
+    closePhoneModal();
+  }
+});
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const modal = get("phone-modal");
+    if (modal && !modal.classList.contains("is-hidden") && modal.dataset.compulsory !== "true") {
+      closePhoneModal();
+    }
+  }
+});
+
+get("phone-modal-form")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const phoneInput = get("modal-phone-input");
+  const errorEl = get("modal-phone-error");
+  const submitBtn = get("modal-phone-submit");
+  const raw = String(phoneInput?.value || "").trim();
+  const clean = cleanIndianPhone(raw);
+
+  if (!clean) {
+    if (errorEl) {
+      errorEl.textContent = "Mobile number is compulsory. Please enter your 10-digit mobile number.";
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+  if (clean.length < 10) {
+    if (errorEl) {
+      errorEl.textContent = `Mobile number is too short (${clean.length}/10 digits). Please enter a full 10-digit number.`;
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+  if (clean.length > 10) {
+    if (errorEl) {
+      errorEl.textContent = `Mobile number is too long (${clean.length} digits). Please enter a 10-digit number.`;
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+  if (!/^[6-9]/.test(clean)) {
+    if (errorEl) {
+      errorEl.textContent = "Please enter a valid Indian mobile number starting with 6, 7, 8, or 9.";
+      errorEl.classList.remove("is-hidden");
+    }
+    phoneInput?.focus();
+    return;
+  }
+
+  if (submitBtn) submitBtn.disabled = true;
+  try {
+    if (isPreviewMode) {
+      currentUser.phone = clean;
+      setText("dashboard-phone", formatIndianPhone(clean));
+      get("phone-modal")?.removeAttribute("data-compulsory");
+      closePhoneModal();
+    } else if (currentUser) {
+      await update(ref(database, `users/${currentUser.uid}`), {
+        phone: clean,
+        name: currentUser.displayName || "",
+        email: currentUser.email || "",
+        updatedAt: Date.now(),
+      });
+      setText("dashboard-phone", formatIndianPhone(clean));
+      get("phone-modal")?.removeAttribute("data-compulsory");
+      closePhoneModal();
+    }
+  } catch (err) {
+    console.error("Unable to save phone number:", err);
+    if (errorEl) {
+      errorEl.textContent = "Could not save phone number. Please try again.";
+      errorEl.classList.remove("is-hidden");
+    }
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+const isPreviewMode = urlParams.get("preview") === "1" || urlParams.get("demo") === "1";
+
+if (isPreviewMode) {
+  currentUser = {
+    uid: "demo-supporter-1",
+    email: "supporter@manalistrays.org",
+    displayName: "Arjun Sharma",
+    phone: "9876543210",
+    emailVerified: true,
+  };
+  setText("dashboard-user-email", currentUser.email);
+  setText("dashboard-email", currentUser.email);
+  setText("dashboard-name", "Arjun");
+  setText("dashboard-phone", formatIndianPhone(currentUser.phone));
+  const avatar = get("account-avatar");
+  if (avatar) avatar.textContent = "A";
+
+  const now = Date.now();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
+  subscriberRecords.set("subscribers", [{
+    id: "sub-101",
+    path: "subscribers",
+    source: "subscribers",
+    type: "monthly",
+    amount: 100,
+    subscriptionStatus: "active",
+    status: "active",
+    email: currentUser.email,
+    name: currentUser.displayName,
+    date: now - thirtyDays * 2,
+    createdAt: now - thirtyDays * 2,
+    nextPaymentDue: now + thirtyDays,
+    isSubscriptionRoot: true,
+  }]);
+
+  paymentRecords = [
+    {
+      id: "pay-101",
+      path: "payments/demo-supporter-1",
+      type: "monthly",
+      reference: "MS-SUB-1001",
+      amount: 100,
+      status: "paid",
+      subscriptionStatus: "active",
+      date: now - thirtyDays * 2,
+      createdAt: now - thirtyDays * 2,
+      subscriptionId: "sub-101",
+      note: "Initial contribution",
+    },
+    {
+      id: "pay-102",
+      path: "payments/demo-supporter-1",
+      type: "monthly",
+      reference: "MS-REC-1002",
+      amount: 100,
+      status: "paid",
+      subscriptionStatus: "active",
+      date: now - thirtyDays,
+      createdAt: now - thirtyDays,
+      subscriptionId: "sub-101",
+      nextPaymentDue: now + thirtyDays,
+      note: "Monthly renewal",
+    },
+    {
+      id: "pay-201",
+      path: "payments/demo-supporter-1",
+      type: "one-time",
+      reference: "MS-DON-8841",
+      amount: 500,
+      status: "paid",
+      date: now - 14 * 24 * 60 * 60 * 1000,
+      createdAt: now - 14 * 24 * 60 * 60 * 1000,
+      note: "Emergency care & food supplies",
+    },
+    {
+      id: "pay-301",
+      path: "payments/demo-supporter-1",
+      type: "gift-monthly",
+      reference: "MS-GIFT-4490",
+      amount: 100,
+      status: "paid",
+      recipientName: "Neha Patel",
+      date: now - 5 * 24 * 60 * 60 * 1000,
+      createdAt: now - 5 * 24 * 60 * 60 * 1000,
+      note: "Gifted subscription for Neha",
+    }
+  ];
+
+  const demoCustom = urlParams.get("customAmount");
+  if (demoCustom) {
+    userCustomPlan = {
+      amount: Number(demoCustom),
+      title: urlParams.get("customTitle") || "Special Patron Autopay",
+      note: "Custom recurring support tier configured exclusively for your account by admin.",
+      enabled: true
+    };
+  }
+
+  renderRecords();
+} else {
+  onAuthStateChanged(auth, (user) => {
+    const authCard = get("dashboard-auth-card");
+    const memberContent = get("dashboard-member-content");
+    const logoutBtn = get("logout-button");
+
+    if (!user || !user.emailVerified) {
+      currentUser = null;
+      if (authCard) authCard.classList.remove("is-hidden");
+      if (memberContent) memberContent.classList.add("is-hidden-auth");
+      if (logoutBtn) logoutBtn.classList.add("is-hidden");
+      return;
+    }
+
+    if (authCard) authCard.classList.add("is-hidden");
+    if (memberContent) memberContent.classList.remove("is-hidden-auth");
+    if (logoutBtn) logoutBtn.classList.remove("is-hidden");
+    currentUser = user;
+    const email = String(user.email || "").trim().toLowerCase();
+    setText("dashboard-user-email", user.email || "");
+    setText("dashboard-email", user.email || "");
+    const displayName = user.displayName || email.split("@")[0] || "supporter";
+    setText("dashboard-name", displayName.split(" ")[0]);
+    const avatar = get("account-avatar");
+    if (avatar) {
+      avatar.textContent = displayName.charAt(0);
+      if (user.photoURL) {
+        const image = document.createElement("img");
+        image.src = user.photoURL;
+        image.alt = "";
+        image.referrerPolicy = "no-referrer";
+        avatar.replaceChildren(image);
+      }
+    }
+
+    // Compulsory check: enforce mobile number for existing and upcoming users
+    onValue(ref(database, `users/${user.uid}`), (snapshot) => {
+      const userData = snapshot.val() || {};
+      const savedPhone = cleanIndianPhone(userData.phone);
+      currentUserPhone = savedPhone || cleanIndianPhone(user.phoneNumber) || "";
+      if (isValidIndianPhone(savedPhone)) {
+        setText("dashboard-phone", formatIndianPhone(savedPhone));
+        get("phone-modal")?.removeAttribute("data-compulsory");
+        closePhoneModal();
+      } else {
+        setText("dashboard-phone", "Mobile not provided");
+        openPhoneModal(true); // Compulsory modal for existing accounts missing a valid phone
+      }
+    });
+
+    onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers_velcrow", email)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers", email)); renderRecords(); }, showDatabaseError);
+    onValue(ref(database, `payments/${user.uid}`), (snapshot) => { paymentRecords = normalizeUidRecords(snapshot.val(), "payment", `payments/${user.uid}`); renderRecords(); }, () => {});
+    onValue(ref(database, "testPayments"), (snapshot) => { testPaymentRecords = normalizeUidRecords(snapshot.val(), "test-payment", "testPayments").filter((record) => String(record.email || "").trim().toLowerCase() === email); renderRecords(); }, () => {});
+    onValue(ref(database, `paymentIntents/${user.uid}`), (snapshot) => { paymentIntents = normalizeUidRecords(snapshot.val(), "intent", `paymentIntents/${user.uid}`); renderRecords(); }, () => {});
+
+    // Listen for exclusive custom plan assigned by admin
+    onValue(ref(database, `customPlans/${user.uid}`), (snapshot) => {
+      userCustomPlan = snapshot.val();
+      renderCustomPlanBanner();
+      renderRecords();
+    }, () => {});
+  });
+}
+
+// Plan selection & exclusive button event listeners
+get("dash-exclusive-btn")?.addEventListener("click", () => {
+  if (userCustomPlan && Number(userCustomPlan.amount) > 0) {
+    selectedDashboardPlanAmount = Number(userCustomPlan.amount);
+    document.querySelectorAll(".dash-plan-btn").forEach((b) => b.classList.remove("active"));
+    toggleMonthlySubscription();
+  }
+});
+
+document.querySelectorAll(".dash-plan-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const amt = Number(btn.dataset.amount) || 100;
+    selectedDashboardPlanAmount = amt;
+    document.querySelectorAll(".dash-plan-btn").forEach((b) => b.classList.toggle("active", Number(b.dataset.amount) === amt));
+    renderRecords();
+  });
+});
+
+get("logout-button")?.addEventListener("click", async () => {
+  await signOut(auth);
+  if (typeof window.showView === "function") {
+    window.showView("home");
+  } else {
+    window.location.hash = "#home";
+  }
+});
+
+
+
+// Google Sign-in Handler for Dashboard Auth Card
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+document.getElementById("dashboard-google-login-btn")?.addEventListener("click", async () => {
+  const msgEl = document.getElementById("dashboard-login-msg");
+  if (msgEl) {
+    msgEl.textContent = "Connecting to Google...";
+    msgEl.classList.remove("error");
+  }
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch (err) {
+    if (msgEl) {
+      msgEl.textContent = err?.message || "Google sign-in could not be completed.";
+      msgEl.classList.add("error");
+    }
+  }
+});
+
+  </script>
