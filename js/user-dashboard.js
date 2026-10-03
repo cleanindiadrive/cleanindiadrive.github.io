@@ -847,12 +847,11 @@ function renderRecords() {
   }
   const cancel = get("subscription-cancel");
   if (cancel) {
-    if (!activeSub && monthlyIntent) {
-      cancel.disabled = false;
-      cancel.textContent = "Cancel request";
-    } else {
-      cancel.disabled = !activeSub || !["active", "paused"].includes(normalizedStatus(activeSub));
-      cancel.textContent = "Cancel subscription";
+    const isCancelable = (!activeSub && monthlyIntent) || (activeSub && ["active", "paused"].includes(normalizedStatus(activeSub)));
+    cancel.disabled = !isCancelable;
+    const textSpan = cancel.querySelector(".text span") || cancel;
+    if (!cancel.classList.contains("confirm") && !cancel.classList.contains("done")) {
+      textSpan.textContent = (!activeSub && monthlyIntent) ? "Cancel request" : "Cancel subscription";
     }
   }
 
@@ -1176,37 +1175,10 @@ get("dev-charge-button")?.addEventListener("click", async () => {
 
 function closeCancelModal() { get("cancel-modal")?.classList.add("is-hidden"); }
 
-get("subscription-cancel")?.addEventListener("click", () => {
+async function executeCancelSubscription() {
   const records = allRawRecords();
   const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
   if (!activeSub && !monthlyIntent) return;
-  const modalTitle = get("cancel-modal-title");
-  const modalText = get("cancel-modal")?.querySelector("p");
-  if (modalTitle && modalText) {
-    if (!activeSub && monthlyIntent) {
-      modalTitle.textContent = "Cancel subscription request";
-      modalText.textContent = "Are you sure you want to cancel this pending subscription request? You can start a new subscription request anytime.";
-    } else {
-      modalTitle.textContent = "Cancel monthly subscription";
-      modalText.textContent = "Are you sure you want to cancel your monthly subscription? No further charges will be made. All your past contributions and receipts will remain safely saved in your account history.";
-    }
-  }
-  get("cancel-modal")?.classList.remove("is-hidden");
-  get("cancel-modal-confirm")?.focus();
-});
-get("cancel-modal-close")?.addEventListener("click", closeCancelModal);
-get("cancel-modal-keep")?.addEventListener("click", closeCancelModal);
-get("cancel-modal")?.addEventListener("click", (event) => {
-  if (event.target instanceof HTMLElement && event.target.hasAttribute("data-cancel-dismiss")) closeCancelModal();
-});
-
-get("cancel-modal-confirm")?.addEventListener("click", async () => {
-  const records = allRawRecords();
-  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
-  if (!activeSub && !monthlyIntent) return;
-  const modalButtons = ["cancel-modal-confirm", "cancel-modal-keep", "cancel-modal-close"]
-    .map(get).filter(Boolean);
-  modalButtons.forEach((button) => { button.disabled = true; });
   const message = get("subscription-message");
   if (message) {
     message.textContent = activeSub ? "Cancelling monthly subscription…" : "Cancelling subscription request…";
@@ -1252,7 +1224,9 @@ get("cancel-modal-confirm")?.addEventListener("click", async () => {
         reference: "—",
         amount: null,
         status: "cancelled",
+        subscriptionStatus: "cancelled",
         date: now,
+        paidAt: now,
         createdAt: now,
         subscriptionId: activeSub.id,
         note: "Subscription cancelled",
@@ -1293,10 +1267,70 @@ get("cancel-modal-confirm")?.addEventListener("click", async () => {
       message.textContent = "Could not cancel your subscription. Please try again.";
       message.classList.add("error");
     }
-  } finally {
-    modalButtons.forEach((button) => { button.disabled = false; });
+  }
+}
+
+// Double Delete Button Implementation for #subscription-cancel
+const cancelBtn = get("subscription-cancel");
+let cancelResetTimer = null;
+
+cancelBtn?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (cancelBtn.disabled) return;
+
+  const records = allRawRecords();
+  const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+  if (!activeSub && !monthlyIntent) return;
+
+  const textSpan = cancelBtn.querySelector(".text span");
+
+  if (cancelBtn.classList.contains("confirm")) {
+    // 2nd Click: Confirmed! Execute cancellation
+    clearTimeout(cancelResetTimer);
+    cancelBtn.classList.remove("confirm");
+    cancelBtn.classList.add("done");
+    if (textSpan) textSpan.textContent = "Cancelled";
+
+    await executeCancelSubscription();
+
+    setTimeout(() => {
+      cancelBtn.classList.remove("done");
+      const currentActive = allRawRecords().find((r) => isSubscriptionRootRecord(r) && ["active", "paused"].includes(normalizedStatus(r)));
+      if (textSpan) textSpan.textContent = currentActive ? "Cancel subscription" : "Cancel request";
+    }, 2800);
+  } else {
+    // 1st Click: Ask confirmation ("Are you sure?")
+    cancelBtn.classList.add("confirm");
+    if (textSpan) textSpan.textContent = "Are you sure?";
+
+    clearTimeout(cancelResetTimer);
+    cancelResetTimer = setTimeout(() => {
+      cancelBtn.classList.remove("confirm", "done");
+      const currentActive = allRawRecords().find((r) => isSubscriptionRootRecord(r) && ["active", "paused"].includes(normalizedStatus(r)));
+      if (textSpan) textSpan.textContent = currentActive ? "Cancel subscription" : "Cancel request";
+    }, 3500);
   }
 });
+
+// Auto-reset when mouse leaves after confirm state
+cancelBtn?.addEventListener("mouseleave", () => {
+  if (cancelBtn.classList.contains("confirm")) {
+    clearTimeout(cancelResetTimer);
+    cancelResetTimer = setTimeout(() => {
+      cancelBtn.classList.remove("confirm", "done");
+      const currentActive = allRawRecords().find((r) => isSubscriptionRootRecord(r) && ["active", "paused"].includes(normalizedStatus(r)));
+      const textSpan = cancelBtn.querySelector(".text span");
+      if (textSpan) textSpan.textContent = currentActive ? "Cancel subscription" : "Cancel request";
+    }, 2000);
+  }
+});
+
+get("cancel-modal-close")?.addEventListener("click", closeCancelModal);
+get("cancel-modal-keep")?.addEventListener("click", closeCancelModal);
+get("cancel-modal")?.addEventListener("click", (event) => {
+  if (event.target instanceof HTMLElement && event.target.hasAttribute("data-cancel-dismiss")) closeCancelModal();
+});
+get("cancel-modal-confirm")?.addEventListener("click", executeCancelSubscription);
 
 function cleanIndianPhone(val) {
   if (!val) return "";

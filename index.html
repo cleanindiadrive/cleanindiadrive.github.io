@@ -166,9 +166,12 @@
               <strong>One-time support</strong>
               <p>Choose any custom amount to support Manali Strays.</p>
             </div>
-            <div class="mode-form-row">
-              <label class="compact-amount" for="one-time-amount"><span>₹</span><input id="one-time-amount"
-                  type="number" min="1" max="1000000" step="1" value="500" inputmode="numeric" /></label>
+            <div class="coolinput coolinput-amount">
+              <label class="text" for="one-time-amount">Amount:</label>
+              <div class="coolinput-field">
+                <span class="coolinput-prefix">₹</span>
+                <input class="input" id="one-time-amount" type="number" min="1" max="1000000" step="1" value="500" inputmode="numeric" placeholder="500" />
+              </div>
             </div>
             <span class="mode-message" id="one-time-message" role="status"></span>
           </div>
@@ -209,11 +212,11 @@
               <strong>Gift a subscription · ₹100</strong>
               <p>Search any supporter by phone number or name and pay their monthly subscription.</p>
             </div>
-            <div class="gift-search-wrap">
-              <label for="gift-search-input">Search supporter</label>
-              <div class="gift-search-input-box">
+            <div class="gift-search-wrap coolinput" id="gift-search-wrap">
+              <label class="text" for="gift-search-input">Search supporter:</label>
+              <div class="gift-search-input-box coolinput-box">
                 <svg class="gift-search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input id="gift-search-input" type="text" inputmode="text" placeholder="Type mobile number or name…" autocomplete="off" aria-autocomplete="list" />
+                <input class="input" id="gift-search-input" type="text" inputmode="text" placeholder="Type mobile number or name…" autocomplete="off" aria-autocomplete="list" />
                 <button type="button" class="gift-search-clear is-hidden" id="gift-search-clear" aria-label="Clear search">×</button>
               </div>
 
