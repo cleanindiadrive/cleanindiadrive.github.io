@@ -7592,9 +7592,22 @@ dashSubToggle?.addEventListener("click", async (e) => {
         if (message) message.textContent = `Subscription ${nextStatus}.`;
         renderRecords();
       } else {
+        const subId = String(activeSub.subscriptionId || activeSub.id || "").trim();
+        if (subId.startsWith("sub_")) {
+          const endpoint = isPausing ? "pause-subscription" : "resume-subscription";
+          const res = await fetch(`${BACKEND_URL}/${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription_id: subId }),
+          });
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `Failed to ${isPausing ? "pause" : "resume"} subscription in Razorpay`);
+          }
+        }
         await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
           subscriptionStatus: nextStatus,
-          ...(activeSub.isTest ? { status: nextStatus } : {}),
+          status: nextStatus,
           ...(nextStatus === "paused" ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
         });
         if (message) message.textContent = `Subscription ${nextStatus}.`;
@@ -7745,6 +7758,19 @@ async function executeCancelSubscription() {
       if (message) message.textContent = "Your subscription has been cancelled. Your past contributions remain safely saved in your account history.";
       renderRecords();
       return;
+    }
+
+    const subId = String(activeSub.subscriptionId || activeSub.id || "").trim();
+    if (subId.startsWith("sub_")) {
+      const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscription_id: subId }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to cancel subscription in Razorpay");
+      }
     }
 
     await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
