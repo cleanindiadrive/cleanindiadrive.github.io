@@ -8,7 +8,7 @@ const donorTotal = document.getElementById("donor-total");
 const donorList = document.getElementById("donor-list");
 const accountLink = document.getElementById("account-link");
 const sourceData = new Map();
-const subscriberSources = ["subscribers", "subscribers_velcrow", "users"];
+const subscriberSources = ["subscribers", "subscribers_velcrow", "users", "payments", "testPayments"];
 let currentUser = null;
 let currentSubscription = null;
 let currentUserPaymentRecords = [];
@@ -30,11 +30,106 @@ function getRecordStatus(record) {
   return ["active", "paused", "cancelled", "pending"].includes(status) ? status : "active";
 }
 
+const confirmedPaymentStatuses = new Set(["paid", "completed", "success", "active"]);
+
+function isConfirmedPaymentRecord(record) {
+  if (!record || typeof record !== "object") return false;
+  const status = String(record.status || record.subscriptionStatus || "").trim().toLowerCase();
+  return confirmedPaymentStatuses.has(status);
+}
+
+function getActiveSubscribers() {
+  const subscribers = new Map();
+  ["subscribers", "subscribers_velcrow"].forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+    Object.entries(data).forEach(([id, record]) => {
+      if (getRecordStatus(record) !== "active") return;
+      const email = String(record?.email || "").trim().toLowerCase();
+      const key = email || `${source}:${id}`;
+      if (!subscribers.has(key)) {
+        subscribers.set(key, {
+          name: String(record?.name || "").trim(),
+          anonymous: record?.anonymous === true,
+        });
+      }
+    });
+  });
+  return subscribers;
+}
+
+function calculateTotalRaised() {
+  let total = 0;
+  const processedPaymentKeys = new Set();
+  const processedSubscribers = new Set();
+
+  // 1. Process all payment transactions (payments & testPayments)
+  const paymentSources = ["payments"];
+  if (isDevelopmentMode || sourceData.has("testPayments")) {
+    paymentSources.push("testPayments");
+  }
+
+  paymentSources.forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+
+    Object.entries(data).forEach(([uidOrId, recordOrGroup]) => {
+      if (!recordOrGroup || typeof recordOrGroup !== "object") return;
+
+      // Handle flat structure (e.g. testPayments/{id} or direct payment record)
+      if (recordOrGroup.amount !== undefined && isConfirmedPaymentRecord(recordOrGroup)) {
+        const key = `${source}/${uidOrId}`;
+        if (!processedPaymentKeys.has(key)) {
+          processedPaymentKeys.add(key);
+          total += Number(recordOrGroup.amount) || 0;
+          if (recordOrGroup.subscriptionId) {
+            processedSubscribers.add(recordOrGroup.subscriptionId);
+          }
+        }
+        return;
+      }
+
+      // Handle nested UID structure (e.g. payments/{uid}/{paymentId})
+      Object.entries(recordOrGroup).forEach(([payId, record]) => {
+        if (!record || typeof record !== "object") return;
+        if (isConfirmedPaymentRecord(record)) {
+          const key = `${source}/${uidOrId}/${payId}`;
+          if (!processedPaymentKeys.has(key)) {
+            processedPaymentKeys.add(key);
+            total += Number(record.amount) || 0;
+            if (record.subscriptionId) {
+              processedSubscribers.add(record.subscriptionId);
+            }
+          }
+        }
+      });
+    });
+  });
+
+  // 2. Also include subscribers from "subscribers" and "subscribers_velcrow"
+  // For subscribers whose payments are not individually recorded in payments table
+  ["subscribers", "subscribers_velcrow"].forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+    Object.entries(data).forEach(([id, record]) => {
+      if (!record || typeof record !== "object") return;
+      if (getRecordStatus(record) !== "active") return;
+      if (!processedSubscribers.has(id)) {
+        const amt = Number(record.amount) || 100;
+        total += amt;
+      }
+    });
+  });
+
+  return total;
+}
+
 function getActiveDonors() {
   const donors = new Map();
 
-  sourceData.forEach((data, source) => {
-    if (source === "users") return;
+  // Active subscribers
+  ["subscribers", "subscribers_velcrow"].forEach((source) => {
+    const data = sourceData.get(source);
     if (!data || typeof data !== "object") return;
     Object.entries(data).forEach(([id, record]) => {
       if (getRecordStatus(record) !== "active") return;
@@ -44,6 +139,43 @@ function getActiveDonors() {
         name: String(record?.name || "").trim(),
         anonymous: record?.anonymous === true,
       });
+    });
+  });
+
+  // Also include confirmed one-time & gift supporters
+  const paymentSources = ["payments"];
+  if (isDevelopmentMode || sourceData.has("testPayments")) {
+    paymentSources.push("testPayments");
+  }
+
+  paymentSources.forEach((source) => {
+    const data = sourceData.get(source);
+    if (!data || typeof data !== "object") return;
+
+    const processDonorRecord = (record, id) => {
+      if (!record || typeof record !== "object") return;
+      if (!isConfirmedPaymentRecord(record)) return;
+      const name = String(record?.name || record?.donorName || record?.recipientName || record?.email?.split?.("@")?.[0] || "").trim();
+      if (!name) return;
+      const email = String(record?.email || "").trim().toLowerCase();
+      const key = email || `${source}:${id}`;
+      if (!donors.has(key)) {
+        donors.set(key, {
+          name,
+          anonymous: record?.anonymous === true,
+        });
+      }
+    };
+
+    Object.entries(data).forEach(([uidOrId, recordOrGroup]) => {
+      if (!recordOrGroup || typeof recordOrGroup !== "object") return;
+      if (recordOrGroup.amount !== undefined) {
+        processDonorRecord(recordOrGroup, uidOrId);
+      } else {
+        Object.entries(recordOrGroup).forEach(([payId, record]) => {
+          processDonorRecord(record, payId);
+        });
+      }
     });
   });
 
@@ -58,9 +190,13 @@ function formatPublicDonorName(name, anonymous = false) {
 }
 
 function renderPublicTotals() {
-  const total = getActiveDonors().size;
-  if (subscriberCount) subscriberCount.textContent = `${total} active subscribers`;
-  if (moneyRaised) moneyRaised.textContent = String(total * 100);
+  const activeSubs = getActiveSubscribers().size;
+  if (subscriberCount) subscriberCount.textContent = `${activeSubs} active subscribers`;
+
+  const total = calculateTotalRaised();
+  if (moneyRaised) {
+    moneyRaised.textContent = total.toLocaleString("en-IN");
+  }
 }
 
 function renderDonors() {
