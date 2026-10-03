@@ -798,7 +798,7 @@ function renderRecords() {
 
   const statusPill = get("dashboard-status-pill");
   if (statusPill) {
-    statusPill.textContent = status === "active" ? "Active Supporter" : status === "paused" ? "Subscription Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Payment Pending" : "Supporter Account";
+    statusPill.textContent = status === "active" ? "Active Supporter" : status === "paused" ? "Subscription Paused" : status === "cancelled" ? "Cancelled" : status === "pending" ? "Payment Pending" : "No Active Plan";
     statusPill.className = `dashboard-status-indicator status-${status}`;
   }
 
