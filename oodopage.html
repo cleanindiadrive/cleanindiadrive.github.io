@@ -1989,6 +1989,35 @@
         flex: 1;
     }
 
+    .dashboard-name-row {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .dashboard-name-row h1 {
+        margin-bottom: 0;
+    }
+
+    .dashboard-edit-name-btn {
+        flex: 0 0 auto;
+        padding: 0.15rem 0.25rem;
+        border: 0;
+        background: transparent;
+        color: #1a73e8;
+        font-size: 0.72rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .dashboard-edit-name-btn:hover {
+        color: #0b57d0;
+    }
+
     .dashboard-eyebrow-row {
         display: flex;
         align-items: center;
@@ -2675,6 +2704,36 @@
         gap: 0.6rem;
     }
 
+    .subscription-tabs-row {
+        display: flex;
+        gap: 0.45rem;
+        overflow-x: auto;
+        padding: 0.55rem 0.7rem;
+        background: #f4f2eb;
+        border-bottom: 1px solid #e5e1d7;
+        scrollbar-width: thin;
+    }
+
+    .subscription-tab {
+        flex: 0 0 auto;
+        border: 1px solid #d8d3c8;
+        border-radius: 999px;
+        padding: 0.38rem 0.75rem;
+        background: #ffffff;
+        color: #48453e;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .subscription-tab:hover,
+    .subscription-tab.is-active {
+        border-color: #1d7549;
+        background: #1d7549;
+        color: #ffffff;
+    }
+
     .view-toggle {
         display: inline-flex;
         align-items: center;
@@ -3104,8 +3163,15 @@
             font-size: clamp(1.5rem, 6vw, 1.85rem);
             font-weight: 600;
             text-align: left;
-            margin: 0 0 0.35rem 0;
+            margin: 0;
+            width: auto;
+        }
+
+        .dashboard-name-row {
+            align-items: baseline;
             width: 100%;
+            gap: 0.35rem;
+            margin-bottom: 0.35rem;
         }
 
         .dashboard-user-contact {
@@ -3120,6 +3186,9 @@
         }
 
         .dashboard-email-text {
+            display: block;
+            align-self: flex-start;
+            width: 100%;
             text-align: left;
             font-size: 0.82rem;
         }
@@ -3304,6 +3373,8 @@
     }
 
     .profile-name-modal-card {
+        position: relative;
+        z-index: 1;
         width: min(100%, 370px);
         padding: 1.35rem;
         border: 1px solid var(--line);
@@ -5540,7 +5611,11 @@
                             <span class="dashboard-status-indicator status-none" id="dashboard-status-pill">No Active
                                 Plan</span>
                         </div>
-                        <h1>Hello, <span id="dashboard-name">supporter</span>.</h1>
+                        <div class="dashboard-name-row">
+                            <h1>Hello, <span id="dashboard-name">supporter</span>.</h1>
+                            <button type="button" class="dashboard-edit-name-btn" id="dashboard-edit-name-btn"
+                                title="Change your name">Edit name</button>
+                        </div>
                         <div class="dashboard-user-contact">
                             <span class="dashboard-email-text" id="dashboard-email"></span>
                             <span class="dashboard-sep-dot" aria-hidden="true">·</span>
@@ -5976,6 +6051,34 @@
         </section>
     </div>
 
+    <div class="profile-name-modal is-hidden" id="profile-name-modal" role="dialog" aria-modal="true"
+        aria-labelledby="profile-name-modal-title">
+        <div class="cancel-modal-backdrop" id="profile-name-modal-backdrop"></div>
+        <section class="profile-name-modal-card">
+            <button class="cancel-modal-close" id="profile-name-modal-close" type="button"
+                aria-label="Close name dialog">×</button>
+            <div class="cancel-modal-icon phone-modal-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
+                    <path d="M4 21a8 8 0 0 1 16 0"></path>
+                </svg>
+            </div>
+            <h2 id="profile-name-modal-title">Change your name</h2>
+            <p>Use the name you want shown on your supporter profile and future contributions.</p>
+            <form id="dashboard-name-form" novalidate>
+                <label for="dashboard-name-input">Full name</label>
+                <input id="dashboard-name-input" type="text" maxlength="80" autocomplete="name"
+                    placeholder="Enter your name" required>
+                <div class="modal-form-error is-hidden" id="dashboard-name-error" role="alert"></div>
+                <div class="cancel-modal-actions">
+                    <button class="mode-action" id="profile-name-cancel" type="button">Cancel</button>
+                    <button class="mode-action mode-action-primary" id="profile-name-save" type="submit">Save name</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
 
 
 
@@ -6072,6 +6175,62 @@
 
     document.getElementById("page-loader")?.addEventListener("click", dismissLoader);
 
+    // When this page is hosted inside an Odoo iframe, report the real content
+    // height so the parent can remove the empty space below the footer.
+    (function enableEmbeddedHeightSync() {
+        if (window.parent === window) return;
+
+        let frameId = 0;
+        const postHeight = () => {
+            frameId = 0;
+            const root = document.documentElement;
+            const body = document.body;
+            const footer = document.querySelector("footer");
+            const footerBottom = footer
+                ? footer.getBoundingClientRect().bottom + window.scrollY
+                : 0;
+            const height = Math.ceil(Math.max(
+                root.scrollHeight,
+                root.offsetHeight,
+                body?.scrollHeight || 0,
+                body?.offsetHeight || 0,
+                footerBottom,
+            ));
+
+            window.parent.postMessage({
+                source: "sillysense-oodopage",
+                type: "height",
+                height,
+            }, "*");
+        };
+
+        const scheduleHeightUpdate = () => {
+            if (frameId) cancelAnimationFrame(frameId);
+            frameId = requestAnimationFrame(postHeight);
+        };
+
+        window.addEventListener("load", scheduleHeightUpdate);
+        window.addEventListener("resize", scheduleHeightUpdate);
+        document.addEventListener("DOMContentLoaded", scheduleHeightUpdate);
+
+        if (window.ResizeObserver) {
+            new ResizeObserver(scheduleHeightUpdate).observe(document.body);
+        }
+        if (window.MutationObserver) {
+            new MutationObserver(scheduleHeightUpdate).observe(document.body, {
+                childList: true,
+                subtree: true,
+                characterData: true,
+                attributes: true,
+                attributeFilter: ["class", "style"],
+            });
+        }
+
+        [100, 500, 1000, 2000, 3500].forEach((delay) => {
+            setTimeout(scheduleHeightUpdate, delay);
+        });
+    })();
+
 </script>
 
 
@@ -6125,6 +6284,7 @@
     let currentSubscription = null;
     let currentUserPaymentRecords = [];
     let monthlyRequestPending = false;
+    let subscriptionCheckoutPending = false;
     let detachMonthlyIntentListener = null;
     let giftRecipients = [];
 
@@ -6143,7 +6303,7 @@
             return "cancelled";
         }
         const status = String(record.subscriptionStatus || record.status || "").trim().toLowerCase();
-        if (["active", "authenticated"].includes(status)) return "active";
+        if (["active", "authenticated", "paid", "completed", "success"].includes(status)) return "active";
         if (["paused", "cancelled", "pending"].includes(status)) return status;
         return "unknown";
     }
@@ -6210,6 +6370,14 @@
         let total = 0;
         const processedPaymentKeys = new Set();
         const processedSubscribers = new Set();
+        const processedPaymentEmails = new Set();
+        const processedPaymentUserIds = new Set();
+        const rememberPaymentOwner = (record) => {
+            const email = String(record?.email || record?.giver_email || record?.donor_email || "").trim().toLowerCase();
+            const userId = String(record?.userId || record?.user_id || record?.giver_id || record?.donor_id || "").trim();
+            if (email) processedPaymentEmails.add(email);
+            if (userId) processedPaymentUserIds.add(userId);
+        };
 
         // 1. Process all payment transactions (payments & testPayments)
         const paymentSources = ["payments"];
@@ -6226,13 +6394,25 @@
 
                 // Handle flat structure (e.g. testPayments/{id} or direct payment record)
                 if (recordOrGroup.amount !== undefined && isConfirmedPaymentRecord(recordOrGroup)) {
-                    const key = `${source}/${uidOrId}`;
+                    // `payments/{paymentId}` and `payments/{uid}/{paymentId}` are
+                    // two indexes for the same transaction. Deduplicate by the
+                    // provider/payment reference, never by Firebase path.
+                    const paymentIdentity = String(
+                        recordOrGroup.paymentId
+                        || recordOrGroup.reference
+                        || recordOrGroup.transactionId
+                        || recordOrGroup.orderId
+                        || recordOrGroup.id
+                        || uidOrId
+                    ).trim();
+                    const key = `${source}/payment/${paymentIdentity}`;
                     if (!processedPaymentKeys.has(key)) {
                         processedPaymentKeys.add(key);
                         total += Number(recordOrGroup.amount) || 0;
                         if (recordOrGroup.subscriptionId) {
                             processedSubscribers.add(recordOrGroup.subscriptionId);
                         }
+                        rememberPaymentOwner(recordOrGroup);
                     }
                     return;
                 }
@@ -6241,13 +6421,22 @@
                 Object.entries(recordOrGroup).forEach(([payId, record]) => {
                     if (!record || typeof record !== "object") return;
                     if (isConfirmedPaymentRecord(record)) {
-                        const key = `${source}/${uidOrId}/${payId}`;
+                        const paymentIdentity = String(
+                            record.paymentId
+                            || record.reference
+                            || record.transactionId
+                            || record.orderId
+                            || record.id
+                            || payId
+                        ).trim();
+                        const key = `${source}/payment/${paymentIdentity}`;
                         if (!processedPaymentKeys.has(key)) {
                             processedPaymentKeys.add(key);
                             total += Number(record.amount) || 0;
                             if (record.subscriptionId) {
                                 processedSubscribers.add(record.subscriptionId);
                             }
+                            rememberPaymentOwner(record);
                         }
                     }
                 });
@@ -6256,13 +6445,23 @@
 
         // 2. Also include subscribers from "subscribers" and "subscribers_velcrow"
         // For subscribers whose payments are not individually recorded in payments table
+        const processedSubscriberRoots = new Set();
         ["subscribers", "subscribers_velcrow"].forEach((source) => {
             const data = sourceData.get(source);
             if (!data || typeof data !== "object") return;
             Object.entries(data).forEach(([id, record]) => {
                 if (!record || typeof record !== "object") return;
                 if (getRecordStatus(record) !== "active") return;
-                if (!processedSubscribers.has(id)) {
+                const subscriptionIdentity = String(record.subscriptionId || record.id || id).trim();
+                if (processedSubscriberRoots.has(subscriptionIdentity)) return;
+                processedSubscriberRoots.add(subscriptionIdentity);
+                const recordEmail = String(record.email || "").trim().toLowerCase();
+                const recordUserId = String(record.userId || record.user_id || "").trim();
+                const hasRecordedPayment = processedSubscribers.has(subscriptionIdentity)
+                    || processedSubscribers.has(id)
+                    || (recordEmail && processedPaymentEmails.has(recordEmail))
+                    || (recordUserId && processedPaymentUserIds.has(recordUserId));
+                if (!hasRecordedPayment) {
                     const amt = Number(record.amount) || 100;
                     total += amt;
                 }
@@ -6282,9 +6481,14 @@
             Object.entries(data).forEach(([id, record]) => {
                 if (getRecordStatus(record) !== "active") return;
                 const email = String(record?.email || "").trim().toLowerCase();
+                const name = String(record?.name || record?.donorName || "").trim();
+                // A lifecycle-only subscriber root can exist before the
+                // payment webhook fills in donor details. Do not render that
+                // empty root as a separate anonymous donor.
+                if (!name && !email) return;
                 const key = email || `${source}:${id}`;
                 if (!donors.has(key)) donors.set(key, {
-                    name: String(record?.name || "").trim(),
+                    name,
                     anonymous: record?.anonymous === true,
                 });
             });
@@ -6348,13 +6552,23 @@
     }
 
     function renderDonors() {
-        const donors = [...getActiveDonors().values()]
-            .map((donor) => {
-                const label = formatPublicDonorName(donor.name, donor.anonymous);
-                const isAnon = donor.anonymous || label === "Anonymous supporter";
-                const avatar = isAnon ? "•" : (label.charAt(0) || "•").toUpperCase();
-                return { label, avatar };
-            })
+        const uniqueDonors = new Map();
+        [...getActiveDonors().values()].forEach((donor) => {
+            const label = formatPublicDonorName(donor.name, donor.anonymous);
+            const isAnon = donor.anonymous || label === "Anonymous supporter";
+            // The public list is a list of names, so the display name is the
+            // final uniqueness key even when the same person has multiple
+            // payment/subscription records or more than one email address.
+            const nameKey = label.toLocaleLowerCase().replace(/\s+/g, " ").trim();
+            if (!uniqueDonors.has(nameKey)) {
+                uniqueDonors.set(nameKey, {
+                    label,
+                    avatar: isAnon ? "•" : (label.charAt(0) || "•").toUpperCase(),
+                });
+            }
+        });
+
+        const donors = [...uniqueDonors.values()]
             .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
         if (donorTotal) donorTotal.textContent = String(donors.length);
         if (!donorList) return;
@@ -6415,31 +6629,86 @@
         const recipients = [];
         const seen = new Set();
 
-        sourceData.forEach((data, source) => {
-            if (!data || typeof data !== "object") return;
-            Object.entries(data).forEach(([id, record]) => {
-                const rawPhone = String(record?.phone || "").trim();
-                const cleanPhone = cleanIndianPhone(rawPhone);
-                if (!cleanPhone || cleanPhone.length < 5) return;
+        const addRecipient = (record, source, idPath) => {
+            if (!record || typeof record !== "object" || Array.isArray(record)) return;
 
-                const name = String(record?.fullName || record?.name || "").trim() || "Anonymous supporter";
-                const email = String(record?.email || "").trim().toLowerCase();
-                const dedupeKey = cleanPhone.length === 10 ? cleanPhone : (email || `${source}:${id}`);
-                if (seen.has(dedupeKey)) return;
-                seen.add(dedupeKey);
+            const rawPhone = String(
+                record.phone
+                || record.phoneNumber
+                || record.mobile
+                || record.mobileNumber
+                || record.contactNumber
+                || record.recipientPhone
+                || record.recipient_phone
+                || ""
+            ).trim();
+            const cleanPhone = cleanIndianPhone(rawPhone);
+            const name = String(
+                record.fullName
+                || record.name
+                || record.displayName
+                || record.userName
+                || record.donorName
+                || record.recipientName
+                || record.recipient_name
+                || ""
+            ).trim();
+            const email = String(record.email || record.recipientEmail || record.recipient_email || "").trim().toLowerCase();
 
-                const team = "Supporter";
+            // Users are the source of truth for this search. Subscription and
+            // payment records are also accepted because older accounts may
+            // not have a complete users/{uid} profile yet.
+            if (!name && !cleanPhone && !email) return;
+            const existingRecipient = recipients.find((item) =>
+                (cleanPhone && item.phone === cleanPhone) || (email && item.email === email)
+            );
+            if (existingRecipient) {
+                existingRecipient.phone = existingRecipient.phone || cleanPhone;
+                existingRecipient.displayPhone = existingRecipient.phone
+                    ? formatIndianPhone(existingRecipient.phone)
+                    : "Mobile number not available";
+                existingRecipient.email = existingRecipient.email || email;
+                if ((!existingRecipient.name || existingRecipient.name === "Anonymous supporter") && name) {
+                    existingRecipient.name = name;
+                }
+                return;
+            }
+            const dedupeKey = cleanPhone.length === 10
+                ? `phone:${cleanPhone}`
+                : (email ? `email:${email}` : `record:${source}:${idPath}`);
+            if (seen.has(dedupeKey)) return;
+            seen.add(dedupeKey);
 
-                recipients.push({
-                    id,
-                    source,
-                    name,
-                    phone: cleanPhone,
-                    displayPhone: formatIndianPhone(cleanPhone),
-                    email,
-                    team,
-                });
+            recipients.push({
+                id: String(idPath || "").split("/").pop() || "",
+                source,
+                name: name || "Anonymous supporter",
+                phone: cleanPhone,
+                displayPhone: cleanPhone ? formatIndianPhone(cleanPhone) : "Mobile number not available",
+                email,
+                team: "Supporter",
             });
+        };
+
+        const walkRecords = (value, source, path = "", depth = 0) => {
+            if (!value || typeof value !== "object" || Array.isArray(value) || depth > 4) return;
+            const entries = Object.entries(value);
+            const looksLikePerson = entries.some(([key]) => [
+                "phone", "phoneNumber", "mobile", "mobileNumber", "contactNumber",
+                "fullName", "name", "displayName", "email", "recipientName", "recipient_name",
+            ].includes(key));
+            if (looksLikePerson) addRecipient(value, source, path);
+            entries.forEach(([key, child]) => {
+                if (child && typeof child === "object" && !Array.isArray(child)) {
+                    walkRecords(child, source, path ? `${path}/${key}` : key, depth + 1);
+                }
+            });
+        };
+
+        // Start with users so a complete profile wins over older payment
+        // snapshots when the same supporter appears in multiple Firebase nodes.
+        ["users", "subscribers", "subscribers_velcrow", "payments", "testPayments"].forEach((source) => {
+            if (sourceData.has(source)) walkRecords(sourceData.get(source), source);
         });
 
         return recipients;
@@ -6449,7 +6718,9 @@
         const trimmed = String(query || "").trim();
         if (!trimmed) return [];
 
-        const rawDigits = trimmed.replace(/\D/g, "");
+        // Match local 10-digit searches and +91/space-formatted searches
+        // against the same normalized phone value.
+        const rawDigits = cleanIndianPhone(trimmed) || trimmed.replace(/\D/g, "");
         const lowerText = trimmed.toLowerCase();
         const allRecipients = getAllPotentialGiftRecipients();
 
@@ -6543,10 +6814,13 @@
             recipientSelect.innerHTML = `<option value="${escapeHtml(recipient.phone)}" selected>${escapeHtml(recipient.name)}</option>`;
         }
 
+        const canGiftRecipient = isValidIndianPhone(recipient.phone);
         if (giftSubmitBtn) {
-            setPosButtonDisabled(giftSubmitBtn, false);
+            setPosButtonDisabled(giftSubmitBtn, !canGiftRecipient);
         }
-        setModeMessage("gift-message", "");
+        setModeMessage("gift-message", canGiftRecipient
+            ? ""
+            : "This supporter has no valid mobile number saved, so a gifted membership cannot be started yet.", !canGiftRecipient);
     }
 
     function clearGiftSelection() {
@@ -6587,7 +6861,7 @@
         const subBtn = document.getElementById("subscription-toggle");
         if (subBtn) {
             subBtn.classList.remove("is-animating", "is-animating-reverse");
-            setPosButtonDisabled(subBtn, monthlyRequestPending);
+            setPosButtonDisabled(subBtn, monthlyRequestPending || subscriptionCheckoutPending);
         }
         const oneTimeBtn = document.getElementById("one-time-submit");
         if (oneTimeBtn) {
@@ -6621,7 +6895,7 @@
         resetAllPosButtons();
     }
 
-    function findSubscriptionForUser(email) {
+    function findSubscriptionForUser(email, userId = "") {
         if (!email) return null;
         const normalizedEmail = email.trim().toLowerCase();
         const matches = [];
@@ -6653,6 +6927,55 @@
                 return b.timestamp - a.timestamp;
             })[0];
         }
+
+        // Older records can contain a paid monthly charge without the
+        // subscriber root being present yet. Treat that charge as the active
+        // personal plan so the homepage cannot start a second subscription.
+        const paymentMatches = [];
+        const cancelledSubscriptionIds = new Set();
+        const walkPayments = (value, source, path = "", depth = 0) => {
+            if (!value || typeof value !== "object" || Array.isArray(value) || depth > 4) return;
+            const subscriptionId = String(
+                value.subscriptionId
+                || value.razorpaySubscriptionId
+                || value.razorpay_subscription_id
+                || value.parentSubscriptionId
+                || ""
+            ).trim();
+            if (subscriptionId) {
+                const recordEmail = String(value.email || "").trim().toLowerCase();
+                const recordUserId = String(value.userId || value.user_id || "").trim();
+                const matchesUser = (recordEmail && recordEmail === normalizedEmail) || (userId && recordUserId === userId);
+                const isGift = Boolean(value.isGift || value.is_gift)
+                    || String(value.type || "").toLowerCase().includes("gift")
+                    || Boolean(value.recipientName || value.recipient_name || value.gift_recipient_name);
+                const status = getRecordStatus(value);
+                if (matchesUser && (value.isCancellation || value.type === "cancellation" || status === "cancelled")) {
+                    cancelledSubscriptionIds.add(subscriptionId);
+                } else if (matchesUser && !isGift && status === "active") {
+                    paymentMatches.push({
+                        id: subscriptionId,
+                        path: "subscribers",
+                        subscriptionId,
+                        ...value,
+                        status: "active",
+                        timestamp: Number(value.paidAt || value.createdAt || value.date || 0),
+                        inferredSubscriptionRoot: true,
+                    });
+                }
+            }
+            Object.entries(value).forEach(([key, child]) => {
+                if (child && typeof child === "object" && !Array.isArray(child)) {
+                    walkPayments(child, source, path ? `${path}/${key}` : key, depth + 1);
+                }
+            });
+        };
+
+        ["payments", "testPayments"].forEach((source) => walkPayments(sourceData.get(source), source));
+        const inferred = paymentMatches
+            .filter((record) => !cancelledSubscriptionIds.has(record.subscriptionId))
+            .sort((a, b) => b.timestamp - a.timestamp)[0];
+        if (inferred) return inferred;
 
         return null;
     }
@@ -6751,13 +7074,28 @@
         }
         if (!status || !button) return;
 
-        currentSubscription = currentUser ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase()) : null;
+        currentSubscription = currentUser
+            ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase(), currentUser.uid)
+            : null;
         if (!currentUser) {
+            subscriptionCheckoutPending = false;
             status.textContent = `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
             setPosButtonText(button, "Subscribe");
             setPosButtonDisabled(button, false);
             accountAction?.classList.add("is-hidden");
             return;
+        }
+
+        if (subscriptionCheckoutPending && (!currentSubscription || currentSubscription.status === "cancelled")) {
+            status.textContent = "Your first subscription charge is being confirmed. Please wait a moment…";
+            setPosButtonText(button, "Payment pending");
+            setPosButtonDisabled(button, true);
+            accountAction?.classList.add("is-hidden");
+            return;
+        }
+
+        if (currentSubscription && ["active", "paused"].includes(currentSubscription.status)) {
+            subscriptionCheckoutPending = false;
         }
 
         if (!currentSubscription) {
@@ -6906,7 +7244,11 @@
                     });
                     if (!res.ok) {
                         const errData = await res.json().catch(() => ({}));
-                        console.warn("Old plan cancel warning:", errData);
+                        const errMessage = String(errData.error || "");
+                        if (!/not cancellable.*cancelled|already.*cancelled|cancelled status/i.test(errMessage)) {
+                            throw new Error(errMessage || "Could not cancel the current subscription");
+                        }
+                        console.info("Current subscription was already cancelled in Razorpay; continuing with the new plan.");
                     }
                 }
                 if (existingSub.path && existingSub.id) {
@@ -6946,8 +7288,16 @@
     }
 
     function executeCreateMonthlySubscription(button, status) {
+        if (!currentUser) {
+            subscriptionCheckoutPending = false;
+            status.textContent = "Please sign in before starting a personal subscription.";
+            setPosButtonDisabled(button, false);
+            return;
+        }
+
         playPosTransactionAnimation(button, async () => {
             setPosButtonDisabled(button, true);
+            subscriptionCheckoutPending = true;
             status.textContent = "Connecting to payment gateway…";
             try {
                 const res = await fetch(`${BACKEND_URL}/create-subscription`, {
@@ -6980,6 +7330,7 @@
                     theme: { color: "#FFDD00" },
                     handler: function (response) {
                         console.log("Subscription mandate created:", response);
+                        subscriptionCheckoutPending = true;
                         status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
                         setPosButtonText(button, "Active subscription");
                         button.classList.remove("is-animating");
@@ -6988,6 +7339,7 @@
                     },
                     modal: {
                         ondismiss: function () {
+                            subscriptionCheckoutPending = false;
                             button.classList.remove("is-animating");
                             setPosButtonDisabled(button, false);
                             status.textContent = "Payment window closed.";
@@ -6999,6 +7351,7 @@
                     const rzp = new window.Razorpay(options);
                     rzp.on("payment.failed", function (resp) {
                         console.error("Subscription payment failed:", resp.error);
+                        subscriptionCheckoutPending = false;
                         status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
                         button.classList.remove("is-animating");
                         setPosButtonDisabled(button, false);
@@ -7009,6 +7362,7 @@
                 }
             } catch (error) {
                 console.error("Unable to start subscription:", error);
+                subscriptionCheckoutPending = false;
                 status.textContent = error.message || "Could not start the subscription. Please try again.";
                 button.classList.remove("is-animating");
                 setPosButtonDisabled(button, false);
@@ -7103,6 +7457,10 @@
         const recipient = selectedGiftRecipient;
         if (!recipient) {
             setModeMessage("gift-message", "Please search and select a supporter first.", true);
+            return;
+        }
+        if (!isValidIndianPhone(recipient.phone)) {
+            setModeMessage("gift-message", "The selected supporter needs a valid 10-digit mobile number before you can gift a membership.", true);
             return;
         }
         if (isPosButtonDisabled(button)) return;
@@ -7386,6 +7744,7 @@
         detachMonthlyIntentListener = null;
         currentUser = user?.emailVerified ? user : null;
         monthlyRequestPending = false;
+        subscriptionCheckoutPending = false;
         currentUserPhone = "";
 
         if (accountLink) {
@@ -7564,11 +7923,13 @@
 
     const subscriberRecords = new Map();
     let paymentRecords = [];
+    let globalPaymentRecords = [];
     let testPaymentRecords = [];
     let paymentIntents = [];
     let primarySubscription = null;
     let cancelledSubscription = null;
     let monthlyIntent = null;
+    let subscriptionCheckoutPending = false;
     let currentUser = null;
     let selectedDashboardPlanAmount = 100;
     let userCustomPlan = null;
@@ -7667,6 +8028,12 @@
         if (record.isCancellation || record.type === "cancellation") return "cancelled";
         if (record.isSubscriptionRoot) {
             const rootStatus = String(record.subscriptionStatus || record.status || "").trim().toLowerCase();
+            // Older subscriber records stored a successfully activated
+            // mandate as `paid`/`completed`/`success`. For a subscription
+            // root those are active lifecycle states, not one-off payment
+            // statuses.
+            if (rootStatus === "completed" || record.cancelledAt || record.endedAt) return "cancelled";
+            if (["paid", "success", "authenticated"].includes(rootStatus)) return "active";
             return rootStatus || fallback;
         }
         const status = String(record.status || record.subscriptionStatus || "").trim().toLowerCase();
@@ -7689,6 +8056,20 @@
 
         return Object.entries(data).flatMap(([id, record]) => {
             if (!record || typeof record !== "object") return [];
+            // Older backend writes can leave a status-only entry in the
+            // secondary subscribers_velcrow node. It has no user, email, plan,
+            // or gift identity and must not become a fake ₹100 subscription.
+            const isStatusOnlyMirror = source === "subscribers_velcrow"
+                && !record.email
+                && !record.userId
+                && !record.user_id
+                && record.amount == null
+                && !record.type
+                && !record.planId
+                && !record.membershipType
+                && !record.is_gift
+                && !record.isGift;
+            if (isStatusOnlyMirror) return [];
             const recEmail = String(record.email || "").trim().toLowerCase();
             const giverEmail = String(record.giver_email || record.donor_email || record.giverEmail || record.donorEmail || "").trim().toLowerCase();
             const giverId = String(record.giver_id || record.donor_id || record.giverId || record.donorId || record.userId || "").trim();
@@ -7791,6 +8172,7 @@
     function isSubscriptionRecord(record) {
         const type = String(record?.type || "").trim().toLowerCase().replaceAll("_", "-");
         if (type === "gift-monthly" || type === "gift-subscription" || record?.isGift) return false;
+        if ((record?.isCancellation || type === "cancellation") && /gift/i.test(String(record?.note || ""))) return false;
         const billingReason = String(record?.billingReason || record?.billing_type || "").toLowerCase();
         const metadata = [record?.reference, record?.orderId, record?.note, record?.description, record?.paymentType, record?.category]
             .filter(Boolean).join(" ").toLowerCase();
@@ -7809,8 +8191,39 @@
     function isSubscriptionRootRecord(record) {
         if (!isSubscriptionRecord(record)) return false;
         if (record?.isSubscriptionRoot) return true;
+        if (["subscribers", "subscribers_velcrow"].includes(String(record?.path || record?.source || ""))) {
+            return !isGiftRecord(record);
+        }
         if (record?.subscriptionId || record?.parentSubscriptionId || record?.subscriptionPath) return false;
         return ["active", "paused", "cancelled", "pending"].includes(normalizedStatus(record));
+    }
+
+    function normalizeGlobalPaymentRecords(data, email, userId, phone = "") {
+        if (!data || typeof data !== "object") return [];
+        const normalizedEmail = String(email || "").trim().toLowerCase();
+        const normalizedUserId = String(userId || "").trim();
+        const normalizedPhone = cleanIndianPhone(phone);
+        const knownSubscriptionIds = new Set(
+            [...subscriberRecords.values()].flat().map((record) => getSubscriptionIdentity(record)).filter(Boolean)
+        );
+
+        return Object.entries(data).flatMap(([id, record]) => {
+            if (!record || typeof record !== "object" || Array.isArray(record) || record.amount == null) return [];
+            const recordEmails = [record.email, record.giver_email, record.donor_email]
+                .map((value) => String(value || "").trim().toLowerCase())
+                .filter(Boolean);
+            const recordUserIds = [record.userId, record.user_id, record.giver_id, record.donor_id]
+                .map((value) => String(value || "").trim())
+                .filter(Boolean);
+            const recordPhone = cleanIndianPhone(record.phone || record.recipientPhone || record.recipient_phone);
+            const subscriptionId = String(record.subscriptionId || record.parentSubscriptionId || "").trim();
+            const belongsToUser = (normalizedEmail && recordEmails.includes(normalizedEmail))
+                || (normalizedUserId && recordUserIds.includes(normalizedUserId))
+                || (normalizedPhone && recordPhone === normalizedPhone)
+                || (subscriptionId && knownSubscriptionIds.has(subscriptionId));
+            if (!belongsToUser) return [];
+            return normalizeUidRecords({ [id]: record }, "global-payment", "payments");
+        });
     }
 
     function isConfirmedPayment(record) {
@@ -7841,7 +8254,20 @@
 
     function buildSubscriptionGroups(records) {
         const subscriptionRecords = records.filter(isSubscriptionRecord);
-        const roots = subscriptionRecords.filter(isSubscriptionRootRecord);
+        const rootRecords = subscriptionRecords.filter(isSubscriptionRootRecord);
+        const rootsByIdentity = new Map();
+        rootRecords.forEach((record) => {
+            const identity = getSubscriptionReference(record) || `${record.path || record.source || "record"}/${record.id || record.reference || "root"}`;
+            const existing = rootsByIdentity.get(identity);
+            if (!existing) {
+                rootsByIdentity.set(identity, record);
+                return;
+            }
+            const existingTime = Number(existing.updatedAt || existing.cancelledAt || existing.endedAt || existing.date || existing.createdAt || 0);
+            const recordTime = Number(record.updatedAt || record.cancelledAt || record.endedAt || record.date || record.createdAt || 0);
+            if (recordTime >= existingTime) rootsByIdentity.set(identity, record);
+        });
+        const roots = [...rootsByIdentity.values()];
         const groups = roots.map((subscription, index) => ({
             key: `subscription:${subscription.path || subscription.source || "record"}:${subscription.id || subscription.reference || index}`,
             subscription,
@@ -7859,9 +8285,13 @@
                 const matching = groups.find((group) => String(group.subscription.id) === String(record.subscriptionId));
                 if (matching) return matching;
             }
-            if (groups.length === 1) return groups[0];
+            // An explicit subscription ID must never be assigned to another
+            // subscription just because only one root is currently loaded.
+            // That fallback was mixing charges from a cancelled old plan into
+            // the newly selected plan.
+            if (!reference && groups.length === 1) return groups[0];
             const recordTime = Number(record?.date || record?.createdAt || record?.paidAt || 0);
-            if (recordTime > 0) {
+            if (!reference && recordTime > 0) {
                 const matching = groups.find((group) => {
                     const startTime = Number(group.subscription.date || group.subscription.createdAt || 0);
                     const endTime = Number(group.subscription.cancelledAt || group.subscription.endedAt || Infinity);
@@ -7872,16 +8302,27 @@
             return null;
         };
 
-        subscriptionRecords.filter((record) => !roots.includes(record)).forEach((record) => {
+        subscriptionRecords.filter((record) => !rootRecords.includes(record)).forEach((record) => {
             const group = findGroup(record);
             if (group) {
                 group.charges.push(record);
                 return;
             }
             const reference = getSubscriptionReference(record);
+            const inferredStatus = normalizedStatus(record) === "cancelled" ? "cancelled" : "active";
+            const inferredSubscription = {
+                ...record,
+                id: reference || record.id || record.reference,
+                subscriptionId: reference || record.subscriptionId || record.id || record.reference,
+                type: "monthly",
+                status: inferredStatus,
+                subscriptionStatus: inferredStatus,
+                isSubscriptionRoot: true,
+                inferredSubscriptionRoot: true,
+            };
             groups.push({
                 key: `subscription:${reference || record.path || record.source || "record"}:${record.id || record.reference || groups.length}`,
-                subscription: record,
+                subscription: inferredSubscription,
                 charges: [record],
             });
         });
@@ -8077,6 +8518,15 @@
             return;
         }
 
+        const subscriptionTabs = groups.map((group, index) => {
+            const subscription = group.subscription;
+            const status = normalizedStatus(subscription);
+            const tabKey = `subscription-row-${index}`;
+            const date = formatDateOnly(subscription.date || subscription.createdAt);
+            const label = `${formatAmount(subscription.amount || 100)}/mo · ${statusLabel(status)}${date ? ` · ${date}` : ""}`;
+            return `<button type="button" class="subscription-tab${index === 0 ? " is-active" : ""}" role="tab" aria-selected="${index === 0}" data-subscription-tab="${tabKey}">${escapeHtml(label)}</button>`;
+        }).join("");
+
         list.innerHTML = `<div class="subscription-table-wrap">
     <div class="card__title">
       <span class="card__title-main">Subscription Overview</span>
@@ -8087,6 +8537,9 @@
           <button type="button" class="view-toggle-btn" data-view-target="subscription-payments" data-view="cards">Cards</button>
         </div>
       </div>
+    </div>
+    <div class="subscription-tabs-row" role="tablist" aria-label="Subscriptions">
+      ${subscriptionTabs}
     </div>
     <div class="table-view-container" id="subscription-payments-table-container">
       <div class="table-scroll-wrap">
@@ -8151,7 +8604,7 @@
                         ? `Pending request · Submitted ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`
                         : `Active · Started ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`;
 
-            return `<tr class="subscription-summary-row${isCancelled ? " is-cancelled" : ""}" data-subscription-toggle="${key}" tabindex="0" role="button" aria-expanded="${expanded}">
+            return `<tr class="subscription-summary-row${isCancelled ? " is-cancelled" : ""}" data-subscription-group="${key}" data-subscription-toggle="${key}" tabindex="0" role="button" aria-expanded="${expanded}">
               <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</strong><small>${subMetaText}</small></span></td>
               <td><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
               <td>${escapeHtml(String(charges.length))}</td>
@@ -8159,7 +8612,7 @@
               <td>${nextPaymentCell}</td>
               <td>${actionHtml}</td>
             </tr>
-            <tr class="subscription-charges-row${expanded ? "" : " is-hidden"}" data-subscription-details="${key}">
+            <tr class="subscription-charges-row${expanded ? "" : " is-hidden"}" data-subscription-group="${key}" data-subscription-details="${key}">
               <td colspan="6">
                 <div class="subscription-charges-panel">
                   <div class="card__title card__title--nested">
@@ -8211,7 +8664,7 @@
                     ? `<span class="text-muted"><small>Cancelled</small></span>`
                     : `<span class="text-muted"><small>—</small></span>`;
 
-            return `<div class="card uiverse-table-card${isCancelled ? " is-cancelled" : ""}">
+            return `<div class="card uiverse-table-card${isCancelled ? " is-cancelled" : ""}" data-subscription-group="subscription-row-${groups.indexOf(group)}">
           <div class="card__title">
             <span class="card__title-main">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</span>
             <span class="card__badge">${escapeHtml(formatAmount(total))}</span>
@@ -8241,6 +8694,20 @@
     </div>
   </div>`;
 
+        const activateSubscriptionTab = (tabKey) => {
+            list.querySelectorAll(".subscription-tab").forEach((tab) => {
+                const active = tab.getAttribute("data-subscription-tab") === tabKey;
+                tab.classList.toggle("is-active", active);
+                tab.setAttribute("aria-selected", String(active));
+            });
+            list.querySelectorAll("[data-subscription-group]").forEach((element) => {
+                element.classList.toggle("is-hidden", element.getAttribute("data-subscription-group") !== tabKey);
+            });
+            const activeSummary = [...list.querySelectorAll(".subscription-summary-row")]
+                .find((row) => row.getAttribute("data-subscription-group") === tabKey);
+            if (activeSummary) activeSummary.setAttribute("aria-expanded", "false");
+        };
+
         const toggleRow = (row) => {
             const key = row.getAttribute("data-subscription-toggle");
             const details = list.querySelector(`[data-subscription-details="${key}"]`);
@@ -8250,6 +8717,11 @@
             details.classList.toggle("is-hidden", expanded);
         };
         list.onclick = (event) => {
+            const tab = event.target.closest?.(".subscription-tab");
+            if (tab) {
+                activateSubscriptionTab(tab.getAttribute("data-subscription-tab"));
+                return;
+            }
             if (event.target.closest?.(".btn-pause-sub, .btn-resume-sub, button")) {
                 return;
             }
@@ -8263,6 +8735,19 @@
                 toggleRow(row);
             }
         };
+        activateSubscriptionTab("subscription-row-0");
+    }
+
+    function getGiftSubscriptionId(record) {
+        const candidates = [
+            record?.razorpaySubscriptionId,
+            record?.razorpay_subscription_id,
+            record?.subscription_id,
+            record?.subscriptionId,
+            record?.reference,
+            record?.id,
+        ].map((value) => String(value || "").trim()).filter(Boolean);
+        return candidates.find((value) => value.startsWith("sub_")) || candidates[0] || "";
     }
 
     function renderGiftHistory(rawGiftRecords) {
@@ -8330,7 +8815,7 @@
                 const displayStatus = isCancelled ? "cancelled" : (rawStatus === "paused" ? "paused" : "active");
                 const amount = formatAmount(record.amount || 100);
                 const dateStr = formatDate(record.date || record.createdAt);
-                const refCode = cleanReference(record.reference || record.subscriptionId || record.id || "—");
+                const refCode = cleanReference(record.subscriptionId || record.razorpaySubscriptionId || record.reference || record.id || "—");
                 const personTitle = isDonor
                     ? `Gift for ${escapeHtml(record.recipientName || "Supporter")}`
                     : `Gift from ${escapeHtml(record.donorName || "Kind Supporter")}`;
@@ -8342,14 +8827,17 @@
                     ? `<span class="status-pill status-pill-given">Gifted by you</span>`
                     : `<span class="status-pill status-pill-received">Gifted to you</span>`;
 
-                const subId = record.subscriptionId || record.id || "";
+                const subId = getGiftSubscriptionId(record);
+                const recordId = String(record.id || "");
+                const recordPath = String(record.path || record.source || "");
+                const recordReference = String(record.reference || "");
                 const canCancel = !isCancelled && rawStatus !== "failed";
                 const cancelLabel = "Cancel Gift";
                 const recipientName = record.recipientName || "Supporter";
                 const donorName = record.donorName || "Kind Supporter";
 
                 const actionHtml = canCancel
-                    ? `<button type="button" class="btn-cancel-gift" data-gift-sub-id="${escapeHtml(subId)}" data-gift-role="${isDonor ? "donor" : "receiver"}" data-gift-recipient="${escapeHtml(recipientName)}" data-gift-donor="${escapeHtml(donorName)}" data-gift-amount="${record.amount || 100}">${cancelLabel}</button>`
+                    ? `<button type="button" class="btn-cancel-gift" data-gift-sub-id="${escapeHtml(subId)}" data-gift-record-id="${escapeHtml(recordId)}" data-gift-record-path="${escapeHtml(recordPath)}" data-gift-reference="${escapeHtml(recordReference)}" data-gift-role="${isDonor ? "donor" : "receiver"}" data-gift-recipient="${escapeHtml(recipientName)}" data-gift-donor="${escapeHtml(donorName)}" data-gift-amount="${record.amount || 100}">${cancelLabel}</button>`
                     : isCancelled
                         ? `<span class="text-muted"><small>Cancelled</small></span>`
                         : `<span class="text-muted"><small>—</small></span>`;
@@ -8377,7 +8865,7 @@
                 const displayStatus = isCancelled ? "cancelled" : (rawStatus === "paused" ? "paused" : "active");
                 const amount = formatAmount(record.amount || 100);
                 const dateStr = formatDate(record.date || record.createdAt);
-                const refCode = cleanReference(record.reference || record.subscriptionId || record.id || "—");
+                const refCode = cleanReference(record.subscriptionId || record.razorpaySubscriptionId || record.reference || record.id || "—");
                 const personTitle = isDonor
                     ? `Gift for ${escapeHtml(record.recipientName || "Supporter")}`
                     : `Gift from ${escapeHtml(record.donorName || "Kind Supporter")}`;
@@ -8388,7 +8876,10 @@
                 const roleLabel = isDonor ? "Gifted by you" : "Gifted to you";
                 const roleBadgeClass = isDonor ? "status-pill-given" : "status-pill-received";
 
-                const subId = record.subscriptionId || record.id || "";
+                const subId = getGiftSubscriptionId(record);
+                const recordId = String(record.id || "");
+                const recordPath = String(record.path || record.source || "");
+                const recordReference = String(record.reference || "");
                 const canCancel = !isCancelled && rawStatus !== "failed";
                 const cancelLabel = "Cancel Gift";
                 const recipientName = record.recipientName || "Supporter";
@@ -8414,7 +8905,7 @@
             <div class="item">${escapeHtml(dateStr)}</div>
             <div class="item"><span class="table-ref-code">${escapeHtml(refCode)}</span></div>
             <div class="item"><span class="status-pill ${paymentStatusClass(displayStatus)}">${escapeHtml(statusLabel(displayStatus))}</span></div>
-            ${canCancel ? `<div class="item"><button type="button" class="btn-cancel-gift" data-gift-sub-id="${escapeHtml(subId)}" data-gift-role="${isDonor ? "donor" : "receiver"}" data-gift-recipient="${escapeHtml(recipientName)}" data-gift-donor="${escapeHtml(donorName)}" data-gift-amount="${record.amount || 100}">${cancelLabel}</button></div>` : (isCancelled ? '<div class="item"><span class="text-muted"><small>Cancelled</small></span></div>' : '')}
+            ${canCancel ? `<div class="item"><button type="button" class="btn-cancel-gift" data-gift-sub-id="${escapeHtml(subId)}" data-gift-record-id="${escapeHtml(recordId)}" data-gift-record-path="${escapeHtml(recordPath)}" data-gift-reference="${escapeHtml(recordReference)}" data-gift-role="${isDonor ? "donor" : "receiver"}" data-gift-recipient="${escapeHtml(recipientName)}" data-gift-donor="${escapeHtml(donorName)}" data-gift-amount="${record.amount || 100}">${cancelLabel}</button></div>` : (isCancelled ? '<div class="item"><span class="text-muted"><small>Cancelled</small></span></div>' : '')}
           </div>
         </div>
       </div>`;
@@ -8423,10 +8914,36 @@
     }
 
     function allRawRecords() {
-        const records = [...subscriberRecords.values(), paymentRecords, testPaymentRecords, paymentIntents].flat();
+        const records = [...subscriberRecords.values(), paymentRecords, globalPaymentRecords, testPaymentRecords, paymentIntents]
+            .flat()
+            .filter((record) => {
+                const source = String(record?.path || record?.source || "");
+                const isVelcrowMirror = source === "subscribers_velcrow";
+                const hasUserIdentity = Boolean(
+                    String(record?.email || record?.userId || record?.user_id || "").trim()
+                );
+                const isGift = isGiftRecord(record);
+                const isStatusOnlyMirror = isVelcrowMirror
+                    && record?.isSubscriptionRoot
+                    && !hasUserIdentity
+                    && !isGift
+                    && !record?.planId
+                    && !record?.subscribedAt
+                    && !record?.lastPaymentAt;
+                return !isStatusOnlyMirror;
+            });
         const unique = new Map();
         records.forEach((record) => {
-            const key = `${record.path || record.source || "record"}/${record.id || record.reference || `${record.date}-${record.amount}`}`;
+            const reference = String(record.reference || record.paymentId || "").trim();
+            const subscriptionIdentity = getSubscriptionIdentity(record);
+            const isStablePaymentReference = /^(pay_|order_)/i.test(reference);
+            const isSubscriberRoot = isSubscriptionRootRecord(record)
+                && ["subscribers", "subscribers_velcrow"].includes(String(record.path || record.source || ""));
+            const key = isStablePaymentReference
+                ? `reference/${reference}`
+                : isSubscriberRoot && subscriptionIdentity
+                    ? `subscription-root/${subscriptionIdentity}`
+                    : `${record.path || record.source || "record"}/${record.id || record.reference || `${record.date}-${record.amount}`}`;
             if (!unique.has(key)) unique.set(key, record);
         });
         return [...unique.values()].sort((a, b) => Number(b.date || 0) - Number(a.date || 0));
@@ -8510,9 +9027,83 @@
         return [...unique.values()].sort((a, b) => Number(b.date || b.paidAt || b.createdAt || 0) - Number(a.date || a.paidAt || a.createdAt || 0));
     }
 
+    function getSubscriptionIdentity(record) {
+        if (!record) return "";
+        return String(
+            record.subscriptionId
+            || record.parentSubscriptionId
+            || record.subscriptionPath
+            || (record.isSubscriptionRoot ? record.id : "")
+            || ""
+        ).trim();
+    }
+
+    function findActiveSubscriptions(records) {
+        const unique = new Map();
+        records
+            .filter((record) => isSubscriptionRootRecord(record)
+                && !isGiftRecord(record)
+                && ["active", "paused"].includes(normalizedStatus(record)))
+            .forEach((record) => {
+                const identity = getSubscriptionIdentity(record)
+                    || `${record.path || record.source || "record"}/${record.id || record.reference || "subscription"}`;
+                const existing = unique.get(identity);
+                if (!existing) {
+                    unique.set(identity, record);
+                    return;
+                }
+                const existingTime = Number(existing.updatedAt || existing.date || existing.createdAt || 0);
+                const recordTime = Number(record.updatedAt || record.date || record.createdAt || 0);
+                if (recordTime >= existingTime) unique.set(identity, record);
+            });
+        return [...unique.values()].sort((a, b) => Number(b.updatedAt || b.date || b.createdAt || 0) - Number(a.updatedAt || a.date || a.createdAt || 0));
+    }
+
     function findActiveSubscription(records) {
-        const roots = records.filter(isSubscriptionRootRecord);
-        return roots.find((r) => ["active", "paused"].includes(normalizedStatus(r))) || null;
+        const activeRoot = findActiveSubscriptions(records)[0];
+        if (activeRoot) return activeRoot;
+
+        // Some older accounts only have the successful monthly payment under
+        // payments/{uid}; the subscriber root is missing. The subscription
+        // table can still group that payment, but the status card and cancel
+        // button used to incorrectly report "No monthly subscription".
+        const cancelledIds = new Set(records
+            .filter((record) => record.isCancellation || record.type === "cancellation" || normalizedStatus(record) === "cancelled")
+            .map(getSubscriptionIdentity)
+            .filter(Boolean));
+
+        const inferred = records
+            .filter((record) => {
+                const identity = getSubscriptionIdentity(record);
+                return isSubscriptionRecord(record)
+                    && !record.isSubscriptionRoot
+                    && !record.isCancellation
+                    && !isGiftRecord(record)
+                    && identity
+                    && !cancelledIds.has(identity)
+                    && isConfirmedPayment(record);
+            })
+            .sort((a, b) => Number(b.date || b.paidAt || b.createdAt || 0) - Number(a.date || a.paidAt || a.createdAt || 0))[0];
+
+        if (!inferred) return null;
+        return {
+            ...inferred,
+            status: "active",
+            subscriptionStatus: "active",
+            isSubscriptionRoot: true,
+            inferredSubscriptionRoot: true,
+        };
+    }
+
+    function getSubscriptionUpdatePaths(subscription) {
+        const subId = getSubscriptionIdentity(subscription) || String(subscription?.id || "").trim();
+        if (subscription?.inferredSubscriptionRoot && subId) {
+            return [`subscribers/${subId}`, `subscribers_velcrow/${subId}`];
+        }
+        if (subscription?.path && subscription?.id) {
+            return [`${subscription.path}/${subscription.id}`];
+        }
+        return subId ? [`subscribers/${subId}`, `subscribers_velcrow/${subId}`] : [];
     }
 
     function findLatestCancelledSubscription(records) {
@@ -8547,6 +9138,7 @@
 
         const activeSub = findActiveSubscription(raw);
         const activeReceivedGift = raw.find((r) => isGiftRecord(r) && r.giftRole === "receiver" && ["active", "paused"].includes(normalizedStatus(r)));
+        if (activeSub) subscriptionCheckoutPending = false;
         cancelledSubscription = findLatestCancelledSubscription(raw);
         monthlyIntent = raw.find((record) => isSubscriptionRecord(record) && normalizedStatus(record) === "pending") || null;
         primarySubscription = activeSub || cancelledSubscription || null;
@@ -8562,6 +9154,8 @@
             ? normalizedStatus(activeSub)
             : activeReceivedGift
                 ? normalizedStatus(activeReceivedGift)
+                : subscriptionCheckoutPending
+                    ? "pending"
                 : cancelledSubscription
                     ? "cancelled"
                     : monthlyIntent
@@ -8655,7 +9249,9 @@
             const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
             subscriptionSummary = `Your monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
         } else if (status === "pending") {
-            subscriptionSummary = (isDevelopmentMode || isPreviewMode)
+            subscriptionSummary = subscriptionCheckoutPending
+                ? "Your first subscription charge was submitted and is waiting for server confirmation. Please keep this page open for a moment."
+                : (isDevelopmentMode || isPreviewMode)
                 ? "Subscription request pending. Click 'Activate subscription (Test)' to confirm and activate."
                 : "Subscription request pending. Payment confirmation is still required to activate it.";
         } else {
@@ -8667,13 +9263,14 @@
         const toggle = get("dashboard-subscription-toggle");
         if (toggle) {
             const isTestablePending = Boolean(monthlyIntent) && !activeSub && (isDevelopmentMode || isPreviewMode);
-            setPosButtonDisabled(toggle, Boolean(monthlyIntent) && !activeSub && !isTestablePending);
+            const isCheckoutPending = subscriptionCheckoutPending && !activeSub;
+            setPosButtonDisabled(toggle, isCheckoutPending || (Boolean(monthlyIntent) && !activeSub && !isTestablePending));
             const label = status === "active"
                 ? "Pause"
                 : status === "paused"
                     ? "Resume"
                     : status === "pending"
-                        ? (isTestablePending ? "Activate (Test)" : "Payment pending")
+                        ? (isCheckoutPending ? "Payment pending" : (isTestablePending ? "Activate (Test)" : "Payment pending"))
                         : status === "cancelled"
                             ? "Subscribe"
                             : "Subscribe";
@@ -8698,7 +9295,7 @@
             }
         }
 
-        const allGifts = raw.filter((r) => isGiftRecord(r) || ["gift-monthly", "gift-subscription"].includes(r.type));
+        const allGifts = raw.filter((r) => !r.isCancellation && (isGiftRecord(r) || ["gift-monthly", "gift-subscription"].includes(r.type)));
         setText("gift-summary", allGifts.length ? `${giftPaid.length} confirmed gift${giftPaid.length === 1 ? "" : "s"} for other supporters.` : "Gift payments made for another supporter will appear here.");
         renderGiftHistory(allGifts);
         renderSubscriptionPayments(raw);
@@ -8742,7 +9339,7 @@
             const newAmt = Number(e.target.value) || 100;
             selectedDashboardPlanAmount = newAmt;
             const records = allRawRecords();
-            const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+            const activeSub = findActiveSubscription(records);
             if (activeSub) {
                 const currentAmt = Number(activeSub.amount) || 100;
                 if (newAmt !== currentAmt) {
@@ -8758,8 +9355,9 @@
     });
 
     async function startMonthlySubscription(overrideAmount) {
+        if (subscriptionCheckoutPending) return;
         const records = allRawRecords();
-        const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+        const activeSub = findActiveSubscription(records);
         const intentAmount = monthlyIntent && Number(monthlyIntent.amount) > 0 ? Number(monthlyIntent.amount) : null;
         const effectiveAmount = overrideAmount || intentAmount || selectedDashboardPlanAmount || 100;
 
@@ -8822,6 +9420,7 @@
                 return;
             }
 
+            subscriptionCheckoutPending = true;
             const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -8852,11 +9451,13 @@
                 theme: { color: "#FFDD00" },
                 handler: function (response) {
                     console.log("Subscription mandate created in dashboard:", response);
+                    subscriptionCheckoutPending = true;
                     if (message) message.textContent = "Mandate setup complete! Your recurring subscription is active. Thank you!";
                     renderRecords();
                 },
                 modal: {
                     ondismiss: function () {
+                        subscriptionCheckoutPending = false;
                         if (button) {
                             button.classList.remove("is-animating");
                             setPosButtonDisabled(button, false);
@@ -8870,6 +9471,7 @@
                 const rzp = new window.Razorpay(options);
                 rzp.on("payment.failed", function (resp) {
                     console.error("Dashboard subscription failed:", resp.error);
+                    subscriptionCheckoutPending = false;
                     if (message) {
                         message.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
                         message.classList.add("error");
@@ -8886,12 +9488,13 @@
 
         } catch (error) {
             console.error("Unable to start monthly subscription:", error);
+            subscriptionCheckoutPending = false;
             if (message) {
-                message.textContent = "Could not start your monthly subscription. Please try again.";
+                message.textContent = error?.message || "Could not start your monthly subscription. Please try again.";
                 message.classList.add("error");
             }
         } finally {
-            if (button) setPosButtonDisabled(button, false);
+            if (button) setPosButtonDisabled(button, subscriptionCheckoutPending);
         }
     }
 
@@ -8901,7 +9504,7 @@
         e.preventDefault();
         if (isSubToggling || isTogglingSubscriptionPause || !currentUser || isPosButtonDisabled(dashSubToggle)) return;
         const records = allRawRecords();
-        const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+        const activeSub = findActiveSubscription(records);
 
         if (!activeSub) {
             isSubToggling = true;
@@ -8964,7 +9567,7 @@
         }
 
         const records = allRawRecords();
-        const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+        const activeSub = findActiveSubscription(records);
         if (!activeSub && !monthlyIntent) return;
 
         isCancellingSubscription = true;
@@ -8981,6 +9584,7 @@
             message.classList.remove("error");
         }
         const now = Date.now();
+        const activeSubscriptionId = getSubscriptionIdentity(activeSub) || String(activeSub?.id || "").trim();
         try {
             if (!activeSub && monthlyIntent) {
                 if (monthlyIntent.path && monthlyIntent.id) {
@@ -9025,7 +9629,7 @@
                     date: now,
                     paidAt: now,
                     createdAt: now,
-                    subscriptionId: activeSub.id,
+                    subscriptionId: activeSubscriptionId,
                     note: "Subscription cancelled",
                 });
                 isCancellingSubscription = false;
@@ -9035,7 +9639,7 @@
                 return;
             }
 
-            const subId = String(activeSub.subscriptionId || activeSub.id || "").trim();
+            const subId = activeSubscriptionId;
             if (subId.startsWith("sub_")) {
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
@@ -9044,17 +9648,37 @@
                 });
                 if (!res.ok) {
                     const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || "Failed to cancel subscription in Razorpay");
+                    const errorMessage = String(errData.error || "");
+                    if (!/not cancellable.*cancelled|already.*cancelled|cancelled status/i.test(errorMessage)) {
+                        throw new Error(errorMessage || "Failed to cancel subscription in Razorpay");
+                    }
+                    console.info("Monthly subscription was already cancelled in Razorpay; syncing local status.");
                 }
             }
 
-            await update(ref(database, `${activeSub.path}/${activeSub.id}`), {
+            const subscriptionUpdate = {
                 subscriptionStatus: "cancelled",
                 status: "cancelled",
                 cancelledAt: now,
                 endedAt: now,
                 nextPaymentDue: null,
-            });
+            };
+            const subscriptionPaths = activeSub.inferredSubscriptionRoot
+                ? [`subscribers/${subId}`, `subscribers_velcrow/${subId}`]
+                : [`${activeSub.path}/${activeSub.id}`];
+            let subscriptionUpdated = false;
+            let subscriptionUpdateError = null;
+            for (const path of [...new Set(subscriptionPaths.filter(Boolean))]) {
+                try {
+                    await update(ref(database, path), subscriptionUpdate);
+                    subscriptionUpdated = true;
+                } catch (error) {
+                    subscriptionUpdateError = error;
+                }
+            }
+            if (!subscriptionUpdated && !subId.startsWith("sub_")) {
+                throw subscriptionUpdateError || new Error("Could not save the subscription cancellation.");
+            }
             const cancelRef = push(ref(database, activeSub.isTest ? "testPayments" : `payments/${currentUser.uid}`));
             await set(cancelRef, {
                 type: "cancellation",
@@ -9065,7 +9689,7 @@
                 email: currentUser.email || "",
                 createdAt: now,
                 date: now,
-                subscriptionId: activeSub.id,
+                subscriptionId: activeSubscriptionId,
                 reference: "—",
                 note: "Subscription cancelled",
             });
@@ -9141,27 +9765,53 @@
             if (closeBtn) closeBtn.disabled = true;
 
             try {
-                // 1. Cancel old plan
-                const subId = String(existingSub.subscriptionId || existingSub.id || "").trim();
-                if (subId.startsWith("sub_")) {
-                    const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ subscription_id: subId }),
-                    });
-                    if (!res.ok) {
-                        const errData = await res.json().catch(() => ({}));
-                        console.warn("Old plan cancel warning:", errData);
+                // 1. Cancel every active personal plan before creating the
+                // replacement. This also repairs accounts that accumulated
+                // more than one active plan during an earlier failed switch.
+                const activePlans = [existingSub, ...findActiveSubscriptions(allRawRecords())];
+                const cancelledIds = new Set();
+                for (const subscription of activePlans) {
+                    const subId = getSubscriptionIdentity(subscription) || String(subscription?.id || "").trim();
+                    if (!subId || cancelledIds.has(subId)) continue;
+                    cancelledIds.add(subId);
+
+                    if (subId.startsWith("sub_")) {
+                        const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ subscription_id: subId }),
+                        });
+                        if (!res.ok) {
+                            const errData = await res.json().catch(() => ({}));
+                            const errMessage = String(errData.error || "");
+                            if (!/not cancellable.*cancelled|already.*cancelled|cancelled status/i.test(errMessage)) {
+                                throw new Error(errMessage || "Could not cancel the current subscription");
+                            }
+                            console.info(`Subscription ${subId} was already cancelled in Razorpay; syncing local status.`);
+                        }
                     }
-                }
-                if (existingSub.path && existingSub.id) {
-                    await update(ref(database, `${existingSub.path}/${existingSub.id}`), {
+
+                    const cancelUpdates = {
                         subscriptionStatus: "cancelled",
                         status: "cancelled",
                         cancelledAt: Date.now(),
                         endedAt: Date.now(),
                         nextPaymentDue: null,
-                    });
+                    };
+                    const updatePaths = getSubscriptionUpdatePaths(subscription);
+                    let planUpdated = false;
+                    let planUpdateError = null;
+                    for (const path of [...new Set(updatePaths)]) {
+                        try {
+                            await update(ref(database, path), cancelUpdates);
+                            planUpdated = true;
+                        } catch (error) {
+                            planUpdateError = error;
+                        }
+                    }
+                    if (!planUpdated && !subId.startsWith("sub_")) {
+                        throw planUpdateError || new Error("Could not save the current subscription cancellation");
+                    }
                 }
                 isChangingPlan = false;
                 closeModal();
@@ -9201,10 +9851,10 @@
         if (targetSubId) {
             targetSub = records.find((r) => (r.id === targetSubId || r.subscriptionId === targetSubId) && isSubscriptionRootRecord(r))
                 || records.find((r) => (r.id === targetSubId || r.subscriptionId === targetSubId) && (r.path === "subscribers" || r.path === "subscribers_velcrow"))
-                || records.find((r) => (r.id === targetSubId || r.subscriptionId === targetSubId) && isSubscriptionRecord(r) && !isConfirmedPayment(r));
+                || records.find((r) => (r.id === targetSubId || r.subscriptionId === targetSubId) && isSubscriptionRecord(r));
         }
         if (!targetSub) {
-            targetSub = records.find((r) => isSubscriptionRootRecord(r) && ["active", "paused"].includes(normalizedStatus(r)))
+            targetSub = findActiveSubscription(records)
                 || records.find((r) => (r.path === "subscribers" || r.path === "subscribers_velcrow") && ["active", "paused"].includes(normalizedStatus(r)));
         }
         if (!targetSub) return;
@@ -9297,8 +9947,11 @@
                     ...(isPausing ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
                     updatedAt: Date.now(),
                 };
-                if (targetSub.path && targetSub.id) {
-                    await update(ref(database, `${targetSub.path}/${targetSub.id}`), updates);
+                const updatePaths = getSubscriptionUpdatePaths(targetSub);
+                if (updatePaths.length) {
+                    for (const path of [...new Set(updatePaths)]) {
+                        await update(ref(database, path), updates);
+                    }
                 } else if (subId) {
                     await update(ref(database, `subscribers/${subId}`), updates);
                 }
@@ -9313,10 +9966,35 @@
                 message.textContent = `Subscription ${nextStatus === "paused" ? "paused" : "resumed"}.`;
                 message.classList.remove("error");
             }
+
+            // Update the in-memory subscriber roots immediately. Firebase
+            // listeners are asynchronous, so waiting for their next snapshot
+            // leaves the button showing the old action after a successful API
+            // response.
+            const localUpdates = {
+                subscriptionStatus: nextStatus,
+                status: nextStatus,
+                ...(isPausing ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
+                updatedAt: Date.now(),
+            };
+            Object.assign(targetSub, localUpdates);
+            const targetIdentity = getSubscriptionIdentity(targetSub);
+            for (const list of subscriberRecords.values()) {
+                if (!Array.isArray(list)) continue;
+                list.forEach((record) => {
+                    const recordIdentity = getSubscriptionIdentity(record);
+                    if (recordIdentity && targetIdentity && recordIdentity === targetIdentity) {
+                        Object.assign(record, localUpdates);
+                    }
+                });
+            }
             renderRecords();
             if (typeof window.refreshSubscriptionMode === "function") {
                 window.refreshSubscriptionMode();
             }
+            const nextLabel = nextStatus === "paused" ? "Resume" : "Pause";
+            setPosButtonText(dashToggle, nextLabel);
+            dashToggle?.setAttribute("data-state", nextStatus === "paused" ? "resume" : "pause");
         } catch (error) {
             console.error("Unable to update subscription status:", error);
             if (message) {
@@ -9343,17 +10021,21 @@
         e.preventDefault();
         if (cancelBtn.disabled) return;
         const records = allRawRecords();
-        const activeSub = records.find((record) => isSubscriptionRootRecord(record) && ["active", "paused"].includes(normalizedStatus(record)));
+        const activeSub = findActiveSubscription(records);
         const activeGift = records.find((r) => isGiftRecord(r) && r.giftRole === "receiver" && ["active", "paused"].includes(normalizedStatus(r)));
 
         if (!activeSub && activeGift) {
             openCancelGiftModal(
-                activeGift.subscriptionId || activeGift.id,
+                getGiftSubscriptionId(activeGift),
                 activeGift.recipientName || (currentUser?.displayName || "Supporter"),
                 activeGift.amount || 100,
                 {
                     role: "receiver",
                     donorName: activeGift.donorName || "Kind Supporter",
+                    recordId: activeGift.id,
+                    recordPath: activeGift.path || activeGift.source,
+                    reference: activeGift.reference,
+                    razorpaySubscriptionId: activeGift.razorpaySubscriptionId || activeGift.razorpay_subscription_id,
                 }
             );
             return;
@@ -9388,7 +10070,18 @@
         const recName = recipientName || "Supporter";
         const isReceiver = role === "receiver";
 
-        targetGiftToCancel = { subId, recipientName: recName, donorName, amount, role, isReceiver };
+        targetGiftToCancel = {
+            subId: String(subId || "").trim(),
+            recipientName: recName,
+            donorName,
+            amount,
+            role,
+            isReceiver,
+            recordId: String(meta.recordId || "").trim(),
+            recordPath: String(meta.recordPath || "").trim(),
+            reference: String(meta.reference || "").trim(),
+            razorpaySubscriptionId: String(meta.razorpaySubscriptionId || "").trim(),
+        };
 
         if (titleEl) {
             titleEl.textContent = isReceiver ? "End gifted membership" : "Cancel gifted membership";
@@ -9443,16 +10136,68 @@
         if (closeBtn) closeBtn.disabled = true;
 
         const now = Date.now();
-        let subId = String(targetGiftToCancel.subId || "").trim();
+        const target = targetGiftToCancel;
+        const raw = allRawRecords();
+        const targetIdentifiers = new Set([
+            target.subId,
+            target.recordId,
+            target.reference,
+            target.razorpaySubscriptionId,
+        ].map((value) => String(value || "").trim()).filter(Boolean));
+        const matchingGiftRecord = (record) => {
+            if (!isGiftRecord(record)) return false;
+            const identifiers = [
+                record.subscriptionId,
+                record.razorpaySubscriptionId,
+                record.razorpay_subscription_id,
+                record.reference,
+                record.id,
+                record.path && record.id ? `${record.path}/${record.id}` : "",
+            ].map((value) => String(value || "").trim()).filter(Boolean);
+            return identifiers.some((identifier) => targetIdentifiers.has(identifier));
+        };
+        const matchingGiftRecords = raw.filter(matchingGiftRecord);
+        const canonicalGiftRecord = matchingGiftRecords.find((record) => getGiftSubscriptionId(record).startsWith("sub_"))
+            || matchingGiftRecords[0]
+            || null;
+        let subId = String(
+            target.razorpaySubscriptionId
+            || (canonicalGiftRecord ? getGiftSubscriptionId(canonicalGiftRecord) : "")
+            || target.subId
+            || ""
+        ).trim();
         const isReceiver = Boolean(targetGiftToCancel.isReceiver);
 
         if (!subId.startsWith("sub_")) {
-            const raw = allRawRecords();
-            const match = raw.find((r) => (r.subscriptionId && r.subscriptionId.startsWith("sub_"))
-                && (r.id === subId || r.reference === subId || (r.recipientName && r.recipientName === targetGiftToCancel.recipientName)));
-            if (match && match.subscriptionId) {
-                subId = match.subscriptionId;
+            const match = raw.find((record) => {
+                if (!isGiftRecord(record) || !record.subscriptionId || !String(record.subscriptionId).startsWith("sub_")) return false;
+                return matchingGiftRecord(record)
+                    || (record.recipientName && record.recipientName === target.recipientName);
+            });
+            if (match?.subscriptionId) {
+                subId = String(match.subscriptionId).trim();
             }
+        }
+
+        const dbPaths = new Set();
+        const addDbPath = (path, id) => {
+            const safePath = String(path || "").trim();
+            const safeId = String(id || "").trim();
+            // normalizeSubscriberRecords creates -given/-received display ids
+            // when one record represents both sides of a gift. Those are not
+            // actual Firebase keys, so only use the original record id.
+            if (!safeId || /-(given|received)$/.test(safeId)) return;
+            // Gift records are canonical under `subscribers`. Writing a
+            // cancellation into subscribers_velcrow creates a status-only
+            // record, which later looks like a fake ₹100 personal plan.
+            if (safePath === "subscribers") {
+                dbPaths.add(`${safePath}/${safeId}`);
+            }
+        };
+        addDbPath(target.recordPath, target.recordId);
+        matchingGiftRecords.forEach((record) => addDbPath(record.path || record.source, record.id));
+        if (subId) {
+            addDbPath("subscribers", subId);
         }
 
         try {
@@ -9471,8 +10216,12 @@
                 paymentRecords.unshift({
                     id: `cancel-gift-${now}`,
                     path: `payments/${currentUser.uid}`,
-                    type: "cancellation",
+                    type: "gift-cancellation",
                     isCancellation: true,
+                    isGift: true,
+                    is_gift: true,
+                    membershipType: "gift",
+                    giftRole: "donor",
                     reference: "—",
                     amount: null,
                     status: "cancelled",
@@ -9487,7 +10236,7 @@
                         : `Cancelled gifted subscription for ${targetGiftToCancel.recipientName}`,
                 });
                 const records = allRawRecords();
-                records.filter((r) => isGiftRecord(r) && r.isSubscriptionRoot && (r.subscriptionId === subId || r.id === subId)).forEach((giftRecord) => {
+                records.filter((giftRecord) => matchingGiftRecord(giftRecord) && giftRecord.isSubscriptionRoot).forEach((giftRecord) => {
                     giftRecord.status = "cancelled";
                     giftRecord.subscriptionStatus = "cancelled";
                     giftRecord.cancelledAt = now;
@@ -9499,6 +10248,7 @@
                 return;
             }
 
+            let remoteCancellationConfirmed = false;
             if (subId.startsWith("sub_")) {
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
@@ -9507,8 +10257,16 @@
                 });
                 if (!res.ok) {
                     const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || "Failed to cancel gifted subscription in Razorpay");
+                    const errorMessage = String(errData.error || "");
+                    // Razorpay returns this when a previous attempt already
+                    // cancelled the subscription. Treat it as success and
+                    // repair the stale Firebase/UI status below.
+                    if (!/not cancellable.*cancelled|already.*cancelled|cancelled status/i.test(errorMessage)) {
+                        throw new Error(errorMessage || "Failed to cancel gifted subscription in Razorpay");
+                    }
+                    console.info("Gifted subscription was already cancelled in Razorpay; syncing local status.");
                 }
+                remoteCancellationConfirmed = true;
             }
 
             const cancelUpdates = {
@@ -9522,14 +10280,29 @@
                 nextPaymentDue: null,
             };
 
-            await update(ref(database, `subscribers/${subId}`), cancelUpdates).catch(() => { });
-            await update(ref(database, `subscribers_velcrow/${subId}`), cancelUpdates).catch(() => { });
+            let databaseUpdateConfirmed = false;
+            const databaseErrors = [];
+            for (const path of dbPaths) {
+                try {
+                    await update(ref(database, path), cancelUpdates);
+                    databaseUpdateConfirmed = true;
+                } catch (error) {
+                    databaseErrors.push(error);
+                }
+            }
+            if (!databaseUpdateConfirmed && !remoteCancellationConfirmed) {
+                throw databaseErrors[0] || new Error("Could not save the gifted membership cancellation.");
+            }
 
             if (currentUser) {
                 const cancelRef = push(ref(database, `payments/${currentUser.uid}`));
                 await set(cancelRef, {
-                    type: "cancellation",
+                    type: "gift-cancellation",
                     isCancellation: true,
+                    isGift: true,
+                    is_gift: true,
+                    membershipType: "gift",
+                    giftRole: "donor",
                     amount: null,
                     status: "cancelled",
                     email: currentUser.email || "",
@@ -9546,7 +10319,7 @@
 
             for (const list of subscriberRecords.values()) {
                 if (Array.isArray(list)) {
-                    list.filter((r) => r.subscriptionId === subId || r.id === subId).forEach((r) => {
+                    list.filter(matchingGiftRecord).forEach((r) => {
                         r.status = "cancelled";
                         r.subscriptionStatus = "cancelled";
                         r.cancelledAt = now;
@@ -9594,7 +10367,14 @@
             const donor = cancelGiftBtn.getAttribute("data-gift-donor");
             const role = cancelGiftBtn.getAttribute("data-gift-role") || "donor";
             const amount = cancelGiftBtn.getAttribute("data-gift-amount");
-            openCancelGiftModal(subId, recipient, amount, { role, donorName: donor });
+            openCancelGiftModal(subId, recipient, amount, {
+                role,
+                donorName: donor,
+                recordId: cancelGiftBtn.getAttribute("data-gift-record-id"),
+                recordPath: cancelGiftBtn.getAttribute("data-gift-record-path"),
+                reference: cancelGiftBtn.getAttribute("data-gift-reference"),
+                razorpaySubscriptionId: cancelGiftBtn.getAttribute("data-gift-razorpay-id"),
+            });
         }
     });
 
@@ -9755,6 +10535,112 @@
         }
     });
 
+    function normalizeProfileName(value) {
+        return String(value || "").trim().replace(/\s+/g, " ");
+    }
+
+    function applyProfileName(value) {
+        const clean = normalizeProfileName(value);
+        const firstName = clean.split(" ")[0] || "supporter";
+        setText("dashboard-name", firstName);
+
+        const avatar = get("account-avatar");
+        if (avatar && !currentUser?.photoURL) {
+            avatar.replaceChildren();
+            avatar.textContent = firstName.charAt(0).toUpperCase() || "S";
+        }
+    }
+
+    function openProfileNameModal() {
+        const modal = get("profile-name-modal");
+        const input = get("dashboard-name-input");
+        const errorEl = get("dashboard-name-error");
+        if (!modal || !input) return;
+
+        const fallbackName = String(currentUser?.email || "")
+            .split("@")[0]
+            .replace(/[._-]+/g, " ");
+        input.value = normalizeProfileName(currentUser?.displayName || fallbackName);
+        if (errorEl) {
+            errorEl.textContent = "";
+            errorEl.classList.add("is-hidden");
+        }
+        modal.classList.remove("is-hidden");
+        requestAnimationFrame(() => {
+            input.focus();
+            input.select();
+        });
+    }
+
+    function closeProfileNameModal() {
+        get("profile-name-modal")?.classList.add("is-hidden");
+    }
+
+    get("dashboard-edit-name-btn")?.addEventListener("click", openProfileNameModal);
+    get("profile-name-modal-close")?.addEventListener("click", closeProfileNameModal);
+    get("profile-name-cancel")?.addEventListener("click", closeProfileNameModal);
+    get("profile-name-modal-backdrop")?.addEventListener("click", closeProfileNameModal);
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const modal = get("profile-name-modal");
+            if (modal && !modal.classList.contains("is-hidden")) {
+                closeProfileNameModal();
+            }
+        }
+    });
+
+    get("dashboard-name-form")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const input = get("dashboard-name-input");
+        const errorEl = get("dashboard-name-error");
+        const submitBtn = get("profile-name-save");
+        const clean = normalizeProfileName(input?.value);
+
+        if (clean.length < 2) {
+            if (errorEl) {
+                errorEl.textContent = "Please enter your name.";
+                errorEl.classList.remove("is-hidden");
+            }
+            input?.focus();
+            return;
+        }
+
+        if (!currentUser) {
+            if (errorEl) {
+                errorEl.textContent = "Please sign in before changing your name.";
+                errorEl.classList.remove("is-hidden");
+            }
+            return;
+        }
+
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+            if (isPreviewMode) {
+                currentUser.displayName = clean;
+            } else {
+                await updateProfile(currentUser, { displayName: clean });
+                await update(ref(database, `users/${currentUser.uid}`), {
+                    name: clean,
+                    displayName: clean,
+                    email: currentUser.email || "",
+                    updatedAt: Date.now(),
+                });
+                currentUser.displayName = clean;
+            }
+
+            applyProfileName(clean);
+            closeProfileNameModal();
+        } catch (err) {
+            console.error("Unable to save profile name:", err);
+            if (errorEl) {
+                errorEl.textContent = "Could not save your name. Please try again.";
+                errorEl.classList.remove("is-hidden");
+            }
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     const isPreviewMode = urlParams.get("preview") === "1" || urlParams.get("demo") === "1";
 
@@ -9775,7 +10661,7 @@
 
         setText("dashboard-user-email", currentUser.email);
         setText("dashboard-email", currentUser.email);
-        setText("dashboard-name", "Arjun");
+        applyProfileName(currentUser.displayName);
         setText("dashboard-phone", formatIndianPhone(currentUser.phone));
         const avatar = get("account-avatar");
         if (avatar) avatar.textContent = "A";
@@ -9925,6 +10811,7 @@
 
             if (!user) {
                 currentUser = null;
+                subscriptionCheckoutPending = false;
                 if (authCard) authCard.classList.remove("is-hidden");
                 if (memberContent) memberContent.classList.add("is-hidden-auth");
                 if (logoutBtn) logoutBtn.classList.add("is-hidden");
@@ -9939,10 +10826,10 @@
             setText("dashboard-user-email", user.email || "");
             setText("dashboard-email", user.email || "");
             const displayName = user.displayName || email.split("@")[0] || "supporter";
-            setText("dashboard-name", displayName.split(" ")[0]);
+            applyProfileName(displayName);
             const avatar = get("account-avatar");
             if (avatar) {
-                avatar.textContent = displayName.charAt(0);
+                avatar.textContent = displayName.charAt(0).toUpperCase();
                 if (user.photoURL) {
                     const image = document.createElement("img");
                     image.src = user.photoURL;
@@ -9971,6 +10858,7 @@
             onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "subscribers_velcrow", "subscribers_velcrow", email, currentUserPhone, user.uid)); renderRecords(); }, showDatabaseError);
             onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers", email, currentUserPhone, user.uid)); renderRecords(); }, showDatabaseError);
             onValue(ref(database, `payments/${user.uid}`), (snapshot) => { paymentRecords = normalizeUidRecords(snapshot.val(), "payment", `payments/${user.uid}`); renderRecords(); }, () => { });
+            onValue(ref(database, "payments"), (snapshot) => { globalPaymentRecords = normalizeGlobalPaymentRecords(snapshot.val(), email, user.uid, currentUserPhone); renderRecords(); }, () => { });
             onValue(ref(database, "testPayments"), (snapshot) => { testPaymentRecords = normalizeUidRecords(snapshot.val(), "test-payment", "testPayments").filter((record) => String(record.email || "").trim().toLowerCase() === email); renderRecords(); }, () => { });
             onValue(ref(database, `paymentIntents/${user.uid}`), (snapshot) => { paymentIntents = normalizeUidRecords(snapshot.val(), "intent", `paymentIntents/${user.uid}`); renderRecords(); }, () => { });
 
@@ -9988,7 +10876,12 @@
         if (userCustomPlan && Number(userCustomPlan.amount) > 0) {
             selectedDashboardPlanAmount = Number(userCustomPlan.amount);
             document.querySelectorAll(".dash-plan-btn").forEach((b) => b.classList.remove("active"));
-            toggleMonthlySubscription();
+            const activeSub = findActiveSubscription(allRawRecords());
+            if (activeSub) {
+                promptDashboardChangePlan(activeSub, Number(activeSub.amount) || 100, selectedDashboardPlanAmount);
+            } else {
+                dashSubToggle?.click();
+            }
         }
     });
 
