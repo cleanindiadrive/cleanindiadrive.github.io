@@ -1279,6 +1279,43 @@
         color: #9ca3af;
     }
 
+    .subscription-row-actions {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .btn-cancel-sub-row {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.32rem 0.75rem;
+        border: 1px solid #ef4444;
+        border-radius: 999px;
+        background: #fef2f2;
+        color: #dc2626;
+        font-family: inherit;
+        font-size: 0.72rem;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancel-sub-row:hover:not(:disabled) {
+        border-color: #dc2626;
+        background: #ef4444;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+    }
+
+    .btn-cancel-sub-row:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
     .btn-cancel-gift {
         display: inline-flex;
         align-items: center;
@@ -5779,7 +5816,7 @@
 
 
                             <div class="dash-plan-picker-wrap" id="dash-plan-picker-wrap">
-                                <div class="dash-plan-picker-label">Select monthly autopay tier:</div>
+                                <div class="dash-plan-picker-label" id="dash-plan-picker-label">Select monthly autopay tier:</div>
                                 <div class="cc-ios-tabs" id="dash-autopay-tabs">
                                     <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier"
                                         id="dash-tab-100" value="100" checked="">
@@ -7172,7 +7209,7 @@
         if (selectedMonthlyAmount === currentSubAmount) {
             status.textContent = `Active subscription · ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Click Subscribe to renew or add a contribution.`;
         } else {
-            status.textContent = `Current plan: ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Switch or start ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo below.`;
+            status.textContent = `Current plan: ₹${currentSubAmount.toLocaleString("en-IN")}/mo. Add another ₹${selectedMonthlyAmount.toLocaleString("en-IN")}/mo subscription below.`;
         }
         setPosButtonText(button, "Subscribe");
         setPosButtonDisabled(button, false);
@@ -7188,7 +7225,9 @@
         const status = document.getElementById("subscription-mode-status");
         if (!button || !status || isPosButtonDisabled(button)) return;
 
-        if (currentSubscription && currentSubscription.status === "paused") {
+        if (currentSubscription
+            && currentSubscription.status === "paused"
+            && Number(currentSubscription.amount || 100) === Number(selectedMonthlyAmount || 100)) {
             playPosTransactionAnimation(button, async () => {
                 setPosButtonDisabled(button, true);
                 try {
@@ -7215,13 +7254,6 @@
                 }
                 refreshSubscriptionMode();
             }, false);
-            return;
-        }
-
-        // If user already has an active subscription, prompt them to confirm plan change
-        if (currentSubscription && ["active", "paused"].includes(currentSubscription.status)) {
-            const currentSubAmount = Number(currentSubscription.amount) || 100;
-            promptChangePlan(currentSubscription, currentSubAmount, selectedMonthlyAmount, button, status);
             return;
         }
 
@@ -8603,11 +8635,14 @@
                     : escapeHtml(nextPayment ? formatDateOnly(nextPayment) : "—");
 
             const canPauseResume = ["active", "paused"].includes(status);
-            const subId = subscription.id || subscription.subscriptionId || "";
+            const subId = getSubscriptionIdentity(subscription) || String(subscription.id || "").trim();
             const actionHtml = canPauseResume
-                ? (status === "active"
-                    ? `<button type="button" class="btn-pause-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Pause subscription">Pause</button>`
-                    : `<button type="button" class="btn-resume-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Resume subscription">Resume</button>`)
+                ? `<span class="subscription-row-actions">
+                    ${status === "active"
+                        ? `<button type="button" class="btn-pause-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Pause subscription">Pause</button>`
+                        : `<button type="button" class="btn-resume-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Resume subscription">Resume</button>`}
+                    <button type="button" class="btn-cancel-sub-row" data-sub-id="${escapeHtml(subId)}" aria-label="Cancel this subscription">Cancel</button>
+                  </span>`
                 : isCancelled
                     ? `<span class="text-muted"><small>Cancelled</small></span>`
                     : `<span class="text-muted"><small>—</small></span>`;
@@ -8696,11 +8731,14 @@
                     : escapeHtml(nextPayment ? formatDateOnly(nextPayment) : "—");
 
             const canPauseResume = ["active", "paused"].includes(status);
-            const subId = subscription.id || subscription.subscriptionId || "";
+            const subId = getSubscriptionIdentity(subscription) || String(subscription.id || "").trim();
             const actionHtml = canPauseResume
-                ? (status === "active"
-                    ? `<button type="button" class="btn-pause-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Pause subscription">Pause</button>`
-                    : `<button type="button" class="btn-resume-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Resume subscription">Resume</button>`)
+                ? `<span class="subscription-row-actions">
+                    ${status === "active"
+                        ? `<button type="button" class="btn-pause-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Pause subscription">Pause</button>`
+                        : `<button type="button" class="btn-resume-sub" data-sub-id="${escapeHtml(subId)}" aria-label="Resume subscription">Resume</button>`}
+                    <button type="button" class="btn-cancel-sub-row" data-sub-id="${escapeHtml(subId)}" aria-label="Cancel this subscription">Cancel</button>
+                  </span>`
                 : isCancelled
                     ? `<span class="text-muted"><small>Cancelled</small></span>`
                     : `<span class="text-muted"><small>—</small></span>`;
@@ -9147,6 +9185,16 @@
         return subId ? [`subscribers/${subId}`, `subscribers_velcrow/${subId}`] : [];
     }
 
+    function findPersonalSubscriptionById(subscriptionId, records = allRawRecords()) {
+        const wanted = String(subscriptionId || "").trim();
+        if (!wanted) return null;
+        return records.find((record) => {
+            if (!isSubscriptionRootRecord(record) || isGiftRecord(record)) return false;
+            const identity = getSubscriptionIdentity(record) || String(record.id || "").trim();
+            return identity === wanted || String(record.id || "").trim() === wanted;
+        }) || null;
+    }
+
     function findLatestCancelledSubscription(records) {
         const roots = records.filter(isSubscriptionRootRecord);
         return roots
@@ -9177,7 +9225,8 @@
         const giftTotal = giftPaid.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
         const otherTotal = otherPaid.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
 
-        const activeSub = findActiveSubscription(raw);
+        const activePersonalSubscriptions = findActiveSubscriptions(raw);
+        const activeSub = activePersonalSubscriptions[0] || null;
         const activeReceivedGift = raw.find((r) => isGiftRecord(r) && r.giftRole === "receiver" && ["active", "paused"].includes(normalizedStatus(r)));
         if (activeSub) subscriptionCheckoutPending = false;
         cancelledSubscription = findLatestCancelledSubscription(raw);
@@ -9272,7 +9321,13 @@
 
         const planPickerWrap = get("dash-plan-picker-wrap");
         if (planPickerWrap) {
-            planPickerWrap.classList.toggle("is-hidden", Boolean(activeSub));
+            planPickerWrap.classList.remove("is-hidden");
+        }
+        const planPickerLabel = get("dash-plan-picker-label");
+        if (planPickerLabel) {
+            planPickerLabel.textContent = activePersonalSubscriptions.length
+                ? "Add another monthly subscription tier:"
+                : "Select monthly autopay tier:";
         }
         renderCustomPlanBanner();
 
@@ -9306,27 +9361,26 @@
             const isTestablePending = Boolean(monthlyIntent) && !activeSub && (isDevelopmentMode || isPreviewMode);
             const isCheckoutPending = subscriptionCheckoutPending && !activeSub;
             setPosButtonDisabled(toggle, isCheckoutPending || (Boolean(monthlyIntent) && !activeSub && !isTestablePending));
-            const label = status === "active"
-                ? "Pause"
-                : status === "paused"
-                    ? "Resume"
-                    : status === "pending"
-                        ? (isCheckoutPending ? "Payment pending" : (isTestablePending ? "Activate (Test)" : "Payment pending"))
-                        : status === "cancelled"
-                            ? "Subscribe"
-                            : "Subscribe";
+            const label = status === "pending"
+                ? (isCheckoutPending ? "Payment pending" : (isTestablePending ? "Activate (Test)" : "Payment pending"))
+                : activePersonalSubscriptions.length
+                    ? "Add subscription"
+                    : "Subscribe";
             setPosButtonText(toggle, label);
-            toggle.setAttribute("data-state", status === "active" ? "pause" : status === "paused" ? "resume" : "subscribe");
+            toggle.setAttribute("data-state", "subscribe");
         }
         const cancel = get("subscription-cancel");
         if (cancel) {
             const isCancelable = (!activeSub && monthlyIntent)
-                || (activeSub && ["active", "paused"].includes(normalizedStatus(activeSub)))
-                || Boolean(activeReceivedGift);
+                || (activePersonalSubscriptions.length === 1 && ["active", "paused"].includes(normalizedStatus(activeSub)))
+                || (!activeSub && Boolean(activeReceivedGift));
             cancel.disabled = !isCancelable;
             const cancelLabelEl = cancel.querySelector("span");
             if (cancelLabelEl) {
-                if (activeReceivedGift && !activeSub) {
+                if (activePersonalSubscriptions.length > 1) {
+                    cancelLabelEl.textContent = "Choose a subscription below";
+                    cancel.setAttribute("aria-label", "Choose a subscription below to cancel");
+                } else if (activeReceivedGift && !activeSub) {
                     cancelLabelEl.textContent = "Cancel Gifted Membership";
                     cancel.setAttribute("aria-label", "Cancel gifted membership");
                 } else {
@@ -9380,33 +9434,17 @@
             const newAmt = Number(e.target.value) || 100;
             selectedDashboardPlanAmount = newAmt;
             const records = allRawRecords();
-            const activeSub = findActiveSubscription(records);
-            if (activeSub) {
-                const currentAmt = Number(activeSub.amount) || 100;
-                if (newAmt !== currentAmt) {
-                    promptDashboardChangePlan(activeSub, currentAmt, newAmt);
-                }
-            } else {
-                const button = get("dashboard-subscription-toggle");
-                if (button && !isPosButtonDisabled(button) && (getPosButtonText(button).includes("Start") || getPosButtonText(button).includes("Transaction"))) {
-                    setPosButtonText(button, "Subscribe");
-                }
+            const button = get("dashboard-subscription-toggle");
+            if (button && !isPosButtonDisabled(button)) {
+                setPosButtonText(button, findActiveSubscriptions(records).length ? "Add subscription" : "Subscribe");
             }
         });
     });
 
     async function startMonthlySubscription(overrideAmount) {
         if (subscriptionCheckoutPending) return;
-        const records = allRawRecords();
-        const activeSub = findActiveSubscription(records);
         const intentAmount = monthlyIntent && Number(monthlyIntent.amount) > 0 ? Number(monthlyIntent.amount) : null;
         const effectiveAmount = overrideAmount || intentAmount || selectedDashboardPlanAmount || 100;
-
-        if (activeSub && !overrideAmount) {
-            const currentSubAmount = Number(activeSub.amount) || 100;
-            promptDashboardChangePlan(activeSub, currentSubAmount, effectiveAmount);
-            return;
-        }
         if (!currentUser) return;
         const button = get("dashboard-subscription-toggle");
         const message = get("subscription-message");
@@ -9544,22 +9582,14 @@
     dashSubToggle?.addEventListener("click", async (e) => {
         e.preventDefault();
         if (isSubToggling || isTogglingSubscriptionPause || !currentUser || isPosButtonDisabled(dashSubToggle)) return;
-        const records = allRawRecords();
-        const activeSub = findActiveSubscription(records);
-
-        if (!activeSub) {
-            isSubToggling = true;
-            playPosTransactionAnimation(dashSubToggle, async () => {
-                try {
-                    await startMonthlySubscription();
-                } finally {
-                    isSubToggling = false;
-                }
-            }, false);
-            return;
-        }
-
-        await executeToggleSubscriptionPause(activeSub.id, dashSubToggle);
+        isSubToggling = true;
+        playPosTransactionAnimation(dashSubToggle, async () => {
+            try {
+                await startMonthlySubscription();
+            } finally {
+                isSubToggling = false;
+            }
+        }, false);
     });
 
     dashSubToggle?.addEventListener("keydown", (e) => {
@@ -9572,13 +9602,16 @@
 
 
     let isCancellingSubscription = false;
+    let cancelSubscriptionTarget = null;
 
     function closeCancelModal() {
         if (isCancellingSubscription) return;
         get("cancel-modal")?.classList.add("is-hidden");
+        cancelSubscriptionTarget = null;
     }
 
-    function openCancelModal() {
+    function openCancelModal(subscription = null) {
+        cancelSubscriptionTarget = subscription;
         const errorEl = get("cancel-modal-error");
         if (errorEl) {
             errorEl.textContent = "";
@@ -9608,7 +9641,7 @@
         }
 
         const records = allRawRecords();
-        const activeSub = findActiveSubscription(records);
+        const activeSub = cancelSubscriptionTarget || findActiveSubscription(records);
         if (!activeSub && !monthlyIntent) return;
 
         isCancellingSubscription = true;
@@ -10083,7 +10116,7 @@
         }
 
         if (!activeSub && !monthlyIntent) return;
-        openCancelModal();
+        openCancelModal(activeSub);
     });
 
     get("cancel-modal-close")?.addEventListener("click", closeCancelModal);
@@ -10392,6 +10425,15 @@
     }
 
     document.addEventListener("click", (event) => {
+        const cancelSubBtn = event.target.closest?.(".btn-cancel-sub-row");
+        if (cancelSubBtn) {
+            event.preventDefault();
+            if (isCancellingSubscription) return;
+            const targetSub = findPersonalSubscriptionById(cancelSubBtn.getAttribute("data-sub-id"));
+            if (targetSub) openCancelModal(targetSub);
+            return;
+        }
+
         const pauseSubBtn = event.target.closest?.(".btn-pause-sub, .btn-resume-sub");
         if (pauseSubBtn) {
             event.preventDefault();
@@ -10917,12 +10959,7 @@
         if (userCustomPlan && Number(userCustomPlan.amount) > 0) {
             selectedDashboardPlanAmount = Number(userCustomPlan.amount);
             document.querySelectorAll(".dash-plan-btn").forEach((b) => b.classList.remove("active"));
-            const activeSub = findActiveSubscription(allRawRecords());
-            if (activeSub) {
-                promptDashboardChangePlan(activeSub, Number(activeSub.amount) || 100, selectedDashboardPlanAmount);
-            } else {
-                dashSubToggle?.click();
-            }
+            dashSubToggle?.click();
         }
     });
 
