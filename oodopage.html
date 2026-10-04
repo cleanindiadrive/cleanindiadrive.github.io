@@ -1665,6 +1665,20 @@
         background: var(--canvas);
     }
 
+    /*
+     * An iframe's viewport grows when the parent resizes it. Keeping a
+     * 100vh minimum inside that iframe would therefore preserve the old,
+     * larger height after an accordion is closed. Embedded pages should size
+     * themselves from their content instead.
+     */
+    html.is-embedded,
+    body.is-embedded,
+    body.is-embedded .auth-page,
+    body.is-embedded .dashboard-page,
+    body.is-embedded .page-view {
+        min-height: 0 !important;
+    }
+
     .auth-shell {
         display: grid;
         width: min(100% - 2rem, 440px);
@@ -6180,6 +6194,12 @@
     (function enableEmbeddedHeightSync() {
         if (window.parent === window) return;
 
+        // Prevent the iframe's current viewport height from becoming the
+        // page's minimum height. This is what allows the parent frame to
+        // shrink again after an accordion/details panel is closed.
+        document.documentElement.classList.add("is-embedded");
+        document.body.classList.add("is-embedded");
+
         let frameId = 0;
         const postHeight = () => {
             frameId = 0;
@@ -6215,6 +6235,7 @@
 
         if (window.ResizeObserver) {
             new ResizeObserver(scheduleHeightUpdate).observe(document.body);
+            new ResizeObserver(scheduleHeightUpdate).observe(document.documentElement);
         }
         if (window.MutationObserver) {
             new MutationObserver(scheduleHeightUpdate).observe(document.body, {
