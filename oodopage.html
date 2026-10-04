@@ -749,26 +749,26 @@
     }
 
     .container:hover,
-    .pos-transaction-container:hover,
     .container.is-animating,
-    .pos-transaction-container.is-animating,
     .container.is-animating-reverse,
-    .pos-transaction-container.is-animating-reverse,
-    .container.is-active,
-    .pos-transaction-container.is-active {
+    .container.is-active {
         transform: scale(1.03);
         width: 110px;
         box-shadow: 0 6px 20px rgba(255, 218, 0, 0.45);
     }
 
+    .pos-transaction-container:hover,
+    .pos-transaction-container.is-animating,
+    .pos-transaction-container.is-animating-reverse,
+    .pos-transaction-container.is-active {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(255, 218, 0, 0.45);
+    }
+
     .container:hover .left-side,
-    .pos-transaction-container:hover .left-side,
     .container.is-animating .left-side,
-    .pos-transaction-container.is-animating .left-side,
     .container.is-animating-reverse .left-side,
-    .pos-transaction-container.is-animating-reverse .left-side,
-    .container.is-active .left-side,
-    .pos-transaction-container.is-active .left-side {
+    .container.is-active .left-side {
         width: 100%;
     }
 
@@ -1431,10 +1431,11 @@
 
     .home-new-tx-wrap {
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
         align-items: center;
-        flex: 0 0 auto;
-        margin: 0;
+        width: 100%;
+        flex: 1 1 100%;
+        margin: 0 auto;
     }
 
 
@@ -5348,7 +5349,7 @@
                     </div>
 
                     <div class="home-new-tx-wrap">
-                        <div class="container pos-transaction-container" id="subscription-toggle" role="button" tabindex="0"
+                        <div class="pos-transaction-container" id="subscription-toggle" role="button" tabindex="0"
                             aria-label="Start monthly subscription">
                             <div class="left-side">
                                 <div class="card">
@@ -5395,7 +5396,7 @@
                     </div>
 
                     <div class="home-new-tx-wrap">
-                        <div class="container pos-transaction-container" id="one-time-submit" role="button" tabindex="0"
+                        <div class="pos-transaction-container" id="one-time-submit" role="button" tabindex="0"
                             aria-label="Submit one-time transaction">
                             <div class="left-side">
                                 <div class="card">
@@ -5491,7 +5492,7 @@
                     </div>
 
                     <div class="home-new-tx-wrap">
-                        <div class="container pos-transaction-container is-disabled" id="gift-submit" role="button" tabindex="0"
+                        <div class="pos-transaction-container is-disabled" id="gift-submit" role="button" tabindex="0"
                             aria-disabled="true" aria-label="Gift a transaction">
                             <div class="left-side">
                                 <div class="card">
@@ -5563,24 +5564,6 @@
     </main>
 
 </div>
-
-
-<!-- Shared footer: remains visible on both the home and dashboard views. -->
-<footer>
-    <div class="contact-title">Contact me?</div>
-    <div class="contact-details">I'm in the group, you silly buffallo</div>
-    <div class="footer-links">
-        <a href="https://cleanindiadrive.github.io/about.html">About Us</a>
-        <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/contact.html">Contact Us</a>
-        <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/cancellation.html">Cancellation Policy</a>
-        <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/terms.html">Terms &amp; Conditions</a>
-        <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/privacy.html">Privacy Policy</a>
-    </div>
-</footer>
 
 
 <div id="view-dashboard" class="page-view is-hidden">
@@ -5834,7 +5817,7 @@
 
                             <div class="subscription-action-group">
                                 <div class="dashboard-subscription-tx-wrap">
-                                    <div class="container pos-transaction-container" id="dashboard-subscription-toggle"
+                                    <div class="pos-transaction-container" id="dashboard-subscription-toggle"
                                         role="button" tabindex="0" aria-label="Start subscription transaction">
                                         <div class="left-side">
                                             <div class="card">
@@ -6129,6 +6112,24 @@
 
 
 </div>
+
+
+<!-- Shared footer: remains visible after whichever view is active. -->
+<footer>
+    <div class="contact-title">Contact me?</div>
+    <div class="contact-details">I'm in the group, you silly buffallo</div>
+    <div class="footer-links">
+        <a href="https://cleanindiadrive.github.io/about.html">About Us</a>
+        <span class="footer-sep">·</span>
+        <a href="https://cleanindiadrive.github.io/contact.html">Contact Us</a>
+        <span class="footer-sep">·</span>
+        <a href="https://cleanindiadrive.github.io/cancellation.html">Cancellation Policy</a>
+        <span class="footer-sep">·</span>
+        <a href="https://cleanindiadrive.github.io/terms.html">Terms &amp; Conditions</a>
+        <span class="footer-sep">·</span>
+        <a href="https://cleanindiadrive.github.io/privacy.html">Privacy Policy</a>
+    </div>
+</footer>
 
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
