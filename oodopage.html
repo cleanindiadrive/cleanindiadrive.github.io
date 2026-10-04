@@ -15,8 +15,7 @@
 
     @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;900&display=swap");
 
-    #sillysense-oodopage,
-    #sillysense-oodopage * {
+    * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
@@ -39,8 +38,11 @@
         --content-width: 820px;
     }
 
-    #sillysense-oodopage {
+    html {
         scroll-behavior: smooth;
+    }
+
+    body {
         position: relative;
         isolation: isolate;
         min-width: 320px;
@@ -51,7 +53,7 @@
         text-rendering: optimizeLegibility;
     }
 
-    #sillysense-oodopage::before {
+    body::before {
         position: fixed;
         z-index: -1;
         inset: 0;
@@ -65,26 +67,26 @@
         pointer-events: none;
     }
 
-     #sillysense-oodopage a {
+     a {
         color: inherit;
     }
 
-     #sillysense-oodopage button,
-     #sillysense-oodopage input,
-     #sillysense-oodopage select {
+     button,
+     input,
+     select {
         font: inherit;
     }
 
-     #sillysense-oodopage button,
-     #sillysense-oodopage a {
+     button,
+     a {
         -webkit-tap-highlight-color: transparent;
     }
 
-     #sillysense-oodopage button:focus-visible,
-     #sillysense-oodopage a:focus-visible,
-     #sillysense-oodopage input:focus-visible,
-     #sillysense-oodopage select:focus-visible,
-     #sillysense-oodopage summary:focus-visible {
+     button:focus-visible,
+     a:focus-visible,
+     input:focus-visible,
+     select:focus-visible,
+     summary:focus-visible {
         outline: 3px solid rgba(255, 218, 0, 0.6);
         outline-offset: 3px;
     }
@@ -100,7 +102,8 @@
         border-bottom: 1px solid var(--line);
     }
 
-     .site-nav {
+     .site-nav,
+     nav {
         display: flex;
         width: min(100% - 2.5rem, 860px);
         min-height: 64px;
@@ -1646,21 +1649,21 @@
         padding: 0.75rem 0;
     }
 
-     #sillysense-oodopage footer {
+     footer {
         padding: 2.75rem 1rem 2.25rem;
         background: #1c1c1a;
         color: #fff;
         text-align: center;
     }
 
-     #sillysense-oodopage footer .contact-title {
+     footer .contact-title {
         margin-bottom: 0.25rem;
         font-size: 0.94rem;
         font-weight: 700;
         color: #ffffff;
     }
 
-     #sillysense-oodopage footer .contact-details {
+     footer .contact-details {
         color: #a4a49c;
         font-size: 0.78rem;
     }
@@ -1707,10 +1710,10 @@
      * larger height after an accordion is closed. Embedded pages should size
      * themselves from their content instead.
      */
-    #sillysense-oodopage.is-embedded,
-    #sillysense-oodopage.is-embedded .auth-page,
-    #sillysense-oodopage.is-embedded .dashboard-page,
-    #sillysense-oodopage.is-embedded .page-view {
+    body.is-embedded,
+    body.is-embedded .auth-page,
+    body.is-embedded .dashboard-page,
+    body.is-embedded .page-view {
         height: auto !important;
         min-height: 0 !important;
     }
@@ -3290,7 +3293,8 @@
 
     @media (max-width: 480px) {
 
-         .site-nav {
+         .site-nav,
+         nav {
             min-height: 58px;
             padding-right: 0.25rem;
             padding-left: 0.25rem;
@@ -3397,9 +3401,9 @@
 
     @media (prefers-reduced-motion: reduce) {
 
-        #sillysense-oodopage *,
-        #sillysense-oodopage *::before,
-        #sillysense-oodopage *::after {
+        *,
+        *::before,
+        *::after {
             scroll-behavior: auto !important;
             transition-duration: 0.01ms !important;
         }
@@ -5226,7 +5230,6 @@
   </style>
 </head>
 <body>
-<div id="sillysense-oodopage">
 <div id="page-loader" aria-hidden="true">
     <div class="main">
         <div class="dog">
@@ -6137,7 +6140,7 @@
     function showView(viewName) {
         const homeView = document.getElementById("view-home");
         const dashView = document.getElementById("view-dashboard");
-        const appRoot = document.getElementById("sillysense-oodopage");
+        const appRoot = document.body;
         if (!homeView || !dashView) return;
 
         if (viewName === "dashboard") {
@@ -6228,15 +6231,13 @@
         // Prevent the iframe's current viewport height from becoming the
         // page's minimum height. This is what allows the parent frame to
         // shrink again after an accordion/details panel is closed.
-        const appRoot = document.getElementById("sillysense-oodopage");
-        if (!appRoot) return;
-        appRoot.classList.add("is-embedded");
+        document.body.classList.add("is-embedded");
 
         let frameId = 0;
         const getDocumentBottom = (element) => {
             let bottom = 0;
             let current = element;
-            while (current && current !== appRoot) {
+            while (current && current !== document.body) {
                 bottom += current.offsetTop || 0;
                 current = current.offsetParent;
             }
@@ -6245,12 +6246,12 @@
 
         const postHeight = () => {
             frameId = 0;
-            const visibleViews = [...appRoot.querySelectorAll(".page-view:not(.is-hidden)")];
+            const visibleViews = [...document.querySelectorAll(".page-view:not(.is-hidden)")];
             const visibleViewBottom = visibleViews.reduce(
                 (max, view) => Math.max(max, getDocumentBottom(view)),
                 0,
             );
-            const visibleFooters = [...appRoot.querySelectorAll("footer")]
+            const visibleFooters = [...document.querySelectorAll("footer")]
                 .filter((footer) => footer.getClientRects().length > 0);
             const footerBottom = visibleFooters.reduce(
                 (max, footer) => Math.max(max, getDocumentBottom(footer)),
@@ -6286,11 +6287,11 @@
         }, true);
 
         if (window.ResizeObserver) {
-            new ResizeObserver(scheduleHeightUpdate).observe(appRoot);
+            new ResizeObserver(scheduleHeightUpdate).observe(document.body);
             new ResizeObserver(scheduleHeightUpdate).observe(document.documentElement);
         }
         if (window.MutationObserver) {
-            new MutationObserver(scheduleHeightUpdate).observe(appRoot, {
+            new MutationObserver(scheduleHeightUpdate).observe(document.body, {
                 childList: true,
                 subtree: true,
                 characterData: true,
@@ -11111,6 +11112,5 @@
     });
 
 </script>
-</div>
 </body>
 </html>
