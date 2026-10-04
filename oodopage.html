@@ -1676,6 +1676,7 @@
     body.is-embedded .auth-page,
     body.is-embedded .dashboard-page,
     body.is-embedded .page-view {
+        height: auto !important;
         min-height: 0 !important;
     }
 
@@ -6201,21 +6202,30 @@
         document.body.classList.add("is-embedded");
 
         let frameId = 0;
+        const getDocumentBottom = (element) => {
+            let bottom = 0;
+            let current = element;
+            while (current && current !== document.body) {
+                bottom += current.offsetTop || 0;
+                current = current.offsetParent;
+            }
+            return bottom + (element?.offsetHeight || 0);
+        };
+
         const postHeight = () => {
             frameId = 0;
-            const root = document.documentElement;
-            const body = document.body;
-            const footer = document.querySelector("footer");
-            const footerBottom = footer
-                ? footer.getBoundingClientRect().bottom + window.scrollY
-                : 0;
-            const height = Math.ceil(Math.max(
-                root.scrollHeight,
-                root.offsetHeight,
-                body?.scrollHeight || 0,
-                body?.offsetHeight || 0,
-                footerBottom,
-            ));
+            const visibleViews = [...document.querySelectorAll(".page-view:not(.is-hidden)")];
+            const visibleViewBottom = visibleViews.reduce(
+                (max, view) => Math.max(max, getDocumentBottom(view)),
+                0,
+            );
+            const visibleFooters = [...document.querySelectorAll("footer")]
+                .filter((footer) => footer.getClientRects().length > 0);
+            const footerBottom = visibleFooters.reduce(
+                (max, footer) => Math.max(max, getDocumentBottom(footer)),
+                0,
+            );
+            const height = Math.ceil(Math.max(1, visibleViewBottom, footerBottom));
 
             window.parent.postMessage({
                 source: "sillysense-oodopage",
