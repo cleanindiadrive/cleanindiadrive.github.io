@@ -184,9 +184,9 @@
 
     .hero-cta-group {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 1fr);
         gap: 0.85rem;
-        max-width: 540px;
+        max-width: 280px;
         margin: 0 auto;
     }
 
@@ -5292,11 +5292,6 @@
                 <h1>Subscribe to<br>Manali Strays</h1>
 
                 <div class="hero-cta-group">
-                    <a class="price-btn" id="subscribe-btn" href="#ways-to-support">
-                        <strong id="hero-btn-amount">₹100 Per Month</strong>
-                        <span id="subscriber-count">0 active subscribers</span>
-                    </a>
-
                     <div id="money-counter" class="money-card">
                         <span class="money-label">Total Raised</span>
                         <strong>₹<span id="money-raised">0</span></strong>
@@ -5554,14 +5549,14 @@
                         <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
                     </svg>
                 </div>
-                <h2 id="change-plan-modal-title">Change your subscription?</h2>
-                <p id="change-plan-modal-desc">You already have an active plan. Do you want to change to the selected
-                    plan? Your current plan will be cancelled and the new plan will start.</p>
+                <h2 id="change-plan-modal-title">Add another subscription?</h2>
+                <p id="change-plan-modal-desc">You already have an active plan. The selected subscription will be
+                    added alongside it, and your monthly total will increase.</p>
                 <p class="modal-form-error is-hidden" id="change-plan-modal-error"></p>
                 <div class="cancel-modal-actions">
                     <button class="mode-action" id="change-plan-modal-keep" type="button">Keep current plan</button>
-                    <button class="mode-action mode-action-primary" id="change-plan-modal-confirm" type="button">Yes,
-                        change plan</button>
+                    <button class="mode-action mode-action-primary" id="change-plan-modal-confirm" type="button">Add
+                        subscription</button>
                 </div>
             </section>
         </div>
@@ -6056,15 +6051,15 @@
                     <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
                 </svg>
             </div>
-            <h2 id="dashboard-change-plan-modal-title">Change your subscription?</h2>
-            <p id="dashboard-change-plan-modal-desc">You already have an active plan. Do you want to change to the
-                selected plan? Your current plan will be cancelled and the new plan will start.</p>
+            <h2 id="dashboard-change-plan-modal-title">Add another subscription?</h2>
+            <p id="dashboard-change-plan-modal-desc">You already have an active plan. The selected subscription will
+                be added alongside it, and your monthly total will increase.</p>
             <p class="modal-form-error is-hidden" id="dashboard-change-plan-modal-error"></p>
             <div class="cancel-modal-actions">
                 <button class="mode-action" id="dashboard-change-plan-modal-keep" type="button">Keep current
                     plan</button>
                 <button class="mode-action mode-action-primary" id="dashboard-change-plan-modal-confirm"
-                    type="button">Yes, change plan</button>
+                    type="button">Add subscription</button>
             </div>
         </section>
     </div>
@@ -6349,7 +6344,6 @@
 
 
 
-    const subscriberCount = document.getElementById("subscriber-count");
     const moneyRaised = document.getElementById("money-raised");
     const donorTotal = document.getElementById("donor-total");
     const donorList = document.getElementById("donor-list");
@@ -6365,6 +6359,30 @@
     let subscriptionCheckoutPending = false;
     let detachMonthlyIntentListener = null;
     let giftRecipients = [];
+
+    // A single browser-wide payment gate prevents monthly, gift, and one-time
+    // buttons from opening overlapping Razorpay checkouts.
+    const paymentGate = window.__sillysensePaymentGate || {
+        busy: false,
+        kind: "",
+        startedAt: 0,
+    };
+    window.__sillysensePaymentGate = paymentGate;
+    window.sillysenseBeginPayment = (kind) => {
+        if (paymentGate.busy) return false;
+        paymentGate.busy = true;
+        paymentGate.kind = String(kind || "payment");
+        paymentGate.startedAt = Date.now();
+        window.dispatchEvent(new Event("sillysense-payment-state"));
+        return true;
+    };
+    window.sillysenseEndPayment = () => {
+        paymentGate.busy = false;
+        paymentGate.kind = "";
+        paymentGate.startedAt = 0;
+        window.dispatchEvent(new Event("sillysense-payment-state"));
+    };
+    window.sillysensePaymentBusy = () => Boolean(paymentGate.busy);
 
     function escapeHtml(value) {
         return String(value ?? "")
@@ -6620,9 +6638,6 @@
     }
 
     function renderPublicTotals() {
-        const activeSubs = getActiveSubscribers().size;
-        if (subscriberCount) subscriberCount.textContent = `${activeSubs} active subscribers`;
-
         const total = calculateTotalRaised();
         if (moneyRaised) {
             moneyRaised.textContent = total.toLocaleString("en-IN");
@@ -7067,9 +7082,6 @@
     function updateSelectedMonthlyPlan(amount) {
         selectedMonthlyAmount = Number(amount) || 100;
 
-        const heroAmount = document.getElementById("hero-btn-amount");
-        if (heroAmount) heroAmount.textContent = `₹${selectedMonthlyAmount.toLocaleString("en-IN")} Per Month`;
-
         const planLabel = document.getElementById("monthly-plan-label");
         if (planLabel) planLabel.textContent = `Monthly subscription · ₹${selectedMonthlyAmount.toLocaleString("en-IN")} / mo`;
 
@@ -7258,10 +7270,18 @@
         }
 
         if (monthlyRequestPending) return;
+        if (window.sillysensePaymentBusy?.()) {
+            status.textContent = "Another payment is already being processed. Please wait for it to finish.";
+            return;
+        }
+        if (currentSubscription && ["active", "paused"].includes(currentSubscription.status)) {
+            promptAddSubscription(selectedMonthlyAmount, button, status);
+            return;
+        }
         executeCreateMonthlySubscription(button, status);
     }
 
-    function promptChangePlan(existingSub, currentAmt, newAmt, button, statusEl) {
+    function promptAddSubscription(newAmt, button, statusEl) {
         const modal = document.getElementById("change-plan-modal");
         const descEl = document.getElementById("change-plan-modal-desc");
         const confirmBtn = document.getElementById("change-plan-modal-confirm");
@@ -7276,78 +7296,51 @@
         }
 
         if (descEl) {
-            if (currentAmt === newAmt) {
-                descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to restart or change your plan? If you change, your existing subscription will be cancelled and the new plan will start.`;
-            } else {
-                descEl.textContent = `You already have an active plan of ₹${currentAmt.toLocaleString("en-IN")} / month. Do you want to change to ₹${newAmt.toLocaleString("en-IN")} / month? If you change, your existing subscription will be cancelled and the new plan will start.`;
-            }
+            const currentAmt = Number(currentSubscription?.amount) || 100;
+            const totalAmt = currentSubscription?.status === "paused"
+                ? newAmt
+                : currentAmt + newAmt;
+            descEl.textContent = `You already have a ₹${currentAmt.toLocaleString("en-IN")}/mo subscription. This new ₹${newAmt.toLocaleString("en-IN")}/mo subscription will be added alongside it, not replace it. Your monthly total will be ₹${totalAmt.toLocaleString("en-IN")}/mo.`;
         }
 
         if (confirmBtn) {
             confirmBtn.disabled = false;
-            confirmBtn.innerHTML = "Yes, change plan";
+            confirmBtn.innerHTML = "Add subscription";
         }
-        if (keepBtn) keepBtn.disabled = false;
+        if (keepBtn) {
+            keepBtn.disabled = false;
+            keepBtn.textContent = "Keep current plan";
+        }
         if (closeBtn) closeBtn.disabled = false;
 
         modal.classList.remove("is-hidden");
 
-        let isChangingPlan = false;
+        let isAddingSubscription = false;
         const closeModal = () => {
-            if (isChangingPlan) return;
+            if (isAddingSubscription) return;
             modal.classList.add("is-hidden");
         };
 
         confirmBtn.onclick = async () => {
-            if (isChangingPlan) return;
-            isChangingPlan = true;
+            if (isAddingSubscription) return;
+            isAddingSubscription = true;
             confirmBtn.disabled = true;
-            confirmBtn.innerHTML = `<span class="button-spinner button-spinner-dark" aria-hidden="true"></span> Changing plan…`;
+            confirmBtn.innerHTML = `<span class="button-spinner button-spinner-dark" aria-hidden="true"></span> Starting payment…`;
             if (keepBtn) keepBtn.disabled = true;
             if (closeBtn) closeBtn.disabled = true;
 
             try {
-                // 1. Cancel old plan
-                const subId = String(existingSub.subscriptionId || existingSub.id || "").trim();
-                if (subId.startsWith("sub_")) {
-                    const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ subscription_id: subId }),
-                    });
-                    if (!res.ok) {
-                        const errData = await res.json().catch(() => ({}));
-                        const errMessage = String(errData.error || "");
-                        if (!/not cancellable.*cancelled|already.*cancelled|cancelled status/i.test(errMessage)) {
-                            throw new Error(errMessage || "Could not cancel the current subscription");
-                        }
-                        console.info("Current subscription was already cancelled in Razorpay; continuing with the new plan.");
-                    }
-                }
-                if (existingSub.path && existingSub.id) {
-                    await update(ref(database, `${existingSub.path}/${existingSub.id}`), {
-                        subscriptionStatus: "cancelled",
-                        status: "cancelled",
-                        cancelledAt: Date.now(),
-                        endedAt: Date.now(),
-                        nextPaymentDue: null,
-                    });
-                }
-                currentSubscription = null;
-                isChangingPlan = false;
-                closeModal();
-
-                // 2. Start new plan
+                modal.classList.add("is-hidden");
                 executeCreateMonthlySubscription(button, statusEl);
             } catch (err) {
-                console.error("Failed to switch plan:", err);
-                isChangingPlan = false;
+                console.error("Failed to add subscription:", err);
+                isAddingSubscription = false;
                 if (errorEl) {
-                    errorEl.textContent = err.message || "Failed to change plan. Please try again.";
+                    errorEl.textContent = err.message || "Failed to add the subscription. Please try again.";
                     errorEl.classList.remove("is-hidden");
                 }
                 confirmBtn.disabled = false;
-                confirmBtn.innerHTML = "Yes, change plan";
+                confirmBtn.innerHTML = "Add subscription";
                 if (keepBtn) keepBtn.disabled = false;
                 if (closeBtn) closeBtn.disabled = false;
             }
@@ -7368,9 +7361,16 @@
             return;
         }
 
+        if (!window.sillysenseBeginPayment?.("monthly")) {
+            status.textContent = "Another payment is already being processed. Please wait for it to finish.";
+            setPosButtonDisabled(button, false);
+            return;
+        }
+
+        subscriptionCheckoutPending = true;
+        setPosButtonDisabled(button, true);
+
         playPosTransactionAnimation(button, async () => {
-            setPosButtonDisabled(button, true);
-            subscriptionCheckoutPending = true;
             status.textContent = "Connecting to payment gateway…";
             try {
                 const res = await fetch(`${BACKEND_URL}/create-subscription`, {
@@ -7403,6 +7403,7 @@
                     theme: { color: "#FFDD00" },
                     handler: function (response) {
                         console.log("Subscription mandate created:", response);
+                        window.sillysenseEndPayment?.();
                         subscriptionCheckoutPending = true;
                         status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
                         setPosButtonText(button, "Active subscription");
@@ -7412,6 +7413,7 @@
                     },
                     modal: {
                         ondismiss: function () {
+                            window.sillysenseEndPayment?.();
                             subscriptionCheckoutPending = false;
                             button.classList.remove("is-animating");
                             setPosButtonDisabled(button, false);
@@ -7424,6 +7426,7 @@
                     const rzp = new window.Razorpay(options);
                     rzp.on("payment.failed", function (resp) {
                         console.error("Subscription payment failed:", resp.error);
+                        window.sillysenseEndPayment?.();
                         subscriptionCheckoutPending = false;
                         status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
                         button.classList.remove("is-animating");
@@ -7435,6 +7438,7 @@
                 }
             } catch (error) {
                 console.error("Unable to start subscription:", error);
+                window.sillysenseEndPayment?.();
                 subscriptionCheckoutPending = false;
                 status.textContent = error.message || "Could not start the subscription. Please try again.";
                 button.classList.remove("is-animating");
@@ -7453,6 +7457,10 @@
             return;
         }
         if (isPosButtonDisabled(button)) return;
+        if (!window.sillysenseBeginPayment?.("one-time")) {
+            setModeMessage("one-time-message", "Another payment is already being processed. Please wait for it to finish.", true);
+            return;
+        }
 
         playPosTransactionAnimation(button, async () => {
             setPosButtonDisabled(button, true);
@@ -7490,12 +7498,14 @@
                     theme: { color: "#FFDD00" },
                     handler: function (response) {
                         console.log("One-time payment completed:", response);
+                        window.sillysenseEndPayment?.();
                         setModeMessage("one-time-message", `Payment of ₹${amount.toLocaleString("en-IN")} received! Thank you for your generous contribution.`);
                         button.classList.remove("is-animating");
                         setPosButtonDisabled(button, false);
                     },
                     modal: {
                         ondismiss: function () {
+                            window.sillysenseEndPayment?.();
                             button.classList.remove("is-animating");
                             setPosButtonDisabled(button, false);
                             setModeMessage("one-time-message", "Payment window closed.");
@@ -7507,6 +7517,7 @@
                     const rzp = new window.Razorpay(options);
                     rzp.on("payment.failed", function (resp) {
                         console.error("One-time payment failed:", resp.error);
+                        window.sillysenseEndPayment?.();
                         setModeMessage("one-time-message", `Payment failed: ${resp.error.description || "Please try again."}`, true);
                         button.classList.remove("is-animating");
                         setPosButtonDisabled(button, false);
@@ -7517,6 +7528,7 @@
                 }
             } catch (error) {
                 console.error("Unable to start one-time payment:", error);
+                window.sillysenseEndPayment?.();
                 setModeMessage("one-time-message", error.message || "Could not process payment. Please try again.", true);
                 button.classList.remove("is-animating");
                 setPosButtonDisabled(button, false);
@@ -7541,6 +7553,11 @@
         // Always read the checked radio at submit time — most reliable source of truth
         const checkedRadio = document.querySelector('input[name="gift-autopay-tier"]:checked');
         if (checkedRadio) selectedGiftAmount = Number(checkedRadio.value) || 100;
+
+        if (!window.sillysenseBeginPayment?.("gift")) {
+            setModeMessage("gift-message", "Another payment is already being processed. Please wait for it to finish.", true);
+            return;
+        }
 
         playPosTransactionAnimation(button, async () => {
             setPosButtonDisabled(button, true);
@@ -7578,6 +7595,7 @@
                     theme: { color: "#FFDD00" },
                     handler: async function (response) {
                         console.log("Gift subscription mandate created:", response);
+                        window.sillysenseEndPayment?.();
                         setModeMessage("gift-message", `Gift subscription for ${recipient.name} activated! Thank you for gifting hope.`);
                         try {
                             const now = Date.now();
@@ -7641,6 +7659,7 @@
                     },
                     modal: {
                         ondismiss: function () {
+                            window.sillysenseEndPayment?.();
                             button.classList.remove("is-animating", "is-animating-reverse");
                             setPosButtonDisabled(button, false);
                             setModeMessage("gift-message", "Payment window closed.");
@@ -7653,6 +7672,7 @@
                     const rzp = new window.Razorpay(options);
                     rzp.on("payment.failed", function (resp) {
                         console.error("Gift subscription payment failed:", resp.error);
+                        window.sillysenseEndPayment?.();
                         setModeMessage("gift-message", `Payment failed: ${resp.error.description || "Please try again."}`, true);
                         button.classList.remove("is-animating", "is-animating-reverse");
                         setPosButtonDisabled(button, false);
@@ -7664,6 +7684,7 @@
                 }
             } catch (error) {
                 console.error("Unable to set up gift subscription:", error);
+                window.sillysenseEndPayment?.();
                 setModeMessage("gift-message", error.message || "Could not set up gift subscription. Please try again.", true);
                 button.classList.remove("is-animating", "is-animating-reverse");
                 setPosButtonDisabled(button, false);
@@ -7682,15 +7703,6 @@
         };
         input.addEventListener("change", updateGiftAmount);
         input.addEventListener("input", updateGiftAmount);
-    });
-
-    const heroSubscribeBtn = document.getElementById("subscribe-btn");
-    heroSubscribeBtn?.addEventListener("click", (e) => {
-        e.preventDefault();
-        const subBtn = document.getElementById("subscription-toggle");
-        if (subBtn) {
-            subBtn.click();
-        }
     });
 
     document.querySelectorAll(".mode-tab").forEach((tab) => {
@@ -9227,6 +9239,9 @@
 
         const activePersonalSubscriptions = findActiveSubscriptions(raw);
         const activeSub = activePersonalSubscriptions[0] || null;
+        const payingPersonalSubscriptions = activePersonalSubscriptions.filter((subscription) => normalizedStatus(subscription) === "active");
+        const payingMonthlyTotal = payingPersonalSubscriptions.reduce((sum, subscription) => sum + (Number(subscription.amount) || 0), 0);
+        const payingMonthlyLabel = `₹${payingMonthlyTotal.toLocaleString("en-IN")}`;
         const activeReceivedGift = raw.find((r) => isGiftRecord(r) && r.giftRole === "receiver" && ["active", "paused"].includes(normalizedStatus(r)));
         if (activeSub) subscriptionCheckoutPending = false;
         cancelledSubscription = findLatestCancelledSubscription(raw);
@@ -9240,8 +9255,10 @@
         setText("gift-count", `${giftPaid.length} contribution${giftPaid.length === 1 ? "" : "s"} · ${formatAmount(giftTotal)}`);
         setText("record-count", `${records.length} record${records.length === 1 ? "" : "s"}`);
 
-        const status = activeSub
-            ? normalizedStatus(activeSub)
+        const status = payingPersonalSubscriptions.length
+            ? "active"
+            : activeSub
+                ? normalizedStatus(activeSub)
             : activeReceivedGift
                 ? normalizedStatus(activeReceivedGift)
                 : subscriptionCheckoutPending
@@ -9256,9 +9273,11 @@
         setText("quick-stat-total", formatAmount(total));
         setText("quick-stat-count", `${paidRecords.length} confirmed contribution${paidRecords.length === 1 ? "" : "s"}`);
 
-        if (activeSub) {
-            setText("quick-stat-plan", `${formatAmount(activeSub.amount || 100)} / mo`);
-            setText("quick-stat-plan-status", "Active supporter");
+        if (activePersonalSubscriptions.length) {
+            setText("quick-stat-plan", `${payingMonthlyLabel} / mo`);
+            setText("quick-stat-plan-status", payingPersonalSubscriptions.length
+                ? `${payingPersonalSubscriptions.length} active subscription${payingPersonalSubscriptions.length === 1 ? "" : "s"}`
+                : "All subscriptions paused");
         } else if (activeReceivedGift) {
             setText("quick-stat-plan", `${formatAmount(activeReceivedGift.amount || 100)} / mo`);
             setText("quick-stat-plan-status", `Gifted by ${activeReceivedGift.donorName || "Supporter"}`);
@@ -9332,13 +9351,9 @@
         renderCustomPlanBanner();
 
         let subscriptionSummary = "";
-        if (activeSub) {
-            const isPaused = normalizedStatus(activeSub) === "paused";
-            if (isPaused) {
-                subscriptionSummary = `Paused · ${formatAmount(activeSub.amount || 100)}/mo · started ${formatDateTime(activeSub.date || activeSub.createdAt)} · autopay is currently paused. Click Resume anytime to reactivate.`;
-            } else {
-                subscriptionSummary = `Active · ${formatAmount(activeSub.amount || 100)}/mo · started ${formatDateTime(activeSub.date)}${activeSub.nextPaymentDue ? ` · next renewal ${formatDateOnly(activeSub.nextPaymentDue)}` : ""}`;
-            }
+        if (activePersonalSubscriptions.length) {
+            const pausedCount = activePersonalSubscriptions.length - payingPersonalSubscriptions.length;
+            subscriptionSummary = `${payingPersonalSubscriptions.length} active monthly subscription${payingPersonalSubscriptions.length === 1 ? "" : "s"} · total ${payingMonthlyLabel}/mo${pausedCount ? ` · ${pausedCount} paused` : ""}. Manage each subscription separately below.`;
         } else if (activeReceivedGift) {
             subscriptionSummary = `You have an active ${formatAmount(activeReceivedGift.amount || 100)}/mo membership generously gifted by ${activeReceivedGift.donorName || "a kind supporter"}. Thank you for being a vital part of our rescue family!`;
         } else if (cancelledSubscription) {
@@ -9441,11 +9456,76 @@
         });
     });
 
-    async function startMonthlySubscription(overrideAmount) {
+    function promptDashboardAddSubscription(newAmt) {
+        const modal = get("dashboard-change-plan-modal") || get("change-plan-modal");
+        const descEl = get("dashboard-change-plan-modal-desc") || get("change-plan-modal-desc");
+        const confirmBtn = get("dashboard-change-plan-modal-confirm") || get("change-plan-modal-confirm");
+        const keepBtn = get("dashboard-change-plan-modal-keep") || get("change-plan-modal-keep");
+        const closeBtn = get("dashboard-change-plan-modal-close") || get("change-plan-modal-close");
+        const errorEl = get("dashboard-change-plan-modal-error") || get("change-plan-modal-error");
+        if (!modal || !confirmBtn) return startMonthlySubscription(newAmt, true);
+
+        const activeSubs = findActiveSubscriptions(allRawRecords());
+        const currentTotal = activeSubs
+            .filter((subscription) => normalizedStatus(subscription) === "active")
+            .reduce((sum, subscription) => sum + (Number(subscription.amount) || 0), 0);
+        const nextTotal = currentTotal + Number(newAmt || 0);
+
+        if (descEl) {
+            descEl.textContent = `You already have ${activeSubs.length} monthly subscription${activeSubs.length === 1 ? "" : "s"}. This new ₹${Number(newAmt || 0).toLocaleString("en-IN")}/mo subscription will be added alongside them, not replace them. Your active monthly total will be ₹${nextTotal.toLocaleString("en-IN")}/mo.`;
+        }
+        if (errorEl) {
+            errorEl.textContent = "";
+            errorEl.classList.add("is-hidden");
+        }
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = "Add subscription";
+        if (keepBtn) {
+            keepBtn.disabled = false;
+            keepBtn.textContent = "Keep current plans";
+        }
+        if (closeBtn) closeBtn.disabled = false;
+        modal.classList.remove("is-hidden");
+
+        let isAdding = false;
+        const closeModal = () => {
+            if (isAdding) return;
+            modal.classList.add("is-hidden");
+        };
+        confirmBtn.onclick = async () => {
+            if (isAdding) return;
+            isAdding = true;
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = `<span class="button-spinner button-spinner-dark" aria-hidden="true"></span> Starting payment…`;
+            if (keepBtn) keepBtn.disabled = true;
+            if (closeBtn) closeBtn.disabled = true;
+            modal.classList.add("is-hidden");
+            await startMonthlySubscription(newAmt, true);
+        };
+        keepBtn && (keepBtn.onclick = closeModal);
+        closeBtn && (closeBtn.onclick = closeModal);
+        modal.onclick = (event) => {
+            if (event.target.hasAttribute("data-change-plan-dismiss")) closeModal();
+        };
+    }
+
+    async function startMonthlySubscription(overrideAmount, skipAddConfirmation = false) {
         if (subscriptionCheckoutPending) return;
         const intentAmount = monthlyIntent && Number(monthlyIntent.amount) > 0 ? Number(monthlyIntent.amount) : null;
         const effectiveAmount = overrideAmount || intentAmount || selectedDashboardPlanAmount || 100;
         if (!currentUser) return;
+        if (!skipAddConfirmation && findActiveSubscriptions(allRawRecords()).length) {
+            promptDashboardAddSubscription(effectiveAmount);
+            return;
+        }
+        if (!window.sillysenseBeginPayment?.("monthly")) {
+            const busyMessage = get("subscription-message");
+            if (busyMessage) {
+                busyMessage.textContent = "Another payment is already being processed. Please wait for it to finish.";
+                busyMessage.classList.add("error");
+            }
+            return;
+        }
         const button = get("dashboard-subscription-toggle");
         const message = get("subscription-message");
         if (button) setPosButtonDisabled(button, true);
@@ -9453,6 +9533,7 @@
             message.textContent = "Setting up monthly subscription…";
             message.classList.remove("error");
         }
+        subscriptionCheckoutPending = true;
         const now = Date.now();
         const nextPayment = nextMonthTimestamp(now);
 
@@ -9495,11 +9576,12 @@
                 });
 
                 if (message) message.textContent = "Monthly subscription is now active!";
+                window.sillysenseEndPayment?.();
+                subscriptionCheckoutPending = false;
                 renderRecords();
                 return;
             }
 
-            subscriptionCheckoutPending = true;
             const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -9530,12 +9612,14 @@
                 theme: { color: "#FFDD00" },
                 handler: function (response) {
                     console.log("Subscription mandate created in dashboard:", response);
+                    window.sillysenseEndPayment?.();
                     subscriptionCheckoutPending = true;
                     if (message) message.textContent = "Mandate setup complete! Your recurring subscription is active. Thank you!";
                     renderRecords();
                 },
                 modal: {
                     ondismiss: function () {
+                        window.sillysenseEndPayment?.();
                         subscriptionCheckoutPending = false;
                         if (button) {
                             button.classList.remove("is-animating");
@@ -9550,6 +9634,7 @@
                 const rzp = new window.Razorpay(options);
                 rzp.on("payment.failed", function (resp) {
                     console.error("Dashboard subscription failed:", resp.error);
+                    window.sillysenseEndPayment?.();
                     subscriptionCheckoutPending = false;
                     if (message) {
                         message.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
@@ -9567,6 +9652,7 @@
 
         } catch (error) {
             console.error("Unable to start monthly subscription:", error);
+            window.sillysenseEndPayment?.();
             subscriptionCheckoutPending = false;
             if (message) {
                 message.textContent = error?.message || "Could not start your monthly subscription. Please try again.";
@@ -9582,6 +9668,12 @@
     dashSubToggle?.addEventListener("click", async (e) => {
         e.preventDefault();
         if (isSubToggling || isTogglingSubscriptionPause || !currentUser || isPosButtonDisabled(dashSubToggle)) return;
+        if (window.sillysensePaymentBusy?.()) return;
+        const activeSubs = findActiveSubscriptions(allRawRecords());
+        if (activeSubs.length) {
+            promptDashboardAddSubscription(selectedDashboardPlanAmount);
+            return;
+        }
         isSubToggling = true;
         playPosTransactionAnimation(dashSubToggle, async () => {
             try {
@@ -9794,6 +9886,10 @@
     }
 
     function promptDashboardChangePlan(existingSub, currentAmt, newAmt) {
+        // Kept as a compatibility shim for older cached callers. New plans are
+        // always additive; never cancel existing subscriptions here.
+        return promptDashboardAddSubscription(newAmt);
+
         const modal = get("dashboard-change-plan-modal") || get("change-plan-modal");
         const descEl = get("dashboard-change-plan-modal-desc") || get("change-plan-modal-desc");
         const confirmBtn = get("dashboard-change-plan-modal-confirm") || get("change-plan-modal-confirm");
@@ -10327,7 +10423,7 @@
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ subscription_id: subId }),
+                    body: JSON.stringify({ subscription_id: subId, is_gift: true }),
                 });
                 if (!res.ok) {
                     const errData = await res.json().catch(() => ({}));
