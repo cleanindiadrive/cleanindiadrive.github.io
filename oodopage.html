@@ -12,16 +12,16 @@
   <link rel="preload" as="image" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/trees-texture.webp" type="image/webp" fetchpriority="high" />
   <style>
 
+
     @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;900&display=swap");
 
-    #sillysense-oodopage,
-    #sillysense-oodopage * {
+    * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
     }
 
-    #sillysense-oodopage {
+    :root {
         --yellow: #ffda00;
         --yellow-hover: #f2cc00;
         --yellow-soft: #fff8c9;
@@ -38,11 +38,11 @@
         --content-width: 820px;
     }
 
-    #sillysense-oodopage {
+    html {
         scroll-behavior: smooth;
     }
 
-    #sillysense-oodopage {
+    body {
         position: relative;
         isolation: isolate;
         min-width: 320px;
@@ -53,7 +53,7 @@
         text-rendering: optimizeLegibility;
     }
 
-    #sillysense-oodopage::before {
+    body::before {
         position: fixed;
         z-index: -1;
         inset: 0;
@@ -67,32 +67,32 @@
         pointer-events: none;
     }
 
-    #sillysense-oodopage a {
+     a {
         color: inherit;
     }
 
-    #sillysense-oodopage button,
-    #sillysense-oodopage input,
-    #sillysense-oodopage select {
+     button,
+     input,
+     select {
         font: inherit;
     }
 
-    #sillysense-oodopage button,
-    #sillysense-oodopage a {
+     button,
+     a {
         -webkit-tap-highlight-color: transparent;
     }
 
-    #sillysense-oodopage button:focus-visible,
-    #sillysense-oodopage a:focus-visible,
-    #sillysense-oodopage input:focus-visible,
-    #sillysense-oodopage select:focus-visible,
-    #sillysense-oodopage summary:focus-visible {
+     button:focus-visible,
+     a:focus-visible,
+     input:focus-visible,
+     select:focus-visible,
+     summary:focus-visible {
         outline: 3px solid rgba(255, 218, 0, 0.6);
         outline-offset: 3px;
     }
 
     /* Header & Navigation */
-    #sillysense-oodopage .site-header {
+     .site-header {
         position: sticky;
         top: 0;
         z-index: 100;
@@ -102,8 +102,8 @@
         border-bottom: 1px solid var(--line);
     }
 
-    #sillysense-oodopage .site-nav,
-    #sillysense-oodopage nav {
+     .site-nav,
+     nav {
         display: flex;
         width: min(100% - 2.5rem, 860px);
         min-height: 64px;
@@ -113,7 +113,7 @@
         padding: 0.5rem 0;
     }
 
-    #sillysense-oodopage .logo img {
+     .logo img {
         display: block;
         width: auto;
         height: 30px;
@@ -1649,26 +1649,26 @@
         padding: 0.75rem 0;
     }
 
-    #sillysense-oodopage footer {
+     footer {
         padding: 2.75rem 1rem 2.25rem;
         background: #1c1c1a;
         color: #fff;
         text-align: center;
     }
 
-    #sillysense-oodopage footer .contact-title {
+     footer .contact-title {
         margin-bottom: 0.25rem;
         font-size: 0.94rem;
         font-weight: 700;
         color: #ffffff;
     }
 
-    #sillysense-oodopage footer .contact-details {
+     footer .contact-details {
         color: #a4a49c;
         font-size: 0.78rem;
     }
 
-    #sillysense-oodopage .footer-links {
+     .footer-links {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -1679,27 +1679,27 @@
         border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    #sillysense-oodopage .footer-links a {
+     .footer-links a {
         color: #b5b5ac;
         font-size: 0.72rem;
         text-decoration: none;
         transition: color 140ms ease;
     }
 
-    #sillysense-oodopage .footer-links a:hover {
+     .footer-links a:hover {
         color: #ffffff;
         text-decoration: underline;
         text-underline-offset: 2px;
     }
 
-    #sillysense-oodopage .footer-sep {
+     .footer-sep {
         color: rgba(255, 255, 255, 0.25);
         font-size: 0.75rem;
     }
 
     /* Login and tracker pages use the same visual language. */
-    #sillysense-oodopage.auth-page,
-    #sillysense-oodopage.dashboard-page {
+    .auth-page,
+    .dashboard-page {
         min-height: 100vh;
         background: var(--canvas);
     }
@@ -1710,10 +1710,10 @@
      * larger height after an accordion is closed. Embedded pages should size
      * themselves from their content instead.
      */
-    #sillysense-oodopage.is-embedded,
-    #sillysense-oodopage.is-embedded .auth-page,
-    #sillysense-oodopage.is-embedded .dashboard-page,
-    #sillysense-oodopage.is-embedded .page-view {
+    body.is-embedded,
+    body.is-embedded .auth-page,
+    body.is-embedded .dashboard-page,
+    body.is-embedded .page-view {
         height: auto !important;
         min-height: 0 !important;
     }
@@ -3293,8 +3293,8 @@
 
     @media (max-width: 480px) {
 
-        #sillysense-oodopage .site-nav,
-        #sillysense-oodopage nav {
+         .site-nav,
+         nav {
             min-height: 58px;
             padding-right: 0.25rem;
             padding-left: 0.25rem;
@@ -5213,29 +5213,23 @@
 
 
     /* Bundle SPA Views */
-    #sillysense-oodopage .page-view {
+     .page-view {
         width: 100%;
         transition: opacity 0.25s ease;
     }
 
-    #sillysense-oodopage .page-view.is-hidden {
+     .page-view.is-hidden {
         display: none !important;
     }
 
-    #sillysense-oodopage .is-hidden-auth {
+     .is-hidden-auth {
         display: none !important;
     }
+
 
   </style>
 </head>
 <body>
-<div id="sillysense-oodopage">
-
-
-
-
-
-
 <div id="page-loader" aria-hidden="true">
     <div class="main">
         <div class="dog">
@@ -6146,7 +6140,7 @@
     function showView(viewName) {
         const homeView = document.getElementById("view-home");
         const dashView = document.getElementById("view-dashboard");
-        const appRoot = document.getElementById("sillysense-oodopage");
+        const appRoot = document.body;
         if (!homeView || !dashView) return;
 
         if (viewName === "dashboard") {
@@ -6237,7 +6231,7 @@
         // Prevent the iframe's current viewport height from becoming the
         // page's minimum height. This is what allows the parent frame to
         // shrink again after an accordion/details panel is closed.
-        document.getElementById("sillysense-oodopage")?.classList.add("is-embedded");
+        document.body.classList.add("is-embedded");
 
         let frameId = 0;
         const getDocumentBottom = (element) => {
@@ -11118,7 +11112,5 @@
     });
 
 </script>
-
-</div>
 </body>
 </html>
