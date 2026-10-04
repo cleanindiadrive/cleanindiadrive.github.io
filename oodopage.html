@@ -6233,6 +6233,17 @@
         window.addEventListener("resize", scheduleHeightUpdate);
         document.addEventListener("DOMContentLoaded", scheduleHeightUpdate);
 
+        // The browser does not consistently fire ResizeObserver for a
+        // <details> panel whose content is removed from normal flow. Send a
+        // fresh measurement whenever an accordion is opened or closed.
+        document.addEventListener("toggle", scheduleHeightUpdate, true);
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest?.("summary")) return;
+            scheduleHeightUpdate();
+            setTimeout(scheduleHeightUpdate, 80);
+            setTimeout(scheduleHeightUpdate, 240);
+        }, true);
+
         if (window.ResizeObserver) {
             new ResizeObserver(scheduleHeightUpdate).observe(document.body);
             new ResizeObserver(scheduleHeightUpdate).observe(document.documentElement);
