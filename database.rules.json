@@ -1,0 +1,77 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && (auth.token.admin === true || $uid === auth.uid)"
+      }
+    },
+
+    "subscribers": {
+      ".read": true,
+      "$subscriptionId": {
+        ".write": "auth != null && (auth.token.admin === true || data.child('userId').val() === auth.uid || newData.child('userId').val() === auth.uid || data.child('giver_id').val() === auth.uid || newData.child('giver_id').val() === auth.uid || data.child('recipient_uid').val() === auth.uid || newData.child('recipient_uid').val() === auth.uid || data.child('email').val() === auth.token.email || newData.child('email').val() === auth.token.email || data.child('giver_email').val() === auth.token.email || newData.child('giver_email').val() === auth.token.email || data.child('recipient_email').val() === auth.token.email || newData.child('recipient_email').val() === auth.token.email)"
+      }
+    },
+
+    "subscribers_velcrow": {
+      ".read": true,
+      "$subscriptionId": {
+        ".write": "auth != null && (auth.token.admin === true || data.child('userId').val() === auth.uid || newData.child('userId').val() === auth.uid || data.child('giver_id').val() === auth.uid || newData.child('giver_id').val() === auth.uid || data.child('email').val() === auth.token.email || newData.child('email').val() === auth.token.email || data.child('giver_email').val() === auth.token.email || newData.child('giver_email').val() === auth.token.email)"
+      }
+    },
+
+    "payments": {
+      ".read": true,
+      "$key": {
+        ".write": "auth != null && auth.token.admin === true",
+        "$paymentId": {
+          ".write": "auth != null && (auth.token.admin === true || $key === auth.uid)"
+        }
+      }
+    },
+
+    "testPayments": {
+      ".read": true,
+      "$paymentId": {
+        ".write": "auth != null && (auth.token.admin === true || data.child('userId').val() === auth.uid || newData.child('userId').val() === auth.uid || data.child('email').val() === auth.token.email || newData.child('email').val() === auth.token.email)"
+      }
+    },
+
+    "paymentIntents": {
+      "$uid": {
+        ".read": "auth != null && (auth.token.admin === true || $uid === auth.uid)",
+        ".write": "auth != null && (auth.token.admin === true || $uid === auth.uid)"
+      }
+    },
+
+    "customPlans": {
+      "$uid": {
+        ".read": "auth != null && (auth.token.admin === true || $uid === auth.uid)"
+      }
+    },
+
+    "one_time_payment_orders": {
+      ".read": false,
+      ".write": false
+    },
+
+    "processed_webhook_events": {
+      ".read": false,
+      ".write": false
+    },
+
+    "whatsapp_queue": {
+      ".read": false,
+      ".write": false
+    },
+
+    "razorpay_custom_plans": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

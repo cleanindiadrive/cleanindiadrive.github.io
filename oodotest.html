@@ -102,8 +102,14 @@
         border-bottom: 1px solid var(--line);
     }
 
-     .site-nav,
-     nav {
+    /* Odoo supplies its own sticky site header when this page is embedded there. */
+    body:has(header#top, #top_menu, .o_main_navbar) .site-header {
+        position: relative;
+        top: auto;
+        z-index: 1;
+    }
+
+     .site-nav {
         display: flex;
         width: min(100% - 2.5rem, 860px);
         min-height: 64px;
@@ -168,8 +174,7 @@
         background: transparent;
     }
 
-    .hero-container,
-    .hero-section .container {
+    .hero-container {
         max-width: 640px;
         margin: 0 auto;
     }
@@ -729,7 +734,6 @@
        Uiverse.io "New Transaction" POS Terminal Card Checkout Button
        (real pixel sizes - compact & wide, yellow theme)
        ============================================================== */
-    .container,
     .pos-transaction-container {
         background-color: var(--yellow);
         display: flex;
@@ -749,15 +753,6 @@
         margin: 0;
     }
 
-    .container:hover,
-    .container.is-animating,
-    .container.is-animating-reverse,
-    .container.is-active {
-        transform: scale(1.03);
-        width: 110px;
-        box-shadow: 0 6px 20px rgba(255, 218, 0, 0.45);
-    }
-
     .pos-transaction-container:hover,
     .pos-transaction-container.is-animating,
     .pos-transaction-container.is-animating-reverse,
@@ -766,14 +761,6 @@
         box-shadow: 0 6px 20px rgba(255, 218, 0, 0.45);
     }
 
-    .container:hover .left-side,
-    .container.is-animating .left-side,
-    .container.is-animating-reverse .left-side,
-    .container.is-active .left-side {
-        width: 100%;
-    }
-
-    .container .left-side,
     .pos-transaction-container .left-side {
         background-color: #f2cc00;
         width: 62px;
@@ -790,7 +777,6 @@
         border-right: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    .container .right-side,
     .pos-transaction-container .right-side {
         width: calc(100% - 62px);
         display: flex;
@@ -803,12 +789,10 @@
         background-color: var(--yellow);
     }
 
-    .container .right-side:hover,
     .pos-transaction-container .right-side:hover {
         background-color: var(--yellow-hover);
     }
 
-    .container .arrow,
     .pos-transaction-container .arrow {
         width: 12px;
         height: 12px;
@@ -816,13 +800,11 @@
         flex-shrink: 0;
     }
 
-    .container .arrow path,
     .pos-transaction-container .arrow path {
         fill: var(--ink);
         opacity: 0.85;
     }
 
-    .container .new,
     .pos-transaction-container .new {
         font-size: 15px;
         font-family: "Lexend Deca", sans-serif;
@@ -832,7 +814,6 @@
         letter-spacing: -0.01em;
     }
 
-    .container .card,
     .pos-transaction-container .card {
         width: 33px;
         height: 22px;
@@ -846,7 +827,6 @@
         box-shadow: 3px 3px 4px -1px rgba(77, 200, 143, 0.65);
     }
 
-    .container .card-line,
     .pos-transaction-container .card-line {
         width: 30px;
         height: 6px;
@@ -855,7 +835,6 @@
         margin-top: 3px;
     }
 
-    .container .buttons,
     .pos-transaction-container .buttons {
         width: 4px;
         height: 4px;
@@ -866,20 +845,14 @@
         margin: 4px 0 0 -14px;
     }
 
-    .container:hover .card,
     .pos-transaction-container:hover .card,
-    .container.is-animating .card,
     .pos-transaction-container.is-animating .card,
-    .container.is-active .card,
     .pos-transaction-container.is-active .card {
         animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both;
     }
 
-    .container:hover .post,
     .pos-transaction-container:hover .post,
-    .container.is-animating .post,
     .pos-transaction-container.is-animating .post,
-    .container.is-active .post,
     .pos-transaction-container.is-active .post {
         animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both;
     }
@@ -902,7 +875,6 @@
         }
     }
 
-    .container .post,
     .pos-transaction-container .post {
         width: 30px;
         height: 36px;
@@ -914,7 +886,6 @@
         overflow: hidden;
     }
 
-    .container .post-line,
     .pos-transaction-container .post-line {
         width: 22px;
         height: 4px;
@@ -925,7 +896,6 @@
         top: 4px;
     }
 
-    .container .post-line:before,
     .pos-transaction-container .post-line:before {
         content: "";
         position: absolute;
@@ -935,7 +905,6 @@
         top: -4px;
     }
 
-    .container .screen,
     .pos-transaction-container .screen {
         width: 22px;
         height: 11px;
@@ -946,7 +915,6 @@
         border-radius: 2px;
     }
 
-    .container .numbers,
     .pos-transaction-container .numbers {
         width: 5px;
         height: 5px;
@@ -959,7 +927,6 @@
         top: 24px;
     }
 
-    .container .numbers-line2,
     .pos-transaction-container .numbers-line2 {
         width: 5px;
         height: 5px;
@@ -982,7 +949,6 @@
         }
     }
 
-    .container .dollar,
     .pos-transaction-container .dollar {
         position: absolute;
         font-size: 9px;
@@ -996,11 +962,8 @@
         line-height: 11px;
     }
 
-    .container:hover .dollar,
     .pos-transaction-container:hover .dollar,
-    .container.is-animating .dollar,
     .pos-transaction-container.is-animating .dollar,
-    .container.is-active .dollar,
     .pos-transaction-container.is-active .dollar {
         animation: fade-in-fwd 0.3s 1s backwards;
     }
@@ -1018,38 +981,31 @@
     }
 
     /* Reverse support for pausing */
-    .container.is-animating-reverse .card,
     .pos-transaction-container.is-animating-reverse .card {
         animation: slide-top 1.2s cubic-bezier(0.645, 0.045, 0.355, 1) both reverse;
     }
 
-    .container.is-animating-reverse .post,
     .pos-transaction-container.is-animating-reverse .post {
         animation: slide-post 1s cubic-bezier(0.165, 0.84, 0.44, 1) both reverse;
     }
 
-    .container.is-animating-reverse .dollar,
     .pos-transaction-container.is-animating-reverse .dollar {
         animation: fade-in-fwd 0.3s 0s both reverse;
     }
 
     /* Mobile breakpoint */
     @media only screen and (max-width: 480px) {
-        .container,
         .pos-transaction-container {
             width: 100%;
             max-width: 340px;
             margin: 0 auto;
         }
 
-        .container .new,
         .pos-transaction-container .new {
             font-size: 14px;
         }
     }
 
-    .container.is-disabled,
-    .container[aria-disabled="true"],
     .pos-transaction-container.is-disabled,
     .pos-transaction-container[aria-disabled="true"] {
         opacity: 0.52;
@@ -1058,9 +1014,7 @@
         filter: grayscale(0.5);
     }
 
-    .container.is-animating,
     .pos-transaction-container.is-animating,
-    .container.is-animating-reverse,
     .pos-transaction-container.is-animating-reverse {
         opacity: 1 !important;
         filter: none !important;
@@ -3293,8 +3247,7 @@
 
     @media (max-width: 480px) {
 
-         .site-nav,
-         nav {
+         .site-nav {
             min-height: 58px;
             padding-right: 0.25rem;
             padding-left: 0.25rem;
@@ -5227,373 +5180,7 @@
     }
 
 
-  
-
-/* -------------------------------------------------------------
- * Dedicated Gifted Membership Card & Banner
- * ----------------------------------------------------------- */
-.dashboard-gifted-card {
-  position: relative;
-  overflow: hidden;
-  padding: 1.15rem 1.3rem;
-  border-radius: 14px;
-  border: 1.5px solid #f59e0b;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 60%, #fff7ed 100%);
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);
-  margin-bottom: 1.1rem;
-  text-align: left !important;
-}
-
-.gifted-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.4rem;
-}
-
-.gifted-card-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.22rem 0.65rem;
-  border-radius: 999px;
-  background: #d97706;
-  color: #ffffff;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.gifted-card-amount {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #92400e;
-}
-
-.gifted-card-title {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #78350f;
-  margin-bottom: 0.25rem;
-}
-
-.gifted-card-note {
-  font-size: 0.8rem;
-  color: #92400e;
-  line-height: 1.45;
-  margin: 0 0 0.85rem 0;
-}
-
-.gifted-card-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.active-gift-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  border-radius: 10px;
-  border: 1.5px solid #f59e0b;
-  background: #fffbeb;
-  margin-bottom: 0.85rem;
-  text-align: left !important;
-}
-
-.active-gift-banner-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.gift-banner-badge {
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background: #d97706;
-  color: #ffffff;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-}
-
-.gift-banner-text {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #78350f;
-}
-
-.btn-cancel-gifted-membership,
-.btn-cancel-gift {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0.4rem !important;
-  padding: 0.45rem 0.9rem !important;
-  border-radius: 8px !important;
-  border: 1.5px solid #dc2626 !important;
-  background: #ffffff !important;
-  color: #dc2626 !important;
-  font-family: inherit !important;
-  font-size: 0.76rem !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  transition: all 0.18s ease !important;
-  white-space: nowrap !important;
-  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.12) !important;
-  line-height: 1.4 !important;
-}
-
-.btn-cancel-gifted-membership:hover,
-.btn-cancel-gift:hover {
-  background: #fee2e2 !important;
-  border-color: #b91c1c !important;
-  color: #b91c1c !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.2) !important;
-}
-
-.btn-cancel-gifted-membership:active,
-.btn-cancel-gift:active {
-  transform: translateY(0) !important;
-}
-
-.btn-cancel-gifted-membership:disabled,
-.btn-cancel-gift:disabled {
-  opacity: 0.45 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
-}
-
-.status-pill-given {
-  background: #e0f2fe !important;
-  color: #0369a1 !important;
-}
-
-.status-pill-received {
-  background: #fef3c7 !important;
-  color: #b45309 !important;
-}
-
-.cancel-gift-modal-icon {
-  background: #fef3c7 !important;
-  color: #d97706 !important;
-}
-
-/* -------------------------------------------------------------
- * Odoo CMS & Bootstrap 5 Compatibility Resets
- * Prevents theme & Bootstrap classes from breaking layout/styles
- * ----------------------------------------------------------- */
-.s_embed_code,
-.dashboard-main,
-.home-main,
-.page-view,
-.dashboard-welcome,
-.dashboard-profile,
-.dashboard-stats-grid,
-.tracker-accordions {
-  text-align: left !important;
-  box-sizing: border-box !important;
-}
-
-/* Reset Bootstrap .table padding, backgrounds, and inset box-shadow */
-.payments-table,
-.subscription-table,
-.subscription-charges-table,
-.gift-memberships-table {
-  --bs-table-bg: transparent !important;
-  --bs-table-accent-bg: transparent !important;
-  --bs-table-striped-bg: transparent !important;
-  box-shadow: none !important;
-  border-collapse: collapse !important;
-  margin-bottom: 0 !important;
-  width: 100% !important;
-  background-color: transparent !important;
-}
-
-.payments-table > :not(caption) > * > *,
-.subscription-table > :not(caption) > * > *,
-.subscription-charges-table > :not(caption) > * > *,
-.gift-memberships-table > :not(caption) > * > * {
-  box-shadow: none !important;
-  background-color: transparent !important;
-}
-
-.payments-table th,
-.subscription-table th,
-.subscription-charges-table th,
-.gift-memberships-table th {
-  background: rgb(44, 44, 44) !important;
-  color: #ffffff !important;
-  padding: 8px 12px !important;
-  font-size: 0.7rem !important;
-  text-align: left !important;
-  box-shadow: none !important;
-  border-right: 1px solid rgba(203, 203, 203, 0.35) !important;
-  border-bottom: 1px solid rgb(167, 159, 159) !important;
-  vertical-align: middle !important;
-}
-
-.payments-table td,
-.subscription-table td,
-.subscription-charges-table td,
-.gift-memberships-table td {
-  padding: 7px 12px !important;
-  font-size: 0.74rem !important;
-  vertical-align: middle !important;
-  box-shadow: none !important;
-  border-right: 1px solid rgb(203, 203, 203) !important;
-  border-bottom: 1px solid rgb(203, 203, 203) !important;
-}
-
-.payments-table tr:nth-child(even) td,
-.subscription-table tbody tr:nth-child(even) td,
-.subscription-charges-table tbody tr:nth-child(even) td,
-.gift-memberships-table tbody tr:nth-child(even) td {
-  background-color: rgb(234, 235, 234) !important;
-}
-
-.payments-table tr:nth-child(odd) td,
-.subscription-table tbody tr:nth-child(odd) td,
-.subscription-charges-table tbody tr:nth-child(odd) td,
-.gift-memberships-table tbody tr:nth-child(odd) td {
-  background-color: #ffffff !important;
-}
-
-.payments-table tr:hover td,
-.subscription-table tbody tr:hover td,
-.subscription-charges-table tbody tr:hover td,
-.gift-memberships-table tbody tr:hover td {
-  background-color: #fffbe6 !important;
-}
-
-/* Reset Bootstrap .card overrides */
-.left-side .card {
-  position: absolute !important;
-  width: 70px !important;
-  height: 46px !important;
-  background-color: #c7ffbc !important;
-  border-radius: 4px !important;
-  border: none !important;
-  display: block !important;
-  box-shadow: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  top: 0 !important;
-  left: 0 !important;
-  min-width: 70px !important;
-}
-
-.uiverse-table-card.card,
-.uiverse-table-card {
-  background: rgb(44, 44, 44) !important;
-  border: 1px solid rgb(203, 203, 203) !important;
-  border-radius: 10px !important;
-  color: #ffffff !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  box-shadow: none !important;
-  min-width: 0 !important;
-}
-
-.stat-card {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  text-align: left !important;
-  box-sizing: border-box !important;
-  border: 1px solid var(--line) !important;
-  border-radius: var(--radius-md) !important;
-  background: var(--surface) !important;
-}
-
-.stat-meta .stat-label,
-.stat-meta .stat-value,
-.stat-meta .stat-sub {
-  margin: 0 !important;
-  line-height: 1.25 !important;
-}
-
-.stat-meta strong.stat-value {
-  font-size: 1.28rem !important;
-  font-weight: 800 !important;
-  color: var(--ink) !important;
-}
-
-/* Details and Summary reset for Odoo / Bootstrap */
-.tracker-accordion summary,
-.nested-accordion summary {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  list-style: none !important;
-  cursor: pointer !important;
-  text-align: left !important;
-}
-
-.tracker-accordion summary::-webkit-details-marker,
-.nested-accordion summary::-webkit-details-marker,
-.tracker-accordion summary::marker,
-.nested-accordion summary::marker {
-  display: none !important;
-  content: "" !important;
-}
-
-details:not([open]) > :not(summary) {
-  display: none !important;
-}
-
-
-
-
-  /* Bundle SPA Views */
-  .page-view {
-    width: 100%;
-    transition: opacity 0.25s ease;
-  }
-  .page-view.is-hidden {
-    display: none !important;
-  }
-  .is-hidden-auth {
-    display: none !important;
-  }
-
-/* Preserve the oodopage homepage presentation while remaining Odoo-safe. */
-.hero-cta-group {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  max-width: 540px;
-}
-
-.home-new-tx-wrap {
-  justify-content: flex-end;
-  width: auto;
-  flex: 0 0 auto;
-  margin: 0;
-}
-
-@media (max-width: 480px) {
-  .hero-cta-group {
-    grid-template-columns: 1fr;
-    max-width: 360px;
-    gap: 0.65rem;
-  }
-
-  .home-new-tx-wrap {
-    justify-content: center;
-    width: 100%;
-    margin-top: 0.35rem;
-  }
-}
-</style>
+  </style>
 </head>
 <body>
 <div id="page-loader" aria-hidden="true">
@@ -5639,7 +5226,7 @@ details:not([open]) > :not(summary) {
     <header class="site-header">
         <nav class="site-nav">
             <div class="logo">
-                <a href="index.html" aria-label="Manali Strays home">
+                <a href="https://www.nomaddog.in/subscription" aria-label="Nomad Dog subscription">
                     <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png"
                         alt="Manali Strays Logo" width="120" height="30" loading="lazy">
                 </a>
@@ -5654,17 +5241,12 @@ details:not([open]) > :not(summary) {
     </header>
 
     <main class="home-main">
-        <section class="hero-section" id="top">
+        <section class="hero-section" id="manali-hero">
             <div class="hero-container">
                 <h1>Subscribe to<br>Manali Strays</h1>
 
                 <div class="hero-cta-group">
-<a class="price-btn" id="subscribe-btn" href="#ways-to-support">
-            <strong id="hero-btn-amount">₹100 Per Month</strong>
-            <span id="subscriber-count">0 active subscribers</span>
-          </a>
-
-            <div id="money-counter" class="money-card">
+                    <div id="money-counter" class="money-card" aria-live="polite">
                         <span class="money-label">Total Raised</span>
                         <strong>₹<span id="money-raised">0</span></strong>
                     </div>
@@ -5940,7 +5522,7 @@ details:not([open]) > :not(summary) {
 <div id="view-dashboard" class="page-view is-hidden">
     <header class="dashboard-header">
         <div class="dashboard-nav">
-            <a class="logo" href="#home" aria-label="Manali Strays home">
+            <a class="logo" href="https://www.nomaddog.in/subscription" aria-label="Nomad Dog subscription">
                 <img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png"
                     alt="Manali Strays" width="120" height="30" loading="lazy">
             </a>
@@ -6149,28 +5731,6 @@ details:not([open]) > :not(summary) {
                             </div>
 
 
-                            <!-- Dedicated Gifted Membership Card (shown when user has an active/paused gifted membership) -->
-              <div class="dashboard-gifted-card is-hidden" id="dash-gifted-card">
-                <div class="gifted-card-header">
-                  <span class="gifted-card-badge">🎁 ACTIVE GIFTED MEMBERSHIP</span>
-                  <span class="gifted-card-amount" id="dash-gifted-amount">₹100 / mo</span>
-                </div>
-                <strong class="gifted-card-title" id="dash-gifted-title">Gifted Membership</strong>
-                <p class="gifted-card-note" id="dash-gifted-note">You are receiving a gifted membership from Kind Supporter.</p>
-                <div class="gifted-card-actions">
-                  <button type="button" class="btn-cancel-gifted-membership btn-cancel-gift" id="dash-gifted-cancel-btn">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <polyline points="20 12 20 22 4 22 4 12"></polyline>
-                      <rect x="2" y="7" width="20" height="5"></rect>
-                      <line x1="12" y1="22" x2="12" y2="7"></line>
-                      <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
-                      <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
-                    </svg>
-                    <span>Cancel Gifted Membership</span>
-                  </button>
-                </div>
-              </div>
-
                             <div class="dashboard-exclusive-card is-hidden" id="dash-exclusive-card">
                                 <div class="exclusive-header">
                                     <span class="exclusive-badge">⭐ EXCLUSIVE TO YOUR ACCOUNT</span>
@@ -6316,17 +5876,7 @@ details:not([open]) > :not(summary) {
                     <summary><span>Gifted memberships &amp; support</span><strong class="accordion-value"
                             id="gift-count">0 memberships · ₹0</strong></summary>
                     <div class="accordion-content">
-                        <!-- Active Gift Quick Banner inside Gifted Accordion -->
-            <div class="active-gift-banner is-hidden" id="active-gift-banner">
-              <div class="active-gift-banner-info">
-                <span class="gift-banner-badge">Active Gift</span>
-                <span class="gift-banner-text" id="active-gift-banner-text">₹100/mo gifted by Kind Supporter</span>
-              </div>
-              <button type="button" class="btn-cancel-gifted-membership btn-cancel-gift" id="active-gift-banner-cancel-btn">
-                <span>Cancel Gifted Membership</span>
-              </button>
-            </div>
-            <p class="accordion-lead" id="gift-summary">Gifted memberships given to or received from other
+                        <p class="accordion-lead" id="gift-summary">Gifted memberships given to or received from other
                             supporters.</p>
                         <div class="subscription-table-wrap" id="gift-table-wrap">
                             <div class="card__title">
@@ -6522,15 +6072,15 @@ details:not([open]) > :not(summary) {
     <div class="contact-title">Contact me?</div>
     <div class="contact-details">I'm in the group, you silly buffallo</div>
     <div class="footer-links">
-        <a href="https://cleanindiadrive.github.io/about.html">About Us</a>
+        <a href="https://www.sillysensei.com/about.html">About Us</a>
         <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/contact.html">Contact Us</a>
+        <a href="https://www.sillysensei.com/contact.html">Contact Us</a>
         <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/cancellation.html">Cancellation Policy</a>
+        <a href="https://www.sillysensei.com/cancellation.html">Cancellation Policy</a>
         <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/terms.html">Terms &amp; Conditions</a>
+        <a href="https://www.sillysensei.com/terms.html">Terms &amp; Conditions</a>
         <span class="footer-sep">·</span>
-        <a href="https://cleanindiadrive.github.io/privacy.html">Privacy Policy</a>
+        <a href="https://www.sillysensei.com/privacy.html">Privacy Policy</a>
     </div>
 </footer>
 
@@ -6579,6 +6129,10 @@ details:not([open]) > :not(summary) {
         const target = e.target.closest("a, button");
         if (!target) return;
         const href = target.getAttribute("href") || "";
+
+        if (href === "https://www.nomaddog.in/subscription" || href === "https://www.nomaddog.in/subscription/") {
+            return;
+        }
 
         if (target.id === "account-link" || target.id === "subscription-account-link" || href === "#dashboard" || href === "user-dashboard.html" || href.includes("#dashboard")) {
             e.preventDefault();
@@ -7851,6 +7405,10 @@ details:not([open]) > :not(summary) {
 
     async function saveOneTimeIntent(event) {
         event?.preventDefault?.();
+        if (!currentUser) {
+            window.showView?.("dashboard");
+            return;
+        }
         const amountInput = document.getElementById("one-time-amount");
         const button = document.getElementById("one-time-submit");
         const amount = Number(amountInput?.value);
@@ -7898,12 +7456,36 @@ details:not([open]) > :not(summary) {
                         contact: currentUserPhone || "",
                     },
                     theme: { color: "#FFDD00" },
-                    handler: function (response) {
+                    handler: async function (response) {
                         console.log("One-time payment completed:", response);
-                        window.sillysenseEndPayment?.();
-                        setModeMessage("one-time-message", `Payment of ₹${amount.toLocaleString("en-IN")} received! Thank you for your generous contribution.`);
-                        button.classList.remove("is-animating");
-                        setPosButtonDisabled(button, false);
+                        try {
+                            const verifyRes = await fetch(`${BACKEND_URL}/verify-one-time-payment`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                }),
+                            });
+                            const verifyData = await verifyRes.json().catch(() => ({}));
+                            if (!verifyRes.ok || !verifyData.success) {
+                                throw new Error(verifyData.error || "Payment confirmation is still syncing");
+                            }
+
+                            if (verifyData.captured) {
+                                setModeMessage("one-time-message", `Payment of ₹${amount.toLocaleString("en-IN")} received! Thank you for your generous contribution.`);
+                            } else {
+                                setModeMessage("one-time-message", "Payment authorized. We are waiting for Razorpay to confirm capture.");
+                            }
+                        } catch (verificationError) {
+                            console.warn("Payment succeeded at Razorpay but confirmation is still pending:", verificationError);
+                            setModeMessage("one-time-message", "Razorpay received the payment. Dashboard confirmation is still syncing; please refresh shortly.");
+                        } finally {
+                            window.sillysenseEndPayment?.();
+                            button.classList.remove("is-animating");
+                            setPosButtonDisabled(button, false);
+                        }
                     },
                     modal: {
                         ondismiss: function () {
@@ -7940,6 +7522,10 @@ details:not([open]) > :not(summary) {
 
     async function saveGiftIntent(event) {
         event?.preventDefault?.();
+        if (!currentUser) {
+            window.showView?.("dashboard");
+            return;
+        }
         const button = document.getElementById("gift-submit");
         const recipient = selectedGiftRecipient;
         if (!recipient) {
@@ -8288,10 +7874,6 @@ details:not([open]) > :not(summary) {
             sourceData.set(path, data);
             renderPublicTotals();
             renderDonors();
-            const legacySubscriberCount = document.getElementById("subscriber-count");
-            if (legacySubscriberCount) {
-                legacySubscriberCount.textContent = `${getActiveSubscribers().size} active subscribers`;
-            }
             if (giftSearchInput?.value && !selectedGiftRecipient) {
                 renderGiftSearchResults(giftSearchInput.value);
             }
@@ -8302,22 +7884,6 @@ details:not([open]) > :not(summary) {
     });
 
 
-
-    // Keep the legacy hero CTA amount aligned with the active monthly tier.
-    const legacyHeroAmount = document.getElementById("hero-btn-amount");
-    const legacyPlanLabel = document.getElementById("monthly-plan-label");
-    if (legacyHeroAmount && legacyPlanLabel) {
-        const syncLegacyHeroAmount = () => {
-            const match = legacyPlanLabel.textContent.match(/₹[\d,]+/);
-            legacyHeroAmount.textContent = `${match ? match[0] : "₹100"} Per Month`;
-        };
-        syncLegacyHeroAmount();
-        new MutationObserver(syncLegacyHeroAmount).observe(legacyPlanLabel, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-        });
-    }
 </script>
 
 
@@ -9834,41 +9400,6 @@ details:not([open]) > :not(summary) {
         renderTableSection(records, "all-payments-body", "all-payments-cards", "all-payments-badge", "No transactions recorded yet.");
         renderTableSection(oneTimePaid, "one-time-body", "one-time-cards", "one-time-badge", "No one-time payments yet.");
         setText("dashboard-note", records.length ? "Confirmed payments count toward totals. Pending requests stay visible until payment is confirmed." : "Your confirmed and pending payments will appear here.");
-        // Keep the legacy Odoo quick-card presentation synchronized with the
-        // newer subscription state model.
-        const legacyGift = activeReceivedGift && ["active", "paused"].includes(normalizedStatus(activeReceivedGift))
-            ? activeReceivedGift
-            : null;
-        const legacyGiftAmount = legacyGift ? formatAmount(legacyGift.amount || 100) : "";
-        const legacyGiftDonor = legacyGift?.donorName || legacyGift?.giver_name || legacyGift?.giver_email || "a kind supporter";
-        const legacyGiftSubId = legacyGift
-            ? (getSubscriptionIdentity(legacyGift) || legacyGift.subscriptionId || legacyGift.id || "")
-            : "";
-        const legacyGiftButtons = [
-            get("dash-gifted-cancel-btn"),
-            get("active-gift-banner-cancel-btn"),
-        ].filter(Boolean);
-
-        get("dash-gifted-card")?.classList.toggle("is-hidden", !legacyGift);
-        get("active-gift-banner")?.classList.toggle("is-hidden", !legacyGift);
-        if (legacyGift) {
-            setText("dash-gifted-amount", `${legacyGiftAmount} / mo`);
-            setText("dash-gifted-title", "Gifted Membership");
-            setText("dash-gifted-note", `You are receiving a gifted membership from ${legacyGiftDonor}.`);
-            setText("active-gift-banner-text", `${legacyGiftAmount}/mo gifted by ${legacyGiftDonor}`);
-            legacyGiftButtons.forEach((button) => {
-                button.classList.add("btn-cancel-gift");
-                button.dataset.giftSubId = legacyGiftSubId;
-                button.dataset.giftRecordId = legacyGift.id || "";
-                button.dataset.giftRecordPath = legacyGift.path || "";
-                button.dataset.giftReference = legacyGift.reference || "";
-                button.dataset.giftRole = "receiver";
-                button.dataset.giftRecipient = currentUser?.displayName || currentUser?.email || "Supporter";
-                button.dataset.giftDonor = legacyGiftDonor;
-                button.dataset.giftAmount = String(legacyGift.amount || 100);
-            });
-        }
-
     }
 
     document.addEventListener("click", (event) => {
@@ -11572,4 +11103,3 @@ details:not([open]) > :not(summary) {
 </script>
 </body>
 </html>
-

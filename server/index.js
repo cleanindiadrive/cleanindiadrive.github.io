@@ -41,10 +41,10 @@ const allowedTeams = new Set([DEFAULT_TEAM]);
 
 // Exact Plan IDs from your Razorpay Dashboard
 const RAZORPAY_PLANS = {
-  100: process.env.PLAN_ID_100 || "plan_SAoQD8vbO2HoTN",
-  500: process.env.PLAN_ID_500 || "plan_TjOxCaFRnUHoOK",
-  1000: process.env.PLAN_ID_1000 || "plan_TjOx55GxZceDvq",
-  1500: process.env.PLAN_ID_1500 || "plan_TjOwxc0Wp6JP83",
+  100: process.env.PLAN_ID_100 || "plan_SAoPHCDqPYimXm",
+  500: process.env.PLAN_ID_500 || "plan_TjOuDT4u2LwObA",
+  1000: process.env.PLAN_ID_1000 || "plan_TjOuMxRMoYF1hf",
+  1500: process.env.PLAN_ID_1500 || "plan_TjOuUq4hKGqzPt",
 };
 
 const customPlanCache = new Map();
@@ -114,23 +114,162 @@ function readOptionalText(value, field, maxLength = 256) {
   return value.trim();
 }
 
+function getSubscriptionStatus(record) {
+  return String(record?.subscriptionStatus || record?.status || "")
+    .trim()
+    .toLowerCase();
+}
+
+function isGiftRecord(record) {
+  return record?.is_gift === true ||
+    record?.is_gift === "true" ||
+    record?.isGift === true ||
+    record?.membershipType === "gift" ||
+    String(record?.type || "").toLowerCase().startsWith("gift-");
+}
+
+function getGiftLifecycleFields(subscriptionOrNotes) {
+  const notes = subscriptionOrNotes?.notes || subscriptionOrNotes || {};
+  const isGift = notes.is_gift === true ||
+    notes.is_gift === "true" ||
+    notes.isGift === true ||
+    notes.isGift === "true";
+  return isGift
+    ? {
+        is_gift: "true",
+        isGift: true,
+        membershipType: "gift",
+        type: "gift-monthly",
+      }
+    : {};
+}
+
+function getPersonalLifecycleFields(subscription) {
+  const notes = subscription?.notes || {};
+  if (getGiftLifecycleFields(subscription).isGift) return {};
+
+  const fields = {};
+  const userId = String(notes.user_id || notes.userId || "").trim();
+  const email = String(notes.email || subscription?.customer_email || "").trim().toLowerCase();
+  const name = String(notes.name || subscription?.customer_name || "").trim();
+  const phone = String(notes.phone || subscription?.customer_contact || "").trim();
+  if (userId) fields.userId = userId;
+  if (email) fields.email = email;
+  if (name) fields.name = name;
+  if (phone) fields.phone = phone;
+  return fields;
+}
+
+function isTerminalSubscriptionRecord(record) {
+  const status = getSubscriptionStatus(record);
+  return status === "cancelled" ||
+    status === "completed" ||
+    Boolean(record?.cancelledAt || record?.endedAt);
+}
+
+function isAlreadyInStateError(error, state) {
+  const message = String(
+    error?.error?.description || error?.message || error || "",
+  ).toLowerCase();
+
+  if (state === "paused") {
+    return /already.*paused|paused state|can't be paused.*paused/.test(message);
+  }
+  if (state === "active") {
+    return /already.*active|active state|can't be resumed.*active/.test(message);
+  }
+  if (state === "cancelled") {
+    return /already.*cancel|cancelled state|not cancellable|can't be cancelled/.test(message);
+  }
+  return false;
+}
+
+async function subscriptionHasTerminalState(subId) {
+  for (const targetPath of ["subscribers", "subscribers_velcrow"]) {
+    const snap = await db.ref(targetPath).child(subId).get();
+    if (snap.exists() && isTerminalSubscriptionRecord(snap.val())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+async function findActivePersonalSubscriptions(userId, email) {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const matches = new Map();
+
+  for (const targetPath of ["subscribers", "subscribers_velcrow"]) {
+    const snap = await db.ref(targetPath).get();
+    const records = snap.val() || {};
+
+    for (const [recordKey, record] of Object.entries(records)) {
+      if (!record || typeof record !== "object" || isGiftRecord(record)) {
+        continue;
+      }
+
+      const status = getSubscriptionStatus(record);
+      if (!["active", "paused"].includes(status) || isTerminalSubscriptionRecord(record)) {
+        continue;
+      }
+
+      const recordUserId = String(record.userId || record.user_id || "").trim();
+      const recordEmail = String(record.email || "").trim().toLowerCase();
+      const belongsToUser = (userId && recordUserId === userId) ||
+        (normalizedEmail && recordEmail === normalizedEmail);
+      if (!belongsToUser) {
+        continue;
+      }
+
+      const subscriptionId = String(
+        record.subscriptionId || record.subscription_id || record.id || recordKey,
+      ).trim();
+      if (subscriptionId.startsWith("sub_")) {
+        matches.set(subscriptionId, {
+          ...record,
+          id: record.id || recordKey,
+          subscriptionId,
+          sourcePath: targetPath,
+        });
+      }
+    }
+  }
+
+  return [...matches.values()];
+}
+
 /**
  * Helper to update subscriber records across both subscribers & subscribers_velcrow nodes
  * without overwriting unprovided fields.
  */
 async function updateSubscriberRecord(subId, team, updates) {
   let updated = false;
-  for (const targetPath of ["subscribers", "subscribers_velcrow"]) {
+  let foundExisting = false;
+  const incomingStatus = updates?.subscriptionStatus || updates?.status;
+  const incomingIsTerminal = ["cancelled", "completed"].includes(
+    String(incomingStatus || "").toLowerCase(),
+  );
+  const primarySnap = await db.ref("subscribers").child(subId).get();
+  const isGiftSubscription = isGiftRecord(primarySnap.val()) || isGiftRecord(updates);
+  const targetPaths = isGiftSubscription
+    ? ["subscribers"]
+    : ["subscribers", "subscribers_velcrow"];
+
+  for (const targetPath of targetPaths) {
     const ref = db.ref(targetPath).child(subId);
     const snap = await ref.get();
     if (snap.exists()) {
+      foundExisting = true;
+      if (isTerminalSubscriptionRecord(snap.val()) && !incomingIsTerminal) {
+        console.warn(`⏭️ Ignoring ${incomingStatus || "status"} update for terminal subscription ${subId}`);
+        continue;
+      }
       await ref.update({ ...updates, updatedAt: Date.now() });
       updated = true;
     }
   }
 
   // If subscription doesn't exist yet, create minimal record to preserve status
-  if (!updated) {
+  if (!updated && !foundExisting) {
     await db.ref("subscribers").child(subId).set({
       id: subId,
       subscriptionId: subId,
@@ -141,6 +280,91 @@ async function updateSubscriberRecord(subId, team, updates) {
     });
   }
   return true;
+}
+
+function isCapturedPayment(payment) {
+  return String(payment?.status || "").trim().toLowerCase() === "captured" || payment?.captured === true;
+}
+
+/**
+ * Persists a one-time payment after confirming its current Razorpay state.
+ * Webhooks and the checkout verification endpoint both use this helper.
+ */
+async function reconcileOneTimePayment(payment, orderIdOverride = "") {
+  const paymentId = String(payment?.id || "").trim();
+  const orderId = String(payment?.order_id || orderIdOverride || "").trim();
+  if (!paymentId || !orderId) {
+    return { found: false, captured: false, status: "missing_payment_or_order" };
+  }
+
+  const orderRef = db.ref("one_time_payment_orders").child(orderId);
+  const orderSnapshot = await orderRef.get();
+  if (!orderSnapshot.exists()) {
+    return { found: false, captured: false, status: "order_not_found", paymentId, orderId };
+  }
+
+  const orderData = orderSnapshot.val() || {};
+  const paymentStatus = String(payment?.status || "").trim().toLowerCase() || "authorized";
+  if (orderData.status === "captured") {
+    return { found: true, captured: true, alreadyRecorded: true, status: "captured", paymentId, orderId };
+  }
+
+  if (!isCapturedPayment(payment)) {
+    await orderRef.update({
+      status: paymentStatus,
+      paymentId,
+      paymentStatus,
+      updatedAt: Date.now(),
+    });
+    return { found: true, captured: false, status: paymentStatus, paymentId, orderId };
+  }
+
+  const amountInRupees = payment.amount ? payment.amount / 100 : Number(orderData.amount || 0) / 100;
+  const donorName = orderData.donor?.name || "Supporter";
+  const donorEmail = (orderData.donor?.email || "").toLowerCase().trim();
+  const donorPhone = orderData.donor?.phone || "";
+  const userId = orderData.userId || orderData.donor?.userId || "";
+  const team = orderData.team || DEFAULT_TEAM;
+  const paymentRecord = {
+    id: paymentId,
+    paymentId,
+    orderId,
+    amount: amountInRupees,
+    currency: payment.currency || "INR",
+    type: "one-time",
+    status: "paid",
+    email: donorEmail,
+    name: donorName,
+    phone: donorPhone,
+    team,
+    reference: paymentId,
+    note: "One-time contribution",
+    paidAt: payment.created_at ? payment.created_at * 1000 : Date.now(),
+    createdAt: payment.created_at ? payment.created_at * 1000 : Date.now(),
+  };
+
+  await db.ref("payments").child(paymentId).set(paymentRecord);
+  if (userId) {
+    await db.ref(`payments/${userId}`).child(paymentId).set(paymentRecord);
+  }
+  await orderRef.update({
+    status: "captured",
+    paymentId,
+    capturedAt: Date.now(),
+    updatedAt: Date.now(),
+  });
+
+  return { found: true, captured: true, status: "captured", paymentId, orderId };
+}
+
+async function fetchLatestPayment(payment) {
+  if (!payment?.id) return payment;
+  try {
+    return await razorpay.payments.fetch(payment.id);
+  } catch (err) {
+    console.warn(`Could not fetch latest Razorpay payment ${payment.id}:`, err.message);
+    return payment;
+  }
 }
 
 /**
@@ -156,10 +380,18 @@ app.post("/create-subscription", async (req, res) => {
     const phone = readOptionalText(req.body?.phone, "phone", 32);
     const amount = Number(req.body?.amount) || 100;
 
+    if (!userId) {
+      return res.status(401).json({
+        error: "Please sign in before starting a payment.",
+      });
+    }
+
+    const requestId = crypto.randomUUID();
+
     // Resolves to exact Plan ID: ₹100, ₹500, ₹1000, or ₹1500 (or custom)
     const planId = await resolvePlanId(amount);
 
-    console.log(`🚀 Creating subscription for ₹${amount}/mo using Plan: ${planId}`);
+    console.log(`🚀 Creating subscription request ${requestId} for ₹${amount}/mo using Plan: ${planId}`);
 
     const subscription = await razorpay.subscriptions.create({
       plan_id: planId,
@@ -174,7 +406,6 @@ app.post("/create-subscription", async (req, res) => {
         amount: String(amount),
       },
     });
-
     res.json({
       subscription_id: subscription.id,
       razorpay_key: process.env.RAZORPAY_KEY_ID,
@@ -225,6 +456,12 @@ app.post("/create-one-time-payment", async (req, res) => {
       phone: readOptionalText(req.body?.phone, "phone", 32),
     };
 
+    if (!userId) {
+      return res.status(401).json({
+        error: "Please sign in before making a one-time payment.",
+      });
+    }
+
     if (donor.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donor.email)) {
       return res.status(400).json({ error: "Invalid email address" });
     }
@@ -234,7 +471,6 @@ app.post("/create-one-time-payment", async (req, res) => {
       currency: "INR",
       notes: { team, userId: userId || "" },
     });
-
     await db.ref("one_time_payment_orders").child(order.id).set({
       amount: amountInPaise,
       currency: "INR",
@@ -261,6 +497,48 @@ app.post("/create-one-time-payment", async (req, res) => {
 });
 
 /**
+ * Verifies the Checkout response immediately so a missed webhook does not
+ * leave a captured one-time payment absent from the dashboard.
+ */
+app.post("/verify-one-time-payment", async (req, res) => {
+  try {
+    const orderId = readOptionalText(req.body?.razorpay_order_id, "razorpay_order_id", 128);
+    const paymentId = readOptionalText(req.body?.razorpay_payment_id, "razorpay_payment_id", 128);
+    const signature = readOptionalText(req.body?.razorpay_signature, "razorpay_signature", 256);
+    if (!orderId || !paymentId || !signature) {
+      return res.status(400).json({ error: "Razorpay payment verification fields are required" });
+    }
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${orderId}|${paymentId}`)
+      .digest("hex");
+    const expectedBuffer = Buffer.from(expectedSignature, "utf8");
+    const receivedBuffer = Buffer.from(signature, "utf8");
+    if (expectedBuffer.length !== receivedBuffer.length || !crypto.timingSafeEqual(expectedBuffer, receivedBuffer)) {
+      return res.status(400).json({ error: "Invalid Razorpay payment signature" });
+    }
+
+    const payment = await razorpay.payments.fetch(paymentId);
+    if (String(payment?.order_id || "").trim() !== orderId) {
+      return res.status(400).json({ error: "Payment does not belong to this order" });
+    }
+
+    const result = await reconcileOneTimePayment(payment, orderId);
+    if (!result.found) {
+      return res.status(404).json({ error: "Payment order was not found" });
+    }
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    if (err instanceof RequestValidationError) {
+      return res.status(400).json({ error: err.message });
+    }
+    console.error("One-time payment verification failed:", err);
+    return res.status(500).json({ error: "Could not verify one-time payment" });
+  }
+});
+
+/**
  * 3. CREATE GIFT SUBSCRIPTION
  */
 app.post("/create-gift-subscription", async (req, res) => {
@@ -273,6 +551,12 @@ app.post("/create-gift-subscription", async (req, res) => {
     const giverEmail = readOptionalText(req.body?.giver_email, "giver_email", 256);
     const giverName = readOptionalText(req.body?.giver_name, "giver_name", 128);
     const amount = Number(req.body?.amount) || 100;
+
+    if (!giverId) {
+      return res.status(401).json({
+        error: "Please sign in before making a gift payment.",
+      });
+    }
 
     if (!recipientName || !recipientEmail) {
       return res.status(400).json({ error: "Recipient name and email are required" });
@@ -299,7 +583,6 @@ app.post("/create-gift-subscription", async (req, res) => {
         amount: String(amount),
       },
     });
-
     res.json({
       subscription_id: subscription.id,
       razorpay_key: process.env.RAZORPAY_KEY_ID,
@@ -318,7 +601,7 @@ app.post("/create-gift-subscription", async (req, res) => {
  */
 app.post("/pause-subscription", async (req, res) => {
   try {
-    const { subscription_id } = req.body;
+    const subscription_id = readOptionalText(req.body?.subscription_id, "subscription_id", 128);
     if (!subscription_id) {
       return res.status(400).json({ error: "subscription_id is required" });
     }
@@ -338,6 +621,16 @@ app.post("/pause-subscription", async (req, res) => {
 
     res.json({ success: true, status: "paused" });
   } catch (err) {
+    if (isAlreadyInStateError(err, "paused")) {
+      const subscription_id = readOptionalText(req.body?.subscription_id, "subscription_id", 128);
+      await updateSubscriberRecord(subscription_id, DEFAULT_TEAM, {
+        status: "paused",
+        subscriptionStatus: "paused",
+        pausedAt: Date.now(),
+      });
+      console.warn(`⏭️ Subscription was already paused; synced ${subscription_id}`);
+      return res.json({ success: true, status: "paused", alreadyInState: true });
+    }
     console.error("Razorpay Pause Error:", err);
     res.status(500).json({
       error: err?.error?.description || err?.message || "Failed to pause subscription in Razorpay",
@@ -350,7 +643,7 @@ app.post("/pause-subscription", async (req, res) => {
  */
 app.post("/resume-subscription", async (req, res) => {
   try {
-    const { subscription_id } = req.body;
+    const subscription_id = readOptionalText(req.body?.subscription_id, "subscription_id", 128);
     if (!subscription_id) {
       return res.status(400).json({ error: "subscription_id is required" });
     }
@@ -370,6 +663,16 @@ app.post("/resume-subscription", async (req, res) => {
 
     res.json({ success: true, status: "active" });
   } catch (err) {
+    if (isAlreadyInStateError(err, "active")) {
+      const subscription_id = readOptionalText(req.body?.subscription_id, "subscription_id", 128);
+      await updateSubscriberRecord(subscription_id, DEFAULT_TEAM, {
+        status: "active",
+        subscriptionStatus: "active",
+        resumedAt: Date.now(),
+      });
+      console.warn(`⏭️ Subscription was already active; synced ${subscription_id}`);
+      return res.json({ success: true, status: "active", alreadyInState: true });
+    }
     console.error("Razorpay Resume Error:", err);
     res.status(500).json({
       error: err?.error?.description || err?.message || "Failed to resume subscription in Razorpay",
@@ -382,7 +685,8 @@ app.post("/resume-subscription", async (req, res) => {
  */
 app.post("/cancel-subscription", async (req, res) => {
   try {
-    const { subscription_id } = req.body;
+    const subscription_id = readOptionalText(req.body?.subscription_id, "subscription_id", 128);
+    const requestIsGift = req.body?.is_gift === true || req.body?.is_gift === "true" || req.body?.isGift === true || req.body?.isGift === "true";
     if (!subscription_id) {
       return res.status(400).json({ error: "subscription_id is required" });
     }
@@ -393,15 +697,40 @@ app.post("/cancel-subscription", async (req, res) => {
     }
 
     await updateSubscriberRecord(subscription_id, DEFAULT_TEAM, {
+      ...(requestIsGift ? {
+        is_gift: "true",
+        isGift: true,
+        membershipType: "gift",
+        type: "gift-monthly",
+      } : {}),
       status: "cancelled",
       subscriptionStatus: "cancelled",
       cancelledAt: Date.now(),
       endedAt: Date.now(),
       nextPaymentDue: null,
     });
-
     res.json({ success: true, status: "cancelled" });
   } catch (err) {
+    if (isAlreadyInStateError(err, "cancelled")) {
+      const subscription_id = readOptionalText(req.body?.subscription_id, "subscription_id", 128);
+      const requestIsGift = req.body?.is_gift === true || req.body?.is_gift === "true" || req.body?.isGift === true || req.body?.isGift === "true";
+      const now = Date.now();
+      await updateSubscriberRecord(subscription_id, DEFAULT_TEAM, {
+        ...(requestIsGift ? {
+          is_gift: "true",
+          isGift: true,
+          membershipType: "gift",
+          type: "gift-monthly",
+        } : {}),
+        status: "cancelled",
+        subscriptionStatus: "cancelled",
+        cancelledAt: now,
+        endedAt: now,
+        nextPaymentDue: null,
+      });
+      console.warn(`⏭️ Subscription was already cancelled; synced ${subscription_id}`);
+      return res.json({ success: true, status: "cancelled", alreadyInState: true });
+    }
     console.error("Razorpay Cancel Error:", err);
     res.status(500).json({
       error: err?.error?.description || err?.message || "Failed to cancel subscription in Razorpay",
@@ -446,67 +775,21 @@ app.post("/razorpay-webhook", async (req, res) => {
       }
     }
 
-    // --- EVENT: PAYMENT CAPTURED ---
-    if (eventType === "payment.captured") {
-      const payment = event.payload.payment.entity;
-      const orderId = payment.order_id;
-      const amountInRupees = payment.amount ? payment.amount / 100 : 0;
-
-      if (orderId) {
-        const orderSnapshot = await db.ref("one_time_payment_orders").child(orderId).get();
-        if (orderSnapshot.exists()) {
-          const orderData = orderSnapshot.val();
-
-          // Deduplication: if order is already captured or payment is already stored, do not duplicate
-          if (orderData.status === "captured") {
-            console.log(`ℹ️ Order ${orderId} already marked as captured. Skipping.`);
-            if (eventId) {
-              await db.ref("processed_webhook_events").child(eventId).set({ eventType, orderId, processedAt: Date.now() });
-            }
-            return res.sendStatus(200);
-          }
-
-          const userId = orderData.userId || orderData.donor?.userId || "";
-          const donorName = orderData.donor?.name || "Supporter";
-          const donorEmail = (orderData.donor?.email || "").toLowerCase().trim();
-          const donorPhone = orderData.donor?.phone || "";
-          const team = orderData.team || DEFAULT_TEAM;
-
-          const paymentRecord = {
-            id: payment.id,
-            paymentId: payment.id,
-            orderId: orderId,
-            amount: amountInRupees,
-            currency: payment.currency || "INR",
-            type: "one-time",
-            status: "paid",
-            email: donorEmail,
-            name: donorName,
-            phone: donorPhone,
-            team: team,
-            reference: payment.id,
-            note: "One-time contribution",
-            paidAt: payment.created_at ? payment.created_at * 1000 : Date.now(),
-            createdAt: payment.created_at ? payment.created_at * 1000 : Date.now(),
-          };
-
-          // 1. Global payments record (homepage total raised & donors)
-          await db.ref("payments").child(payment.id).set(paymentRecord);
-
-          // 2. Supporter personal payments node (dashboard one-time table)
-          if (userId) {
-            await db.ref(`payments/${userId}`).child(payment.id).set(paymentRecord);
-          }
-
-          // 3. Mark order as captured
-          await orderSnapshot.ref.update({
-            status: "captured",
-            paymentId: payment.id,
-            capturedAt: Date.now(),
-          });
-
-          console.log(`✅ One-time payment recorded: ₹${amountInRupees} (ID: ${payment.id})`);
-        }
+    // --- EVENT: PAYMENT AUTHORIZED OR CAPTURED ---
+    if (eventType === "payment.authorized" || eventType === "payment.captured") {
+      const rawPayment = event.payload?.payment?.entity || {};
+      // The authorized webhook can arrive with an older snapshot even after
+      // Razorpay has already captured the payment, so fetch the current state.
+      const payment = eventType === "payment.authorized"
+        ? await fetchLatestPayment(rawPayment)
+        : rawPayment;
+      const result = await reconcileOneTimePayment(payment, rawPayment.order_id);
+      if (result.captured) {
+        console.log(`✅ One-time payment recorded: ${result.paymentId}`);
+      } else if (result.found) {
+        console.log(`ℹ️ One-time payment ${result.paymentId} is ${result.status}; awaiting capture.`);
+      } else {
+        console.warn(`⚠️ Could not reconcile one-time payment ${result.paymentId || "unknown"}: ${result.status}`);
       }
     }
 
@@ -546,7 +829,9 @@ app.post("/razorpay-webhook", async (req, res) => {
         };
 
         const existingSnap = await db.ref(targetPath).child(sub.id).get();
-        if (existingSnap.exists()) {
+        if (await subscriptionHasTerminalState(sub.id)) {
+          console.warn(`⏭️ Ignoring late authentication for terminal gift subscription ${sub.id}`);
+        } else if (existingSnap.exists()) {
           await db.ref(targetPath).child(sub.id).update({
             ...recipient,
             lastPaymentAt: existingSnap.val()?.lastPaymentAt || recipient.lastPaymentAt,
@@ -593,7 +878,9 @@ app.post("/razorpay-webhook", async (req, res) => {
         };
 
         const existingSnap = await db.ref(targetPath).child(sub.id).get();
-        if (existingSnap.exists()) {
+        if (await subscriptionHasTerminalState(sub.id)) {
+          console.warn(`⏭️ Ignoring late authentication for terminal subscription ${sub.id}`);
+        } else if (existingSnap.exists()) {
           await db.ref(targetPath).child(sub.id).update({
             ...subscriberData,
             lastPaymentAt: existingSnap.val()?.lastPaymentAt || subscriberData.lastPaymentAt,
@@ -624,6 +911,8 @@ app.post("/razorpay-webhook", async (req, res) => {
       const notes = sub.notes || {};
       const team = notes.team || DEFAULT_TEAM;
       await updateSubscriberRecord(sub.id, team, {
+        ...getGiftLifecycleFields(sub),
+        ...getPersonalLifecycleFields(sub),
         status: "active",
         subscriptionStatus: "active",
         activatedAt: Date.now(),
@@ -644,6 +933,8 @@ app.post("/razorpay-webhook", async (req, res) => {
 
       // Update next renewal & last payment timestamp on subscriber
       await updateSubscriberRecord(sub.id, team, {
+        ...getGiftLifecycleFields(sub),
+        ...getPersonalLifecycleFields(sub),
         status: "active",
         subscriptionStatus: "active",
         lastPaymentAt: payment.created_at ? payment.created_at * 1000 : Date.now(),
@@ -696,6 +987,7 @@ app.post("/razorpay-webhook", async (req, res) => {
     if (eventType === "subscription.paused") {
       const sub = event.payload.subscription.entity;
       await updateSubscriberRecord(sub.id, sub.notes?.team || DEFAULT_TEAM, {
+        ...getGiftLifecycleFields(sub),
         status: "paused",
         subscriptionStatus: "paused",
         pausedAt: Date.now(),
@@ -707,6 +999,7 @@ app.post("/razorpay-webhook", async (req, res) => {
     if (eventType === "subscription.resumed") {
       const sub = event.payload.subscription.entity;
       await updateSubscriberRecord(sub.id, sub.notes?.team || DEFAULT_TEAM, {
+        ...getGiftLifecycleFields(sub),
         status: "active",
         subscriptionStatus: "active",
         resumedAt: Date.now(),
@@ -718,6 +1011,7 @@ app.post("/razorpay-webhook", async (req, res) => {
     if (eventType === "subscription.pending") {
       const sub = event.payload.subscription.entity;
       await updateSubscriberRecord(sub.id, sub.notes?.team || DEFAULT_TEAM, {
+        ...getGiftLifecycleFields(sub),
         status: "pending",
         subscriptionStatus: "pending",
       });
@@ -727,6 +1021,7 @@ app.post("/razorpay-webhook", async (req, res) => {
     if (eventType === "subscription.halted") {
       const sub = event.payload.subscription.entity;
       await updateSubscriberRecord(sub.id, sub.notes?.team || DEFAULT_TEAM, {
+        ...getGiftLifecycleFields(sub),
         status: "halted",
         subscriptionStatus: "halted",
         haltedAt: Date.now(),
@@ -739,6 +1034,7 @@ app.post("/razorpay-webhook", async (req, res) => {
       const sub = event.payload.subscription.entity;
       const newStatus = eventType === "subscription.completed" ? "completed" : "cancelled";
       await updateSubscriberRecord(sub.id, sub.notes?.team || DEFAULT_TEAM, {
+        ...getGiftLifecycleFields(sub),
         status: newStatus,
         subscriptionStatus: newStatus,
         cancelledAt: Date.now(),
