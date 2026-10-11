@@ -489,7 +489,9 @@
             const index = Math.min(productImageIndexes.get(product.id) || 0, Math.max(images.length - 1, 0));
             productImageIndexes.set(product.id, index);
             const activeImage = images[index];
-            const hiddenLabel = product.visible === false ? '<span class="visibility-pill hidden-state">Hidden from visitors</span>' : '<span class="visibility-pill">Visible</span>';
+            const hiddenLabel = isAdmin
+                ? product.visible === false ? '<span class="visibility-pill hidden-state">Hidden from visitors</span>' : '<span class="visibility-pill">Visible</span>'
+                : "";
             const thumbnails = images.length > 1
                 ? `<div class="product-thumbnails" aria-label="${escapeHtml(product.title || "Product")} images">${images.map((url, imageIndex) => `<button class="product-thumbnail${imageIndex === index ? " active" : ""}" type="button" data-action="select-image" data-product-id="${escapeHtml(product.id)}" data-image-index="${imageIndex}" aria-label="Show image ${imageIndex + 1}"><img src="${escapeHtml(url)}" loading="lazy" decoding="async" alt="${escapeHtml(product.title || "Product")} image ${imageIndex + 1}"></button>`).join("")}</div>`
                 : "";
