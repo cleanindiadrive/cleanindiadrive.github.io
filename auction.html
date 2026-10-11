@@ -204,6 +204,7 @@
         .product-body { padding: 0.8rem 0.9rem 0.95rem; }
         .product-body h3 { margin: 0 0 0.3rem; font-size: 1.15rem; }
         .product-description { min-height: 1.5em; margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; white-space: pre-wrap; }
+        .product-price { margin: 0.45rem 0 0; color: var(--ink); font-size: 0.86rem; font-weight: 850; }
         .product-thumbnails { display: flex; gap: 0.45rem; margin-top: 0.85rem; overflow-x: auto; padding: 0.1rem 0 0.25rem; }
         .product-thumbnail { flex: 0 0 58px; height: 46px; padding: 0.12rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; }
         .product-thumbnail.active { border-color: var(--yellow-hover); box-shadow: 0 3px 10px rgba(35, 35, 25, 0.1); }
@@ -348,6 +349,7 @@
                         <label class="field-label wide" for="product-description">Short description<textarea id="product-description" maxlength="500" placeholder="What makes this product special?"></textarea></label>
                         <label class="field-label" for="product-images">Product images (select multiple)<input id="product-images" type="file" accept="image/*" multiple></label>
                         <label class="field-label" for="product-image-url">Or image URL<input id="product-image-url" type="url" placeholder="https://…"></label>
+                        <label class="field-label" for="product-base-price">Base price (₹)<input id="product-base-price" type="number" min="0" step="1" inputmode="numeric" placeholder="Optional"></label>
                         <label class="checkbox-label" for="product-visible"><input id="product-visible" type="checkbox" checked> Show this product to visitors</label>
                     </div>
                     <div id="admin-preview" class="admin-preview"><span class="admin-meta">Images over 6 MB will be compressed in your browser before upload, with quality preserved as far as possible.</span></div>
@@ -467,6 +469,11 @@
 
         function imageCountForProduct(product) { return galleryEntriesForProduct(product).length; }
 
+        function basePriceForProduct(product) {
+            const price = Number(product?.basePrice);
+            return Number.isFinite(price) && price >= 0 ? `₹${price.toLocaleString("en-IN")}` : "";
+        }
+
         function renderProducts() {
             const visibleProducts = products.filter((product) => isAdmin || product.visible !== false);
             $("gallery-count").textContent = visibleProducts.length ? `${visibleProducts.length} ${visibleProducts.length === 1 ? "product" : "products"}` : "";
@@ -489,7 +496,8 @@
             const media = activeImage
                 ? `<button class="product-image-button" type="button" data-action="zoom" data-product-id="${escapeHtml(product.id)}" data-image-index="${index}" aria-label="Zoom ${escapeHtml(product.title || "product")} image"><img src="${escapeHtml(activeImage)}" loading="lazy" decoding="async" alt="${escapeHtml(product.title || "Product")}"></button><span class="zoom-hint">Click to zoom</span>`
                 : `<div class="product-placeholder"><div><strong>${entries.length ? "Loading image…" : "Image coming soon"}</strong>${entries.length ? "Preparing a fast preview." : "No image has been added yet."}</div></div>`;
-            return `<article class="gallery-card" data-product-id="${escapeHtml(product.id)}"><div class="product-media">${media}<button class="media-control previous" type="button" data-action="previous-image" data-product-id="${escapeHtml(product.id)}" aria-label="Previous image"${images.length < 2 ? " disabled" : ""}>‹</button><button class="media-control next" type="button" data-action="next-image" data-product-id="${escapeHtml(product.id)}" aria-label="Next image"${images.length < 2 ? " disabled" : ""}>›</button></div><div class="product-body"><h3>${escapeHtml(product.title || "Untitled product")}</h3><p class="product-description">${escapeHtml(product.description || "")}</p>${thumbnails}<div class="product-footer"><span>${images.length ? `${images.length} ${images.length === 1 ? "image" : "images"}` : "No images"}</span>${hiddenLabel}</div></div></article>`;
+            const basePrice = basePriceForProduct(product);
+            return `<article class="gallery-card" data-product-id="${escapeHtml(product.id)}"><div class="product-media">${media}<button class="media-control previous" type="button" data-action="previous-image" data-product-id="${escapeHtml(product.id)}" aria-label="Previous image"${images.length < 2 ? " disabled" : ""}>‹</button><button class="media-control next" type="button" data-action="next-image" data-product-id="${escapeHtml(product.id)}" aria-label="Next image"${images.length < 2 ? " disabled" : ""}>›</button></div><div class="product-body"><h3>${escapeHtml(product.title || "Untitled product")}</h3><p class="product-description">${escapeHtml(product.description || "")}</p>${basePrice ? `<p class="product-price">Base price · ${basePrice}</p>` : ""}${thumbnails}<div class="product-footer"><span>${images.length ? `${images.length} ${images.length === 1 ? "image" : "images"}` : "No images"}</span>${hiddenLabel}</div></div></article>`;
         }
 
         function renderAdminProducts() {
@@ -498,7 +506,7 @@
                 $("admin-products").innerHTML = '<p class="admin-meta">No products added yet.</p>';
                 return;
             }
-            $("admin-products").innerHTML = products.map((product) => `<div class="admin-product-row"><div><h3>${escapeHtml(product.title || "Untitled product")}</h3><p>${product.visible === false ? "Hidden from visitors" : "Visible to visitors"} · ${imageCountForProduct(product)} ${imageCountForProduct(product) === 1 ? "image" : "images"}</p></div><div class="admin-product-actions"><button type="button" data-action="toggle-product" data-product-id="${escapeHtml(product.id)}">${product.visible === false ? "Show product" : "Hide product"}</button><button class="delete-product" type="button" data-action="delete-product" data-product-id="${escapeHtml(product.id)}">Delete</button></div></div>`).join("");
+            $("admin-products").innerHTML = products.map((product) => `<div class="admin-product-row"><div><h3>${escapeHtml(product.title || "Untitled product")}</h3><p>${product.visible === false ? "Hidden from visitors" : "Visible to visitors"} · ${imageCountForProduct(product)} ${imageCountForProduct(product) === 1 ? "image" : "images"}${basePriceForProduct(product) ? ` · Base price ${basePriceForProduct(product)}` : ""}</p></div><div class="admin-product-actions"><button type="button" data-action="toggle-product" data-product-id="${escapeHtml(product.id)}">${product.visible === false ? "Show product" : "Hide product"}</button><button class="delete-product" type="button" data-action="delete-product" data-product-id="${escapeHtml(product.id)}">Delete</button></div></div>`).join("");
         }
 
         function subscribeToProductImages(nextProducts) {
@@ -680,6 +688,8 @@
             const description = $("product-description").value.trim();
             const files = Array.from($("product-images").files || []);
             const imageUrl = $("product-image-url").value.trim();
+            const basePriceInput = $("product-base-price").value.trim();
+            const basePrice = basePriceInput === "" ? null : Number(basePriceInput);
             const visible = $("product-visible").checked;
             const button = $("add-product-button");
             if (!title) {
@@ -688,6 +698,10 @@
             }
             if (!files.length && !imageUrl) {
                 showNotice($("admin-notice"), "Add at least one image or paste an image URL.", "error");
+                return;
+            }
+            if (basePriceInput !== "" && (!Number.isFinite(basePrice) || basePrice < 0)) {
+                showNotice($("admin-notice"), "Enter a valid base price or leave it empty.", "error");
                 return;
             }
             setBusy(button, true, "Preparing images…", "Add product");
@@ -707,7 +721,7 @@
                     storedBytes: dataUrlBytes(image.dataUrl),
                     compressed: image.compressed,
                 })));
-                await set(ref(database, `${PRODUCTS_PATH}/${productId}`), {
+                const product = {
                     id: productId,
                     title,
                     description,
@@ -719,7 +733,9 @@
                     updatedAt: serverTimestamp(),
                     createdBy: currentUser.uid,
                     createdByName: currentUser.displayName || currentUser.email || "Admin",
-                });
+                };
+                if (basePriceInput !== "") product.basePrice = basePrice;
+                await set(ref(database, `${PRODUCTS_PATH}/${productId}`), product);
                 $("product-form").reset();
                 $("product-visible").checked = true;
                 previewImages();
