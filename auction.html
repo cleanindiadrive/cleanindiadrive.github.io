@@ -233,6 +233,8 @@
         .preview-tile { display: grid; gap: 0.25rem; width: 112px; color: var(--muted); font-size: 0.64rem; text-align: center; }
         .preview-tile img { display: block; width: 112px; height: 82px; border: 1px solid var(--line); border-radius: 7px; object-fit: cover; }
         .preview-tile span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .replace-image-control { display: grid; gap: 0.2rem; color: var(--ink); font-size: 0.64rem; font-weight: 800; }
+        .replace-image-control input { width: 100%; padding: 0.2rem; font-size: 0.62rem; }
         .admin-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
         .admin-actions > * { flex: 1 1 190px; }
         .primary-button { width: 100%; color: var(--ink); background: var(--yellow); border-color: var(--yellow-hover); box-shadow: 0 6px 16px rgba(35, 35, 25, 0.08); }
@@ -353,7 +355,7 @@
                         <label class="checkbox-label" for="product-visible"><input id="product-visible" type="checkbox" checked> Show this product to visitors</label>
                     </div>
                     <div id="admin-preview" class="admin-preview"><span class="admin-meta">Images over 6 MB will be compressed in your browser before upload, with quality preserved as far as possible.</span></div>
-                    <div class="admin-actions"><button id="add-product-button" class="primary-button" type="submit">Add product</button></div>
+                    <div class="admin-actions"><button id="add-product-button" class="primary-button" type="submit">Add product</button><button id="cancel-edit-button" class="secondary-button is-hidden" type="button">Cancel edit</button></div>
                     <p id="admin-notice" class="notice" role="status"></p>
                 </form>
                 <div class="admin-product-heading"><h3>Manage products</h3><span id="admin-product-count" class="admin-meta"></span></div>
@@ -400,6 +402,7 @@
         let currentUser = null;
         let isAdmin = false;
         let products = [];
+        let editingProductId = null;
         let productsUnsubscribe = null;
         let imageUnsubscribes = new Map();
         let storedImages = new Map();
@@ -508,7 +511,7 @@
                 $("admin-products").innerHTML = '<p class="admin-meta">No products added yet.</p>';
                 return;
             }
-            $("admin-products").innerHTML = products.map((product) => `<div class="admin-product-row"><div><h3>${escapeHtml(product.title || "Untitled product")}</h3><p>${product.visible === false ? "Hidden from visitors" : "Visible to visitors"} · ${imageCountForProduct(product)} ${imageCountForProduct(product) === 1 ? "image" : "images"}${basePriceForProduct(product) ? ` · Base price ${basePriceForProduct(product)}` : ""}</p></div><div class="admin-product-actions"><button type="button" data-action="toggle-product" data-product-id="${escapeHtml(product.id)}">${product.visible === false ? "Show product" : "Hide product"}</button><button class="delete-product" type="button" data-action="delete-product" data-product-id="${escapeHtml(product.id)}">Delete</button></div></div>`).join("");
+            $("admin-products").innerHTML = products.map((product) => `<div class="admin-product-row"><div><h3>${escapeHtml(product.title || "Untitled product")}</h3><p>${product.visible === false ? "Hidden from visitors" : "Visible to visitors"} · ${imageCountForProduct(product)} ${imageCountForProduct(product) === 1 ? "image" : "images"}${basePriceForProduct(product) ? ` · Base price ${basePriceForProduct(product)}` : ""}</p></div><div class="admin-product-actions"><button type="button" data-action="edit-product" data-product-id="${escapeHtml(product.id)}">Edit</button><button type="button" data-action="toggle-product" data-product-id="${escapeHtml(product.id)}">${product.visible === false ? "Show product" : "Hide product"}</button><button class="delete-product" type="button" data-action="delete-product" data-product-id="${escapeHtml(product.id)}">Delete</button></div></div>`).join("");
         }
 
         function subscribeToProductImages(nextProducts) {
@@ -683,13 +686,97 @@
             $("admin-preview").replaceChildren(grid);
         }
 
+        function previewExistingProduct(product) {
+            previewObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+            previewObjectUrls = [];
+            const entries = galleryEntriesForProduct(product);
+            if (!entries.length) {
+                $("admin-preview").innerHTML = '<span class="admin-meta">No current images. Select files or add an image URL to attach images.</span>';
+                return;
+            }
+            const grid = document.createElement("div");
+            grid.className = "admin-preview-grid";
+            entries.forEach((entry, index) => {
+                const tile = document.createElement("div");
+                tile.className = "preview-tile";
+                const image = document.createElement("img");
+                image.src = imageSourceForEntry(entry);
+                image.loading = "lazy";
+                image.alt = `Current image ${index + 1}`;
+                const label = document.createElement("span");
+                label.textContent = `Current image ${index + 1}`;
+                tile.append(image, label);
+                if (entry.imageId) {
+                    const replaceLabel = document.createElement("label");
+                    replaceLabel.className = "replace-image-control";
+                    replaceLabel.textContent = "Replace this image";
+                    const replaceInput = document.createElement("input");
+                    replaceInput.type = "file";
+                    replaceInput.accept = "image/*";
+                    replaceInput.dataset.replaceImageIndex = String(index);
+                    replaceInput.setAttribute("aria-label", `Replace image ${index + 1}`);
+                    replaceLabel.appendChild(replaceInput);
+                    tile.appendChild(replaceLabel);
+                }
+                grid.appendChild(tile);
+            });
+            $("admin-preview").replaceChildren(grid);
+        }
+
+        function resetProductForm() {
+            editingProductId = null;
+            $("product-form").reset();
+            $("product-images").disabled = false;
+            $("product-image-url").disabled = false;
+            $("product-visible").checked = true;
+            $("add-product-button").textContent = "Add product";
+            $("cancel-edit-button").classList.add("is-hidden");
+            previewImages();
+        }
+
+        function editProduct(productId) {
+            if (!isAdmin) return;
+            const product = products.find((item) => item.id === productId);
+            if (!product) return;
+            editingProductId = productId;
+            $("product-title").value = product.title || "";
+            $("product-description").value = product.description || "";
+            $("product-base-price").value = Number.isFinite(Number(product.basePrice)) ? String(product.basePrice) : "";
+            $("product-image-url").value = product.imageUrl || "";
+            $("product-images").value = "";
+            $("product-images").disabled = true;
+            $("product-image-url").disabled = Array.isArray(product.imageIds) && product.imageIds.length > 0;
+            $("product-visible").checked = product.visible !== false;
+            $("add-product-button").textContent = "Save changes";
+            $("cancel-edit-button").classList.remove("is-hidden");
+            previewExistingProduct(product);
+            showNotice($("admin-notice"), "Editing this product. Select new images only if you want to replace the current images.");
+            $("product-form").scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        function replacementFilesForEdit() {
+            return [...document.querySelectorAll("[data-replace-image-index]")]
+                .map((input) => ({ index: Number(input.dataset.replaceImageIndex), file: input.files?.[0] }))
+                .filter((replacement) => Number.isInteger(replacement.index) && replacement.file);
+        }
+
         async function addProduct(event) {
             event.preventDefault();
             if (!isAdmin || !currentUser) return;
+            const wasEditing = Boolean(editingProductId);
+            const editingProduct = products.find((item) => item.id === editingProductId);
+            if (wasEditing && !editingProduct) {
+                resetProductForm();
+                showNotice($("admin-notice"), "That product is no longer available.", "error");
+                return;
+            }
             const title = $("product-title").value.trim();
             const description = $("product-description").value.trim();
-            const files = Array.from($("product-images").files || []);
-            const imageUrl = $("product-image-url").value.trim();
+            const files = wasEditing ? [] : Array.from($("product-images").files || []);
+            const imageUrl = wasEditing
+                ? (!Array.isArray(editingProduct?.imageIds) || !editingProduct.imageIds.length ? $("product-image-url").value.trim() : "")
+                : $("product-image-url").value.trim();
+            const replacements = wasEditing ? replacementFilesForEdit() : [];
             const basePriceInput = $("product-base-price").value.trim();
             const basePrice = basePriceInput === "" ? null : Number(basePriceInput);
             const visible = $("product-visible").checked;
@@ -698,7 +785,7 @@
                 showNotice($("admin-notice"), "Add a product title.", "error");
                 return;
             }
-            if (!files.length && !imageUrl) {
+            if (!wasEditing && !files.length && !imageUrl) {
                 showNotice($("admin-notice"), "Add at least one image or paste an image URL.", "error");
                 return;
             }
@@ -706,48 +793,105 @@
                 showNotice($("admin-notice"), "Enter a valid base price or leave it empty.", "error");
                 return;
             }
-            setBusy(button, true, "Preparing images…", "Add product");
-            showNotice($("admin-notice"), "Compressing large images and saving the product…");
+            const idleText = wasEditing ? "Save changes" : "Add product";
+            setBusy(button, true, "Preparing images…", idleText);
+            showNotice($("admin-notice"), wasEditing ? "Saving product changes…" : "Compressing large images and saving the product…");
+            let newImageIds = [];
+            let productIdForCleanup = null;
             try {
-                const productId = push(ref(database, PRODUCTS_PATH)).key;
+                const productId = wasEditing ? editingProduct.id : push(ref(database, PRODUCTS_PATH)).key;
                 if (!productId) throw new Error("Could not create the product record.");
-                const encodedImages = await Promise.all(files.map((file) => encodeImage(file)));
-                const imageIds = files.map(() => push(ref(database, `${IMAGES_PATH}/${productId}`)).key);
-                if (imageIds.some((imageId) => !imageId)) throw new Error("Could not create image records.");
-                await Promise.all(encodedImages.map((image, index) => set(ref(database, `${IMAGES_PATH}/${productId}/${imageIds[index]}`), {
-                    dataUrl: image.dataUrl,
-                    name: files[index].name,
-                    type: image.dataUrl.startsWith("data:image/jpeg") ? "image/jpeg" : files[index].type,
-                    index,
-                    originalBytes: files[index].size,
-                    storedBytes: dataUrlBytes(image.dataUrl),
-                    compressed: image.compressed,
-                })));
+                productIdForCleanup = productId;
+                const oldImageIds = wasEditing && Array.isArray(editingProduct.imageIds) ? editingProduct.imageIds : [];
+                const oldImageUrls = wasEditing && Array.isArray(editingProduct.imageUrls) ? editingProduct.imageUrls : [];
+                let imageIds = wasEditing && Array.isArray(editingProduct.imageIds) ? editingProduct.imageIds : [];
+                let thumbnailUrls = wasEditing && Array.isArray(editingProduct.thumbnailUrls) ? editingProduct.thumbnailUrls : [];
+                let savedImageUrl = wasEditing ? editingProduct.imageUrl || "" : "";
+                let replacedImages = false;
+                let replacedImageSet = false;
+                if (wasEditing && imageUrl && oldImageIds.length === 0) {
+                    imageIds = [];
+                    thumbnailUrls = [];
+                    savedImageUrl = imageUrl;
+                    replacedImages = true;
+                    replacedImageSet = true;
+                } else if (wasEditing) {
+                    const currentEntries = galleryEntriesForProduct(editingProduct);
+                    const encodedReplacements = await Promise.all(replacements.map((replacement) => encodeImage(replacement.file)));
+                    await Promise.all(encodedReplacements.map((image, replacementIndex) => {
+                        const replacement = replacements[replacementIndex];
+                        const entry = currentEntries[replacement.index];
+                        if (!entry?.imageId || replacement.index >= imageIds.length) {
+                            throw new Error("Only uploaded images can be replaced individually. Add a new product image instead.");
+                        }
+                        thumbnailUrls[replacement.index] = image.thumbnailDataUrl;
+                        return set(ref(database, `${IMAGES_PATH}/${productId}/${entry.imageId}`), {
+                            dataUrl: image.dataUrl,
+                            name: replacement.file.name,
+                            type: image.dataUrl.startsWith("data:image/jpeg") ? "image/jpeg" : replacement.file.type,
+                            index: replacement.index,
+                            originalBytes: replacement.file.size,
+                            storedBytes: dataUrlBytes(image.dataUrl),
+                            compressed: image.compressed,
+                        });
+                    }));
+                    replacedImages = replacements.length > 0;
+                } else if (files.length) {
+                    const encodedImages = await Promise.all(files.map((file) => encodeImage(file)));
+                    imageIds = files.map(() => push(ref(database, `${IMAGES_PATH}/${productId}`)).key);
+                    newImageIds = imageIds;
+                    if (imageIds.some((imageId) => !imageId)) throw new Error("Could not create image records.");
+                    await Promise.all(encodedImages.map((image, index) => set(ref(database, `${IMAGES_PATH}/${productId}/${imageIds[index]}`), {
+                        dataUrl: image.dataUrl,
+                        name: files[index].name,
+                        type: image.dataUrl.startsWith("data:image/jpeg") ? "image/jpeg" : files[index].type,
+                        index,
+                        originalBytes: files[index].size,
+                        storedBytes: dataUrlBytes(image.dataUrl),
+                        compressed: image.compressed,
+                    })));
+                    thumbnailUrls = encodedImages.map((image) => image.thumbnailDataUrl);
+                    savedImageUrl = "";
+                    replacedImages = true;
+                    replacedImageSet = true;
+                } else if (imageUrl) {
+                    imageIds = [];
+                    thumbnailUrls = [];
+                    savedImageUrl = imageUrl;
+                    replacedImages = true;
+                    replacedImageSet = true;
+                }
                 const product = {
                     id: productId,
                     title,
                     description,
-                    imageUrl: files.length ? "" : imageUrl,
+                    imageUrl: savedImageUrl,
                     imageIds,
-                    thumbnailUrls: encodedImages.map((image) => image.thumbnailDataUrl),
+                    thumbnailUrls,
                     visible,
-                    createdAt: serverTimestamp(),
+                    createdAt: wasEditing ? editingProduct.createdAt : serverTimestamp(),
                     updatedAt: serverTimestamp(),
-                    createdBy: currentUser.uid,
-                    createdByName: currentUser.displayName || currentUser.email || "Admin",
+                    createdBy: wasEditing ? editingProduct.createdBy || currentUser.uid : currentUser.uid,
+                    createdByName: wasEditing ? editingProduct.createdByName || currentUser.displayName || currentUser.email || "Admin" : currentUser.displayName || currentUser.email || "Admin",
                 };
                 if (basePriceInput !== "") product.basePrice = basePrice;
+                else if (wasEditing) product.basePrice = null;
+                if (wasEditing && !replacedImageSet && oldImageUrls.length) product.imageUrls = oldImageUrls;
                 await set(ref(database, `${PRODUCTS_PATH}/${productId}`), product);
-                $("product-form").reset();
-                $("product-visible").checked = true;
-                previewImages();
-                showNotice($("admin-notice"), "Product added to the gallery.", "success");
+                if (wasEditing && replacedImages && oldImageIds.length) {
+                    await Promise.all(oldImageIds.filter((imageId) => !imageIds.includes(imageId)).map((imageId) => remove(ref(database, `${IMAGES_PATH}/${productId}/${imageId}`))));
+                }
+                resetProductForm();
+                showNotice($("admin-notice"), wasEditing ? "Product changes saved." : "Product added to the gallery.", "success");
             } catch (error) {
                 console.error(error);
+                if (newImageIds.length) {
+                    await Promise.all(newImageIds.filter(Boolean).map((imageId) => remove(ref(database, `${IMAGES_PATH}/${productIdForCleanup}/${imageId}`)).catch(() => undefined)));
+                }
                 const message = String(error?.message || "");
-                showNotice($("admin-notice"), message.toLowerCase().includes("permission_denied") ? "Firebase rejected this admin write. Check the gallery database rules." : message || "Could not add the product.", "error");
+                showNotice($("admin-notice"), message.toLowerCase().includes("permission_denied") ? "Firebase rejected this admin write. Check the gallery database rules." : message || (wasEditing ? "Could not save the product changes." : "Could not add the product."), "error");
             } finally {
-                setBusy(button, false, "Preparing images…", "Add product");
+                setBusy(button, false, "Preparing images…", editingProductId ? "Save changes" : "Add product");
             }
         }
 
@@ -961,6 +1105,10 @@
             if (!target) return;
             const productId = target.dataset.productId;
             const action = target.dataset.action;
+            if (action === "edit-product") {
+                editProduct(productId);
+                return;
+            }
             if (action === "toggle-product") {
                 toggleProduct(productId);
                 return;
@@ -1001,6 +1149,10 @@
         $("signout-button").addEventListener("click", () => signOut(auth));
         $("product-form").addEventListener("submit", addProduct);
         $("product-images").addEventListener("change", previewImages);
+        $("cancel-edit-button").addEventListener("click", () => {
+            resetProductForm();
+            showNotice($("admin-notice"), "Edit cancelled.");
+        });
         $("gallery-grid").addEventListener("click", handleGalleryClick);
         $("admin-products").addEventListener("click", handleGalleryClick);
         $("lightbox-close").addEventListener("click", closeLightbox);
