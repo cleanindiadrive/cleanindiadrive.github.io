@@ -7933,41 +7933,63 @@
             if (typeof onComplete === "function") onComplete();
             return;
         }
-        if (container.classList.contains("is-disabled") || container.getAttribute("aria-disabled") === "true") {
+
+        if (
+            container.classList.contains("is-disabled") ||
+            container.getAttribute("aria-disabled") === "true"
+        ) {
             if (typeof onComplete === "function") onComplete();
             return;
         }
-        container.classList.remove("is-animating");
-        container.classList.remove("is-animating-reverse");
+
+        container.classList.remove(
+            "is-animating",
+            "is-animating-reverse"
+        );
+
         const card = container.querySelector(".card");
         const post = container.querySelector(".post");
         const dollar = container.querySelector(".dollar");
+
         if (card) card.style.animation = "none";
         if (post) post.style.animation = "none";
         if (dollar) dollar.style.animation = "none";
-        void container.offsetWidth; // force reflow
+
+        void container.offsetWidth;
+
         if (card) card.style.animation = "";
         if (post) post.style.animation = "";
         if (dollar) dollar.style.animation = "";
 
-        const animClass = reverse ? "is-animating-reverse" : "is-animating";
+        const animClass = reverse
+            ? "is-animating-reverse"
+            : "is-animating";
+
         container.classList.add(animClass);
 
-        const animDuration = 1150;
-
-        setTimeout(() => {
-            container.classList.remove("is-animating");
-            container.classList.remove("is-animating-reverse");
-            if (typeof onComplete === "function") {
-                try {
-                    onComplete();
-                } catch (err) {
-                    console.error("Dashboard transaction callback error:", err);
-                }
+        // START API REQUEST IMMEDIATELY
+        if (typeof onComplete === "function") {
+            try {
+                onComplete();
+            } catch (err) {
+                console.error(
+                    "Dashboard transaction callback error:",
+                    err
+                );
             }
-        }, animDuration);
-    }
+        }
 
+        // Animation continues independently
+        setTimeout(() => {
+            if (!isPosButtonDisabled(container)) {
+                container.classList.remove(
+                    "is-animating",
+                    "is-animating-reverse"
+                );
+            }
+        }, 1150);
+    }
+    
     function setPosButtonDisabled(button, isDisabled) {
         if (!button) return;
         button.classList.toggle("is-disabled", Boolean(isDisabled));
