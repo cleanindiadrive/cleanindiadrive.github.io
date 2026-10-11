@@ -174,7 +174,8 @@
         .gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
         .gallery-card { min-width: 0; overflow: hidden; content-visibility: auto; contain-intrinsic-size: 320px; }
         .product-media { position: relative; display: grid; min-height: 240px; background: #fcfcfa; }
-        .sold-badge { position: absolute; top: 0.8rem; left: 0.8rem; z-index: 3; padding: 0.38rem 0.65rem; color: #fff; border: 1px solid #8e1712; border-radius: 999px; background: rgba(179, 38, 30, 0.94); box-shadow: 0 4px 12px rgba(35, 35, 25, 0.16); font-size: 0.7rem; font-weight: 900; letter-spacing: 0.08em; }
+        .sold-badge { position: absolute; top: 0.65rem; left: 0.65rem; z-index: 3; width: min(42%, 175px); pointer-events: none; transform: rotate(-7deg); mix-blend-mode: multiply; }
+        .sold-badge img { display: block; width: 100%; height: auto; }
         .product-image-button { display: block; width: 100%; min-height: 240px; padding: 0; overflow: hidden; border: 0; background: transparent; }
         .product-image-button img { display: block; width: 100%; height: 240px; object-fit: contain; transition: transform 250ms ease; }
         .product-image-button:hover img { transform: scale(1.025); }
@@ -488,7 +489,7 @@
             const hiddenLabel = isAdmin
                 ? product.visible === false ? '<span class="visibility-pill hidden-state">Hidden from visitors</span>' : '<span class="visibility-pill">Visible</span>'
                 : "";
-            const soldBadge = product.sold === true ? '<span class="sold-badge">SOLD</span>' : "";
+            const soldBadge = product.sold === true ? '<span class="sold-badge"><img src="assets/sold-stamp.png" alt="Sold"></span>' : "";
             const thumbnails = images.length > 1
                 ? `<div class="product-thumbnails" aria-label="${escapeHtml(product.title || "Product")} images">${images.map((url, imageIndex) => `<button class="product-thumbnail${imageIndex === index ? " active" : ""}" type="button" data-action="select-image" data-product-id="${escapeHtml(product.id)}" data-image-index="${imageIndex}" aria-label="Show image ${imageIndex + 1}"><img src="${escapeHtml(url)}" loading="lazy" decoding="async" alt="${escapeHtml(product.title || "Product")} image ${imageIndex + 1}"></button>`).join("")}</div>`
                 : "";
