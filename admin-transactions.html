@@ -1,1221 +1,654 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow, noarchive">
-    <title>Gallery · Silly Sensei</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/icons/favicon.svg" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            color-scheme: light;
-            --yellow: #ffda00;
-            --yellow-hover: #f2cc00;
-            --yellow-soft: #fff8c9;
-            --paper: #fffef0;
-            --ink: #272727;
-            --muted: #737373;
-            --line: #e8e8e2;
-            --green: #176b3a;
-            --green-soft: #edf7ee;
-            --red: #b3261e;
-            --canvas: #fafaf7;
-            --surface: #ffffff;
-            --shadow: 0 14px 40px rgba(35, 35, 25, 0.07);
-            --radius-lg: 24px;
-            --radius-md: 14px;
-            font-family: "Poppins", sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manali Strays — Transaction Admin</title>
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f7f2;
+      --surface: #ffffff;
+      --surface-soft: #f8faf6;
+      --ink: #20251f;
+      --muted: #6b746a;
+      --line: #e1e7df;
+      --green: #176b3a;
+      --green-soft: #e8f5eb;
+      --yellow: #ffda00;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --amber: #9a6700;
+      --amber-soft: #fff8df;
+      --shadow: 0 14px 40px rgba(31, 47, 31, 0.08);
+      --radius: 18px;
+    }
 
-        * { box-sizing: border-box; }
-        html, body { min-height: 100%; }
-        body {
-            position: relative;
-            isolation: isolate;
-            margin: 0;
-            color: var(--ink);
-            background: var(--canvas);
-            font-size: 0.92rem;
-            line-height: 1.5;
-            text-rendering: optimizeLegibility;
-        }
-        body::before {
-            position: fixed;
-            z-index: -1;
-            inset: 0;
-            background-image: url("https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/trees-texture.webp");
-            background-position: center bottom;
-            background-repeat: no-repeat;
-            background-size: cover;
-            content: "";
-            opacity: 0.12;
-            mix-blend-mode: multiply;
-            pointer-events: none;
-        }
+    * { box-sizing: border-box; }
 
-        button, input, textarea { font: inherit; }
-        button { cursor: pointer; }
-        .is-hidden { display: none !important; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+    }
 
-        .auth-screen {
-            display: grid;
-            place-items: center;
-            min-height: 100vh;
-            padding: 1.25rem;
-        }
-        .auth-card, .admin-card, .gallery-card, .empty-card {
-            background: rgba(255, 255, 255, 0.94);
-            border: 1px solid var(--line);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
-        }
-        .auth-card { width: min(100%, 440px); padding: clamp(1.5rem, 5vw, 2.6rem); }
-        .brand-lockup { display: flex; align-items: center; gap: 0.7rem; font-weight: 900; letter-spacing: -0.04em; }
-        .auth-logo { display: block; width: 132px; height: 34px; }
-        .auth-logo img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left center; }
-        .brand-mark {
-            display: grid;
-            place-items: center;
-            overflow: hidden;
-            width: 42px;
-            height: 42px;
-            color: var(--ink);
-            background: var(--yellow);
-            border: 1px solid var(--ink);
-            border-radius: 8px;
-            font-size: 1.05rem;
-            font-weight: 950;
-        }
-        .brand-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
-        h1, h2, h3, p { margin-top: 0; }
-        h1, h2, h3 { letter-spacing: -0.045em; }
-        .auth-card h1 { margin: 2.1rem 0 0.6rem; font-size: clamp(2.2rem, 8vw, 4rem); font-weight: 600; line-height: 0.92; }
-        .auth-card p { max-width: 32rem; color: var(--muted); line-height: 1.55; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .is-hidden { display: none !important; }
 
-        .google-button, .primary-button, .secondary-button, .danger-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 48px;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            font-weight: 850;
-            transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
-        }
-        .google-button:active, .primary-button:active, .secondary-button:active, .danger-button:active { transform: translate(3px, 3px); }
-        .google-button {
-            width: 100%;
-            gap: 0.7rem;
-            margin-top: 1.5rem;
-            color: #fff;
-            background: var(--ink);
-            border-color: var(--ink);
-            box-shadow: 0 8px 18px rgba(35, 35, 25, 0.12);
-        }
-        .google-button:hover, .primary-button:hover { transform: translate(-2px, -2px); }
+    .app-shell { width: min(100% - 2rem, 1440px); margin: 0 auto; padding: 1.25rem 0 3rem; }
 
-        .app-shell { width: min(100% - 2.5rem, 1000px); margin: 0 auto; padding: 0 0 3.5rem; }
-        .site-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            margin: 0 calc((100% - 100vw) / 2);
-            background: rgba(255, 255, 255, 0.92);
-            border-bottom: 1px solid var(--line);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        .site-nav {
-            display: flex;
-            width: min(100% - 2.5rem, 860px);
-            min-height: 64px;
-            margin: 0 auto;
-            align-items: center;
-            gap: 0.65rem;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-        }
-        .site-nav .logo img { display: block; width: auto; height: 30px; object-fit: contain; }
-        .nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.55rem; min-width: 0; }
-        .nav-user-name { max-width: 190px; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; font-weight: 500; }
-        .account-link {
-            display: inline-flex;
-            min-height: 38px;
-            align-items: center;
-            justify-content: center;
-            gap: 0.45rem;
-            padding: 0.45rem 0.85rem;
-            border: 1px solid var(--line);
-            border-radius: 999px;
-            background: var(--surface);
-            color: var(--muted);
-            font-size: 0.76rem;
-            font-weight: 600;
-            text-decoration: none;
-            box-shadow: 0 2px 6px rgba(35, 35, 25, 0.04);
-            transition: border-color 160ms ease, color 160ms ease, background 160ms ease, transform 160ms ease;
-        }
-        .account-link:hover { border-color: var(--yellow-hover); background: #fffef1; color: var(--ink); transform: translateY(-1px); }
-        .account-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--line);
+    }
 
-        .page-intro { max-width: 640px; margin: 0 auto 1.25rem; padding-top: clamp(1.25rem, 3vw, 2.25rem); text-align: center; }
-        .page-intro h1 { margin-bottom: 0.55rem; font-size: clamp(2rem, 5.8vw, 3.2rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1.08; }
-        .page-intro p { margin-bottom: 0; color: var(--muted); }
-        .gallery-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
-        .gallery-heading h2 { margin: 0; font-size: clamp(1.45rem, 3vw, 2rem); }
-        .gallery-count { color: var(--muted); font-size: 0.78rem; font-weight: 700; }
+    .brand { display: flex; align-items: center; gap: 0.8rem; }
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--yellow);
+      color: var(--ink);
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+    }
+    h1, h2, h3 { margin: 0; font-family: "Space Grotesk", sans-serif; }
+    h1 { font-size: clamp(1.15rem, 2.4vw, 1.55rem); }
+    h2 { font-size: 1rem; }
+    h3 { font-size: 0.95rem; }
+    .eyebrow { color: var(--muted); font-size: 0.75rem; }
 
-        .empty-card { padding: clamp(2rem, 7vw, 5rem) 1.5rem; text-align: center; }
-        .empty-card h2 { margin-bottom: 0.5rem; font-size: clamp(1.8rem, 5vw, 3rem); }
-        .empty-card p { max-width: 32rem; margin: 0 auto; color: var(--muted); line-height: 1.5; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-        .gallery-card { min-width: 0; overflow: hidden; content-visibility: auto; contain-intrinsic-size: 320px; }
-        .product-media { position: relative; display: grid; min-height: 240px; background: #fcfcfa; }
-        .sold-badge { position: absolute; top: 0.65rem; left: 0.65rem; z-index: 3; width: min(42%, 175px); pointer-events: none; transform: rotate(-7deg); mix-blend-mode: multiply; }
-        .sold-badge img { display: block; width: 100%; height: auto; }
-        .product-image-button { display: block; width: 100%; min-height: 240px; padding: 0; overflow: hidden; border: 0; background: transparent; }
-        .product-image-button img { display: block; width: 100%; height: 240px; object-fit: contain; transition: transform 250ms ease; }
-        .product-image-button:hover img { transform: scale(1.025); }
-        .product-placeholder { display: grid; place-items: center; min-height: 240px; padding: 1.5rem; color: var(--muted); text-align: center; }
-        .product-placeholder strong { display: block; margin-bottom: 0.35rem; color: var(--ink); font-size: 1.25rem; }
-        .media-control {
-            position: absolute;
-            top: 50%;
-            z-index: 2;
-            display: grid;
-            place-items: center;
-            width: 36px;
-            height: 36px;
-            color: var(--ink);
-            border: 1px solid var(--line);
-            border-radius: 50%;
-            background: rgba(255, 218, 0, 0.95);
-            box-shadow: 0 4px 12px rgba(35, 35, 25, 0.12);
-            font-size: 1.15rem;
-            font-weight: 900;
-            transform: translateY(-50%);
-        }
-        .media-control:hover { background: var(--yellow); }
-        .media-control.previous { left: 0.75rem; }
-        .media-control.next { right: 0.75rem; }
-        .media-control:disabled { visibility: hidden; }
-        .zoom-hint { position: absolute; right: 0.8rem; bottom: 0.75rem; padding: 0.3rem 0.55rem; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.9); font-size: 0.68rem; font-weight: 800; pointer-events: none; }
-        .product-body { padding: 0.8rem 0.9rem 0.95rem; }
-        .product-body h3 { margin: 0 0 0.3rem; font-size: 1.15rem; }
-        .product-description { min-height: 1.5em; margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; white-space: pre-wrap; }
-        .product-price { margin: 0.45rem 0 0; color: var(--ink); font-size: 0.86rem; font-weight: 850; }
-        .product-thumbnails { display: flex; gap: 0.45rem; margin-top: 0.85rem; overflow-x: auto; padding: 0.1rem 0 0.25rem; }
-        .product-thumbnail { flex: 0 0 58px; height: 46px; padding: 0.12rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; }
-        .product-thumbnail.active { border-color: var(--yellow-hover); box-shadow: 0 3px 10px rgba(35, 35, 25, 0.1); }
-        .product-thumbnail img { display: block; width: 100%; height: 100%; object-fit: cover; }
-        .product-footer { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 0.85rem; color: var(--muted); font-size: 0.7rem; font-weight: 750; }
-        .visibility-pill { padding: 0.25rem 0.5rem; border: 1px solid #c9e5cf; border-radius: 999px; color: var(--green); background: var(--green-soft); }
-        .visibility-pill.hidden-state { color: var(--red); border-color: #efc3bf; background: #fff6f5; }
+    .topbar-actions { display: flex; align-items: center; gap: 0.7rem; }
+    .signed-in-email { color: var(--muted); font-size: 0.78rem; }
 
-        .admin-card { margin-top: 1.25rem; padding: clamp(1.35rem, 3.5vw, 2rem); }
-        .admin-toolbar, .admin-product-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
-        .admin-card h2 { margin-bottom: 0.15rem; font-size: 1.5rem; }
-        .admin-card p { margin-bottom: 1rem; color: var(--muted); font-size: 0.85rem; }
-        .status-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.7rem; border: 1px solid currentColor; border-radius: 999px; color: var(--muted); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
-        .status-pill::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
-        .admin-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 0.75rem; }
-        .admin-grid .wide { grid-column: 1 / -1; }
-        .field-label { display: grid; gap: 0.35rem; color: var(--muted); font-size: 0.78rem; font-weight: 800; }
-        input, textarea { width: 100%; padding: 0.78rem 0.85rem; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; outline: 0; background: #fff; }
-        input:focus, textarea:focus { border-color: var(--yellow-hover); box-shadow: 0 0 0 3px rgba(255, 218, 0, 0.2); }
-        textarea { min-height: 88px; resize: vertical; }
-        input[type="file"] { padding: 0.45rem; background: var(--paper); }
-        .checkbox-label { display: flex; align-items: center; gap: 0.55rem; min-height: 48px; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--muted); font-size: 0.78rem; font-weight: 800; }
-        .checkbox-label input { width: auto; accent-color: var(--yellow-hover); }
-        .admin-preview { display: grid; place-items: center; min-height: 130px; margin-top: 0.85rem; overflow: hidden; border: 1px dashed var(--line); border-radius: var(--radius-md); background: var(--paper); }
-        .admin-preview-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.55rem; width: 100%; padding: 0.75rem; }
-        .preview-tile { display: grid; gap: 0.25rem; width: 112px; color: var(--muted); font-size: 0.64rem; text-align: center; }
-        .preview-tile img { display: block; width: 112px; height: 82px; border: 1px solid var(--line); border-radius: 7px; object-fit: cover; }
-        .preview-tile span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .replace-image-control { display: grid; gap: 0.2rem; color: var(--ink); font-size: 0.64rem; font-weight: 800; }
-        .replace-image-control input { width: 100%; padding: 0.2rem; font-size: 0.62rem; }
-        .admin-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
-        .admin-actions > * { flex: 1 1 190px; }
-        .primary-button { width: 100%; color: var(--ink); background: var(--yellow); border-color: var(--yellow-hover); box-shadow: 0 6px 16px rgba(35, 35, 25, 0.08); }
-        .secondary-button { padding: 0 1rem; color: var(--ink); background: #fff; }
-        .danger-button { padding: 0 1rem; color: var(--red); background: #fff; border-color: #efc3bf; }
-        .primary-button:disabled, .secondary-button:disabled, .danger-button:disabled { cursor: not-allowed; opacity: 0.5; transform: none; box-shadow: none; }
-        .admin-products { display: grid; gap: 0.55rem; margin-top: 1.25rem; }
-        .admin-product-row { display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; padding: 0.75rem; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
-        .admin-product-row h3 { margin: 0; font-size: 0.96rem; }
-        .admin-product-row p { margin: 0.15rem 0 0; font-size: 0.72rem; }
-        .admin-product-actions { display: flex; align-items: center; gap: 0.5rem; flex: 0 0 auto; }
-        .admin-product-actions button { min-height: 36px; padding: 0 0.7rem; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); font-size: 0.72rem; font-weight: 800; }
-        .admin-product-actions button:hover { border-color: var(--yellow-hover); background: var(--yellow-soft); }
-        .admin-product-actions button.delete-product { color: var(--red); border-color: #efc3bf; }
-        .admin-product-actions button.delete-product:hover { border-color: var(--red); background: #fff6f5; }
-        .admin-meta { color: var(--muted); font-size: 0.74rem; }
-        .notice { min-height: 1.2rem; margin: 0.75rem 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
-        .notice.error { color: var(--red); }
-        .notice.success { color: var(--green); }
+    .btn {
+      min-height: 38px;
+      padding: 0.55rem 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .btn:hover { border-color: #aebbad; background: var(--surface-soft); }
+    .btn-primary { border-color: var(--yellow); background: var(--yellow); }
+    .btn-primary:hover { border-color: #efc900; background: #f5d000; }
+    .btn-danger { border-color: #efc4bf; background: var(--red-soft); color: var(--red); }
 
-        .lightbox { position: fixed; z-index: 300; inset: 0; display: grid; place-items: center; padding: 1.25rem; background: rgba(20, 20, 16, 0.88); }
-        .lightbox-dialog { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; width: min(100%, 1000px); height: min(92vh, 860px); padding: 0.8rem; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 18px; background: rgba(255, 255, 255, 0.97); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35); }
-        .lightbox-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
-        .lightbox-toolbar h2 { margin: 0; overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
-        .lightbox-controls { display: flex; align-items: center; gap: 0.35rem; }
-        .lightbox-controls button, .lightbox-nav { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); font-weight: 900; }
-        .lightbox-controls button:hover, .lightbox-nav:hover { border-color: var(--yellow-hover); background: var(--yellow-soft); }
-        .lightbox-stage { position: relative; display: grid; place-items: center; min-height: 0; margin: 0.6rem 0; overflow: hidden; border-radius: 12px; background: #f5f5f1; touch-action: none; }
-        .lightbox-stage img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; user-select: none; will-change: transform; }
-        .lightbox-nav { position: absolute; top: 50%; z-index: 2; border-radius: 50%; background: rgba(255, 218, 0, 0.95); transform: translateY(-50%); }
-        .lightbox-nav.previous { left: 0.8rem; }
-        .lightbox-nav.next { right: 0.8rem; }
-        .lightbox-caption { margin: 0; color: var(--muted); font-size: 0.75rem; text-align: center; }
+    .auth-card, .access-card {
+      width: min(100%, 460px);
+      margin: 8vh auto 0;
+      padding: 2rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .auth-card p, .access-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .auth-card .btn { width: 100%; margin-top: 0.55rem; }
+    .auth-divider { margin: 1.15rem 0; color: var(--muted); font-size: 0.75rem; }
+    .auth-form { display: grid; gap: 0.65rem; text-align: left; }
 
-        @media (max-width: 760px) {
-            .app-shell { width: min(100% - 1.25rem, 680px); padding-top: 0; }
-            .site-nav { width: min(100% - 2rem, 860px); min-height: 58px; }
-            .nav-actions { margin-left: auto; }
-            .nav-user-name { max-width: min(38vw, 190px); }
-            .gallery-grid { grid-template-columns: 1fr; }
-            .admin-grid { grid-template-columns: 1fr; }
-            .admin-grid .wide { grid-column: auto; }
-            .admin-card { padding: 1rem; }
-            .admin-actions { display: grid; grid-template-columns: 1fr; }
-            .admin-actions > * { width: 100%; }
-            .lightbox-dialog { height: min(88vh, 700px); }
-            .lightbox-controls button:not(#lightbox-close), .lightbox-nav { display: none; }
-            .lightbox-caption { font-size: 0.68rem; }
-        }
-        @media (max-width: 450px) {
-            .brand-lockup { min-width: 42px; }
-            .brand-lockup .brand-name { display: none; }
-            .brand-mark { display: grid; flex: 0 0 38px; width: 38px; height: 38px; font-size: 0.95rem; }
-            .site-nav { width: min(100% - 1.5rem, 860px); padding-right: 0.25rem; padding-left: 0.25rem; }
-            .site-nav .logo img { height: 28px; max-width: 132px; }
-            .nav-actions { gap: 0.35rem; }
-            .nav-user-name { max-width: 80px; font-size: 0.65rem; }
-            .account-link { width: 38px; height: 38px; min-height: 38px; padding: 0; }
-            .account-link span { display: none; }
-            .page-intro { margin-bottom: 1rem; }
-            .page-intro h1 { font-size: clamp(2.15rem, 12vw, 3.2rem); }
-            .page-intro p { font-size: 0.82rem; }
-            .product-media, .product-image-button, .product-placeholder { min-height: 205px; }
-            .product-image-button img { height: 205px; }
-            .admin-product-row { align-items: flex-start; flex-direction: column; }
-            .admin-product-actions { width: 100%; }
-            .admin-product-actions button { flex: 1; }
-            .lightbox { padding: 0.5rem; }
-            .lightbox-dialog { height: 88vh; padding: 0.55rem; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
-        }
-    </style>
+    .field, .search-input, .select-input {
+      width: 100%;
+      min-height: 40px;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.82rem;
+    }
+    .field:focus, .search-input:focus, .select-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(23, 107, 58, 0.1); }
+    .auth-error { min-height: 1.2rem; margin-top: 0.7rem; color: var(--red); font-size: 0.78rem; }
+
+    .dashboard-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .toolbar-copy p { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.8rem; }
+    .toolbar-controls { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .toolbar-controls .search-input { width: min(270px, 100%); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
+    .stat-card { padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: 0 4px 14px rgba(31, 47, 31, 0.04); }
+    .stat-label { color: var(--muted); font-size: 0.72rem; }
+    .stat-value { margin-top: 0.3rem; font-family: "Space Grotesk", sans-serif; font-size: clamp(1.15rem, 2vw, 1.65rem); font-weight: 700; }
+
+    .main-grid { display: grid; grid-template-columns: minmax(280px, 0.86fr) minmax(0, 2.1fr); gap: 1rem; align-items: start; }
+    .panel { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: 0 4px 14px rgba(31, 47, 31, 0.04); overflow: hidden; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 1rem 1.1rem; border-bottom: 1px solid var(--line); }
+    .panel-heading span { color: var(--muted); font-size: 0.72rem; }
+    .panel-body { padding: 0.9rem; }
+    .panel-body > .search-input { margin-bottom: 0.7rem; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    th, td { padding: 0.75rem 0.65rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
+    th { color: var(--muted); font-size: 0.67rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr.clickable { cursor: pointer; }
+    tbody tr.clickable:hover, tbody tr.selected { background: var(--surface-soft); }
+    .primary-text { color: var(--ink); font-weight: 700; }
+    .secondary-text { margin-top: 0.15rem; color: var(--muted); font-size: 0.7rem; }
+    .amount { font-weight: 700; }
+    .status { display: inline-flex; padding: 0.22rem 0.5rem; border-radius: 999px; font-size: 0.67rem; font-weight: 700; text-transform: capitalize; }
+    .status-paid, .status-captured, .status-active, .status-success, .status-completed { background: var(--green-soft); color: var(--green); }
+    .status-pending, .status-authorized, .status-created { background: var(--amber-soft); color: var(--amber); }
+    .status-failed, .status-cancelled, .status-refunded { background: var(--red-soft); color: var(--red); }
+    .empty-cell { padding: 1.5rem 0.7rem; color: var(--muted); text-align: center; }
+
+    .detail-panel { margin-top: 1rem; }
+    .detail-header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+    .detail-meta { margin-top: 0.35rem; color: var(--muted); font-size: 0.78rem; }
+    .detail-stats { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.9rem 0; }
+    .detail-chip { padding: 0.45rem 0.65rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); font-size: 0.74rem; }
+    .detail-chip strong { font-size: 0.86rem; }
+    .subsection { margin-top: 1rem; }
+    .subsection h3 { margin-bottom: 0.55rem; }
+    .live-dot { display: inline-block; width: 7px; height: 7px; margin-right: 0.3rem; border-radius: 50%; background: var(--green); }
+    .warning { margin-top: 0.8rem; padding: 0.7rem 0.8rem; border: 1px solid #f0df9e; border-radius: 10px; background: var(--amber-soft); color: #735000; font-size: 0.75rem; line-height: 1.45; }
+
+    #toast { position: fixed; right: 1rem; bottom: 1rem; max-width: min(360px, calc(100% - 2rem)); padding: 0.75rem 0.9rem; border-radius: 10px; background: #243326; color: #fff; font-size: 0.78rem; opacity: 0; transform: translateY(8px); transition: 180ms ease; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .main-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .app-shell { width: min(100% - 1rem, 1440px); padding-top: 0.5rem; }
+      .topbar, .dashboard-toolbar { align-items: flex-start; flex-direction: column; }
+      .topbar-actions { width: 100%; justify-content: space-between; }
+      .signed-in-email { max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .stats-grid { gap: 0.55rem; }
+      .stat-card { padding: 0.75rem; }
+      .stat-value { font-size: 1.05rem; }
+      th, td { padding: 0.65rem 0.5rem; }
+    }
+  </style>
 </head>
 <body>
-    <div id="app-shell" class="app-shell">
-        <header class="site-header">
-            <nav class="site-nav">
-                <div class="logo"><a href="oodoo.html#home" aria-label="Silly Sensei home"><img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Manali Strays" width="120" height="30"></a></div>
-                <div class="nav-actions">
-                    <span id="user-badge" class="nav-user-name">Guest</span>
-                    <button class="account-link" id="login-button" type="button" aria-label="Optional admin sign in" title="Optional admin sign in"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 20c.7-3.4 3.2-5.2 7.5-5.2s6.8 1.8 7.5 5.2"></path></svg><span>Admin sign in</span></button>
-                    <a class="account-link" href="oodoo.html#home" aria-label="Open homepage"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
-                    <button class="account-link is-hidden" id="signout-button" type="button" aria-label="Log out" title="Log out"><svg class="account-icon" viewBox="0 0 512 512" aria-hidden="true"><path d="M192 64h-64c-17.7 0-32 14.3-32 32v320c0 17.7 14.3 32 32 32h64M336 160l96 96-96 96M432 256H176" stroke="currentColor" stroke-width="38" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Sign out</span></button>
-                </div>
-            </nav>
-        </header>
-
-        <main>
-            <div class="page-intro"><h1>Gallery.</h1><p>Economics of this is that the price goes to the artist; anything above it supports Manali Strays simpal ekonomiks.</p></div>
-
-            <section aria-labelledby="gallery-heading">
-                <div class="gallery-heading"><h2 id="gallery-heading">Featured products</h2><span id="gallery-count" class="gallery-count"></span></div>
-                <div id="empty-card" class="empty-card"><h2>No products yet.</h2><p>Products enabled by the admin will appear here.</p></div>
-                <div id="gallery-grid" class="gallery-grid is-hidden" aria-live="polite"></div>
-                <p id="gallery-notice" class="notice" role="status"></p>
-            </section>
-
-            <section id="admin-panel" class="admin-card is-hidden">
-                <div class="admin-toolbar"><div><h2>Gallery controls</h2><p>Add products and choose which ones visitors can see.</p></div><span class="status-pill">Admin</span></div>
-                <form id="product-form">
-                    <div class="admin-grid">
-                        <label class="field-label wide" for="product-title">Product title<input id="product-title" type="text" maxlength="120" placeholder="Example: Hand-painted Manali print" required></label>
-                        <label class="field-label wide" for="product-description">Short description<textarea id="product-description" maxlength="500" placeholder="What makes this product special?"></textarea></label>
-                        <label class="field-label" for="product-images">Product images (select multiple)<input id="product-images" type="file" accept="image/*" multiple></label>
-                        <label class="field-label" for="product-image-url">Or image URL<input id="product-image-url" type="url" placeholder="https://…"></label>
-                        <label class="field-label" for="product-base-price">Base price (₹)<input id="product-base-price" type="number" min="0" step="1" inputmode="numeric" placeholder="Optional"></label>
-                        <label class="checkbox-label" for="product-visible"><input id="product-visible" type="checkbox" checked> Show this product to visitors</label>
-                        <label class="checkbox-label" for="product-sold"><input id="product-sold" type="checkbox"> Mark this product as sold</label>
-                    </div>
-                    <div id="admin-preview" class="admin-preview"><span class="admin-meta">Images over 6 MB will be compressed in your browser before upload, with quality preserved as far as possible.</span></div>
-                    <div class="admin-actions"><button id="add-product-button" class="primary-button" type="submit">Add product</button><button id="cancel-edit-button" class="secondary-button is-hidden" type="button">Cancel edit</button></div>
-                    <p id="admin-notice" class="notice" role="status"></p>
-                </form>
-                <div class="admin-product-heading"><h3>Manage products</h3><span id="admin-product-count" class="admin-meta"></span></div>
-                <div id="admin-products" class="admin-products"><p class="admin-meta">No products added yet.</p></div>
-            </section>
-        </main>
-    </div>
-
-    <div id="lightbox" class="lightbox is-hidden" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
-        <div class="lightbox-dialog">
-            <div class="lightbox-toolbar"><h2 id="lightbox-title">Image preview</h2><div class="lightbox-controls"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="zoom-reset" type="button" aria-label="Reset zoom">100%</button><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="lightbox-close" type="button" aria-label="Close image preview">×</button></div></div>
-            <div id="lightbox-stage" class="lightbox-stage"><button id="lightbox-previous" class="lightbox-nav previous" type="button" aria-label="Previous image">‹</button><img id="lightbox-image" alt=""><button id="lightbox-next" class="lightbox-nav next" type="button" aria-label="Next image">›</button></div>
-            <p id="lightbox-caption" class="lightbox-caption"></p>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">MS</div>
+        <div>
+          <div class="eyebrow">Restricted administration</div>
+          <h1>Manali Strays Transactions</h1>
         </div>
-    </div>
+      </div>
+      <div class="topbar-actions">
+        <span class="signed-in-email" id="signed-in-email"></span>
+        <button class="btn btn-danger is-hidden" id="sign-out-btn" type="button">Sign out</button>
+      </div>
+    </header>
 
-    <script type="module">
-        import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-        import { getAuth, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-        import { get, getDatabase, onValue, push, ref, remove, serverTimestamp, set, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+    <section class="auth-card" id="auth-view">
+      <h2>Admin sign in</h2>
+      <p>Use the authorized administrator account to view supporter and transaction data.</p>
+      <button class="btn btn-primary" id="google-sign-in" type="button">Continue with Google</button>
+      <div class="auth-divider">or use email and password</div>
+      <form class="auth-form" id="password-form">
+        <input class="field" id="admin-email" type="email" autocomplete="email" placeholder="Admin email" required />
+        <input class="field" id="admin-password" type="password" autocomplete="current-password" placeholder="Password" required />
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+      <div class="auth-error" id="auth-error" role="alert"></div>
+    </section>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDma_UrBD5XQICj5LOu214Fu3va_7VnvDg",
-            authDomain: "sillysensei-b251b.firebaseapp.com",
-            databaseURL: "https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "sillysensei-b251b",
-            storageBucket: "sillysensei-b251b.firebasestorage.app",
-            messagingSenderId: "859697431303",
-            appId: "1:859697431303:web:f91ce7535a3aff27cc7ba2",
-            measurementId: "G-XGR07BYBGN",
-        };
+    <section class="access-card is-hidden" id="access-denied-view">
+      <h2>Access denied</h2>
+      <p>This account is not authorized to open the transaction dashboard.</p>
+      <button class="btn btn-danger" id="denied-sign-out" type="button">Sign out</button>
+    </section>
 
-        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-        const provider = new GoogleAuthProvider();
-        const $ = (id) => document.getElementById(id);
-        const ADMIN_EMAILS = new Set(["abhishekredddy500@gmail.com", "vishnudeviprasadshetty@gmail.com", "supritachat.25@gmail.com"]);
-        const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
-        const TARGET_IMAGE_BYTES = 5.7 * 1024 * 1024;
-        const PRODUCTS_PATH = "auction/gallery/products";
-        const IMAGES_PATH = "auction/gallery/images";
+    <main class="is-hidden" id="dashboard-view">
+      <div class="dashboard-toolbar">
+        <div class="toolbar-copy">
+          <h2>Overview</h2>
+          <p><span class="live-dot"></span>Live Firebase data · read-only dashboard</p>
+        </div>
+        <div class="toolbar-controls">
+          <input class="search-input" id="transaction-search" type="search" placeholder="Search transactions…" />
+          <select class="select-input" id="transaction-status" aria-label="Filter transaction status">
+            <option value="all">All statuses</option>
+            <option value="paid">Paid / captured</option>
+            <option value="pending">Pending / authorized</option>
+            <option value="failed">Failed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button class="btn" id="export-csv" type="button">Export CSV</button>
+        </div>
+      </div>
 
-        let currentUser = null;
-        let isAdmin = false;
-        let products = [];
-        let editingProductId = null;
-        let productsUnsubscribe = null;
-        let imageUnsubscribes = new Map();
-        let storedImages = new Map();
-        let fullImageLoads = new Map();
-        let productImageIndexes = new Map();
-        let previewObjectUrls = [];
-        let lightboxProduct = null;
-        let lightboxImages = [];
-        let lightboxIndex = 0;
-        let lightboxZoom = 1;
-        let lightboxOffsetX = 0;
-        let lightboxOffsetY = 0;
-        let touchStart = null;
-        let pinchStartDistance = 0;
-        let pinchStartZoom = 1;
+      <section class="stats-grid" aria-label="Summary statistics">
+        <div class="stat-card"><div class="stat-label">Confirmed raised</div><div class="stat-value" id="stat-total">₹0</div></div>
+        <div class="stat-card"><div class="stat-label">Confirmed transactions</div><div class="stat-value" id="stat-transactions">0</div></div>
+        <div class="stat-card"><div class="stat-label">Registered users</div><div class="stat-value" id="stat-users">0</div></div>
+        <div class="stat-card"><div class="stat-label">Active subscriptions</div><div class="stat-value" id="stat-subscriptions">0</div></div>
+      </section>
 
-        const escapeHtml = (value) => String(value ?? "")
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
+      <div class="main-grid">
+        <section class="panel">
+          <div class="panel-heading"><h2>Users</h2><span id="user-count">0 users</span></div>
+          <div class="panel-body">
+            <input class="search-input" id="user-search" type="search" placeholder="Search name, email, or UID…" />
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Supporter</th><th>Paid</th><th>Activity</th></tr></thead>
+                <tbody id="users-body"><tr><td class="empty-cell" colspan="3">Loading users…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
 
-        function showNotice(element, message, type = "") {
-            element.textContent = message;
-            element.className = `notice${type ? ` ${type}` : ""}`;
+        <section class="panel">
+          <div class="panel-heading"><h2>All transactions</h2><span id="transaction-count">0 records</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Supporter</th><th>Type</th><th>Amount</th><th>Status</th><th>Reference</th></tr></thead>
+              <tbody id="transactions-body"><tr><td class="empty-cell" colspan="6">Loading transactions…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel detail-panel">
+        <div class="panel-heading"><h2>Supporter details</h2><span id="selected-user-label">Select a user above</span></div>
+        <div class="panel-body" id="user-detail-body"><div class="empty-cell">Select a supporter to see their complete payment and subscription history.</div></div>
+      </section>
+
+      <div class="warning">This page is read-only. Your current Firebase rules still allow public reads on several collections, so the email check protects this dashboard UI but does not by itself make the underlying data private.</div>
+    </main>
+  </div>
+  <div id="toast" role="status"></div>
+
+  <script type="module">
+    import { onValue, ref } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+    import {
+      GoogleAuthProvider,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      signInWithPopup,
+      signOut,
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import { auth, database } from "./js/firebase-client.js";
+
+    const ADMIN_EMAIL = "vishnudeviprasadshetty@gmail.com";
+    const state = {
+      users: {},
+      payments: {},
+      testPayments: {},
+      subscribers: {},
+      subscribersVelcrow: {},
+    };
+    let selectedUserKey = "";
+    let dataListenersStarted = false;
+
+    const $ = (id) => document.getElementById(id);
+    const authView = $("auth-view");
+    const deniedView = $("access-denied-view");
+    const dashboardView = $("dashboard-view");
+    const authError = $("auth-error");
+    const toast = $("toast");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 3200);
+    }
+
+    function formatAmount(value) {
+      return `₹${(Number(value) || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+    }
+
+    function formatDate(value) {
+      const timestamp = Number(value || 0);
+      if (!timestamp) return "—";
+      return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(timestamp));
+    }
+
+    function normalizeEmail(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function normalizeStatus(record) {
+      return String(record?.status || record?.paymentStatus || record?.subscriptionStatus || "unknown").trim().toLowerCase();
+    }
+
+    function statusGroup(status) {
+      if (["paid", "captured", "completed", "success", "active"].includes(status)) return "paid";
+      if (["pending", "authorized", "created"].includes(status)) return "pending";
+      if (["failed", "cancelled", "refunded"].includes(status)) return status;
+      return "other";
+    }
+
+    function paymentIdentity(record, fallback) {
+      return String(record?.paymentId || record?.payment_id || record?.orderId || record?.reference || record?.transactionId || record?.id || fallback);
+    }
+
+    function looksLikePayment(record) {
+      return record && typeof record === "object" && !Array.isArray(record) && (
+        record.amount != null || record.paymentId || record.orderId || record.reference || record.type
+      );
+    }
+
+    function flattenPaymentSource(data, source) {
+      const output = [];
+      Object.entries(data || {}).forEach(([key, value]) => {
+        if (!value || typeof value !== "object" || Array.isArray(value)) return;
+        if (looksLikePayment(value)) {
+          output.push({ ...value, __source: source, __path: `${source}/${key}`, __fallback: key });
+          return;
         }
-
-        function setBusy(button, busy, busyText, idleText) {
-            button.disabled = busy;
-            const label = button.querySelector("[data-button-label]") || button;
-            label.textContent = busy ? busyText : idleText;
-        }
-
-        function displayUser(user) { $("user-badge").textContent = user ? (user.displayName || user.email || "Signed in") : "Guest"; }
-
-        async function checkAdmin(user) {
-            if (ADMIN_EMAILS.has((user.email || "").toLowerCase())) return true;
-            try {
-                const token = await user.getIdTokenResult(true);
-                return token.claims.admin === true;
-            } catch (error) {
-                console.warn("Could not load gallery admin status:", error);
-                return false;
-            }
-        }
-
-        function updateAdminVisibility() { $("admin-panel").classList.toggle("is-hidden", !isAdmin); }
-
-        function galleryEntriesForProduct(product) {
-            const imageIds = Array.isArray(product?.imageIds) ? product.imageIds : [];
-            const thumbnailUrls = Array.isArray(product?.thumbnailUrls) ? product.thumbnailUrls : [];
-            const entries = imageIds.map((imageId, index) => ({
-                imageId,
-                thumbnail: typeof thumbnailUrls[index] === "string" ? thumbnailUrls[index] : "",
-                full: storedImages.get(`${product.id}/${imageId}`) || "",
-            }));
-            const externalImages = Array.isArray(product?.imageUrls)
-                ? product.imageUrls.filter((image) => typeof image === "string" && image)
-                : [];
-            if (!externalImages.length && product?.imageUrl) externalImages.push(product.imageUrl);
-            externalImages.forEach((url) => entries.push({ url, thumbnail: url, full: url }));
-            return entries;
-        }
-
-        function imageSourceForEntry(entry) { return entry?.thumbnail || entry?.full || entry?.url || ""; }
-
-        function imageCountForProduct(product) { return galleryEntriesForProduct(product).length; }
-
-        function basePriceForProduct(product) {
-            const price = Number(product?.basePrice);
-            return Number.isFinite(price) && price >= 0 ? `₹${price.toLocaleString("en-IN")}` : "";
-        }
-
-        function renderProducts() {
-            const visibleProducts = products.filter((product) => isAdmin || product.visible !== false);
-            $("gallery-count").textContent = visibleProducts.length ? `${visibleProducts.length} ${visibleProducts.length === 1 ? "product" : "products"}` : "";
-            $("empty-card").classList.toggle("is-hidden", visibleProducts.length > 0);
-            $("gallery-grid").classList.toggle("is-hidden", visibleProducts.length === 0);
-            $("gallery-grid").innerHTML = visibleProducts.map((product) => renderProductCard(product)).join("");
-            renderAdminProducts();
-        }
-
-        function renderProductCard(product) {
-            const entries = galleryEntriesForProduct(product);
-            const images = entries.map(imageSourceForEntry);
-            const index = Math.min(productImageIndexes.get(product.id) || 0, Math.max(images.length - 1, 0));
-            productImageIndexes.set(product.id, index);
-            const activeImage = images[index];
-            const hiddenLabel = isAdmin
-                ? product.visible === false ? '<span class="visibility-pill hidden-state">Hidden from visitors</span>' : '<span class="visibility-pill">Visible</span>'
-                : "";
-            const soldBadge = product.sold === true ? '<span class="sold-badge"><img src="assets/sold-stamp.png" alt="Sold"></span>' : "";
-            const thumbnails = images.length > 1
-                ? `<div class="product-thumbnails" aria-label="${escapeHtml(product.title || "Product")} images">${images.map((url, imageIndex) => `<button class="product-thumbnail${imageIndex === index ? " active" : ""}" type="button" data-action="select-image" data-product-id="${escapeHtml(product.id)}" data-image-index="${imageIndex}" aria-label="Show image ${imageIndex + 1}"><img src="${escapeHtml(url)}" loading="lazy" decoding="async" alt="${escapeHtml(product.title || "Product")} image ${imageIndex + 1}"></button>`).join("")}</div>`
-                : "";
-            const media = activeImage
-                ? `<button class="product-image-button" type="button" data-action="zoom" data-product-id="${escapeHtml(product.id)}" data-image-index="${index}" aria-label="Zoom ${escapeHtml(product.title || "product")} image"><img src="${escapeHtml(activeImage)}" loading="lazy" decoding="async" alt="${escapeHtml(product.title || "Product")}"></button><span class="zoom-hint">Click to zoom</span>`
-                : `<div class="product-placeholder"><div><strong>${entries.length ? "Loading image…" : "Image coming soon"}</strong>${entries.length ? "Preparing a fast preview." : "No image has been added yet."}</div></div>`;
-            const basePrice = basePriceForProduct(product);
-            return `<article class="gallery-card" data-product-id="${escapeHtml(product.id)}"><div class="product-media">${media}${soldBadge}<button class="media-control previous" type="button" data-action="previous-image" data-product-id="${escapeHtml(product.id)}" aria-label="Previous image"${images.length < 2 ? " disabled" : ""}>‹</button><button class="media-control next" type="button" data-action="next-image" data-product-id="${escapeHtml(product.id)}" aria-label="Next image"${images.length < 2 ? " disabled" : ""}>›</button></div><div class="product-body"><h3>${escapeHtml(product.title || "Untitled product")}</h3><p class="product-description">${escapeHtml(product.description || "")}</p>${basePrice ? `<p class="product-price">Base price · ${basePrice}</p>` : ""}${thumbnails}<div class="product-footer"><span>${images.length ? `${images.length} ${images.length === 1 ? "image" : "images"}` : "No images"}</span>${hiddenLabel}</div></div></article>`;
-        }
-
-        function renderAdminProducts() {
-            $("admin-product-count").textContent = products.length ? `${products.length} total` : "";
-            if (!products.length) {
-                $("admin-products").innerHTML = '<p class="admin-meta">No products added yet.</p>';
-                return;
-            }
-            $("admin-products").innerHTML = products.map((product) => `<div class="admin-product-row"><div><h3>${escapeHtml(product.title || "Untitled product")}</h3><p>${product.visible === false ? "Hidden from visitors" : "Visible to visitors"} · ${product.sold === true ? "Sold" : "Available"} · ${imageCountForProduct(product)} ${imageCountForProduct(product) === 1 ? "image" : "images"}${basePriceForProduct(product) ? ` · Base price ${basePriceForProduct(product)}` : ""}</p></div><div class="admin-product-actions"><button type="button" data-action="edit-product" data-product-id="${escapeHtml(product.id)}">Edit</button><button type="button" data-action="toggle-product" data-product-id="${escapeHtml(product.id)}">${product.visible === false ? "Show product" : "Hide product"}</button><button type="button" data-action="toggle-sold" data-product-id="${escapeHtml(product.id)}">${product.sold === true ? "Mark available" : "Mark sold"}</button><button class="delete-product" type="button" data-action="delete-product" data-product-id="${escapeHtml(product.id)}">Delete</button></div></div>`).join("");
-        }
-
-        function subscribeToProductImages(nextProducts) {
-            const nextIds = new Set(nextProducts.map((product) => product.id));
-            imageUnsubscribes.forEach((unsubscribe, productId) => {
-                if (!nextIds.has(productId)) {
-                    unsubscribe();
-                    imageUnsubscribes.delete(productId);
-                    [...storedImages.keys()].filter((key) => key.startsWith(`${productId}/`)).forEach((key) => storedImages.delete(key));
-                }
-            });
-            nextProducts.forEach((product) => {
-                if (imageUnsubscribes.has(product.id)) return;
-                const imageIds = Array.isArray(product.imageIds) ? product.imageIds : [];
-                const thumbnailUrls = Array.isArray(product.thumbnailUrls) ? product.thumbnailUrls : [];
-                // New products have lightweight previews on the product record. Keep
-                // their full image data unloaded until a visitor opens the lightbox.
-                if (!imageIds.length || thumbnailUrls.length >= imageIds.length) return;
-                imageUnsubscribes.set(product.id, onValue(ref(database, `${IMAGES_PATH}/${product.id}`), (snapshot) => {
-                    const raw = snapshot.val() || {};
-                    imageIds.forEach((imageId) => {
-                        const dataUrl = raw[imageId]?.dataUrl;
-                        if (typeof dataUrl === "string" && dataUrl) storedImages.set(`${product.id}/${imageId}`, dataUrl);
-                    });
-                    renderProducts();
-                }, (error) => {
-                    console.error("Gallery image listener failed:", error);
-                    showNotice($("gallery-notice"), "Some product images could not be loaded.", "error");
-                }));
-            });
-        }
-
-        function startGalleryListener() {
-            if (productsUnsubscribe) productsUnsubscribe();
-            productsUnsubscribe = onValue(ref(database, PRODUCTS_PATH), (snapshot) => {
-                const raw = snapshot.val() || {};
-                products = Object.entries(raw)
-                    .map(([id, product]) => ({ id, ...(product || {}) }))
-                    .sort((a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0));
-                subscribeToProductImages(products);
-                renderProducts();
-            }, (error) => {
-                console.error("Gallery listener failed:", error);
-                const permissionError = String(error?.message || "").toLowerCase().includes("permission_denied");
-                showNotice($("gallery-notice"), permissionError ? "Firebase rules currently block guest gallery reads. Allow public reads for /auction/gallery while keeping its writes admin-only." : "The gallery could not be loaded. Refresh and try again.", "error");
-            });
-        }
-
-        function readAsDataUrl(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error("Could not read the image file."));
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function dataUrlBytes(dataUrl) {
-            const encoded = String(dataUrl).split(",")[1] || "";
-            return Math.ceil(encoded.length * 3 / 4);
-        }
-
-        function loadImageForCompression(file) {
-            return new Promise((resolve, reject) => {
-                const objectUrl = URL.createObjectURL(file);
-                const image = new Image();
-                image.onload = () => {
-                    URL.revokeObjectURL(objectUrl);
-                    resolve(image);
-                };
-                image.onerror = () => {
-                    URL.revokeObjectURL(objectUrl);
-                    reject(new Error(`Could not open ${file.name || "the image"}.`));
-                };
-                image.src = objectUrl;
-            });
-        }
-
-        async function compressImage(file) {
-            const image = await loadImageForCompression(file);
-            const sourceWidth = image.naturalWidth || image.width;
-            const sourceHeight = image.naturalHeight || image.height;
-            if (!sourceWidth || !sourceHeight) throw new Error(`Could not determine the size of ${file.name || "the image"}.`);
-
-            const canvas = document.createElement("canvas");
-            const context = canvas.getContext("2d", { alpha: file.type === "image/png" });
-            if (!context) throw new Error("Your browser cannot compress this image.");
-            const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
-            let scale = Math.min(1, 5000 / Math.max(sourceWidth, sourceHeight));
-            let quality = 0.92;
-            let bestDataUrl = "";
-
-            for (let attempt = 0; attempt < 12; attempt += 1) {
-                canvas.width = Math.max(1, Math.round(sourceWidth * scale));
-                canvas.height = Math.max(1, Math.round(sourceHeight * scale));
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                if (outputType === "image/jpeg") {
-                    context.fillStyle = "#ffffff";
-                    context.fillRect(0, 0, canvas.width, canvas.height);
-                }
-                context.drawImage(image, 0, 0, canvas.width, canvas.height);
-                const dataUrl = canvas.toDataURL(outputType, quality);
-                bestDataUrl = dataUrl;
-                if (dataUrlBytes(dataUrl) <= TARGET_IMAGE_BYTES) return dataUrl;
-                if (outputType === "image/png" || attempt % 2 === 1) {
-                    scale *= 0.84;
-                } else {
-                    quality = Math.max(0.55, quality - 0.08);
-                }
-            }
-            if (bestDataUrl && dataUrlBytes(bestDataUrl) <= MAX_IMAGE_BYTES) return bestDataUrl;
-            throw new Error(`${file.name || "This image"} could not be compressed below 6 MB.`);
-        }
-
-        async function createThumbnail(file) {
-            const image = await loadImageForCompression(file);
-            const sourceWidth = image.naturalWidth || image.width;
-            const sourceHeight = image.naturalHeight || image.height;
-            const maxDimension = 1000;
-            const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
-            const canvas = document.createElement("canvas");
-            canvas.width = Math.max(1, Math.round(sourceWidth * scale));
-            canvas.height = Math.max(1, Math.round(sourceHeight * scale));
-            const context = canvas.getContext("2d", { alpha: file.type === "image/png" });
-            if (!context) throw new Error("Your browser cannot create an image preview.");
-            const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
-            if (outputType === "image/jpeg") {
-                context.fillStyle = "#ffffff";
-                context.fillRect(0, 0, canvas.width, canvas.height);
-            }
-            context.drawImage(image, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL(outputType, 0.78);
-        }
-
-        async function encodeImage(file) {
-            if (!file || !file.type.startsWith("image/")) throw new Error("Please choose image files only.");
-            const [dataUrl, thumbnailDataUrl] = await Promise.all([
-                file.size <= MAX_IMAGE_BYTES ? readAsDataUrl(file) : compressImage(file),
-                createThumbnail(file),
-            ]);
-            return { dataUrl, thumbnailDataUrl, compressed: file.size > MAX_IMAGE_BYTES };
-        }
-
-        function formatBytes(bytes) {
-            if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-        }
-
-        function previewImages() {
-            previewObjectUrls.forEach((url) => URL.revokeObjectURL(url));
-            previewObjectUrls = [];
-            const files = Array.from($("product-images").files || []);
-            if (!files.length) {
-                $("admin-preview").innerHTML = '<span class="admin-meta">Images over 6 MB will be compressed in your browser before upload, with quality preserved as far as possible.</span>';
-                return;
-            }
-            const grid = document.createElement("div");
-            grid.className = "admin-preview-grid";
-            files.forEach((file) => {
-                const url = URL.createObjectURL(file);
-                previewObjectUrls.push(url);
-                const tile = document.createElement("div");
-                tile.className = "preview-tile";
-                const image = document.createElement("img");
-                image.src = url;
-                image.alt = file.name || "Selected product preview";
-                const label = document.createElement("span");
-                label.textContent = `${file.name || "Image"} · ${formatBytes(file.size)}${file.size > MAX_IMAGE_BYTES ? " · will compress" : ""}`;
-                tile.append(image, label);
-                grid.appendChild(tile);
-            });
-            $("admin-preview").replaceChildren(grid);
-        }
-
-        function previewExistingProduct(product) {
-            previewObjectUrls.forEach((url) => URL.revokeObjectURL(url));
-            previewObjectUrls = [];
-            const entries = galleryEntriesForProduct(product);
-            if (!entries.length) {
-                $("admin-preview").innerHTML = '<span class="admin-meta">No current images. Select files or add an image URL to attach images.</span>';
-                return;
-            }
-            const grid = document.createElement("div");
-            grid.className = "admin-preview-grid";
-            entries.forEach((entry, index) => {
-                const tile = document.createElement("div");
-                tile.className = "preview-tile";
-                const image = document.createElement("img");
-                image.src = imageSourceForEntry(entry);
-                image.loading = "lazy";
-                image.alt = `Current image ${index + 1}`;
-                const label = document.createElement("span");
-                label.textContent = `Current image ${index + 1}`;
-                tile.append(image, label);
-                if (entry.imageId) {
-                    const replaceLabel = document.createElement("label");
-                    replaceLabel.className = "replace-image-control";
-                    replaceLabel.textContent = "Replace this image";
-                    const replaceInput = document.createElement("input");
-                    replaceInput.type = "file";
-                    replaceInput.accept = "image/*";
-                    replaceInput.dataset.replaceImageIndex = String(index);
-                    replaceInput.setAttribute("aria-label", `Replace image ${index + 1}`);
-                    replaceLabel.appendChild(replaceInput);
-                    tile.appendChild(replaceLabel);
-                }
-                grid.appendChild(tile);
-            });
-            $("admin-preview").replaceChildren(grid);
-        }
-
-        function resetProductForm() {
-            editingProductId = null;
-            $("product-form").reset();
-            $("product-images").disabled = false;
-            $("product-image-url").disabled = false;
-            $("product-visible").checked = true;
-            $("product-sold").checked = false;
-            $("add-product-button").textContent = "Add product";
-            $("cancel-edit-button").classList.add("is-hidden");
-            previewImages();
-        }
-
-        function editProduct(productId) {
-            if (!isAdmin) return;
-            const product = products.find((item) => item.id === productId);
-            if (!product) return;
-            editingProductId = productId;
-            $("product-title").value = product.title || "";
-            $("product-description").value = product.description || "";
-            $("product-base-price").value = Number.isFinite(Number(product.basePrice)) ? String(product.basePrice) : "";
-            $("product-image-url").value = product.imageUrl || "";
-            $("product-images").value = "";
-            $("product-images").disabled = true;
-            $("product-image-url").disabled = Array.isArray(product.imageIds) && product.imageIds.length > 0;
-            $("product-visible").checked = product.visible !== false;
-            $("product-sold").checked = product.sold === true;
-            $("add-product-button").textContent = "Save changes";
-            $("cancel-edit-button").classList.remove("is-hidden");
-            previewExistingProduct(product);
-            showNotice($("admin-notice"), "Editing this product. Select new images only if you want to replace the current images.");
-            $("product-form").scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-
-        function replacementFilesForEdit() {
-            return [...document.querySelectorAll("[data-replace-image-index]")]
-                .map((input) => ({ index: Number(input.dataset.replaceImageIndex), file: input.files?.[0] }))
-                .filter((replacement) => Number.isInteger(replacement.index) && replacement.file);
-        }
-
-        async function addProduct(event) {
-            event.preventDefault();
-            if (!isAdmin || !currentUser) return;
-            const wasEditing = Boolean(editingProductId);
-            const editingProduct = products.find((item) => item.id === editingProductId);
-            if (wasEditing && !editingProduct) {
-                resetProductForm();
-                showNotice($("admin-notice"), "That product is no longer available.", "error");
-                return;
-            }
-            const title = $("product-title").value.trim();
-            const description = $("product-description").value.trim();
-            const files = wasEditing ? [] : Array.from($("product-images").files || []);
-            const imageUrl = wasEditing
-                ? (!Array.isArray(editingProduct?.imageIds) || !editingProduct.imageIds.length ? $("product-image-url").value.trim() : "")
-                : $("product-image-url").value.trim();
-            const replacements = wasEditing ? replacementFilesForEdit() : [];
-            const basePriceInput = $("product-base-price").value.trim();
-            const basePrice = basePriceInput === "" ? null : Number(basePriceInput);
-            const visible = $("product-visible").checked;
-            const sold = $("product-sold").checked;
-            const button = $("add-product-button");
-            if (!title) {
-                showNotice($("admin-notice"), "Add a product title.", "error");
-                return;
-            }
-            if (!wasEditing && !files.length && !imageUrl) {
-                showNotice($("admin-notice"), "Add at least one image or paste an image URL.", "error");
-                return;
-            }
-            if (basePriceInput !== "" && (!Number.isFinite(basePrice) || basePrice < 0)) {
-                showNotice($("admin-notice"), "Enter a valid base price or leave it empty.", "error");
-                return;
-            }
-            const idleText = wasEditing ? "Save changes" : "Add product";
-            setBusy(button, true, "Preparing images…", idleText);
-            showNotice($("admin-notice"), wasEditing ? "Saving product changes…" : "Compressing large images and saving the product…");
-            let newImageIds = [];
-            let productIdForCleanup = null;
-            try {
-                const productId = wasEditing ? editingProduct.id : push(ref(database, PRODUCTS_PATH)).key;
-                if (!productId) throw new Error("Could not create the product record.");
-                productIdForCleanup = productId;
-                const oldImageIds = wasEditing && Array.isArray(editingProduct.imageIds) ? editingProduct.imageIds : [];
-                const oldImageUrls = wasEditing && Array.isArray(editingProduct.imageUrls) ? editingProduct.imageUrls : [];
-                let imageIds = wasEditing && Array.isArray(editingProduct.imageIds) ? editingProduct.imageIds : [];
-                let thumbnailUrls = wasEditing && Array.isArray(editingProduct.thumbnailUrls) ? editingProduct.thumbnailUrls : [];
-                let savedImageUrl = wasEditing ? editingProduct.imageUrl || "" : "";
-                let replacedImages = false;
-                let replacedImageSet = false;
-                if (wasEditing && imageUrl && oldImageIds.length === 0) {
-                    imageIds = [];
-                    thumbnailUrls = [];
-                    savedImageUrl = imageUrl;
-                    replacedImages = true;
-                    replacedImageSet = true;
-                } else if (wasEditing) {
-                    const currentEntries = galleryEntriesForProduct(editingProduct);
-                    const encodedReplacements = await Promise.all(replacements.map((replacement) => encodeImage(replacement.file)));
-                    await Promise.all(encodedReplacements.map((image, replacementIndex) => {
-                        const replacement = replacements[replacementIndex];
-                        const entry = currentEntries[replacement.index];
-                        if (!entry?.imageId || replacement.index >= imageIds.length) {
-                            throw new Error("Only uploaded images can be replaced individually. Add a new product image instead.");
-                        }
-                        thumbnailUrls[replacement.index] = image.thumbnailDataUrl;
-                        return set(ref(database, `${IMAGES_PATH}/${productId}/${entry.imageId}`), {
-                            dataUrl: image.dataUrl,
-                            name: replacement.file.name,
-                            type: image.dataUrl.startsWith("data:image/jpeg") ? "image/jpeg" : replacement.file.type,
-                            index: replacement.index,
-                            originalBytes: replacement.file.size,
-                            storedBytes: dataUrlBytes(image.dataUrl),
-                            compressed: image.compressed,
-                        });
-                    }));
-                    replacedImages = replacements.length > 0;
-                } else if (files.length) {
-                    const encodedImages = await Promise.all(files.map((file) => encodeImage(file)));
-                    imageIds = files.map(() => push(ref(database, `${IMAGES_PATH}/${productId}`)).key);
-                    newImageIds = imageIds;
-                    if (imageIds.some((imageId) => !imageId)) throw new Error("Could not create image records.");
-                    await Promise.all(encodedImages.map((image, index) => set(ref(database, `${IMAGES_PATH}/${productId}/${imageIds[index]}`), {
-                        dataUrl: image.dataUrl,
-                        name: files[index].name,
-                        type: image.dataUrl.startsWith("data:image/jpeg") ? "image/jpeg" : files[index].type,
-                        index,
-                        originalBytes: files[index].size,
-                        storedBytes: dataUrlBytes(image.dataUrl),
-                        compressed: image.compressed,
-                    })));
-                    thumbnailUrls = encodedImages.map((image) => image.thumbnailDataUrl);
-                    savedImageUrl = "";
-                    replacedImages = true;
-                    replacedImageSet = true;
-                } else if (imageUrl) {
-                    imageIds = [];
-                    thumbnailUrls = [];
-                    savedImageUrl = imageUrl;
-                    replacedImages = true;
-                    replacedImageSet = true;
-                }
-                const product = {
-                    id: productId,
-                    title,
-                    description,
-                    imageUrl: savedImageUrl,
-                    imageIds,
-                    thumbnailUrls,
-                    visible,
-                    sold,
-                    createdAt: wasEditing ? editingProduct.createdAt : serverTimestamp(),
-                    updatedAt: serverTimestamp(),
-                    createdBy: wasEditing ? editingProduct.createdBy || currentUser.uid : currentUser.uid,
-                    createdByName: wasEditing ? editingProduct.createdByName || currentUser.displayName || currentUser.email || "Admin" : currentUser.displayName || currentUser.email || "Admin",
-                };
-                if (basePriceInput !== "") product.basePrice = basePrice;
-                else if (wasEditing) product.basePrice = null;
-                if (wasEditing && !replacedImageSet && oldImageUrls.length) product.imageUrls = oldImageUrls;
-                await set(ref(database, `${PRODUCTS_PATH}/${productId}`), product);
-                if (wasEditing && replacedImages && oldImageIds.length) {
-                    await Promise.all(oldImageIds.filter((imageId) => !imageIds.includes(imageId)).map((imageId) => remove(ref(database, `${IMAGES_PATH}/${productId}/${imageId}`))));
-                }
-                resetProductForm();
-                showNotice($("admin-notice"), wasEditing ? "Product changes saved." : "Product added to the gallery.", "success");
-            } catch (error) {
-                console.error(error);
-                if (newImageIds.length) {
-                    await Promise.all(newImageIds.filter(Boolean).map((imageId) => remove(ref(database, `${IMAGES_PATH}/${productIdForCleanup}/${imageId}`)).catch(() => undefined)));
-                }
-                const message = String(error?.message || "");
-                showNotice($("admin-notice"), message.toLowerCase().includes("permission_denied") ? "Firebase rejected this admin write. Check the gallery database rules." : message || (wasEditing ? "Could not save the product changes." : "Could not add the product."), "error");
-            } finally {
-                setBusy(button, false, "Preparing images…", editingProductId ? "Save changes" : "Add product");
-            }
-        }
-
-        async function toggleProduct(productId) {
-            if (!isAdmin) return;
-            const product = products.find((item) => item.id === productId);
-            if (!product) return;
-            try {
-                await update(ref(database, `${PRODUCTS_PATH}/${productId}`), { visible: product.visible === false, updatedAt: serverTimestamp() });
-                showNotice($("admin-notice"), product.visible === false ? "Product is visible to visitors." : "Product is hidden from visitors.", "success");
-            } catch (error) {
-                console.error(error);
-                showNotice($("admin-notice"), error.message || "Could not update product visibility.", "error");
-            }
-        }
-
-        async function toggleSold(productId) {
-            if (!isAdmin) return;
-            const product = products.find((item) => item.id === productId);
-            if (!product) return;
-            const sold = product.sold !== true;
-            try {
-                await update(ref(database, `${PRODUCTS_PATH}/${productId}`), { sold, updatedAt: serverTimestamp() });
-                showNotice($("admin-notice"), sold ? "Product marked as sold." : "Product marked as available.", "success");
-            } catch (error) {
-                console.error(error);
-                showNotice($("admin-notice"), error.message || "Could not update the sold status.", "error");
-            }
-        }
-
-        async function deleteProduct(productId, button) {
-            if (!isAdmin) return;
-            const product = products.find((item) => item.id === productId);
-            if (!product) return;
-            const title = product.title || "this product";
-            if (!window.confirm(`Delete “${title}” and all of its images? This cannot be undone.`)) return;
-            if (button) {
-                button.disabled = true;
-                button.textContent = "Deleting…";
-            }
-            try {
-                const imageIds = Array.isArray(product.imageIds) ? product.imageIds : [];
-                await Promise.all(imageIds.map((imageId) => remove(ref(database, `${IMAGES_PATH}/${productId}/${imageId}`))));
-                await remove(ref(database, `${PRODUCTS_PATH}/${productId}`));
-                [...fullImageLoads.keys()].filter((key) => key.startsWith(`${productId}/`)).forEach((key) => fullImageLoads.delete(key));
-                productImageIndexes.delete(productId);
-                showNotice($("admin-notice"), "Product deleted from the gallery.", "success");
-            } catch (error) {
-                console.error(error);
-                if (button) {
-                    button.disabled = false;
-                    button.textContent = "Delete";
-                }
-                showNotice($("admin-notice"), error.message || "Could not delete the product.", "error");
-            }
-        }
-
-        function changeProductImage(productId, direction) {
-            const product = products.find((item) => item.id === productId);
-            if (!product) return;
-            const images = galleryEntriesForProduct(product);
-            if (images.length < 2) return;
-            const currentIndex = productImageIndexes.get(productId) || 0;
-            productImageIndexes.set(productId, (currentIndex + direction + images.length) % images.length);
-            renderProducts();
-        }
-
-        async function loadFullImage(product, imageIndex) {
-            const entry = galleryEntriesForProduct(product)[imageIndex];
-            if (!entry?.imageId || entry.full) return entry?.full || entry?.url || entry?.thumbnail || "";
-            const key = `${product.id}/${entry.imageId}`;
-            if (!fullImageLoads.has(key)) {
-                fullImageLoads.set(key, get(ref(database, `${IMAGES_PATH}/${product.id}/${entry.imageId}`)).then((snapshot) => {
-                    const dataUrl = snapshot.val()?.dataUrl;
-                    if (typeof dataUrl === "string" && dataUrl) {
-                        storedImages.set(key, dataUrl);
-                        return dataUrl;
-                    }
-                    return entry.thumbnail || "";
-                }).catch((error) => {
-                    console.error("Could not load full gallery image:", error);
-                    return entry.thumbnail || "";
-                }));
-            }
-            const fullImage = await fullImageLoads.get(key);
-            if (lightboxProduct?.id === product.id && lightboxIndex === imageIndex && fullImage) {
-                lightboxImages[imageIndex] = fullImage;
-                renderLightbox();
-            }
-            return fullImage;
-        }
-
-        async function openLightbox(product, imageIndex) {
-            const entries = galleryEntriesForProduct(product);
-            if (!entries.length) return;
-            lightboxProduct = product;
-            lightboxImages = entries.map(imageSourceForEntry);
-            lightboxIndex = Math.min(Math.max(imageIndex, 0), entries.length - 1);
-            lightboxZoom = 1;
-            lightboxOffsetX = 0;
-            lightboxOffsetY = 0;
-            $("lightbox-title").textContent = product.title || "Image preview";
-            $("lightbox").classList.remove("is-hidden");
-            document.body.style.overflow = "hidden";
-            renderLightbox();
-            $("lightbox-close").focus();
-            await loadFullImage(product, lightboxIndex);
-        }
-
-        function renderLightbox() {
-            const image = $("lightbox-image");
-            image.src = lightboxImages[lightboxIndex] || "";
-            image.style.transform = `translate(${lightboxOffsetX}px, ${lightboxOffsetY}px) scale(${lightboxZoom})`;
-            const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-            $("lightbox-caption").textContent = isTouchDevice
-                ? `${lightboxImages.length > 1 ? `${lightboxIndex + 1} / ${lightboxImages.length} · ` : ""}Pinch to zoom · drag to move · swipe to change`
-                : lightboxImages.length > 1 ? `${lightboxIndex + 1} / ${lightboxImages.length} · Use +/− or the mouse wheel to zoom` : "Use +/− or the mouse wheel to zoom";
-            $("lightbox-previous").disabled = lightboxImages.length < 2;
-            $("lightbox-next").disabled = lightboxImages.length < 2;
-            $("zoom-reset").textContent = `${Math.round(lightboxZoom * 100)}%`;
-        }
-
-        function closeLightbox() {
-            $("lightbox").classList.add("is-hidden");
-            document.body.style.overflow = "";
-            lightboxProduct = null;
-            lightboxImages = [];
-            lightboxOffsetX = 0;
-            lightboxOffsetY = 0;
-        }
-
-        function changeLightboxImage(direction) {
-            if (lightboxImages.length < 2) return;
-            lightboxIndex = (lightboxIndex + direction + lightboxImages.length) % lightboxImages.length;
-            lightboxZoom = 1;
-            lightboxOffsetX = 0;
-            lightboxOffsetY = 0;
-            renderLightbox();
-            if (lightboxProduct) loadFullImage(lightboxProduct, lightboxIndex);
-        }
-
-        function adjustZoom(amount) {
-            lightboxZoom = Math.min(4, Math.max(1, Number((lightboxZoom + amount).toFixed(2))));
-            if (lightboxZoom === 1) {
-                lightboxOffsetX = 0;
-                lightboxOffsetY = 0;
-            }
-            renderLightbox();
-        }
-
-        function touchDistance(touches) {
-            const first = touches[0];
-            const second = touches[1];
-            return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-        }
-
-        function panLimit() {
-            const stage = $("lightbox-stage");
-            return Math.max(50, (lightboxZoom - 1) * Math.max(stage.clientWidth, stage.clientHeight) * 0.72);
-        }
-
-        function handleLightboxTouchStart(event) {
-            if (event.touches.length === 2) {
-                touchStart = null;
-                pinchStartDistance = touchDistance(event.touches);
-                pinchStartZoom = lightboxZoom;
-                event.preventDefault();
-                return;
-            }
-            if (event.touches.length === 1) {
-                const touch = event.touches[0];
-                touchStart = {
-                    x: touch.clientX,
-                    y: touch.clientY,
-                    offsetX: lightboxOffsetX,
-                    offsetY: lightboxOffsetY,
-                    startedAt: Date.now(),
-                };
-                event.preventDefault();
-            }
-        }
-
-        function handleLightboxTouchMove(event) {
-            if (event.touches.length === 2 && pinchStartDistance) {
-                lightboxZoom = Math.min(4, Math.max(1, Number((pinchStartZoom * touchDistance(event.touches) / pinchStartDistance).toFixed(2))));
-                if (lightboxZoom === 1) {
-                    lightboxOffsetX = 0;
-                    lightboxOffsetY = 0;
-                }
-                renderLightbox();
-                event.preventDefault();
-                return;
-            }
-            if (event.touches.length === 1 && touchStart) {
-                const touch = event.touches[0];
-                const deltaX = touch.clientX - touchStart.x;
-                const deltaY = touch.clientY - touchStart.y;
-                if (lightboxZoom > 1) {
-                    const limit = panLimit();
-                    lightboxOffsetX = Math.min(limit, Math.max(-limit, touchStart.offsetX + deltaX));
-                    lightboxOffsetY = Math.min(limit, Math.max(-limit, touchStart.offsetY + deltaY));
-                    renderLightbox();
-                }
-                event.preventDefault();
-            }
-        }
-
-        function handleLightboxTouchEnd(event) {
-            if (event.touches.length > 0) return;
-            if (touchStart && lightboxZoom === 1 && event.changedTouches.length) {
-                const touch = event.changedTouches[0];
-                const deltaX = touch.clientX - touchStart.x;
-                const deltaY = touch.clientY - touchStart.y;
-                const elapsed = Date.now() - touchStart.startedAt;
-                if (Math.abs(deltaX) > 60 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2 && elapsed < 800) {
-                    changeLightboxImage(deltaX < 0 ? 1 : -1);
-                }
-            }
-            touchStart = null;
-            pinchStartDistance = 0;
-        }
-
-        function handleGalleryClick(event) {
-            const target = event.target.closest("[data-action]");
-            if (!target) return;
-            const productId = target.dataset.productId;
-            const action = target.dataset.action;
-            if (action === "edit-product") {
-                editProduct(productId);
-                return;
-            }
-            if (action === "toggle-product") {
-                toggleProduct(productId);
-                return;
-            }
-            if (action === "toggle-sold") {
-                toggleSold(productId);
-                return;
-            }
-            if (action === "delete-product") {
-                deleteProduct(productId, target);
-                return;
-            }
-            const product = products.find((item) => item.id === productId);
-            if (!product) return;
-            const imageIndex = Number(target.dataset.imageIndex || 0);
-            if (action === "select-image") {
-                productImageIndexes.set(productId, imageIndex);
-                renderProducts();
-            } else if (action === "previous-image") {
-                changeProductImage(productId, -1);
-            } else if (action === "next-image") {
-                changeProductImage(productId, 1);
-            } else if (action === "zoom") {
-                openLightbox(product, imageIndex);
-            }
-        }
-
-        $("login-button").addEventListener("click", async () => {
-            showNotice($("gallery-notice"), "Opening optional admin sign-in…");
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                console.error(error);
-                if (["auth/popup-blocked", "auth/cancelled-popup-request", "auth/operation-not-supported-in-this-environment"].includes(error.code)) {
-                    showNotice($("gallery-notice"), "Switching to secure sign-in…");
-                    await signInWithRedirect(auth, provider);
-                } else {
-                    showNotice($("gallery-notice"), error.message || "Sign-in did not complete.", "error");
-                }
-            }
+        Object.entries(value).forEach(([childKey, childValue]) => {
+          if (looksLikePayment(childValue)) {
+            output.push({ ...childValue, __source: source, __path: `${source}/${key}/${childKey}`, __fallback: childKey, __nestedUserId: key });
+          }
         });
-        $("signout-button").addEventListener("click", () => signOut(auth));
-        $("product-form").addEventListener("submit", addProduct);
-        $("product-images").addEventListener("change", previewImages);
-        $("cancel-edit-button").addEventListener("click", () => {
-            resetProductForm();
-            showNotice($("admin-notice"), "Edit cancelled.");
-        });
-        $("gallery-grid").addEventListener("click", handleGalleryClick);
-        $("admin-products").addEventListener("click", handleGalleryClick);
-        $("lightbox-close").addEventListener("click", closeLightbox);
-        $("lightbox-previous").addEventListener("click", () => changeLightboxImage(-1));
-        $("lightbox-next").addEventListener("click", () => changeLightboxImage(1));
-        $("zoom-in").addEventListener("click", () => adjustZoom(0.25));
-        $("zoom-out").addEventListener("click", () => adjustZoom(-0.25));
-        $("zoom-reset").addEventListener("click", () => { lightboxZoom = 1; lightboxOffsetX = 0; lightboxOffsetY = 0; renderLightbox(); });
-        $("lightbox-stage").addEventListener("wheel", (event) => { event.preventDefault(); adjustZoom(event.deltaY < 0 ? 0.2 : -0.2); }, { passive: false });
-        $("lightbox-stage").addEventListener("touchstart", handleLightboxTouchStart, { passive: false });
-        $("lightbox-stage").addEventListener("touchmove", handleLightboxTouchMove, { passive: false });
-        $("lightbox-stage").addEventListener("touchend", handleLightboxTouchEnd, { passive: false });
-        $("lightbox-stage").addEventListener("touchcancel", handleLightboxTouchEnd, { passive: false });
-        $("lightbox").addEventListener("click", (event) => { if (event.target === $("lightbox")) closeLightbox(); });
-        document.addEventListener("keydown", (event) => {
-            if ($("lightbox").classList.contains("is-hidden")) return;
-            if (event.key === "Escape") closeLightbox();
-            if (event.key === "ArrowLeft") changeLightboxImage(-1);
-            if (event.key === "ArrowRight") changeLightboxImage(1);
-            if (event.key === "+" || event.key === "=") adjustZoom(0.25);
-            if (event.key === "-") adjustZoom(-0.25);
-        });
+      });
+      return output;
+    }
 
-        getRedirectResult(auth).catch((error) => {
-            if (error?.code) showNotice($("gallery-notice"), error.message || "Sign-in did not complete.", "error");
+    function allPayments() {
+      const deduped = new Map();
+      [...flattenPaymentSource(state.payments, "payments"), ...flattenPaymentSource(state.testPayments, "testPayments")]
+        .forEach((record) => {
+          const identity = paymentIdentity(record, record.__path);
+          const existing = deduped.get(identity);
+          if (!existing) {
+            deduped.set(identity, record);
+            return;
+          }
+          deduped.set(identity, {
+            ...existing,
+            ...record,
+            userId: existing.userId || record.userId || record.user_id || record.__nestedUserId || "",
+            email: existing.email || record.email || record.giver_email || record.donor_email || "",
+          });
         });
+      return [...deduped.values()].sort((a, b) => Number(b.paidAt || b.createdAt || b.date || 0) - Number(a.paidAt || a.createdAt || a.date || 0));
+    }
 
-        onAuthStateChanged(auth, async (user) => {
-            currentUser = user;
-            if (!user) {
-                isAdmin = false;
-                displayUser(null);
-                updateAdminVisibility();
-                $("login-button").classList.remove("is-hidden");
-                $("signout-button").classList.add("is-hidden");
-                startGalleryListener();
-                return;
-            }
-            displayUser(user);
-            isAdmin = await checkAdmin(user);
-            if (currentUser !== user) return;
-            $("login-button").classList.add("is-hidden");
-            $("signout-button").classList.remove("is-hidden");
-            updateAdminVisibility();
-            startGalleryListener();
+    function allSubscriptions() {
+      const deduped = new Map();
+      [[state.subscribers, "subscribers"], [state.subscribersVelcrow, "subscribers_velcrow"]].forEach(([data, source]) => {
+        Object.entries(data || {}).forEach(([key, value]) => {
+          if (!value || typeof value !== "object") return;
+          const id = String(value.subscriptionId || value.subscription_id || value.id || key);
+          const existing = deduped.get(id);
+          deduped.set(id, existing ? { ...existing, ...value, __source: source } : { ...value, id, __source: source });
         });
-    </script>
+      });
+      return [...deduped.values()];
+    }
+
+    function recordEmail(record) {
+      return normalizeEmail(record?.email || record?.giver_email || record?.donor_email || record?.recipient_email);
+    }
+
+    function recordUserId(record) {
+      return String(record?.userId || record?.user_id || record?.giver_id || record?.donor_id || record?.__nestedUserId || "").trim();
+    }
+
+    function recordName(record) {
+      return String(record?.name || record?.giver_name || record?.donor_name || record?.customer_name || record?.recipientName || "Supporter").trim();
+    }
+
+    function buildPeople(paymentRecords = allPayments(), subscriptionRecords = allSubscriptions()) {
+      const people = new Map();
+      Object.entries(state.users || {}).forEach(([uid, record]) => {
+        const email = normalizeEmail(record?.email);
+        people.set(uid, {
+          key: uid,
+          uid,
+          name: record?.name || record?.fullName || record?.displayName || "Supporter",
+          email,
+          phone: record?.phone || record?.phoneNumber || "",
+        });
+      });
+
+      const ensurePerson = (record) => {
+        const uid = recordUserId(record);
+        const email = recordEmail(record);
+        let key = uid || [...people.values()].find((person) => email && person.email === email)?.key || (email ? `email:${email}` : "");
+        if (!key) return "";
+        const current = people.get(key) || { key, uid, name: "Supporter", email: "", phone: "" };
+        current.uid ||= uid;
+        current.email ||= email;
+        current.name = current.name === "Supporter" ? recordName(record) : current.name;
+        current.phone ||= record?.phone || record?.recipient_phone || record?.giver_phone || "";
+        people.set(key, current);
+        return key;
+      };
+
+      paymentRecords.forEach((record) => { record.__personKey = ensurePerson(record); });
+      subscriptionRecords.forEach((record) => { record.__personKey = ensurePerson(record); });
+      return people;
+    }
+
+    function isConfirmed(record) {
+      return statusGroup(normalizeStatus(record)) === "paid";
+    }
+
+    function renderStats(people, payments, subscriptions) {
+      const confirmed = payments.filter(isConfirmed);
+      $("stat-total").textContent = formatAmount(confirmed.reduce((sum, record) => sum + Number(record.amount || 0), 0));
+      $("stat-transactions").textContent = String(confirmed.length);
+      $("stat-users").textContent = String(people.size);
+      $("stat-subscriptions").textContent = String(subscriptions.filter((record) => ["active", "paused"].includes(normalizeStatus(record))).length);
+    }
+
+    function renderUsers(people, payments, subscriptions) {
+      const query = String($("user-search").value || "").trim().toLowerCase();
+      const rows = [...people.values()]
+        .map((person) => {
+          const personPayments = payments.filter((record) => record.__personKey === person.key && isConfirmed(record));
+          const personSubs = subscriptions.filter((record) => record.__personKey === person.key && ["active", "paused"].includes(normalizeStatus(record)));
+          return { person, total: personPayments.reduce((sum, record) => sum + Number(record.amount || 0), 0), payments: personPayments.length, subs: personSubs.length };
+        })
+        .filter(({ person }) => !query || [person.name, person.email, person.uid].join(" ").toLowerCase().includes(query))
+        .sort((a, b) => b.total - a.total || a.person.name.localeCompare(b.person.name));
+
+      $("user-count").textContent = `${rows.length} user${rows.length === 1 ? "" : "s"}`;
+      $("users-body").innerHTML = rows.length ? rows.map(({ person, total, payments: count, subs }) => `
+        <tr class="clickable ${selectedUserKey === person.key ? "selected" : ""}" data-user-key="${escapeHtml(person.key)}">
+          <td><div class="primary-text">${escapeHtml(person.name)}</div><div class="secondary-text">${escapeHtml(person.email || person.uid || "No email")}</div></td>
+          <td class="amount">${formatAmount(total)}</td>
+          <td><div>${count} paid</div><div class="secondary-text">${subs} active plan${subs === 1 ? "" : "s"}</div></td>
+        </tr>`).join("") : `<tr><td class="empty-cell" colspan="3">No users found.</td></tr>`;
+    }
+
+    function renderTransactions(people, payments) {
+      const query = String($("transaction-search").value || "").trim().toLowerCase();
+      const filter = $("transaction-status").value;
+      const rows = payments.filter((record) => {
+        const status = normalizeStatus(record);
+        const person = people.get(record.__personKey);
+        const haystack = [person?.name, person?.email, recordName(record), recordEmail(record), record.type, record.reference, record.paymentId, record.orderId].join(" ").toLowerCase();
+        return (!query || haystack.includes(query)) && (filter === "all" || statusGroup(status) === filter || status === filter);
+      });
+
+      $("transaction-count").textContent = `${rows.length} record${rows.length === 1 ? "" : "s"}`;
+      $("transactions-body").innerHTML = rows.length ? rows.map((record) => {
+        const person = people.get(record.__personKey);
+        const status = normalizeStatus(record);
+        const reference = record.paymentId || record.orderId || record.reference || record.id || "—";
+        return `<tr>
+          <td>${escapeHtml(formatDate(record.paidAt || record.createdAt || record.date))}</td>
+          <td><div class="primary-text">${escapeHtml(person?.name || recordName(record))}</div><div class="secondary-text">${escapeHtml(person?.email || recordEmail(record) || "—")}</div></td>
+          <td>${escapeHtml(String(record.type || "payment").replaceAll("_", "-"))}</td>
+          <td class="amount">${formatAmount(record.amount)}</td>
+          <td><span class="status status-${escapeHtml(status)}">${escapeHtml(status)}</span></td>
+          <td title="${escapeHtml(String(reference))}">${escapeHtml(String(reference).slice(-18))}</td>
+        </tr>`;
+      }).join("") : `<tr><td class="empty-cell" colspan="6">No matching transactions.</td></tr>`;
+    }
+
+    function renderUserDetail(people, payments, subscriptions) {
+      const body = $("user-detail-body");
+      const person = people.get(selectedUserKey);
+      if (!person) {
+        $("selected-user-label").textContent = "Select a user above";
+        body.innerHTML = `<div class="empty-cell">Select a supporter to see their complete payment and subscription history.</div>`;
+        return;
+      }
+
+      const personPayments = payments.filter((record) => record.__personKey === person.key);
+      const personSubs = subscriptions.filter((record) => record.__personKey === person.key);
+      const confirmedTotal = personPayments.filter(isConfirmed).reduce((sum, record) => sum + Number(record.amount || 0), 0);
+      $("selected-user-label").textContent = person.email || person.uid || person.name;
+      body.innerHTML = `
+        <div class="detail-header"><div><h3>${escapeHtml(person.name)}</h3><div class="detail-meta">${escapeHtml(person.email || "No email")} ${person.phone ? `· ${escapeHtml(person.phone)}` : ""}</div></div><div class="secondary-text">UID: ${escapeHtml(person.uid || "—")}</div></div>
+        <div class="detail-stats">
+          <div class="detail-chip">Confirmed paid <strong>${formatAmount(confirmedTotal)}</strong></div>
+          <div class="detail-chip">Transactions <strong>${personPayments.length}</strong></div>
+          <div class="detail-chip">Subscriptions <strong>${personSubs.length}</strong></div>
+        </div>
+        <div class="subsection"><h3>Transaction history</h3><div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th><th>Reference</th></tr></thead><tbody>${personPayments.length ? personPayments.map((record) => {
+          const status = normalizeStatus(record);
+          const reference = record.paymentId || record.orderId || record.reference || record.id || "—";
+          return `<tr><td>${escapeHtml(formatDate(record.paidAt || record.createdAt || record.date))}</td><td>${escapeHtml(String(record.type || "payment").replaceAll("_", "-"))}</td><td class="amount">${formatAmount(record.amount)}</td><td><span class="status status-${escapeHtml(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(String(reference))}</td></tr>`;
+        }).join("") : `<tr><td class="empty-cell" colspan="5">No transactions found.</td></tr>`}</tbody></table></div></div>
+        <div class="subsection"><h3>Subscription history</h3><div class="table-wrap"><table><thead><tr><th>Started</th><th>Type</th><th>Amount</th><th>Status</th><th>Subscription ID</th></tr></thead><tbody>${personSubs.length ? personSubs.map((record) => `<tr><td>${escapeHtml(formatDate(record.createdAt || record.subscribedAt || record.date))}</td><td>${escapeHtml(String(record.type || "monthly"))}</td><td class="amount">${formatAmount(record.amount)}</td><td><span class="status status-${escapeHtml(normalizeStatus(record))}">${escapeHtml(normalizeStatus(record))}</span></td><td>${escapeHtml(String(record.subscriptionId || record.id || "—"))}</td></tr>`).join("") : `<tr><td class="empty-cell" colspan="5">No subscription records found.</td></tr>`}</tbody></table></div></div>`;
+    }
+
+    function renderAll() {
+      const payments = allPayments();
+      const subscriptions = allSubscriptions();
+      const people = buildPeople(payments, subscriptions);
+      if (!selectedUserKey && people.size) selectedUserKey = people.keys().next().value;
+      renderStats(people, payments, subscriptions);
+      renderUsers(people, payments, subscriptions);
+      renderTransactions(people, payments);
+      renderUserDetail(people, payments, subscriptions);
+    }
+
+    function startDataListeners() {
+      if (dataListenersStarted) return;
+      dataListenersStarted = true;
+      const sources = [
+        ["users", "users"],
+        ["payments", "payments"],
+        ["testPayments", "testPayments"],
+        ["subscribers", "subscribers"],
+        ["subscribers_velcrow", "subscribersVelcrow"],
+      ];
+      sources.forEach(([path, key]) => {
+        onValue(ref(database, path), (snapshot) => {
+          state[key] = snapshot.val() || {};
+          renderAll();
+        }, (error) => showToast(`Could not load ${path}: ${error.message}`));
+      });
+    }
+
+    function setView(view) {
+      authView.classList.toggle("is-hidden", view !== "auth");
+      deniedView.classList.toggle("is-hidden", view !== "denied");
+      dashboardView.classList.toggle("is-hidden", view !== "dashboard");
+      $("sign-out-btn").classList.toggle("is-hidden", view !== "dashboard" && view !== "denied");
+    }
+
+    async function finishLogin(user) {
+      const email = normalizeEmail(user?.email);
+      if (email !== ADMIN_EMAIL) {
+        setView("denied");
+        return;
+      }
+      $("signed-in-email").textContent = email;
+      setView("dashboard");
+      startDataListeners();
+    }
+
+    $("google-sign-in").addEventListener("click", async () => {
+      authError.textContent = "";
+      try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+      } catch (error) {
+        authError.textContent = error.message || "Google sign-in failed.";
+      }
+    });
+
+    $("password-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      authError.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth, $("admin-email").value.trim(), $("admin-password").value);
+      } catch (error) {
+        authError.textContent = error.message || "Email sign-in failed.";
+      }
+    });
+
+    [$("sign-out-btn"), $("denied-sign-out")].forEach((button) => button.addEventListener("click", () => signOut(auth)));
+    $("user-search").addEventListener("input", renderAll);
+    $("transaction-search").addEventListener("input", renderAll);
+    $("transaction-status").addEventListener("change", renderAll);
+    $("users-body").addEventListener("click", (event) => {
+      const row = event.target.closest("[data-user-key]");
+      if (!row) return;
+      selectedUserKey = row.dataset.userKey;
+      renderAll();
+    });
+
+    $("export-csv").addEventListener("click", () => {
+      const payments = allPayments();
+      const subscriptions = allSubscriptions();
+      const people = buildPeople(payments, subscriptions);
+      const rows = [["Date", "Name", "Email", "Type", "Amount", "Status", "Payment ID", "Order ID"]];
+      payments.forEach((record) => {
+        const person = people.get(record.__personKey);
+        rows.push([
+          formatDate(record.paidAt || record.createdAt || record.date),
+          person?.name || recordName(record),
+          person?.email || recordEmail(record),
+          record.type || "payment",
+          Number(record.amount || 0),
+          normalizeStatus(record),
+          record.paymentId || "",
+          record.orderId || "",
+        ]);
+      });
+      const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
+      const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `manali-strays-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        $("signed-in-email").textContent = "";
+        setView("auth");
+        return;
+      }
+      finishLogin(user);
+    });
+  </script>
 </body>
 </html>
