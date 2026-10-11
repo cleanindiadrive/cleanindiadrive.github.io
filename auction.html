@@ -311,24 +311,15 @@
     </style>
 </head>
 <body>
-    <section id="auth-screen" class="auth-screen">
-        <div class="auth-card">
-            <div class="brand-lockup"><span class="auth-logo" role="img" aria-label="Silly Sensei logo"><img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Silly Sensei"></span></div>
-            <h1>Gallery.</h1>
-            <p>Sign in to browse the latest products and open any image for a closer look.</p>
-            <button id="login-button" class="google-button" type="button"><span aria-hidden="true">G</span><span>Continue with Google</span></button>
-            <p id="auth-notice" class="notice" role="status"></p>
-        </div>
-    </section>
-
-    <div id="app-shell" class="app-shell is-hidden">
+    <div id="app-shell" class="app-shell">
         <header class="site-header">
             <nav class="site-nav">
                 <div class="logo"><a href="oodoo.html#home" aria-label="Silly Sensei home"><img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Manali Strays" width="120" height="30"></a></div>
                 <div class="nav-actions">
-                    <span id="user-badge" class="nav-user-name"></span>
+                    <span id="user-badge" class="nav-user-name">Guest</span>
+                    <button class="account-link" id="login-button" type="button" aria-label="Optional admin sign in" title="Optional admin sign in"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 20c.7-3.4 3.2-5.2 7.5-5.2s6.8 1.8 7.5 5.2"></path></svg><span>Admin sign in</span></button>
                     <a class="account-link" href="oodoo.html#home" aria-label="Open homepage"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
-                    <button class="account-link" id="signout-button" type="button" aria-label="Log out" title="Log out"><svg class="account-icon" viewBox="0 0 512 512" aria-hidden="true"><path d="M192 64h-64c-17.7 0-32 14.3-32 32v320c0 17.7 14.3 32 32 32h64M336 160l96 96-96 96M432 256H176" stroke="currentColor" stroke-width="38" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Sign out</span></button>
+                    <button class="account-link is-hidden" id="signout-button" type="button" aria-label="Log out" title="Log out"><svg class="account-icon" viewBox="0 0 512 512" aria-hidden="true"><path d="M192 64h-64c-17.7 0-32 14.3-32 32v320c0 17.7 14.3 32 32 32h64M336 160l96 96-96 96M432 256H176" stroke="currentColor" stroke-width="38" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Sign out</span></button>
                 </div>
             </nav>
         </header>
@@ -437,7 +428,7 @@
             label.textContent = busy ? busyText : idleText;
         }
 
-        function displayUser(user) { $("user-badge").textContent = user.displayName || user.email || "Signed in"; }
+        function displayUser(user) { $("user-badge").textContent = user ? (user.displayName || user.email || "Signed in") : "Guest"; }
 
         async function checkAdmin(user) {
             if (ADMIN_EMAILS.has((user.email || "").toLowerCase())) return true;
@@ -556,7 +547,7 @@
             }, (error) => {
                 console.error("Gallery listener failed:", error);
                 const permissionError = String(error?.message || "").toLowerCase().includes("permission_denied");
-                showNotice($("gallery-notice"), permissionError ? "Firebase rules currently block gallery reads. Allow signed-in users to read /auction/gallery." : "The gallery could not be loaded. Refresh and try again.", "error");
+                showNotice($("gallery-notice"), permissionError ? "Firebase rules currently block guest gallery reads. Allow public reads for /auction/gallery while keeping its writes admin-only." : "The gallery could not be loaded. Refresh and try again.", "error");
             });
         }
 
@@ -1133,16 +1124,16 @@
         }
 
         $("login-button").addEventListener("click", async () => {
-            showNotice($("auth-notice"), "Opening Google sign-in…");
+            showNotice($("gallery-notice"), "Opening optional admin sign-in…");
             try {
                 await signInWithPopup(auth, provider);
             } catch (error) {
                 console.error(error);
                 if (["auth/popup-blocked", "auth/cancelled-popup-request", "auth/operation-not-supported-in-this-environment"].includes(error.code)) {
-                    showNotice($("auth-notice"), "Switching to secure sign-in…");
+                    showNotice($("gallery-notice"), "Switching to secure sign-in…");
                     await signInWithRedirect(auth, provider);
                 } else {
-                    showNotice($("auth-notice"), error.message || "Sign-in did not complete.", "error");
+                    showNotice($("gallery-notice"), error.message || "Sign-in did not complete.", "error");
                 }
             }
         });
@@ -1177,29 +1168,25 @@
         });
 
         getRedirectResult(auth).catch((error) => {
-            if (error?.code) showNotice($("auth-notice"), error.message || "Sign-in did not complete.", "error");
+            if (error?.code) showNotice($("gallery-notice"), error.message || "Sign-in did not complete.", "error");
         });
 
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (!user) {
                 isAdmin = false;
-                if (productsUnsubscribe) productsUnsubscribe();
-                imageUnsubscribes.forEach((unsubscribe) => unsubscribe());
-                imageUnsubscribes = new Map();
-                storedImages = new Map();
-                productsUnsubscribe = null;
-                products = [];
+                displayUser(null);
                 updateAdminVisibility();
-                $("auth-screen").classList.remove("is-hidden");
-                $("app-shell").classList.add("is-hidden");
+                $("login-button").classList.remove("is-hidden");
+                $("signout-button").classList.add("is-hidden");
+                startGalleryListener();
                 return;
             }
-            $("auth-screen").classList.add("is-hidden");
-            $("app-shell").classList.remove("is-hidden");
             displayUser(user);
             isAdmin = await checkAdmin(user);
             if (currentUser !== user) return;
+            $("login-button").classList.add("is-hidden");
+            $("signout-button").classList.remove("is-hidden");
             updateAdminVisibility();
             startGalleryListener();
         });
