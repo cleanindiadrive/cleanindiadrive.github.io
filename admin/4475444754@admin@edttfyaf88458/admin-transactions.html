@@ -289,7 +289,7 @@
     } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
     import { auth, database } from "./js/firebase-client.js";
 
-    const ADMIN_EMAIL = "vishnudeviprasadshetty@gmail.com";
+    const ADMIN_EMAIL = new Set(["abhishekredddy500@gmail.com", "vishnudeviprasadshetty@gmail.com", "supritachat.25@gmail.com","idkshetty26@gmail.com"]);
     const state = {
       users: {},
       payments: {},
@@ -575,7 +575,7 @@
 
     async function finishLogin(user) {
       const email = normalizeEmail(user?.email);
-      if (email !== ADMIN_EMAIL) {
+      if (!ADMIN_EMAIL.has(email)) {
         setView("denied");
         return;
       }
