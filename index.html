@@ -6385,6 +6385,10 @@
                 history.pushState("", document.title, window.location.pathname + window.location.search);
             }
             window.scrollTo({ top: 0, behavior: "smooth" });
+            // Refresh the homepage projection whenever the user returns from
+            // the dashboard, so cancellation/status changes never require a
+            // full page reload.
+            window.sillysenseRefreshHomeAccountData?.();
         }
     }
     window.showView = showView;
@@ -6606,7 +6610,7 @@
 
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    import { getDatabase, onValue, push, ref, set, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+    import { getDatabase, onValue, ref } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
     // Firebase Client Setup
     const firebaseConfig = {
@@ -6644,16 +6648,28 @@
     const donorList = document.getElementById("donor-list");
     const accountLink = document.getElementById("account-link");
     const sourceData = new Map();
-    const subscriberSources = ["subscribers", "subscribers_velcrow", "users", "payments", "testPayments"];
     let currentUser = null;
     let currentUserPhone = "";
-    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com").replace(/\/+$/, "");
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com/").replace(/\/+$/, "");
+
+    async function getBackendAuthHeaders() {
+        const token = await currentUser?.getIdToken?.();
+        if (!token) throw new Error("Please sign in again before starting a payment.");
+        return {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    }
     let currentSubscription = null;
     let currentUserPaymentRecords = [];
     let monthlyRequestPending = false;
     let subscriptionCheckoutPending = false;
+    let pendingCheckoutSubscriptionId = "";
     let detachMonthlyIntentListener = null;
     let giftRecipients = [];
+    let publicSummary = { totalRaised: 0, donors: [] };
+    let homeAccountRequest = null;
+    let subscriptionActivationRefreshRun = 0;
     let pendingPaymentAction = null;
     let pendingPaymentKind = "";
     let pendingPaymentRetry = 0;
@@ -7103,7 +7119,7 @@
     }
 
     function renderPublicTotals() {
-        const total = calculateTotalRaised();
+        const total = Number(publicSummary?.totalRaised) || 0;
         if (moneyRaised) {
             moneyRaised.textContent = total.toLocaleString("en-IN");
         }
@@ -7111,16 +7127,10 @@
 
     function renderDonors() {
         const uniqueDonors = new Map();
-        [...getActiveDonors().values()].forEach((donor) => {
+        (Array.isArray(publicSummary?.donors) ? publicSummary.donors : []).forEach((donor) => {
             const label = formatPublicDonorName(donor.name, donor.anonymous);
             const isAnon = donor.anonymous || label === "Anonymous supporter";
-            // Keep separate people separate even when their payment record uses
-            // the same generic display name such as "Supporter".
-            const nameKey = donor.email
-                ? `email:${String(donor.email).trim().toLowerCase()}`
-                : donor.phone
-                    ? `phone:${cleanIndianPhone(donor.phone)}`
-                    : `name:${label.toLocaleLowerCase().replace(/\s+/g, " ").trim()}`;
+            const nameKey = `${label.toLocaleLowerCase().replace(/\s+/g, " ").trim()}:${isAnon ? "anon" : "named"}`;
             if (!uniqueDonors.has(nameKey)) {
                 uniqueDonors.set(nameKey, {
                     label,
@@ -7140,6 +7150,98 @@
         }
 
         donorList.innerHTML = donors.map((donor) => `<span class="donor-name"><b aria-hidden="true">${escapeHtml(donor.avatar)}</b><span>${escapeHtml(donor.label)}</span></span>`).join("");
+    }
+
+    async function loadPublicSummary() {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/public-summary`, { cache: "no-store" });
+            if (!response.ok) throw new Error(`Public summary failed with ${response.status}`);
+            publicSummary = await response.json();
+            renderPublicTotals();
+            renderDonors();
+        } catch (error) {
+            console.error("Unable to load public summary:", error);
+        }
+    }
+
+    async function loadGiftRecipients() {
+        if (!currentUser) {
+            giftRecipients = [];
+            return;
+        }
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/gift-recipients`, {
+                headers: await getBackendAuthHeaders(),
+                cache: "no-store",
+            });
+            if (!response.ok) throw new Error(`Gift recipients failed with ${response.status}`);
+            const result = await response.json();
+            giftRecipients = Array.isArray(result.recipients) ? result.recipients : [];
+            if (giftSearchInput?.value && !selectedGiftRecipient) renderGiftSearchResults(giftSearchInput.value);
+        } catch (error) {
+            giftRecipients = [];
+            console.error("Unable to load gift recipients:", error);
+        }
+    }
+
+    async function loadHomeAccountData() {
+        if (!currentUser || homeAccountRequest) return homeAccountRequest;
+        const requestUserId = currentUser.uid;
+        homeAccountRequest = (async () => {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/account-data`, {
+                    headers: await getBackendAuthHeaders(),
+                    cache: "no-store",
+                });
+                if (!response.ok) throw new Error(`Account data failed with ${response.status}`);
+                const data = await response.json();
+                if (!currentUser || currentUser.uid !== requestUserId) return;
+                sourceData.set("subscribers", data.subscribers || {});
+                sourceData.set("subscribers_velcrow", data.subscribers_velcrow || {});
+                sourceData.set("payments", data.globalPayments || {});
+                sourceData.set("testPayments", data.testPayments || {});
+                const intents = data.paymentIntents && typeof data.paymentIntents === "object"
+                    ? Object.entries(data.paymentIntents).map(([id, record]) => ({ id, ...(record || {}) }))
+                    : [];
+                currentUserPaymentRecords = intents;
+                monthlyRequestPending = !hasConfirmedMonthlySubscription()
+                    && intents.some((record) => record.type === "monthly" && record.status === "pending");
+                refreshSubscriptionMode();
+            } catch (error) {
+                console.error("Unable to load account data for payment state:", error);
+            } finally {
+                homeAccountRequest = null;
+            }
+        })();
+        return homeAccountRequest;
+    }
+    window.sillysenseRefreshHomeAccountData = () => loadHomeAccountData();
+
+    async function waitForHomeSubscriptionActivation() {
+        const run = ++subscriptionActivationRefreshRun;
+        const delays = [0, 1000, 2500, 5000, 9000, 15000, 25000];
+        const requestUserId = currentUser?.uid;
+
+        for (const delay of delays) {
+            if (delay) await new Promise((resolve) => window.setTimeout(resolve, delay));
+            if (run !== subscriptionActivationRefreshRun || !currentUser || currentUser.uid !== requestUserId) return;
+
+            const checkoutId = pendingCheckoutSubscriptionId;
+            await loadHomeAccountData();
+            if (run !== subscriptionActivationRefreshRun || !currentUser || currentUser.uid !== requestUserId) return;
+
+            if (checkoutId && hasConfirmedMonthlySubscription(checkoutId)) {
+                subscriptionCheckoutPending = false;
+                pendingCheckoutSubscriptionId = "";
+                refreshSubscriptionMode();
+                return;
+            }
+        }
+
+        // Do not claim success if the webhook has not appeared yet. Keeping
+        // this flag true prevents a second subscription from being started;
+        // the next page load or the next account refresh can resolve it.
+        refreshSubscriptionMode();
     }
 
     function cleanIndianPhone(val) {
@@ -7194,6 +7296,18 @@
     }
 
     function getAllPotentialGiftRecipients() {
+        if (!currentUser) return [];
+        if (giftRecipients.length) {
+            return giftRecipients.map((recipient) => ({
+                id: String(recipient.id || recipient.userId || ""),
+                source: "api",
+                name: String(recipient.name || "Anonymous supporter"),
+                phone: cleanIndianPhone(recipient.phone),
+                displayPhone: recipient.phone ? formatIndianPhone(recipient.phone) : "Mobile number not available",
+                email: String(recipient.email || "").trim().toLowerCase(),
+                team: "Supporter",
+            }));
+        }
         const recipients = [];
         const seen = new Set();
 
@@ -7227,8 +7341,11 @@
             // payment records are also accepted because older accounts may
             // not have a complete users/{uid} profile yet.
             if (!name && !cleanPhone && !email) return;
+            const identity = String(
+                record.authUid || record.uid || record.userId || record.user_id || email || `${source}:${idPath}`,
+            ).trim();
             const existingRecipient = recipients.find((item) =>
-                (cleanPhone && item.phone === cleanPhone) || (email && item.email === email)
+                item.identity === identity
             );
             if (existingRecipient) {
                 existingRecipient.phone = existingRecipient.phone || cleanPhone;
@@ -7249,6 +7366,7 @@
 
             recipients.push({
                 id: String(idPath || "").split("/").pop() || "",
+                identity,
                 source,
                 name: name || "Anonymous supporter",
                 phone: cleanPhone,
@@ -7464,8 +7582,8 @@
     }
 
     function findSubscriptionForUser(email, userId = "") {
-        if (!email) return null;
-        const normalizedEmail = email.trim().toLowerCase();
+        if (!email && !userId) return null;
+        const normalizedEmail = String(email || "").trim().toLowerCase();
         const matches = [];
 
         // ONLY check actual subscription nodes, NEVER raw payments/charges!
@@ -7474,7 +7592,14 @@
             if (!data || typeof data !== "object") continue;
             for (const [id, record] of Object.entries(data)) {
                 if (!record || typeof record !== "object") continue;
-                if (String(record.email || "").trim().toLowerCase() !== normalizedEmail) continue;
+                const recordUserIds = [record.userId, record.user_id, record.authUid, record.uid]
+                    .map((value) => String(value || "").trim())
+                    .filter(Boolean);
+                const recordEmail = String(record.email || "").trim().toLowerCase();
+                const matchesUser = recordUserIds.length
+                    ? Boolean(userId && recordUserIds.includes(userId))
+                    : Boolean(normalizedEmail && recordEmail === normalizedEmail);
+                if (!matchesUser) continue;
                 const status = getRecordStatus(record);
                 if (status === "unknown") continue;
                 matches.push({
@@ -7513,7 +7638,9 @@
             if (subscriptionId) {
                 const recordEmail = String(value.email || "").trim().toLowerCase();
                 const recordUserId = String(value.userId || value.user_id || "").trim();
-                const matchesUser = (recordEmail && recordEmail === normalizedEmail) || (userId && recordUserId === userId);
+                const matchesUser = recordUserId
+                    ? Boolean(userId && recordUserId === userId)
+                    : Boolean(recordEmail && recordEmail === normalizedEmail);
                 const isGift = Boolean(value.isGift || value.is_gift)
                     || String(value.type || "").toLowerCase().includes("gift")
                     || Boolean(value.recipientName || value.recipient_name || value.gift_recipient_name);
@@ -7547,6 +7674,87 @@
 
         return null;
     }
+
+    function hasConfirmedMonthlySubscription(subscriptionId = "") {
+        if (!currentUser) return false;
+        const requestedId = String(subscriptionId || "").trim();
+        const matchesRequestedSubscription = (record, recordId = "") => {
+            if (!requestedId) return true;
+            return [
+                record?.subscriptionId,
+                record?.razorpaySubscriptionId,
+                record?.razorpay_subscription_id,
+                record?.id,
+                recordId,
+            ].some((value) => String(value || "").trim() === requestedId);
+        };
+
+        const current = findSubscriptionForUser(
+            String(currentUser.email || "").trim().toLowerCase(),
+            currentUser.uid,
+        );
+        if (current
+            && ["active", "paused"].includes(current.status)
+            && matchesRequestedSubscription(current)) return true;
+
+        // The account-data endpoint already filters these roots to the signed-in
+        // account. This fallback also handles legacy records whose owner field
+        // is `uid`/`authUid` instead of `userId`.
+        const email = String(currentUser.email || "").trim().toLowerCase();
+        return ["subscribers", "subscribers_velcrow"].some((source) => {
+            const data = sourceData.get(source);
+            if (!data || typeof data !== "object") return false;
+            return Object.entries(data).some(([recordId, record]) => {
+                if (!record || typeof record !== "object") return false;
+                if (!['active', 'paused'].includes(getRecordStatus(record))) return false;
+                if (!matchesRequestedSubscription(record, recordId)) return false;
+                const ownerIds = [record.userId, record.user_id, record.authUid, record.uid]
+                    .map((value) => String(value || "").trim())
+                    .filter(Boolean);
+                const recordEmail = String(record.email || "").trim().toLowerCase();
+                return (ownerIds.length && ownerIds.includes(currentUser.uid))
+                    || (!ownerIds.length && email && recordEmail === email)
+                    || isGiftRecord(record);
+            });
+        });
+    }
+
+    window.addEventListener("sillysense-subscription-status-changed", (event) => {
+        const subscriptionId = String(event.detail?.subscriptionId || "").trim();
+        const nextStatus = String(event.detail?.status || "").trim().toLowerCase();
+        if (!subscriptionId || !["active", "paused", "cancelled"].includes(nextStatus)) return;
+
+        ["subscribers", "subscribers_velcrow"].forEach((source) => {
+            const data = sourceData.get(source);
+            if (!data || typeof data !== "object") return;
+            Object.entries(data).forEach(([recordId, record]) => {
+                if (!record || typeof record !== "object") return;
+                const recordSubscriptionId = String(
+                    record.subscriptionId
+                    || record.razorpaySubscriptionId
+                    || record.razorpay_subscription_id
+                    || recordId
+                    || "",
+                ).trim();
+                if (recordSubscriptionId !== subscriptionId && recordId !== subscriptionId) return;
+                record.status = nextStatus;
+                record.subscriptionStatus = nextStatus;
+                record.updatedAt = Date.now();
+                if (nextStatus === "cancelled") {
+                    record.cancelledAt = Date.now();
+                    record.endedAt = Date.now();
+                    record.nextPaymentDue = null;
+                }
+            });
+        });
+
+        if (nextStatus === "cancelled") {
+            monthlyRequestPending = false;
+            subscriptionCheckoutPending = false;
+            pendingCheckoutSubscriptionId = "";
+        }
+        refreshSubscriptionMode();
+    });
 
     function isAnonymousDonationSelected() {
         return document.getElementById("anonymous-donation")?.checked === true;
@@ -7645,6 +7853,23 @@
         currentSubscription = currentUser
             ? findSubscriptionForUser(String(currentUser.email || "").trim().toLowerCase(), currentUser.uid)
             : null;
+        const currentSubscriptionIsConfirmed = Boolean(currentSubscription
+            && ["active", "paused"].includes(currentSubscription.status));
+        const checkoutSubscriptionIsConfirmed = Boolean(
+            pendingCheckoutSubscriptionId
+            && hasConfirmedMonthlySubscription(pendingCheckoutSubscriptionId),
+        );
+        if (checkoutSubscriptionIsConfirmed
+            || (!subscriptionCheckoutPending && currentSubscriptionIsConfirmed)) {
+            // A successful subscription always wins over an old pending intent.
+            // Keep the intent record in Firebase for audit/history; only the UI
+            // state is cleared here.
+            monthlyRequestPending = false;
+            subscriptionCheckoutPending = false;
+            pendingCheckoutSubscriptionId = "";
+        } else if (!subscriptionCheckoutPending && hasConfirmedMonthlySubscription()) {
+            monthlyRequestPending = false;
+        }
         if (!currentUser) {
             subscriptionCheckoutPending = false;
             status.textContent = `Ready to start ₹${selectedMonthlyAmount.toLocaleString("en-IN")} per month support.`;
@@ -7728,17 +7953,13 @@
                 try {
                     const subId = String(currentSubscription.subscriptionId || currentSubscription.id || "").trim();
                     if (subId.startsWith("sub_")) {
-                        await fetch(`${BACKEND_URL}/resume-subscription`, {
+                        const res = await fetch(`${BACKEND_URL}/resume-subscription`, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: await getBackendAuthHeaders(),
                             body: JSON.stringify({ subscription_id: subId }),
                         });
+                        if (!res.ok) throw new Error("Could not resume subscription");
                     }
-                    await update(ref(database, `${currentSubscription.path}/${currentSubscription.id}`), {
-                        subscriptionStatus: "active",
-                        status: "active",
-                        resumedAt: Date.now(),
-                    });
                     currentSubscription.status = "active";
                     status.textContent = "Your monthly subscription is active.";
                 } catch (error) {
@@ -7858,7 +8079,7 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount: selectedMonthlyAmount,
                         user_id: currentUser ? currentUser.uid : "",
@@ -7871,6 +8092,7 @@
                 if (!res.ok || !data.subscription_id) {
                     throw new Error(data?.error || "Subscription creation failed");
                 }
+                pendingCheckoutSubscriptionId = String(data.subscription_id);
 
                 const options = {
                     key: data.razorpay_key,
@@ -7888,16 +8110,19 @@
                         console.log("Subscription mandate created:", response);
                         window.sillysenseEndPayment?.();
                         subscriptionCheckoutPending = true;
-                        status.textContent = "Mandate setup complete! Your recurring support is active. Thank you!";
-                        setPosButtonText(button, "Active subscription");
+                        status.textContent = "Payment received. Confirming your subscription…";
+                        setPosButtonText(button, "Payment pending");
                         button.classList.remove("is-animating");
                         setPosButtonDisabled(button, true);
                         refreshSubscriptionMode();
+                        void waitForHomeSubscriptionActivation();
                     },
                     modal: {
                         ondismiss: function () {
                             window.sillysenseEndPayment?.();
+                            subscriptionActivationRefreshRun += 1;
                             subscriptionCheckoutPending = false;
+                            pendingCheckoutSubscriptionId = "";
                             button.classList.remove("is-animating");
                             setPosButtonDisabled(button, false);
                             status.textContent = "Payment window closed.";
@@ -7910,7 +8135,9 @@
                     rzp.on("payment.failed", function (resp) {
                         console.error("Subscription payment failed:", resp.error);
                         window.sillysenseEndPayment?.();
+                        subscriptionActivationRefreshRun += 1;
                         subscriptionCheckoutPending = false;
+                        pendingCheckoutSubscriptionId = "";
                         status.textContent = `Payment failed: ${resp.error.description || resp.error.reason || "Please try again."}`;
                         button.classList.remove("is-animating");
                         setPosButtonDisabled(button, false);
@@ -7923,7 +8150,9 @@
             } catch (error) {
                 console.error("Unable to start subscription:", error);
                 window.sillysenseEndPayment?.();
+                subscriptionActivationRefreshRun += 1;
                 subscriptionCheckoutPending = false;
+                pendingCheckoutSubscriptionId = "";
                 status.textContent = error.message || "Could not start the subscription. Please try again.";
                 button.classList.remove("is-animating");
                 setPosButtonDisabled(button, false);
@@ -7956,7 +8185,7 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/create-one-time-payment`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount,
                         name: currentUser?.displayName || "",
@@ -7989,7 +8218,7 @@
                         try {
                             const verifyRes = await fetch(`${BACKEND_URL}/verify-one-time-payment`, {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: await getBackendAuthHeaders(),
                                 body: JSON.stringify({
                                     razorpay_order_id: response.razorpay_order_id,
                                     razorpay_payment_id: response.razorpay_payment_id,
@@ -8082,15 +8311,12 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/create-gift-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount: selectedGiftAmount,
+                        recipient_user_id: recipient.id || recipient.userId || "",
                         recipient_name: recipient.name,
-                        recipient_email: recipient.email || `${recipient.phone}@gift.manalistrays.org`,
                         recipient_phone: recipient.phone,
-                        giver_id: currentUser ? currentUser.uid : "",
-                        giver_email: currentUser?.email || "",
-                        giver_name: currentUser?.displayName || "",
                     }),
                 });
                 const data = await res.json();
@@ -8113,66 +8339,10 @@
                     handler: async function (response) {
                         console.log("Gift subscription mandate created:", response);
                         window.sillysenseEndPayment?.();
-                        setModeMessage("gift-message", `Gift subscription for ${recipient.name} activated! Thank you for gifting hope.`);
-                        try {
-                            const now = Date.now();
-                            const recEmail = recipient.email || `${recipient.phone}@gift.manalistrays.org`;
-                            await update(ref(database, `subscribers/${data.subscription_id}`), {
-                                id: data.subscription_id,
-                                name: recipient.name,
-                                email: recEmail,
-                                phone: recipient.phone || "",
-                                team: "BCBB",
-                                membershipType: "gift",
-                                is_gift: true,
-                                isGift: true,
-                                amount: selectedGiftAmount,
-                                subscriptionId: data.subscription_id,
-                                status: "active",
-                                subscriptionStatus: "active",
-                                subscribedAt: now,
-                                createdAt: now,
-                                recipient_name: recipient.name,
-                                recipient_email: recEmail,
-                                recipient_phone: recipient.phone || "",
-                                giver_id: currentUser?.uid || "",
-                                giver_email: currentUser?.email || "",
-                                giver_name: currentUser?.displayName || "",
-                                reference: response.razorpay_payment_id || response.razorpay_subscription_id || data.subscription_id,
-                            }).catch((err) => console.warn("Could not write gift to subscribers:", err));
-
-                            if (currentUser?.uid) {
-                                const payRefId = response.razorpay_payment_id || response.razorpay_subscription_id || data.subscription_id;
-                                const giftPayRef = ref(database, `payments/${currentUser.uid}/${payRefId}`);
-                                await update(giftPayRef, {
-                                    id: payRefId,
-                                    type: "gift-monthly",
-                                    isGift: true,
-                                    giftRole: "donor",
-                                    amount: selectedGiftAmount,
-                                    status: "paid",
-                                    subscriptionStatus: "active",
-                                    recipientName: recipient.name,
-                                    recipientEmail: recEmail,
-                                    recipientPhone: recipient.phone || "",
-                                    giver_email: currentUser.email || "",
-                                    giver_name: currentUser.displayName || "",
-                                    giver_id: currentUser.uid,
-                                    subscriptionId: data.subscription_id,
-                                    reference: payRefId,
-                                    date: now,
-                                    paidAt: now,
-                                    createdAt: now,
-                                    note: `Gifted ₹${selectedGiftAmount}/mo subscription for ${recipient.name}`,
-                                }).catch((err) => console.warn("Could not write gift to user payments:", err));
-                            }
-                        } catch (e) {
-                            console.warn("Gift post-creation sync error:", e);
-                        } finally {
-                            button.classList.remove("is-animating", "is-animating-reverse");
-                            setPosButtonDisabled(button, false);
-                            if (typeof resetAllPosButtons === "function") resetAllPosButtons();
-                        }
+                        setModeMessage("gift-message", `Payment received for ${recipient.name}. Membership confirmation is syncing securely.`);
+                        button.classList.remove("is-animating", "is-animating-reverse");
+                        setPosButtonDisabled(button, false);
+                        if (typeof resetAllPosButtons === "function") resetAllPosButtons();
                     },
                     modal: {
                         ondismiss: function () {
@@ -8345,10 +8515,17 @@
     onAuthStateChanged(auth, (user) => {
         detachMonthlyIntentListener?.();
         detachMonthlyIntentListener = null;
+        homeAccountRequest = null;
         currentUser = user?.emailVerified ? user : null;
+        subscriptionActivationRefreshRun += 1;
         monthlyRequestPending = false;
         subscriptionCheckoutPending = false;
+        pendingCheckoutSubscriptionId = "";
         currentUserPhone = "";
+        if (!currentUser) {
+            giftRecipients = [];
+            ["subscribers", "subscribers_velcrow", "payments", "testPayments"].forEach((source) => sourceData.delete(source));
+        }
 
         if (accountLink) {
             accountLink.href = "#dashboard";
@@ -8381,7 +8558,7 @@
                 }
             }, { onlyOnce: true });
 
-            const userPaymentPath = isDevelopmentMode ? "testPayments" : `paymentIntents/${currentUser.uid}`;
+            const userPaymentPath = `paymentIntents/${currentUser.uid}`;
             detachMonthlyIntentListener = onValue(ref(database, userPaymentPath), (snapshot) => {
                 const data = snapshot.val();
                 currentUserPaymentRecords = data && typeof data === "object"
@@ -8389,29 +8566,19 @@
                         .filter(([, record]) => String(record?.email || "").trim().toLowerCase() === String(currentUser.email || "").trim().toLowerCase())
                         .map(([id, record]) => ({ id, ...(record || {}) }))
                     : [];
-                monthlyRequestPending = currentUserPaymentRecords.some((record) => record.type === "monthly" && record.status === "pending");
+                monthlyRequestPending = !hasConfirmedMonthlySubscription()
+                    && currentUserPaymentRecords.some((record) => record.type === "monthly" && record.status === "pending");
                 refreshSubscriptionMode();
             }, () => { });
+            void loadHomeAccountData();
+            void loadGiftRecipients();
         }
         refreshSubscriptionMode();
     });
 
-
-
-    subscriberSources.forEach((path) => {
-        onValue(ref(database, path), (snapshot) => {
-            const data = snapshot.val();
-            sourceData.set(path, data);
-            renderPublicTotals();
-            renderDonors();
-            if (giftSearchInput?.value && !selectedGiftRecipient) {
-                renderGiftSearchResults(giftSearchInput.value);
-            }
-            refreshSubscriptionMode();
-        }, (error) => {
-            console.error(`Unable to load ${path}:`, error);
-        });
-    });
+    // Public totals and donor names come from a backend projection that never
+    // includes email, phone, Firebase UID, or raw payment records.
+    void loadPublicSummary();
 
 
 </script>
@@ -8421,7 +8588,7 @@
 
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    import { getDatabase, onValue, push, ref, remove, set, update, get as fbGet } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+    import { getDatabase, ref } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
     // Firebase Client Setup
     const firebaseConfig = {
@@ -8454,7 +8621,7 @@
 
 
 
-    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com").replace(/\/+$/, "");
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com/").replace(/\/+$/, "");
     // Point this at the service running the manual-user script when it is
     // deployed separately. It can also be set before this module loads with
     // window.MANUAL_USER_API_URL.
@@ -8563,6 +8730,61 @@
     let monthlyIntent = null;
     let subscriptionCheckoutPending = false;
     let currentUser = null;
+    let accountRefreshTimer = null;
+    let accountRefreshInFlight = null;
+
+    async function getBackendAuthHeaders() {
+        const token = await currentUser?.getIdToken?.();
+        if (!token) throw new Error("Please sign in again before starting a payment.");
+        return {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    }
+
+    async function refreshAccountData() {
+        if (!currentUser || accountRefreshInFlight) return accountRefreshInFlight;
+        const requestUserId = currentUser.uid;
+        accountRefreshInFlight = (async () => {
+            const email = String(currentUser.email || "").trim().toLowerCase();
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/account-data`, {
+                    headers: await getBackendAuthHeaders(),
+                    cache: "no-store",
+                });
+                if (!response.ok) throw new Error(`Account data failed with ${response.status}`);
+                const data = await response.json();
+                if (!currentUser || currentUser.uid !== requestUserId) return;
+                const userData = data.user || {};
+                const savedName = normalizeProfileName(userData.name || userData.displayName || "");
+                const savedPhone = cleanIndianPhone(userData.phone) || cleanIndianPhone(currentUser.phoneNumber) || "";
+                currentUserPhone = savedPhone;
+                subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(data.subscribers_velcrow || {}, "subscribers_velcrow", "subscribers_velcrow", email, currentUserPhone, currentUser.uid));
+                subscriberRecords.set("subscribers", normalizeSubscriberRecords(data.subscribers || {}, "subscribers", "subscribers", email, currentUserPhone, currentUser.uid));
+                paymentRecords = normalizeUidRecords(data.payments || {}, "payment", `payments/${currentUser.uid}`);
+                globalPaymentRecords = normalizeGlobalPaymentRecords(data.globalPayments || {}, email, currentUser.uid, currentUserPhone);
+                testPaymentRecords = normalizeUidRecords(data.testPayments || {}, "test-payment", "testPayments");
+                paymentIntents = normalizeUidRecords(data.paymentIntents || {}, "intent", `paymentIntents/${currentUser.uid}`);
+                userCustomPlan = data.customPlan || null;
+                renderCustomPlanBanner();
+
+                if (savedName.length >= 2 && isValidIndianPhone(savedPhone)) {
+                    if (profileSetupRequired) {
+                        setText("dashboard-phone", formatIndianPhone(savedPhone));
+                    } else {
+                        announceProfileReady(savedName, savedPhone);
+                    }
+                } else {
+                    setText("dashboard-phone", isValidIndianPhone(savedPhone) ? formatIndianPhone(savedPhone) : "Mobile not provided");
+                    openProfileSetupModal(currentUser, userData);
+                }
+                renderRecords();
+            } finally {
+                accountRefreshInFlight = null;
+            }
+        })();
+        return accountRefreshInFlight;
+    }
 
     async function claimManualUserProfile(phone, name) {
         if (!currentUser || typeof currentUser.getIdToken !== "function") return null;
@@ -8586,6 +8808,17 @@
             throw new Error(result.error || "Could not connect your existing user record");
         }
 
+        return result.user || null;
+    }
+
+    async function saveProfile(fields) {
+        const response = await fetch(`${BACKEND_URL}/api/profile`, {
+            method: "POST",
+            headers: await getBackendAuthHeaders(),
+            body: JSON.stringify(fields || {}),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || "Could not update profile");
         return result.user || null;
     }
     let selectedDashboardPlanAmount = 100;
@@ -8720,6 +8953,8 @@
                 && !record.email
                 && !record.userId
                 && !record.user_id
+                && !record.authUid
+                && !record.uid
                 && record.amount == null
                 && !record.type
                 && !record.planId
@@ -8729,7 +8964,7 @@
             if (isStatusOnlyMirror) return [];
             const recEmail = String(record.email || "").trim().toLowerCase();
             const giverEmail = String(record.giver_email || record.donor_email || record.giverEmail || record.donorEmail || "").trim().toLowerCase();
-            const giverId = String(record.giver_id || record.donor_id || record.giverId || record.donorId || record.userId || "").trim();
+            const giverId = String(record.giver_id || record.donor_id || record.giverId || record.donorId || record.userId || record.user_id || record.authUid || record.uid || "").trim();
 
             const recipientPhone = cleanIndianPhone(record.recipient_phone || record.gift_recipient_phone || record.phone);
             const recipientEmail = String(record.recipient_email || record.gift_recipient_email || record.email || "").trim().toLowerCase();
@@ -8740,8 +8975,14 @@
             let giftRole = null;
 
             if (isGift) {
-                const isDonor = Boolean((normEmail && giverEmail === normEmail) || (userId && giverId === userId));
-                const isReceiver = Boolean((normEmail && (recipientEmail === normEmail || recEmail === normEmail)) || (normPhone && recipientPhone === normPhone));
+                const isDonor = giverId
+                    ? Boolean(userId && giverId === userId)
+                    : Boolean(normEmail && giverEmail === normEmail);
+                const syntheticRecipientEmail = recipientEmail.endsWith("@gift.manalistrays.org");
+                const isReceiver = Boolean(
+                    (normEmail && (recipientEmail === normEmail || recEmail === normEmail))
+                    || ((!recipientEmail || syntheticRecipientEmail) && normPhone && recipientPhone === normPhone),
+                );
 
                 if (isDonor && isReceiver) {
                     giftRole = "both";
@@ -8754,9 +8995,12 @@
                     isMatch = true;
                 }
             } else {
-                if (normEmail && recEmail === normEmail) {
-                    isMatch = true;
-                }
+                const recordUserIds = [record.userId, record.user_id, record.authUid, record.uid]
+                    .map((value) => String(value || "").trim())
+                    .filter(Boolean);
+                isMatch = recordUserIds.length
+                    ? Boolean(userId && recordUserIds.includes(userId))
+                    : Boolean(normEmail && recEmail === normEmail);
             }
 
             if (!isMatch) return [];
@@ -8859,7 +9103,6 @@
         if (!data || typeof data !== "object") return [];
         const normalizedEmail = String(email || "").trim().toLowerCase();
         const normalizedUserId = String(userId || "").trim();
-        const normalizedPhone = cleanIndianPhone(phone);
         const knownSubscriptionIds = new Set(
             [...subscriberRecords.values()].flat().map((record) => getSubscriptionIdentity(record)).filter(Boolean)
         );
@@ -8872,12 +9115,16 @@
             const recordUserIds = [record.userId, record.user_id, record.giver_id, record.donor_id]
                 .map((value) => String(value || "").trim())
                 .filter(Boolean);
-            const recordPhone = cleanIndianPhone(record.phone || record.recipientPhone || record.recipient_phone);
             const subscriptionId = String(record.subscriptionId || record.parentSubscriptionId || "").trim();
-            const belongsToUser = (normalizedEmail && recordEmails.includes(normalizedEmail))
-                || (normalizedUserId && recordUserIds.includes(normalizedUserId))
-                || (normalizedPhone && recordPhone === normalizedPhone)
-                || (subscriptionId && knownSubscriptionIds.has(subscriptionId));
+            // A payment with an explicit owner must match that owner. Do not
+            // fall back to phone because phone numbers can be shared by two
+            // separate accounts. Subscription IDs remain a safe legacy link
+            // for records written before userId was added to charges.
+            const belongsToUser = recordUserIds.length
+                ? Boolean(normalizedUserId && recordUserIds.includes(normalizedUserId))
+                : recordEmails.length
+                    ? Boolean(normalizedEmail && recordEmails.includes(normalizedEmail))
+                    : Boolean(subscriptionId && knownSubscriptionIds.has(subscriptionId));
             if (!belongsToUser) return [];
             return normalizeUidRecords({ [id]: record }, "global-payment", "payments");
         });
@@ -10156,7 +10403,7 @@
 
             const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: await getBackendAuthHeaders(),
                 body: JSON.stringify({
                     amount: effectiveAmount,
                     user_id: currentUser.uid,
@@ -10294,6 +10541,41 @@
         get("cancel-modal")?.classList.remove("is-hidden");
     }
 
+    function applyLocalSubscriptionCancellation(subscriptionId) {
+        const wantedId = String(subscriptionId || "").trim();
+        if (!wantedId) return;
+        const now = Date.now();
+        let changed = false;
+
+        for (const list of subscriberRecords.values()) {
+            if (!Array.isArray(list)) continue;
+            list.forEach((record) => {
+                const recordId = getSubscriptionIdentity(record) || String(record?.id || "").trim();
+                if (recordId !== wantedId) return;
+                Object.assign(record, {
+                    status: "cancelled",
+                    subscriptionStatus: "cancelled",
+                    cancelledAt: now,
+                    endedAt: now,
+                    nextPaymentDue: null,
+                    updatedAt: now,
+                });
+                changed = true;
+            });
+        }
+
+        if (changed) renderRecords();
+        window.dispatchEvent(new CustomEvent("sillysense-subscription-status-changed", {
+            detail: { subscriptionId: wantedId, status: "cancelled" },
+        }));
+        const refreshHomeAccountData = window.sillysenseRefreshHomeAccountData;
+        if (typeof refreshHomeAccountData === "function") {
+            void refreshHomeAccountData().catch((error) => {
+                console.warn("Unable to refresh homepage subscription status:", error);
+            });
+        }
+    }
+
     async function executeCancelSubscription() {
         if (isCancellingSubscription) return; // Prevent multiple clicks!
         const confirmBtn = get("cancel-modal-confirm");
@@ -10326,10 +10608,16 @@
         const activeSubscriptionId = getSubscriptionIdentity(activeSub) || String(activeSub?.id || "").trim();
         try {
             if (!activeSub && monthlyIntent) {
-                if (monthlyIntent.path && monthlyIntent.id) {
-                    try {
-                        await remove(ref(database, `${monthlyIntent.path}/${monthlyIntent.id}`));
-                    } catch (_) { }
+                if (monthlyIntent.id && !isPreviewMode) {
+                    const response = await fetch(`${BACKEND_URL}/api/cancel-payment-intent`, {
+                        method: "POST",
+                        headers: await getBackendAuthHeaders(),
+                        body: JSON.stringify({ intent_id: monthlyIntent.id }),
+                    });
+                    if (!response.ok) {
+                        const result = await response.json().catch(() => ({}));
+                        throw new Error(result.error || "Could not cancel the pending subscription request");
+                    }
                 }
                 paymentIntents = paymentIntents.filter((item) => item.id !== monthlyIntent.id);
                 monthlyIntent = null;
@@ -10382,7 +10670,7 @@
             if (subId.startsWith("sub_")) {
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({ subscription_id: subId }),
                 });
                 if (!res.ok) {
@@ -10395,43 +10683,10 @@
                 }
             }
 
-            const subscriptionUpdate = {
-                subscriptionStatus: "cancelled",
-                status: "cancelled",
-                cancelledAt: now,
-                endedAt: now,
-                nextPaymentDue: null,
-            };
-            const subscriptionPaths = activeSub.inferredSubscriptionRoot
-                ? [`subscribers/${subId}`, `subscribers_velcrow/${subId}`]
-                : [`${activeSub.path}/${activeSub.id}`];
-            let subscriptionUpdated = false;
-            let subscriptionUpdateError = null;
-            for (const path of [...new Set(subscriptionPaths.filter(Boolean))]) {
-                try {
-                    await update(ref(database, path), subscriptionUpdate);
-                    subscriptionUpdated = true;
-                } catch (error) {
-                    subscriptionUpdateError = error;
-                }
+            if (!subId.startsWith("sub_")) {
+                throw new Error("The subscription is not a production Razorpay subscription.");
             }
-            if (!subscriptionUpdated && !subId.startsWith("sub_")) {
-                throw subscriptionUpdateError || new Error("Could not save the subscription cancellation.");
-            }
-            const cancelRef = push(ref(database, activeSub.isTest ? "testPayments" : `payments/${currentUser.uid}`));
-            await set(cancelRef, {
-                type: "cancellation",
-                isCancellation: true,
-                amount: null,
-                status: "cancelled",
-                isTest: Boolean(activeSub.isTest),
-                email: currentUser.email || "",
-                createdAt: now,
-                date: now,
-                subscriptionId: activeSubscriptionId,
-                reference: "—",
-                note: "Subscription cancelled",
-            });
+            applyLocalSubscriptionCancellation(subId);
             isCancellingSubscription = false;
             closeCancelModal();
             if (message) message.textContent = "Your subscription has been cancelled. Your past contributions remain safely saved in your account history.";
@@ -10521,7 +10776,7 @@
                     if (subId.startsWith("sub_")) {
                         const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: await getBackendAuthHeaders(),
                             body: JSON.stringify({ subscription_id: subId }),
                         });
                         if (!res.ok) {
@@ -10534,26 +10789,8 @@
                         }
                     }
 
-                    const cancelUpdates = {
-                        subscriptionStatus: "cancelled",
-                        status: "cancelled",
-                        cancelledAt: Date.now(),
-                        endedAt: Date.now(),
-                        nextPaymentDue: null,
-                    };
-                    const updatePaths = getSubscriptionUpdatePaths(subscription);
-                    let planUpdated = false;
-                    let planUpdateError = null;
-                    for (const path of [...new Set(updatePaths)]) {
-                        try {
-                            await update(ref(database, path), cancelUpdates);
-                            planUpdated = true;
-                        } catch (error) {
-                            planUpdateError = error;
-                        }
-                    }
-                    if (!planUpdated && !subId.startsWith("sub_")) {
-                        throw planUpdateError || new Error("Could not save the current subscription cancellation");
+                    if (!subId.startsWith("sub_")) {
+                        throw new Error("The subscription is not a production Razorpay subscription.");
                     }
                 }
                 isChangingPlan = false;
@@ -10668,7 +10905,7 @@
                     const endpoint = isPausing ? "pause-subscription" : "resume-subscription";
                     const res = await fetch(`${BACKEND_URL}/${endpoint}`, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: await getBackendAuthHeaders(),
                         body: JSON.stringify({ subscription_id: subId }),
                     });
                     if (!res.ok) {
@@ -10684,19 +10921,8 @@
                         }
                     }
                 }
-                const updates = {
-                    subscriptionStatus: nextStatus,
-                    status: nextStatus,
-                    ...(isPausing ? { pausedAt: Date.now() } : { resumedAt: Date.now() }),
-                    updatedAt: Date.now(),
-                };
-                const updatePaths = getSubscriptionUpdatePaths(targetSub);
-                if (updatePaths.length) {
-                    for (const path of [...new Set(updatePaths)]) {
-                        await update(ref(database, path), updates);
-                    }
-                } else if (subId) {
-                    await update(ref(database, `subscribers/${subId}`), updates);
+                if (!subId.startsWith("sub_")) {
+                    throw new Error("The subscription is not a production Razorpay subscription.");
                 }
                 return true;
             }
@@ -10922,27 +11148,6 @@
             }
         }
 
-        const dbPaths = new Set();
-        const addDbPath = (path, id) => {
-            const safePath = String(path || "").trim();
-            const safeId = String(id || "").trim();
-            // normalizeSubscriberRecords creates -given/-received display ids
-            // when one record represents both sides of a gift. Those are not
-            // actual Firebase keys, so only use the original record id.
-            if (!safeId || /-(given|received)$/.test(safeId)) return;
-            // Gift records are canonical under `subscribers`. Writing a
-            // cancellation into subscribers_velcrow creates a status-only
-            // record, which later looks like a fake ₹100 personal plan.
-            if (safePath === "subscribers") {
-                dbPaths.add(`${safePath}/${safeId}`);
-            }
-        };
-        addDbPath(target.recordPath, target.recordId);
-        matchingGiftRecords.forEach((record) => addDbPath(record.path || record.source, record.id));
-        if (subId) {
-            addDbPath("subscribers", subId);
-        }
-
         try {
             if (isPreviewMode) {
                 for (const list of subscriberRecords.values()) {
@@ -10991,73 +11196,22 @@
                 return;
             }
 
-            let remoteCancellationConfirmed = false;
-            if (subId.startsWith("sub_")) {
-                const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ subscription_id: subId, is_gift: true }),
-                });
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    const errorMessage = String(errData.error || "");
-                    // Razorpay returns this when a previous attempt already
-                    // cancelled the subscription. Treat it as success and
-                    // repair the stale Firebase/UI status below.
-                    if (!/not cancellable.*cancelled|already.*cancelled|cancelled status/i.test(errorMessage)) {
-                        throw new Error(errorMessage || "Failed to cancel gifted subscription in Razorpay");
-                    }
-                    console.info("Gifted subscription was already cancelled in Razorpay; syncing local status.");
+            if (!subId.startsWith("sub_")) {
+                throw new Error("The gifted membership is not a production Razorpay subscription.");
+            }
+
+            const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
+                method: "POST",
+                headers: await getBackendAuthHeaders(),
+                body: JSON.stringify({ subscription_id: subId, is_gift: true }),
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                const errorMessage = String(errData.error || "");
+                if (!/not cancellable.*cancelled|already.*cancelled|cancelled status/i.test(errorMessage)) {
+                    throw new Error(errorMessage || "Failed to cancel gifted subscription in Razorpay");
                 }
-                remoteCancellationConfirmed = true;
-            }
-
-            const cancelUpdates = {
-                status: "cancelled",
-                subscriptionStatus: "cancelled",
-                cancelledAt: now,
-                endedAt: now,
-                cancelledBy: isReceiver ? "receiver" : "donor",
-                cancelledByUserId: currentUser?.uid || "",
-                cancelledByName: currentUser?.displayName || currentUser?.email || (isReceiver ? "Gift Recipient" : "Gift Donor"),
-                nextPaymentDue: null,
-            };
-
-            let databaseUpdateConfirmed = false;
-            const databaseErrors = [];
-            for (const path of dbPaths) {
-                try {
-                    await update(ref(database, path), cancelUpdates);
-                    databaseUpdateConfirmed = true;
-                } catch (error) {
-                    databaseErrors.push(error);
-                }
-            }
-            if (!databaseUpdateConfirmed && !remoteCancellationConfirmed) {
-                throw databaseErrors[0] || new Error("Could not save the gifted membership cancellation.");
-            }
-
-            if (currentUser) {
-                const cancelRef = push(ref(database, `payments/${currentUser.uid}`));
-                await set(cancelRef, {
-                    type: "gift-cancellation",
-                    isCancellation: true,
-                    isGift: true,
-                    is_gift: true,
-                    membershipType: "gift",
-                    giftRole: "donor",
-                    amount: null,
-                    status: "cancelled",
-                    email: currentUser.email || "",
-                    createdAt: now,
-                    date: now,
-                    subscriptionId: subId,
-                    recipientName: targetGiftToCancel.recipientName,
-                    reference: "—",
-                    note: isReceiver
-                        ? `Ended gifted membership from ${targetGiftToCancel.donorName || "Supporter"}`
-                        : `Cancelled gifted subscription for ${targetGiftToCancel.recipientName}`,
-                }).catch(() => { });
+                console.info("Gifted subscription was already cancelled in Razorpay; syncing local status.");
             }
 
             for (const list of subscriberRecords.values()) {
@@ -11266,12 +11420,7 @@
                 get("phone-modal")?.removeAttribute("data-compulsory");
                 closePhoneModal();
             } else if (currentUser) {
-                await update(ref(database, `users/${currentUser.uid}`), {
-                    phone: clean,
-                    name: currentUser.displayName || "",
-                    email: currentUser.email || "",
-                    updatedAt: Date.now(),
-                });
+                await saveProfile({ phone: clean });
                 setText("dashboard-phone", formatIndianPhone(clean));
                 get("phone-modal")?.removeAttribute("data-compulsory");
                 closePhoneModal();
@@ -11377,14 +11526,7 @@
                 // profile, so its active-plan data moves to this Auth UID.
                 await claimManualUserProfile(phone, name);
                 await updateProfile(currentUser, { displayName: name });
-                await update(ref(database, `users/${currentUser.uid}`), {
-                    name,
-                    displayName: name,
-                    phone,
-                    email: currentUser.email || "",
-                    profileCompleted: true,
-                    updatedAt: Date.now(),
-                });
+                await saveProfile({ name, phone });
             }
 
             // Keep the button's Saving state visible long enough to complete on
@@ -11488,12 +11630,7 @@
                 currentUser.displayName = clean;
             } else {
                 await updateProfile(currentUser, { displayName: clean });
-                await update(ref(database, `users/${currentUser.uid}`), {
-                    name: clean,
-                    displayName: clean,
-                    email: currentUser.email || "",
-                    updatedAt: Date.now(),
-                });
+                await saveProfile({ name: clean });
                 currentUser.displayName = clean;
             }
 
@@ -11682,6 +11819,14 @@
 
             if (!user) {
                 currentUser = null;
+                window.clearInterval(accountRefreshTimer);
+                accountRefreshTimer = null;
+                accountRefreshInFlight = null;
+                subscriberRecords.clear();
+                paymentRecords = [];
+                globalPaymentRecords = [];
+                testPaymentRecords = [];
+                paymentIntents = [];
                 subscriptionCheckoutPending = false;
                 profileSetupRequired = false;
                 window.__sillysenseProfileReady = false;
@@ -11714,39 +11859,16 @@
                 }
             }
 
-            // New accounts must provide both pieces of contact information before
-            // a payment can continue. Existing complete profiles go straight through.
-            onValue(ref(database, `users/${user.uid}`), (snapshot) => {
-                const userData = snapshot.val() || {};
-                const savedName = normalizeProfileName(userData.name || userData.displayName || "");
-                const savedPhone = cleanIndianPhone(userData.phone) || cleanIndianPhone(user.phoneNumber) || "";
-                currentUserPhone = savedPhone;
-                if (savedName.length >= 2 && isValidIndianPhone(savedPhone)) {
-                    if (profileSetupRequired) {
-                        setText("dashboard-phone", formatIndianPhone(savedPhone));
-                    } else {
-                        announceProfileReady(savedName, savedPhone);
-                    }
-                } else {
-                    setText("dashboard-phone", isValidIndianPhone(savedPhone) ? formatIndianPhone(savedPhone) : "Mobile not provided");
-                    openProfileSetupModal(user, userData);
-                }
-                renderRecords();
+            // The backend returns only records owned by this Firebase UID/email.
+            // Do not attach listeners to global payment/subscriber roots.
+            void refreshAccountData().catch((error) => {
+                console.error("Unable to load dashboard account data:", error);
+                showDatabaseError(error);
             });
-
-            onValue(ref(database, "subscribers_velcrow"), (snapshot) => { subscriberRecords.set("subscribers_velcrow", normalizeSubscriberRecords(snapshot.val(), "subscribers_velcrow", "subscribers_velcrow", email, currentUserPhone, user.uid)); renderRecords(); }, showDatabaseError);
-            onValue(ref(database, "subscribers"), (snapshot) => { subscriberRecords.set("subscribers", normalizeSubscriberRecords(snapshot.val(), "subscribers", "subscribers", email, currentUserPhone, user.uid)); renderRecords(); }, showDatabaseError);
-            onValue(ref(database, `payments/${user.uid}`), (snapshot) => { paymentRecords = normalizeUidRecords(snapshot.val(), "payment", `payments/${user.uid}`); renderRecords(); }, () => { });
-            onValue(ref(database, "payments"), (snapshot) => { globalPaymentRecords = normalizeGlobalPaymentRecords(snapshot.val(), email, user.uid, currentUserPhone); renderRecords(); }, () => { });
-            onValue(ref(database, "testPayments"), (snapshot) => { testPaymentRecords = normalizeUidRecords(snapshot.val(), "test-payment", "testPayments").filter((record) => String(record.email || "").trim().toLowerCase() === email); renderRecords(); }, () => { });
-            onValue(ref(database, `paymentIntents/${user.uid}`), (snapshot) => { paymentIntents = normalizeUidRecords(snapshot.val(), "intent", `paymentIntents/${user.uid}`); renderRecords(); }, () => { });
-
-            // Listen for exclusive custom plan assigned by admin
-            onValue(ref(database, `customPlans/${user.uid}`), (snapshot) => {
-                userCustomPlan = snapshot.val();
-                renderCustomPlanBanner();
-                renderRecords();
-            }, () => { });
+            window.clearInterval(accountRefreshTimer);
+            accountRefreshTimer = window.setInterval(() => {
+                void refreshAccountData().catch((error) => console.error("Unable to refresh account data:", error));
+            }, 30_000);
         });
     }
 
