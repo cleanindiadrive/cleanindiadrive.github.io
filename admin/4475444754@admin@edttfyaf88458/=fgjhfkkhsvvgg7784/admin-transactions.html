@@ -3,652 +3,261 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manali Strays — Transaction Admin</title>
-  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #f5f7f2;
-      --surface: #ffffff;
-      --surface-soft: #f8faf6;
-      --ink: #20251f;
-      --muted: #6b746a;
-      --line: #e1e7df;
-      --green: #176b3a;
-      --green-soft: #e8f5eb;
-      --yellow: #ffda00;
-      --red: #b42318;
-      --red-soft: #fff0ee;
-      --amber: #9a6700;
-      --amber-soft: #fff8df;
-      --shadow: 0 14px 40px rgba(31, 47, 31, 0.08);
-      --radius: 18px;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      min-width: 320px;
-      min-height: 100vh;
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: "DM Sans", sans-serif;
-    }
-
-    button, input, select { font: inherit; }
-    button { cursor: pointer; }
-    .is-hidden { display: none !important; }
-
-    .app-shell { width: min(100% - 2rem, 1440px); margin: 0 auto; padding: 1.25rem 0 3rem; }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-      padding: 0.85rem 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .brand { display: flex; align-items: center; gap: 0.8rem; }
-    .brand-mark {
-      display: grid;
-      width: 42px;
-      height: 42px;
-      place-items: center;
-      border-radius: 13px;
-      background: var(--yellow);
-      color: var(--ink);
-      font-family: "Space Grotesk", sans-serif;
-      font-weight: 700;
-    }
-    h1, h2, h3 { margin: 0; font-family: "Space Grotesk", sans-serif; }
-    h1 { font-size: clamp(1.15rem, 2.4vw, 1.55rem); }
-    h2 { font-size: 1rem; }
-    h3 { font-size: 0.95rem; }
-    .eyebrow { color: var(--muted); font-size: 0.75rem; }
-
-    .topbar-actions { display: flex; align-items: center; gap: 0.7rem; }
-    .signed-in-email { color: var(--muted); font-size: 0.78rem; }
-
-    .btn {
-      min-height: 38px;
-      padding: 0.55rem 0.9rem;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--surface);
-      color: var(--ink);
-      font-weight: 700;
-      font-size: 0.8rem;
-    }
-    .btn:hover { border-color: #aebbad; background: var(--surface-soft); }
-    .btn-primary { border-color: var(--yellow); background: var(--yellow); }
-    .btn-primary:hover { border-color: #efc900; background: #f5d000; }
-    .btn-danger { border-color: #efc4bf; background: var(--red-soft); color: var(--red); }
-
-    .auth-card, .access-card {
-      width: min(100%, 460px);
-      margin: 8vh auto 0;
-      padding: 2rem;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-    .auth-card p, .access-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
-    .auth-card .btn { width: 100%; margin-top: 0.55rem; }
-    .auth-divider { margin: 1.15rem 0; color: var(--muted); font-size: 0.75rem; }
-    .auth-form { display: grid; gap: 0.65rem; text-align: left; }
-
-    .field, .search-input, .select-input {
-      width: 100%;
-      min-height: 40px;
-      padding: 0.6rem 0.75rem;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      outline: none;
-      background: var(--surface);
-      color: var(--ink);
-      font-size: 0.82rem;
-    }
-    .field:focus, .search-input:focus, .select-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(23, 107, 58, 0.1); }
-    .auth-error { min-height: 1.2rem; margin-top: 0.7rem; color: var(--red); font-size: 0.78rem; }
-
-    .dashboard-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
-    .toolbar-copy p { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.8rem; }
-    .toolbar-controls { display: flex; flex-wrap: wrap; gap: 0.55rem; }
-    .toolbar-controls .search-input { width: min(270px, 100%); }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
-    .stat-card { padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: 0 4px 14px rgba(31, 47, 31, 0.04); }
-    .stat-label { color: var(--muted); font-size: 0.72rem; }
-    .stat-value { margin-top: 0.3rem; font-family: "Space Grotesk", sans-serif; font-size: clamp(1.15rem, 2vw, 1.65rem); font-weight: 700; }
-
-    .main-grid { display: grid; grid-template-columns: minmax(280px, 0.86fr) minmax(0, 2.1fr); gap: 1rem; align-items: start; }
-    .panel { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: 0 4px 14px rgba(31, 47, 31, 0.04); overflow: hidden; }
-    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 1rem 1.1rem; border-bottom: 1px solid var(--line); }
-    .panel-heading span { color: var(--muted); font-size: 0.72rem; }
-    .panel-body { padding: 0.9rem; }
-    .panel-body > .search-input { margin-bottom: 0.7rem; }
-
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-    th, td { padding: 0.75rem 0.65rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
-    th { color: var(--muted); font-size: 0.67rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
-    tbody tr:last-child td { border-bottom: 0; }
-    tbody tr.clickable { cursor: pointer; }
-    tbody tr.clickable:hover, tbody tr.selected { background: var(--surface-soft); }
-    .primary-text { color: var(--ink); font-weight: 700; }
-    .secondary-text { margin-top: 0.15rem; color: var(--muted); font-size: 0.7rem; }
-    .amount { font-weight: 700; }
-    .status { display: inline-flex; padding: 0.22rem 0.5rem; border-radius: 999px; font-size: 0.67rem; font-weight: 700; text-transform: capitalize; }
-    .status-paid, .status-captured, .status-active, .status-success, .status-completed { background: var(--green-soft); color: var(--green); }
-    .status-pending, .status-authorized, .status-created { background: var(--amber-soft); color: var(--amber); }
-    .status-failed, .status-cancelled, .status-refunded { background: var(--red-soft); color: var(--red); }
-    .empty-cell { padding: 1.5rem 0.7rem; color: var(--muted); text-align: center; }
-
-    .detail-panel { margin-top: 1rem; }
-    .detail-header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
-    .detail-meta { margin-top: 0.35rem; color: var(--muted); font-size: 0.78rem; }
-    .detail-stats { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.9rem 0; }
-    .detail-chip { padding: 0.45rem 0.65rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); font-size: 0.74rem; }
-    .detail-chip strong { font-size: 0.86rem; }
-    .subsection { margin-top: 1rem; }
-    .subsection h3 { margin-bottom: 0.55rem; }
-    .live-dot { display: inline-block; width: 7px; height: 7px; margin-right: 0.3rem; border-radius: 50%; background: var(--green); }
-    .warning { margin-top: 0.8rem; padding: 0.7rem 0.8rem; border: 1px solid #f0df9e; border-radius: 10px; background: var(--amber-soft); color: #735000; font-size: 0.75rem; line-height: 1.45; }
-
-    #toast { position: fixed; right: 1rem; bottom: 1rem; max-width: min(360px, calc(100% - 2rem)); padding: 0.75rem 0.9rem; border-radius: 10px; background: #243326; color: #fff; font-size: 0.78rem; opacity: 0; transform: translateY(8px); transition: 180ms ease; pointer-events: none; }
-    #toast.show { opacity: 1; transform: translateY(0); }
-
-    @media (max-width: 980px) {
-      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .main-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 620px) {
-      .app-shell { width: min(100% - 1rem, 1440px); padding-top: 0.5rem; }
-      .topbar, .dashboard-toolbar { align-items: flex-start; flex-direction: column; }
-      .topbar-actions { width: 100%; justify-content: space-between; }
-      .signed-in-email { max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .stats-grid { gap: 0.55rem; }
-      .stat-card { padding: 0.75rem; }
-      .stat-value { font-size: 1.05rem; }
-      th, td { padding: 0.65rem 0.5rem; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>Manali Strays — Admin Workspace</title>
+  <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">MS</div>
-        <div>
-          <div class="eyebrow">Restricted administration</div>
-          <h1>Manali Strays Transactions</h1>
-        </div>
-      </div>
-      <div class="topbar-actions">
-        <span class="signed-in-email" id="signed-in-email"></span>
-        <button class="btn btn-danger is-hidden" id="sign-out-btn" type="button">Sign out</button>
-      </div>
+  <div class="app">
+    <header id="app-header">
+      <div class="brand"><div><div class="eyebrow">Restricted administration</div><h1>Manali Strays</h1><p class="muted">A clear view of supporters, payments, and subscriptions.</p></div></div>
+      <div class="header-meta"><span class="secure-pill">Authenticated workspace</span></div>
     </header>
 
-    <section class="auth-card" id="auth-view">
-      <h2>Admin sign in</h2>
-      <p>Use the authorized administrator account to view supporter and transaction data.</p>
-      <button class="btn btn-primary" id="google-sign-in" type="button">Continue with Google</button>
-      <div class="auth-divider">or use email and password</div>
-      <form class="auth-form" id="password-form">
-        <input class="field" id="admin-email" type="email" autocomplete="email" placeholder="Admin email" required />
-        <input class="field" id="admin-password" type="password" autocomplete="current-password" placeholder="Password" required />
-        <button class="btn" type="submit">Sign in</button>
-      </form>
-      <div class="auth-error" id="auth-error" role="alert"></div>
+    <section class="card auth" id="auth-view">
+      <h2>Admin sign in</h2><p>Sign in with an authorized Firebase account. The server, not this page, enforces admin access.</p>
+      <div class="form"><button class="primary" id="google-sign-in" type="button">Continue with Google</button></div>
+      <div class="divider">or use email and password</div>
+      <form class="form" id="password-form"><input id="admin-email" type="email" autocomplete="email" placeholder="Admin email" required /><input id="admin-password" type="password" autocomplete="current-password" placeholder="Password" required /><button class="secondary-btn" type="submit">Sign in</button></form>
+      <div class="error" id="auth-error" role="alert"></div>
     </section>
 
-    <section class="access-card is-hidden" id="access-denied-view">
-      <h2>Access denied</h2>
-      <p>This account is not authorized to open the transaction dashboard.</p>
-      <button class="btn btn-danger" id="denied-sign-out" type="button">Sign out</button>
-    </section>
+    <section class="card auth hidden" id="denied-view"><h2>Access denied</h2><p>Your Firebase UID is not in the backend <code>ADMIN_UIDS</code> allowlist.</p><div class="error" id="denied-error"></div><button class="danger" id="denied-sign-out" type="button">Sign out</button></section>
 
-    <main class="is-hidden" id="dashboard-view">
-      <div class="dashboard-toolbar">
-        <div class="toolbar-copy">
-          <h2>Overview</h2>
-          <p><span class="live-dot"></span>Live Firebase data · read-only dashboard</p>
+    <main class="hidden dashboard-layout" id="dashboard-view">
+      <aside class="sidebar" aria-label="Admin navigation">
+        <div class="sidebar-brand"><div><strong>Manali Strays</strong><span>Admin workspace</span></div></div>
+        <div class="sidebar-label">Workspace</div>
+        <nav class="section-nav" aria-label="Admin sections">
+          <a class="active" href="#overview"><span class="nav-icon">⌂</span>Dashboard</a>
+          <a href="#supporters-section"><span class="nav-icon">♙</span>Supporters</a>
+          <a href="#transactions-section"><span class="nav-icon">◫</span>Transactions</a>
+          <a href="#ui-board"><span class="nav-icon">▥</span>Insights</a>
+          <a href="#gift-section"><span class="nav-icon">◇</span>Gift subscriptions</a>
+          <a href="#status-section"><span class="nav-icon">◷</span>Plan status</a>
+          <a href="#detail-section"><span class="nav-icon">◎</span>Selected profile</a>
+        </nav>
+        <div class="sidebar-label">Tools</div>
+        <nav class="section-nav section-nav-secondary" aria-label="Admin tools">
+          <a href="#data-quality"><span class="nav-icon">✦</span>Data quality</a>
+          <a href="#latest-activity"><span class="nav-icon">↗</span>Recent activity</a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+      </aside>
+
+      <div class="dashboard-content">
+        <div class="workspace-topbar" id="overview">
+          <div class="breadcrumb"><span class="breadcrumb-icon">⌂</span><span>Dashboard</span></div>
+          <div class="topbar-actions">
+            <label class="top-search"><span aria-hidden="true">⌕</span><input id="transaction-search" type="search" placeholder="Search transactions…" aria-label="Search transactions" /></label>
+            <span class="signed-in" id="signed-in-email"></span>
+            <button class="danger hidden top-sign-out" id="sign-out" type="button">Sign out</button>
+          </div>
         </div>
-        <div class="toolbar-controls">
-          <input class="search-input" id="transaction-search" type="search" placeholder="Search transactions…" />
-          <select class="select-input" id="transaction-status" aria-label="Filter transaction status">
-            <option value="all">All statuses</option>
-            <option value="paid">Paid / captured</option>
-            <option value="pending">Pending / authorized</option>
-            <option value="failed">Failed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <button class="btn" id="export-csv" type="button">Export CSV</button>
+
+        <div class="dashboard-intro"><div><div class="eyebrow">Overview</div><h2>Good day, administrator</h2><p class="muted" id="generated-at">Waiting for the latest snapshot…</p></div><span class="sync-pill" id="sync-status">Live snapshot</span></div>
+        <div class="quick-actions"><span class="quick-label">Quick actions</span><a class="action-button dark" href="#transactions-section">View transactions</a><button class="action-button" id="export-csv" type="button">Export report</button><button class="action-button" id="refresh" type="button">Refresh data</button></div>
+        <section class="insight-board" id="ui-board" aria-label="Contribution analytics">
+          <div class="board-heading"><div><span class="eyebrow">Your impact, at a glance</span><h2>Contribution overview</h2></div><div class="range-switch" role="group" aria-label="Chart date range"><button type="button" data-chart-range="today" aria-pressed="false">Today</button><button type="button" data-chart-range="7d" aria-pressed="false">Past 7 days</button><button type="button" data-chart-range="15d" aria-pressed="false">Past 15 days</button><button type="button" data-chart-range="30d" aria-pressed="false">Past 30 days</button><button type="button" data-chart-range="6m" aria-pressed="true">6 months</button><button type="button" data-chart-range="12m" aria-pressed="false">12 months</button></div></div>
+          <div class="metric-grid" id="dashboard-metrics" aria-live="polite"></div>
+          <div class="chart-grid">
+            <section class="chart-card trend-card" aria-labelledby="trend-title">
+              <div class="chart-heading"><div><span class="chart-overline">Contribution trend</span><h3 id="trend-title">Small acts. Lasting impact.</h3></div><span class="period-label" id="chart-period"></span></div>
+              <div class="trend-summary"><strong id="period-raised">₹0</strong><span id="period-payment-count"></span></div>
+              <div class="chart-stage" id="contribution-trend"></div>
+              <div class="chart-legend"><span><i class="swatch recurring"></i>Recurring &amp; gifts</span><span><i class="swatch once"></i>One-time</span></div>
+            </section>
+            <section class="chart-card verification-card" aria-labelledby="verification-title">
+              <div class="chart-heading"><div><span class="chart-overline">Supporter profiles · all time</span><h3 id="verification-title">Profile completion</h3></div><span class="card-index">01</span></div>
+              <div id="verification-gauge"></div>
+              <div class="gauge-key" id="verification-key"></div>
+              <a href="#supporters-section" class="chart-link">Explore supporters <span aria-hidden="true">↗</span></a>
+            </section>
+            <section class="chart-card ranking-card" aria-labelledby="ranking-title">
+              <div class="chart-heading"><div><span class="chart-overline">People behind the impact</span><h3 id="ranking-title">Top supporters</h3></div><span class="subtle-tag">Top 5</span></div>
+              <div id="supporter-ranking"></div>
+              <p class="chart-caption">Confirmed contributions in the selected period</p>
+            </section>
+            <section class="chart-card volume-card" aria-labelledby="volume-title">
+              <div class="chart-heading"><div><span class="chart-overline">Payment activity</span><h3 id="volume-title">Monthly breakdown</h3></div></div>
+              <div class="chart-stage" id="payment-volume"></div>
+              <div class="chart-legend"><span><i class="swatch recurring"></i>Recurring &amp; gifts</span><span><i class="swatch once"></i>One-time</span></div>
+            </section>
+            <section class="chart-card outcome-card" aria-labelledby="outcome-title">
+              <div class="chart-heading"><div><span class="chart-overline">Every payment accounted for</span><h3 id="outcome-title">Payment outcomes</h3></div></div>
+              <div id="payment-outcomes"></div>
+              <div class="outcome-key" id="outcome-key"></div>
+            </section>
+          </div>
+          <p class="analytics-footnote" id="analytics-footnote"></p>
+          <div class="chart-tooltip" id="chart-tooltip" role="status" hidden></div>
+        </section>
+        <div class="insights-grid"><section class="panel activity-panel"><div class="panel-heading"><div><h2>Latest activity</h2><p class="panel-kicker">The most recent payment records across all statuses.</p></div><span class="muted" id="latest-count"></span></div><div class="panel-body"><div class="activity-list" id="latest-activity"><div class="empty-state">Loading latest activity…</div></div></div></section><section class="panel quality-panel"><div class="panel-heading"><div><h2>Data quality</h2><p class="panel-kicker">Quick checks before you act.</p></div></div><div class="panel-body"><div class="quality-list" id="data-quality"><div class="empty-state">Checking records…</div></div></div></section></div>
+        <div class="toolbar"><div class="toolbar-title"><span class="eyebrow">Filters</span><strong>Refine the transaction view</strong></div><div class="toolbar-controls"><select id="transaction-status" aria-label="Filter transaction status"><option value="all">All statuses</option><option value="paid">Successful payments</option><option value="completed">Completed payment records</option><option value="pending">Pending / authorized</option><option value="failed">Failed</option><option value="cancelled">Cancelled / cancellation activity</option><option value="refunded">Refunded</option></select><select id="transaction-type" aria-label="Filter transaction type"><option value="all">All types</option><option value="monthly">Monthly</option><option value="one-time">One-time</option><option value="gift-monthly">Gift subscriptions</option><option value="cancellation">Cancellation activity</option></select><button class="secondary-btn" id="clear-filters" type="button">Clear filters</button></div></div>
+        <div class="section-title" id="supporters-section"><div><div class="eyebrow">Directory</div><h2>Supporters</h2><p>Search a person to inspect their complete payment and subscription history.</p></div><span class="muted" id="user-count">0 users</span></div>
+        <div class="grid">
+          <section class="panel"><div class="panel-heading"><div><h2>People directory</h2><p class="panel-kicker">Select a row to open the supporter profile.</p></div></div><div class="panel-body"><input id="user-search" type="search" placeholder="Search name, email, phone, or UID…" aria-label="Search supporters" /><div class="table-wrap"><table><thead><tr><th>Supporter</th><th>Contact</th><th>Paid</th><th>Activity</th></tr></thead><tbody id="users-body"><tr><td colspan="4">Loading users…</td></tr></tbody></table></div></div></section>
+          <section class="panel" id="transactions-section"><div class="panel-heading"><div><h2>Transactions</h2><p class="panel-kicker">Use the filters above to narrow this list.</p></div><span class="muted" id="transaction-count">0 records</span></div><div class="table-wrap"><table><thead><tr><th>Date (IST)</th><th>Supporter</th><th>Gift recipient</th><th>Type</th><th>Amount</th><th>Status / details</th><th>Reference</th></tr></thead><tbody id="transactions-body"><tr><td colspan="7">Loading transactions…</td></tr></tbody></table></div></section>
         </div>
-      </div>
-
-      <section class="stats-grid" aria-label="Summary statistics">
-        <div class="stat-card"><div class="stat-label">Confirmed raised</div><div class="stat-value" id="stat-total">₹0</div></div>
-        <div class="stat-card"><div class="stat-label">Confirmed transactions</div><div class="stat-value" id="stat-transactions">0</div></div>
-        <div class="stat-card"><div class="stat-label">Registered users</div><div class="stat-value" id="stat-users">0</div></div>
-        <div class="stat-card"><div class="stat-label">Active subscriptions</div><div class="stat-value" id="stat-subscriptions">0</div></div>
-      </section>
-
-      <div class="main-grid">
-        <section class="panel">
-          <div class="panel-heading"><h2>Users</h2><span id="user-count">0 users</span></div>
+        <section class="panel record-panel" id="gift-section" aria-labelledby="gift-title">
+          <div class="panel-heading"><div><h2 id="gift-title">Gift subscriptions</h2><p class="panel-kicker">Who funds each gift, who receives it, and its payment history.</p></div><span class="muted" id="gift-count"></span></div>
+          <div class="panel-body" id="gift-records"></div>
+        </section>
+        <section class="panel record-panel" id="status-section" aria-labelledby="status-title">
+          <div class="panel-heading"><div><h2 id="status-title">Cancelled &amp; completed — record details</h2><p class="panel-kicker" id="status-counts"></p></div><select id="plan-status-filter" aria-label="Filter plan and activity details"><option value="all">Both statuses</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select></div>
           <div class="panel-body">
-            <input class="search-input" id="user-search" type="search" placeholder="Search name, email, or UID…" />
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Supporter</th><th>Paid</th><th>Activity</th></tr></thead>
-                <tbody id="users-body"><tr><td class="empty-cell" colspan="3">Loading users…</td></tr></tbody>
-              </table>
-            </div>
+            <div class="status-guide"><p><strong>Cancelled plan</strong> A stopped subscription. Previous paid contributions remain paid; cancellation is not a refund.</p><p><strong>Completed plan</strong> A subscription that reached the end of its lifecycle. This is different from a completed payment.</p><p><strong>Activity receipt</strong> Cancellation entries can appear in the transaction list without a charge. They are excluded from payment charts.</p></div>
+            <p class="panel-kicker">All-time snapshot. Open a record for its full IDs, dates and linked payments. Missing reasons are shown as “Not recorded”.</p>
+            <div id="plan-status-records"></div>
           </div>
         </section>
-
-        <section class="panel">
-          <div class="panel-heading"><h2>All transactions</h2><span id="transaction-count">0 records</span></div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Date</th><th>Supporter</th><th>Type</th><th>Amount</th><th>Status</th><th>Reference</th></tr></thead>
-              <tbody id="transactions-body"><tr><td class="empty-cell" colspan="6">Loading transactions…</td></tr></tbody>
-            </table>
-          </div>
-        </section>
+        <section class="panel detail" id="detail-section"><div class="panel-heading"><div><h2>Selected supporter</h2><p class="panel-kicker">Account details, transaction history, and subscription status.</p></div><span class="muted" id="selected-user-label">Select a user above</span></div><div class="detail-body" id="user-detail-body">Select a supporter to see their history.</div></section>
+        <div class="note"><strong>Admin safety:</strong> This page never reads Firebase Realtime Database directly. Data comes from the authenticated backend. Transactions are read-only here. Subscription lifecycle records are separate from payment charges; ending a plan does not delete or reverse previous payments.</div>
       </div>
-
-      <section class="panel detail-panel">
-        <div class="panel-heading"><h2>Supporter details</h2><span id="selected-user-label">Select a user above</span></div>
-        <div class="panel-body" id="user-detail-body"><div class="empty-cell">Select a supporter to see their complete payment and subscription history.</div></div>
-      </section>
-
-      <div class="warning">This page is read-only. Your current Firebase rules still allow public reads on several collections, so the email check protects this dashboard UI but does not by itself make the underlying data private.</div>
     </main>
   </div>
-  <div id="toast" role="status"></div>
 
   <script type="module">
-    import { onValue, ref } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-    import {
-      GoogleAuthProvider,
-      onAuthStateChanged,
-      signInWithEmailAndPassword,
-      signInWithPopup,
-      signOut,
-    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    import { auth, database } from "./js/firebase-client.js";
+    import { renderDashboardCharts, observeDashboardCharts } from "./admin-charts.js";
+    import { isGiftRecord, isLifecycleRecord, normalizeStatus, statusGroup, isConfirmed, subscriptionStatus, subscriptionId, recordOwner, giftRecipient, paymentExplanation, renderRecordPanels } from "./admin-records.js";
+    import { getApps, getApp, initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-    const ADMIN_EMAIL = new Set(["abhishekredddy500@gmail.com", "vishnudeviprasadshetty@gmail.com", "supritachat.25@gmail.com","idkshetty26@gmail.com"]);
-    const state = {
-      users: {},
-      payments: {},
-      testPayments: {},
-      subscribers: {},
-      subscribersVelcrow: {},
+    const firebaseConfig = {
+      apiKey: "AIzaSyDma_UrBD5XQICj5LOu214Fu3va_7VnvDg",
+      authDomain: "sillysensei-b251b.firebaseapp.com",
+      databaseURL: "https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "sillysensei-b251b",
+      storageBucket: "sillysensei-b251b.firebasestorage.app",
+      messagingSenderId: "859697431303",
+      appId: "1:859697431303:web:f91ce7535a3aff27cc7ba2"
     };
-    let selectedUserKey = "";
-    let dataListenersStarted = false;
-
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com/").replace(/\/+$/, "");
     const $ = (id) => document.getElementById(id);
-    const authView = $("auth-view");
-    const deniedView = $("access-denied-view");
-    const dashboardView = $("dashboard-view");
-    const authError = $("auth-error");
-    const toast = $("toast");
+    const state = { users:{}, payments:{}, testPayments:{}, subscribers:{}, subscribersVelcrow:{} };
+    let selectedUserKey = "";
+    let chartRange = "6m";
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      window.setTimeout(() => toast.classList.remove("show"), 3200);
-    }
-
-    function formatAmount(value) {
-      return `₹${(Number(value) || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
-    }
-
-    function formatDate(value) {
-      const timestamp = Number(value || 0);
-      if (!timestamp) return "—";
-      return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(timestamp));
-    }
-
-    function normalizeEmail(value) {
-      return String(value || "").trim().toLowerCase();
-    }
-
-    function normalizeStatus(record) {
-      return String(record?.status || record?.paymentStatus || record?.subscriptionStatus || "unknown").trim().toLowerCase();
-    }
-
-    function statusGroup(status) {
-      if (["paid", "captured", "completed", "success", "active"].includes(status)) return "paid";
-      if (["pending", "authorized", "created"].includes(status)) return "pending";
-      if (["failed", "cancelled", "refunded"].includes(status)) return status;
-      return "other";
-    }
-
-    function paymentIdentity(record, fallback) {
-      return String(record?.paymentId || record?.payment_id || record?.orderId || record?.reference || record?.transactionId || record?.id || fallback);
-    }
-
-    function looksLikePayment(record) {
-      return record && typeof record === "object" && !Array.isArray(record) && (
-        record.amount != null || record.paymentId || record.orderId || record.reference || record.type
-      );
-    }
+    const escapeHtml = (value) => String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    const normalizeEmail = (value) => String(value || "").trim().toLowerCase();
+    const formatAmount = (value) => `₹${(Number(value) || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+    const formatDate = (value) => { const n = recordTimestamp({date:value}); return n ? new Intl.DateTimeFormat("en-IN", { dateStyle:"medium", timeStyle:"short", timeZone:"Asia/Kolkata" }).format(new Date(n)) : "—"; };
+    const recordTimestamp = (record) => { const raw = record?.paidAt ?? record?.createdAt ?? record?.date ?? record?.timestamp ?? record?.paid_at ?? 0; const numeric = Number(raw); if (Number.isFinite(numeric) && numeric > 0) return numeric < 100000000000 ? numeric * 1000 : numeric; const parsed = Date.parse(String(raw || "")); return Number.isFinite(parsed) ? parsed : 0; };
+    const formatShortDate = (timestamp, options = { day:"numeric", month:"short" }) => timestamp ? new Intl.DateTimeFormat("en-IN", options).format(new Date(timestamp)) : "—";
+    const paymentIdentity = (r, fallback) => String([r?.paymentId,r?.payment_id,r?.orderId,r?.transactionId,r?.id,r?.reference].find(value=>value && !["—","-"].includes(String(value))) || fallback);
+    const looksLikePayment = (r) => r && typeof r === "object" && !Array.isArray(r) && (r.amount != null || r.paymentId || r.orderId || r.reference || r.type);
 
     function flattenPaymentSource(data, source) {
       const output = [];
       Object.entries(data || {}).forEach(([key, value]) => {
         if (!value || typeof value !== "object" || Array.isArray(value)) return;
-        if (looksLikePayment(value)) {
-          output.push({ ...value, __source: source, __path: `${source}/${key}`, __fallback: key });
-          return;
-        }
-        Object.entries(value).forEach(([childKey, childValue]) => {
-          if (looksLikePayment(childValue)) {
-            output.push({ ...childValue, __source: source, __path: `${source}/${key}/${childKey}`, __fallback: childKey, __nestedUserId: key });
-          }
-        });
+        if (looksLikePayment(value)) { output.push({ ...value, __source:source, __path:`${source}/${key}`, __fallback:key }); return; }
+        Object.entries(value).forEach(([childKey, childValue]) => { if (looksLikePayment(childValue)) output.push({ ...childValue, __source:source, __path:`${source}/${key}/${childKey}`, __fallback:childKey, __nestedUserId:key }); });
       });
       return output;
     }
-
     function allPayments() {
       const deduped = new Map();
-      [...flattenPaymentSource(state.payments, "payments"), ...flattenPaymentSource(state.testPayments, "testPayments")]
-        .forEach((record) => {
-          const identity = paymentIdentity(record, record.__path);
-          const existing = deduped.get(identity);
-          if (!existing) {
-            deduped.set(identity, record);
-            return;
-          }
-          deduped.set(identity, {
-            ...existing,
-            ...record,
-            userId: existing.userId || record.userId || record.user_id || record.__nestedUserId || "",
-            email: existing.email || record.email || record.giver_email || record.donor_email || "",
-          });
-        });
-      return [...deduped.values()].sort((a, b) => Number(b.paidAt || b.createdAt || b.date || 0) - Number(a.paidAt || a.createdAt || a.date || 0));
+      [...flattenPaymentSource(state.payments,"payments"), ...flattenPaymentSource(state.testPayments,"testPayments")].forEach((record) => {
+        const identity = paymentIdentity(record, record.__path); const existing = deduped.get(identity);
+        deduped.set(identity, existing ? { ...existing, ...record, userId:existing.userId || record.userId || record.user_id || record.__nestedUserId || "", email:existing.email || record.email || record.giver_email || record.donor_email || "" } : record);
+      });
+      return [...deduped.values()].sort((a,b) => recordTimestamp(b) - recordTimestamp(a));
     }
-
     function allSubscriptions() {
       const deduped = new Map();
-      [[state.subscribers, "subscribers"], [state.subscribersVelcrow, "subscribers_velcrow"]].forEach(([data, source]) => {
-        Object.entries(data || {}).forEach(([key, value]) => {
-          if (!value || typeof value !== "object") return;
-          const id = String(value.subscriptionId || value.subscription_id || value.id || key);
-          const existing = deduped.get(id);
-          deduped.set(id, existing ? { ...existing, ...value, __source: source } : { ...value, id, __source: source });
-        });
-      });
+      [[state.subscribers,"subscribers"],[state.subscribersVelcrow,"subscribers_velcrow"]].forEach(([data,source]) => Object.entries(data || {}).forEach(([key,value]) => { if (!value || typeof value !== "object") return; const id=String(value.subscriptionId || value.subscription_id || value.id || key); const existing=deduped.get(id); deduped.set(id, existing ? { ...existing, ...value, __source:source } : { ...value, id, __source:source }); }));
       return [...deduped.values()];
     }
-
-    function recordEmail(record) {
-      return normalizeEmail(record?.email || record?.giver_email || record?.donor_email || record?.recipient_email);
-    }
-
-    function recordUserId(record) {
-      return String(record?.userId || record?.user_id || record?.giver_id || record?.donor_id || record?.__nestedUserId || "").trim();
-    }
-
-    function recordName(record) {
-      return String(record?.name || record?.giver_name || record?.donor_name || record?.customer_name || record?.recipientName || "Supporter").trim();
-    }
-
-    function buildPeople(paymentRecords = allPayments(), subscriptionRecords = allSubscriptions()) {
+    const recordEmail = (r) => recordOwner(r).email;
+    const recordUserId = (r) => recordOwner(r).uid;
+    const recordName = (r) => recordOwner(r).name;
+    const initials = (value) => String(value || "S").trim().split(/\s+/).filter(Boolean).slice(0,2).map((part) => part[0]).join("").toUpperCase() || "S";
+    const statusLabel = (value) => String(value || "unknown").replaceAll("_"," ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+    function buildPeople(payments, subscriptions) {
       const people = new Map();
-      Object.entries(state.users || {}).forEach(([uid, record]) => {
-        const email = normalizeEmail(record?.email);
-        people.set(uid, {
-          key: uid,
-          uid,
-          name: record?.name || record?.fullName || record?.displayName || "Supporter",
-          email,
-          phone: record?.phone || record?.phoneNumber || "",
-        });
-      });
-
-      const ensurePerson = (record) => {
-        const uid = recordUserId(record);
-        const email = recordEmail(record);
-        let key = uid || [...people.values()].find((person) => email && person.email === email)?.key || (email ? `email:${email}` : "");
-        if (!key) return "";
-        const current = people.get(key) || { key, uid, name: "Supporter", email: "", phone: "" };
-        current.uid ||= uid;
-        current.email ||= email;
-        current.name = current.name === "Supporter" ? recordName(record) : current.name;
-        current.phone ||= record?.phone || record?.recipient_phone || record?.giver_phone || "";
-        people.set(key, current);
-        return key;
-      };
-
-      paymentRecords.forEach((record) => { record.__personKey = ensurePerson(record); });
-      subscriptionRecords.forEach((record) => { record.__personKey = ensurePerson(record); });
+      Object.entries(state.users || {}).forEach(([uid,r]) => people.set(uid,{ key:uid, uid, name:r?.name || r?.fullName || r?.displayName || "Supporter", email:normalizeEmail(r?.email), phone:r?.phone || r?.phoneNumber || "", pendingAuth:Boolean(r?.pendingAuth), profileCompleted:Boolean(r?.profileCompleted) }));
+      [...payments,...subscriptions].forEach((record) => { const uid=recordUserId(record); const email=recordEmail(record); const key=uid || [...people.values()].find((p)=>email && p.email===email)?.key || (email ? `email:${email}` : ""); if (!key) return; const p=people.get(key) || {key,uid,name:"Supporter",email:"",phone:"",pendingAuth:false,profileCompleted:false}; p.uid ||= uid; p.email ||= email; p.name = p.name === "Supporter" ? recordName(record) : p.name; p.phone ||= recordOwner(record).phone; record.__personKey=key; people.set(key,p); });
       return people;
     }
-
-    function isConfirmed(record) {
-      return statusGroup(normalizeStatus(record)) === "paid";
+    function renderUiBoard(people,payments,subscriptions) {
+      renderDashboardCharts({people,payments,subscriptions}, {
+        formatAmount,recordTimestamp,isConfirmed,normalizeStatus,statusGroup,recordUserId,isLifecycleRecord,subscriptionStatus
+      }, chartRange);
     }
-
-    function renderStats(people, payments, subscriptions) {
-      const confirmed = payments.filter(isConfirmed);
-      $("stat-total").textContent = formatAmount(confirmed.reduce((sum, record) => sum + Number(record.amount || 0), 0));
-      $("stat-transactions").textContent = String(confirmed.length);
-      $("stat-users").textContent = String(people.size);
-      $("stat-subscriptions").textContent = String(subscriptions.filter((record) => ["active", "paused"].includes(normalizeStatus(record))).length);
+    function renderInsights(people,payments,subscriptions) {
+      const latest=payments.slice(0,5), activity=$("latest-activity"); $("latest-count").textContent=`${payments.length} total`;
+      activity.innerHTML=latest.length ? latest.map((record)=>{ const person=people.get(record.__personKey), name=person?.name || recordName(record), status=normalizeStatus(record), reference=record.paymentId || record.orderId || record.reference || "—"; return `<div class="activity-item"><span class="avatar">${escapeHtml(initials(name))}</span><div class="activity-main"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(statusLabel(record.type || "payment"))} · ${escapeHtml(String(reference).slice(-18))}</span></div><div class="activity-side"><strong>${formatAmount(record.amount)}</strong><span>${escapeHtml(formatDate(record.paidAt || record.createdAt || record.date))}</span></div></div>`; }).join("") : `<div class="empty-state">No payment activity found.</div>`;
+      const pending=payments.filter((r)=>statusGroup(normalizeStatus(r))==="pending").length, unlinked=payments.filter((r)=>!recordUserId(r)).length, anonymous=payments.filter((r)=>/^supporter$|^anonymous supporter$/i.test(recordName(r))).length, cancelled=subscriptions.filter((r)=>subscriptionStatus(r)==="cancelled").length, completed=subscriptions.filter((r)=>subscriptionStatus(r)==="completed").length;
+      $("data-quality").innerHTML=`<div class="quality-row"><span class="quality-label">Active / paused subscriptions</span><strong class="quality-value good">${subscriptions.filter((r)=>["active","paused"].includes(normalizeStatus(r))).length}</strong></div><div class="quality-row"><span class="quality-label">Pending payment records</span><strong class="quality-value ${pending?"warn":"good"}">${pending}</strong></div><div class="quality-row"><span class="quality-label">Payments without an owner</span><strong class="quality-value ${unlinked?"warn":"good"}">${unlinked}</strong></div><div class="quality-row"><span class="quality-label">Supporter names needing review</span><strong class="quality-value ${anonymous?"warn":"good"}">${anonymous}</strong></div><div class="quality-row"><a class="quality-label" href="#status-section">Cancelled plans · view details ↗</a><strong class="quality-value">${cancelled}</strong></div><div class="quality-row"><a class="quality-label" href="#status-section">Completed plans · view details ↗</a><strong class="quality-value">${completed}</strong></div>`;
     }
-
-    function renderUsers(people, payments, subscriptions) {
-      const query = String($("user-search").value || "").trim().toLowerCase();
-      const rows = [...people.values()]
-        .map((person) => {
-          const personPayments = payments.filter((record) => record.__personKey === person.key && isConfirmed(record));
-          const personSubs = subscriptions.filter((record) => record.__personKey === person.key && ["active", "paused"].includes(normalizeStatus(record)));
-          return { person, total: personPayments.reduce((sum, record) => sum + Number(record.amount || 0), 0), payments: personPayments.length, subs: personSubs.length };
-        })
-        .filter(({ person }) => !query || [person.name, person.email, person.uid].join(" ").toLowerCase().includes(query))
-        .sort((a, b) => b.total - a.total || a.person.name.localeCompare(b.person.name));
-
-      $("user-count").textContent = `${rows.length} user${rows.length === 1 ? "" : "s"}`;
-      $("users-body").innerHTML = rows.length ? rows.map(({ person, total, payments: count, subs }) => `
-        <tr class="clickable ${selectedUserKey === person.key ? "selected" : ""}" data-user-key="${escapeHtml(person.key)}">
-          <td><div class="primary-text">${escapeHtml(person.name)}</div><div class="secondary-text">${escapeHtml(person.email || person.uid || "No email")}</div></td>
-          <td class="amount">${formatAmount(total)}</td>
-          <td><div>${count} paid</div><div class="secondary-text">${subs} active plan${subs === 1 ? "" : "s"}</div></td>
-        </tr>`).join("") : `<tr><td class="empty-cell" colspan="3">No users found.</td></tr>`;
+    function renderUsers(people,payments,subscriptions) {
+      const q=String($("user-search").value||"").trim().toLowerCase(); const rows=[...people.values()].map((person)=>{ const ps=payments.filter((r)=>r.__personKey===person.key && isConfirmed(r)); const ss=subscriptions.filter((r)=>r.__personKey===person.key && ["active","paused"].includes(normalizeStatus(r))); return {person,total:ps.reduce((s,r)=>s+Number(r.amount||0),0),payments:ps.length,subs:ss.length}; }).filter(({person})=>!q || [person.name,person.email,person.phone,person.uid].join(" ").toLowerCase().includes(q)).sort((a,b)=>b.total-a.total || a.person.name.localeCompare(b.person.name));
+      $("user-count").textContent=`${rows.length} user${rows.length===1?"":"s"}`; $("users-body").innerHTML=rows.length ? rows.map(({person,total,payments:count,subs})=>`<tr class="clickable ${selectedUserKey===person.key?"selected":""}" data-user-key="${escapeHtml(person.key)}"><td><div class="person-cell"><span class="avatar">${escapeHtml(initials(person.name))}</span><div><strong>${escapeHtml(person.name)}</strong><span class="row-status ${person.profileCompleted?"verified":"pending"}">${person.profileCompleted?"Verified":"Awaiting verification"}</span></div></div></td><td class="contact-cell"><div>${escapeHtml(person.email || "No email")}</div><div class="secondary">${escapeHtml(person.phone || "No phone")}</div></td><td class="amount">${formatAmount(total)}</td><td>${count} paid<div class="secondary">${subs} active plan${subs===1?"":"s"}</div></td></tr>`).join("") : `<tr><td colspan="4" class="empty-state">No supporters found.</td></tr>`;
     }
-
-    function renderTransactions(people, payments) {
-      const query = String($("transaction-search").value || "").trim().toLowerCase();
-      const filter = $("transaction-status").value;
-      const rows = payments.filter((record) => {
-        const status = normalizeStatus(record);
-        const person = people.get(record.__personKey);
-        const haystack = [person?.name, person?.email, recordName(record), recordEmail(record), record.type, record.reference, record.paymentId, record.orderId].join(" ").toLowerCase();
-        return (!query || haystack.includes(query)) && (filter === "all" || statusGroup(status) === filter || status === filter);
+    function recipientMarkup(record,subscriptions,people) {
+      if(!isGiftRecord(record)) return '<span class="secondary">—</span>';
+      const recipient=giftRecipient(record,subscriptions,people);
+      return '<div class="gift-recipient"><strong>'+escapeHtml(recipient.name||"Name not recorded")+'</strong><span class="secondary">'+escapeHtml([recipient.email,recipient.phone].filter(Boolean).join(" · ")||"Contact not recorded")+'</span></div>';
+    }
+    function paymentAmount(record) { return isLifecycleRecord(record) ? '<span class="secondary">No charge</span>' : formatAmount(record.amount); }
+    function paymentStatusMarkup(record) {
+      const status=normalizeStatus(record);
+      return '<details class="transaction-status"><summary><span class="status status-'+escapeHtml(status)+'">'+escapeHtml(statusLabel(status))+'</span></summary><div class="transaction-explanation">'+escapeHtml(paymentExplanation(record))+(subscriptionId(record)?'<p>Subscription: <span class="reference-cell">'+escapeHtml(subscriptionId(record))+'</span></p>':"")+(record.note?'<p>'+escapeHtml(record.note)+'</p>':"")+'</div></details>';
+    }
+    function renderTransactions(people,payments,subscriptions) {
+      const q=String($("transaction-search").value||"").trim().toLowerCase(), filter=$("transaction-status").value, typeFilter=$("transaction-type").value;
+      const rows=payments.filter(r=>{
+        const status=normalizeStatus(r), type=String(r.type||"payment").trim().toLowerCase(), p=people.get(r.__personKey), recipient=isGiftRecord(r)?giftRecipient(r,subscriptions,people):{};
+        const hay=[p?.name,p?.email,p?.phone,recordName(r),recordEmail(r),r.phone,r.type,r.reference,r.paymentId,r.orderId,subscriptionId(r),recipient.name,recipient.email,recipient.phone].join(" ").toLowerCase();
+        const matchesType=typeFilter==="all" || (typeFilter==="gift-monthly"?isGiftRecord(r):typeFilter==="cancellation"?isLifecycleRecord(r):type===typeFilter);
+        return (!q||hay.includes(q)) && (filter==="all"||statusGroup(status)===filter||status===filter) && matchesType;
       });
-
-      $("transaction-count").textContent = `${rows.length} record${rows.length === 1 ? "" : "s"}`;
-      $("transactions-body").innerHTML = rows.length ? rows.map((record) => {
-        const person = people.get(record.__personKey);
-        const status = normalizeStatus(record);
-        const reference = record.paymentId || record.orderId || record.reference || record.id || "—";
-        return `<tr>
-          <td>${escapeHtml(formatDate(record.paidAt || record.createdAt || record.date))}</td>
-          <td><div class="primary-text">${escapeHtml(person?.name || recordName(record))}</div><div class="secondary-text">${escapeHtml(person?.email || recordEmail(record) || "—")}</div></td>
-          <td>${escapeHtml(String(record.type || "payment").replaceAll("_", "-"))}</td>
-          <td class="amount">${formatAmount(record.amount)}</td>
-          <td><span class="status status-${escapeHtml(status)}">${escapeHtml(status)}</span></td>
-          <td title="${escapeHtml(String(reference))}">${escapeHtml(String(reference).slice(-18))}</td>
-        </tr>`;
-      }).join("") : `<tr><td class="empty-cell" colspan="6">No matching transactions.</td></tr>`;
+      $("transaction-count").textContent=rows.length+" record"+(rows.length===1?"":"s");
+      $("transactions-body").innerHTML=rows.length?rows.map(r=>{
+        const p=people.get(r.__personKey),reference=r.paymentId||r.payment_id||r.orderId||r.reference||r.id||"—";
+        return '<tr><td>'+escapeHtml(formatDate(recordTimestamp(r)))+'</td><td><strong>'+escapeHtml(p?.name||recordName(r))+'</strong><div class="secondary">'+escapeHtml(p?.email||recordEmail(r)||"—")+'</div></td><td>'+recipientMarkup(r,subscriptions,people)+'</td><td>'+escapeHtml(statusLabel(r.type||"payment"))+'</td><td class="amount">'+paymentAmount(r)+'</td><td>'+paymentStatusMarkup(r)+'</td><td class="reference-cell">'+escapeHtml(reference)+'</td></tr>';
+      }).join(""):'<tr><td colspan="7" class="empty-state">No transactions match these filters.</td></tr>';
     }
-
-    function renderUserDetail(people, payments, subscriptions) {
-      const body = $("user-detail-body");
-      const person = people.get(selectedUserKey);
-      if (!person) {
-        $("selected-user-label").textContent = "Select a user above";
-        body.innerHTML = `<div class="empty-cell">Select a supporter to see their complete payment and subscription history.</div>`;
-        return;
-      }
-
-      const personPayments = payments.filter((record) => record.__personKey === person.key);
-      const personSubs = subscriptions.filter((record) => record.__personKey === person.key);
-      const confirmedTotal = personPayments.filter(isConfirmed).reduce((sum, record) => sum + Number(record.amount || 0), 0);
-      $("selected-user-label").textContent = person.email || person.uid || person.name;
-      body.innerHTML = `
-        <div class="detail-header"><div><h3>${escapeHtml(person.name)}</h3><div class="detail-meta">${escapeHtml(person.email || "No email")} ${person.phone ? `· ${escapeHtml(person.phone)}` : ""}</div></div><div class="secondary-text">UID: ${escapeHtml(person.uid || "—")}</div></div>
-        <div class="detail-stats">
-          <div class="detail-chip">Confirmed paid <strong>${formatAmount(confirmedTotal)}</strong></div>
-          <div class="detail-chip">Transactions <strong>${personPayments.length}</strong></div>
-          <div class="detail-chip">Subscriptions <strong>${personSubs.length}</strong></div>
-        </div>
-        <div class="subsection"><h3>Transaction history</h3><div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th><th>Reference</th></tr></thead><tbody>${personPayments.length ? personPayments.map((record) => {
-          const status = normalizeStatus(record);
-          const reference = record.paymentId || record.orderId || record.reference || record.id || "—";
-          return `<tr><td>${escapeHtml(formatDate(record.paidAt || record.createdAt || record.date))}</td><td>${escapeHtml(String(record.type || "payment").replaceAll("_", "-"))}</td><td class="amount">${formatAmount(record.amount)}</td><td><span class="status status-${escapeHtml(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(String(reference))}</td></tr>`;
-        }).join("") : `<tr><td class="empty-cell" colspan="5">No transactions found.</td></tr>`}</tbody></table></div></div>
-        <div class="subsection"><h3>Subscription history</h3><div class="table-wrap"><table><thead><tr><th>Started</th><th>Type</th><th>Amount</th><th>Status</th><th>Subscription ID</th></tr></thead><tbody>${personSubs.length ? personSubs.map((record) => `<tr><td>${escapeHtml(formatDate(record.createdAt || record.subscribedAt || record.date))}</td><td>${escapeHtml(String(record.type || "monthly"))}</td><td class="amount">${formatAmount(record.amount)}</td><td><span class="status status-${escapeHtml(normalizeStatus(record))}">${escapeHtml(normalizeStatus(record))}</span></td><td>${escapeHtml(String(record.subscriptionId || record.id || "—"))}</td></tr>`).join("") : `<tr><td class="empty-cell" colspan="5">No subscription records found.</td></tr>`}</tbody></table></div></div>`;
+    function renderDetail(people,payments,subscriptions) {
+      const body=$("user-detail-body"),person=people.get(selectedUserKey);
+      if(!person){$("selected-user-label").textContent="Select a user above";body.innerHTML='<div class="empty-state">Select a supporter to see their history.</div>';return;}
+      const ps=payments.filter(r=>r.__personKey===person.key),ss=subscriptions.filter(r=>r.__personKey===person.key),confirmed=ps.filter(isConfirmed),latest=[...ps].sort((a,b)=>recordTimestamp(b)-recordTimestamp(a))[0];
+      $("selected-user-label").textContent=person.email||person.uid||person.name;
+      body.innerHTML='<div class="detail-head"><div class="detail-identity"><span class="avatar">'+escapeHtml(initials(person.name))+'</span><div><h3>'+escapeHtml(person.name)+'</h3><div class="secondary">'+escapeHtml([person.email,person.phone].filter(Boolean).join(" · "))+'</div><span class="row-status '+(person.profileCompleted?"verified":"pending")+'">'+(person.profileCompleted?"Verified profile":"Awaiting verification")+'</span></div></div><div class="secondary">UID: '+escapeHtml(person.uid||"—")+'</div></div>'+
+        '<div class="chips"><div class="chip">Confirmed paid <strong>'+formatAmount(confirmed.reduce((sum,r)=>sum+Number(r.amount||0),0))+'</strong></div><div class="chip">Transactions <strong>'+ps.length+'</strong></div><div class="chip">Subscriptions <strong>'+ss.length+'</strong></div><div class="chip">Last activity <strong>'+escapeHtml(latest?formatDate(recordTimestamp(latest)):"—")+'</strong></div></div>'+
+        '<div class="subsection"><h3>Transaction history</h3><div class="table-wrap"><table><thead><tr><th>Date (IST)</th><th>Type</th><th>Gift recipient</th><th>Amount</th><th>Status / details</th><th>Reference</th></tr></thead><tbody>'+
+        (ps.length?ps.map(r=>'<tr><td>'+escapeHtml(formatDate(recordTimestamp(r)))+'</td><td>'+escapeHtml(statusLabel(r.type||"payment"))+'</td><td>'+recipientMarkup(r,subscriptions,people)+'</td><td class="amount">'+paymentAmount(r)+'</td><td>'+paymentStatusMarkup(r)+'</td><td class="reference-cell">'+escapeHtml(r.paymentId||r.orderId||r.reference||r.id||"—")+'</td></tr>').join(""):'<tr><td colspan="6" class="empty-state">No transactions found.</td></tr>')+'</tbody></table></div></div>'+
+        '<div class="subsection"><h3>Subscription history</h3><div class="table-wrap"><table><thead><tr><th>Started (IST)</th><th>Type</th><th>Gifted to</th><th>Plan amount</th><th>Status</th><th>Subscription ID</th></tr></thead><tbody>'+
+        (ss.length?ss.map(r=>'<tr><td>'+escapeHtml(formatDate(r.createdAt||r.subscribedAt||r.date))+'</td><td>'+escapeHtml(statusLabel(r.type||"monthly"))+'</td><td>'+recipientMarkup(r,subscriptions,people)+'</td><td class="amount">'+formatAmount(r.amount)+'</td><td><span class="status status-'+escapeHtml(subscriptionStatus(r))+'">'+escapeHtml(statusLabel(subscriptionStatus(r)))+'</span></td><td class="reference-cell">'+escapeHtml(subscriptionId(r)||r.id||"—")+'</td></tr>').join(""):'<tr><td colspan="6" class="empty-state">No subscription records found.</td></tr>')+'</tbody></table></div><p class="panel-kicker"><a href="#gift-section">Gift details ↗</a> · <a href="#status-section">Cancelled / completed details ↗</a></p></div>';
     }
+    function renderAll() { const payments=allPayments(), subscriptions=allSubscriptions(), people=buildPeople(payments,subscriptions); if (!selectedUserKey && people.size) selectedUserKey=people.keys().next().value; renderUiBoard(people,payments,subscriptions); renderInsights(people,payments,subscriptions); renderUsers(people,payments,subscriptions); renderTransactions(people,payments,subscriptions); renderDetail(people,payments,subscriptions); renderRecordPanels({people,payments,subscriptions},{formatAmount,formatDate,recordTimestamp}); }
 
-    function renderAll() {
-      const payments = allPayments();
-      const subscriptions = allSubscriptions();
-      const people = buildPeople(payments, subscriptions);
-      if (!selectedUserKey && people.size) selectedUserKey = people.keys().next().value;
-      renderStats(people, payments, subscriptions);
-      renderUsers(people, payments, subscriptions);
-      renderTransactions(people, payments);
-      renderUserDetail(people, payments, subscriptions);
+    function setView(view) { document.body.classList.toggle("dashboard-active",view==="dashboard"); $("auth-view").classList.toggle("hidden",view!=="auth"); $("denied-view").classList.toggle("hidden",view!=="denied"); $("dashboard-view").classList.toggle("hidden",view!=="dashboard"); $("sign-out").classList.toggle("hidden",view!=="dashboard" && view!=="denied"); }
+    async function loadOverview() {
+      const token=await auth.currentUser.getIdToken(true); const response=await fetch(`${BACKEND_URL}/api/admin/overview`,{headers:{Authorization:`Bearer ${token}`},cache:"no-store"}); let payload={}; try { payload=await response.json(); } catch {}
+      if (!response.ok) throw new Error(payload.error || `Admin request failed with ${response.status}`);
+      Object.assign(state,{users:payload.users||{},payments:payload.payments||{},testPayments:payload.testPayments||{},subscribers:payload.subscribers||{},subscribersVelcrow:payload.subscribersVelcrow||{}}); $("generated-at").textContent=`Updated ${formatDate(payload.generatedAt)}`; $("sync-status").textContent="Snapshot current"; setView("dashboard"); renderAll();
     }
-
-    function startDataListeners() {
-      if (dataListenersStarted) return;
-      dataListenersStarted = true;
-      const sources = [
-        ["users", "users"],
-        ["payments", "payments"],
-        ["testPayments", "testPayments"],
-        ["subscribers", "subscribers"],
-        ["subscribers_velcrow", "subscribersVelcrow"],
-      ];
-      sources.forEach(([path, key]) => {
-        onValue(ref(database, path), (snapshot) => {
-          state[key] = snapshot.val() || {};
-          renderAll();
-        }, (error) => showToast(`Could not load ${path}: ${error.message}`));
-      });
-    }
-
-    function setView(view) {
-      authView.classList.toggle("is-hidden", view !== "auth");
-      deniedView.classList.toggle("is-hidden", view !== "denied");
-      dashboardView.classList.toggle("is-hidden", view !== "dashboard");
-      $("sign-out-btn").classList.toggle("is-hidden", view !== "dashboard" && view !== "denied");
-    }
-
-    async function finishLogin(user) {
-      const email = normalizeEmail(user?.email);
-      if (!ADMIN_EMAIL.has(email)) {
-        setView("denied");
-        return;
-      }
-      $("signed-in-email").textContent = email;
-      setView("dashboard");
-      startDataListeners();
-    }
-
-    $("google-sign-in").addEventListener("click", async () => {
-      authError.textContent = "";
-      try {
-        await signInWithPopup(auth, new GoogleAuthProvider());
-      } catch (error) {
-        authError.textContent = error.message || "Google sign-in failed.";
-      }
-    });
-
-    $("password-form").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      authError.textContent = "";
-      try {
-        await signInWithEmailAndPassword(auth, $("admin-email").value.trim(), $("admin-password").value);
-      } catch (error) {
-        authError.textContent = error.message || "Email sign-in failed.";
-      }
-    });
-
-    [$("sign-out-btn"), $("denied-sign-out")].forEach((button) => button.addEventListener("click", () => signOut(auth)));
-    $("user-search").addEventListener("input", renderAll);
-    $("transaction-search").addEventListener("input", renderAll);
-    $("transaction-status").addEventListener("change", renderAll);
-    $("users-body").addEventListener("click", (event) => {
-      const row = event.target.closest("[data-user-key]");
-      if (!row) return;
-      selectedUserKey = row.dataset.userKey;
+    async function handleSignedIn(user) { $("signed-in-email").textContent=user.email || user.uid; try { await loadOverview(); } catch (error) { if (String(error.message).includes("Administrator access") || String(error.message).includes("not configured")) { $("denied-error").textContent=error.message; setView("denied"); } else { $("auth-error").textContent=error.message; setView("auth"); } } }
+    $("google-sign-in").addEventListener("click",async()=>{ $("auth-error").textContent=""; try { await signInWithPopup(auth,new GoogleAuthProvider()); } catch(e) { $("auth-error").textContent=e.message||"Google sign-in failed."; } });
+    $("password-form").addEventListener("submit",async(e)=>{ e.preventDefault(); $("auth-error").textContent=""; try { await signInWithEmailAndPassword(auth,$("admin-email").value.trim(),$("admin-password").value); } catch(error) { $("auth-error").textContent=error.message||"Email sign-in failed."; } });
+    [$("sign-out"),$("denied-sign-out")].forEach((button)=>button.addEventListener("click",()=>signOut(auth)));
+    $("refresh").addEventListener("click",()=>{ $("sync-status").textContent="Refreshing…"; loadOverview().catch((e)=>{ $("sync-status").textContent="Refresh failed"; $("auth-error").textContent=e.message; }); }); $("clear-filters").addEventListener("click",()=>{ $("transaction-search").value=""; $("transaction-status").value="all"; $("transaction-type").value="all"; renderAll(); }); $("user-search").addEventListener("input",renderAll); $("transaction-search").addEventListener("input",renderAll); $("transaction-status").addEventListener("change",renderAll); $("transaction-type").addEventListener("change",renderAll);
+    document.querySelectorAll("[data-chart-range]").forEach((button)=>button.addEventListener("click",()=>{
+      chartRange=button.dataset.chartRange;
+      document.querySelectorAll("[data-chart-range]").forEach((item)=>item.setAttribute("aria-pressed",String(item===button)));
       renderAll();
-    });
-
-    $("export-csv").addEventListener("click", () => {
-      const payments = allPayments();
-      const subscriptions = allSubscriptions();
-      const people = buildPeople(payments, subscriptions);
-      const rows = [["Date", "Name", "Email", "Type", "Amount", "Status", "Payment ID", "Order ID"]];
-      payments.forEach((record) => {
-        const person = people.get(record.__personKey);
-        rows.push([
-          formatDate(record.paidAt || record.createdAt || record.date),
-          person?.name || recordName(record),
-          person?.email || recordEmail(record),
-          record.type || "payment",
-          Number(record.amount || 0),
-          normalizeStatus(record),
-          record.paymentId || "",
-          record.orderId || "",
-        ]);
-      });
-      const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
-      const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `manali-strays-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
-      link.click();
-      URL.revokeObjectURL(url);
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        $("signed-in-email").textContent = "";
-        setView("auth");
-        return;
-      }
-      finishLogin(user);
-    });
+    }));
+    observeDashboardCharts();
+    $("plan-status-filter").addEventListener("change",renderAll);
+    $("users-body").addEventListener("click",(event)=>{ const row=event.target.closest("[data-user-key]"); if(row){selectedUserKey=row.dataset.userKey;renderAll();} });
+    $("export-csv").addEventListener("click",()=>{ const payments=allPayments(), subscriptions=allSubscriptions(), people=buildPeople(payments,subscriptions), rows=[["Date","Name","Email","Type","Amount","Status","Payment ID","Order ID"]]; payments.forEach((r)=>{const p=people.get(r.__personKey);rows.push([formatDate(r.paidAt||r.createdAt||r.date),p?.name||recordName(r),p?.email||recordEmail(r),r.type||"payment",Number(r.amount||0),normalizeStatus(r),r.paymentId||"",r.orderId||""]);}); const csv=rows.map((row)=>row.map((cell)=>`"${String(cell??"").replaceAll('"','""')}"`).join(",")).join("\n"); const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));link.download=`manali-strays-transactions-${new Date().toISOString().slice(0,10)}.csv`;link.click(); });
+    onAuthStateChanged(auth,(user)=>{ if (!user) { $("signed-in-email").textContent=""; setView("auth"); return; } void handleSignedIn(user); });
   </script>
 </body>
 </html>
