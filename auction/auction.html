@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#fafaf7">
+    <title>Gallery · Silly Sensei</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/icons/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://raw.githubusercontent.com">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://sillysensei-b251b-default-rtdb.asia-southeast1.firebasedatabase.app" crossorigin>
+    <link rel="preload" as="image" href="assets/silly-sensei-loading.png" fetchpriority="high">
+    <link rel="preload" as="image" href="assets/loading-doodles.png">
+    <link id="gallery-background-preload" rel="preload" as="image" href="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/trees-texture.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <style>
+        :root {
+            color-scheme: light;
+            --yellow: #ffda00;
+            --yellow-hover: #f2cc00;
+            --yellow-soft: #fff8c9;
+            --paper: #fffef0;
+            --ink: #272727;
+            --muted: #737373;
+            --line: #e8e8e2;
+            --green: #176b3a;
+            --green-soft: #edf7ee;
+            --red: #b3261e;
+            --canvas: #fafaf7;
+            --surface: #ffffff;
+            --shadow: 0 14px 40px rgba(35, 35, 25, 0.07);
+            --radius-lg: 24px;
+            --radius-md: 14px;
+            font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { min-height: 100%; }
+        body {
+            position: relative;
+            isolation: isolate;
+            margin: 0;
+            color: var(--ink);
+            background: var(--canvas);
+            font-size: 0.92rem;
+            line-height: 1.5;
+            text-rendering: optimizeLegibility;
+        }
+        body::before {
+            position: fixed;
+            z-index: -1;
+            inset: 0;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-image: url("https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/assets/trees-texture.webp");
+            content: "";
+            opacity: 0.12;
+            mix-blend-mode: multiply;
+            pointer-events: none;
+        }
+
+        button, input, textarea { font: inherit; }
+        button { cursor: pointer; }
+        .is-hidden { display: none !important; }
+        .loading-screen { position: fixed; z-index: 500; inset: 0; display: grid; place-items: center; overflow: hidden; padding: 1.5rem; isolation: isolate; background: var(--canvas); opacity: 1; visibility: visible; transition: opacity 450ms ease, visibility 0s linear 0s; }
+        .loading-screen.is-hidden { display: grid !important; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 450ms ease, visibility 0s linear 450ms; }
+        .loading-screen::before { position: absolute; z-index: 0; inset: 0; background-image: url("assets/loading-doodles.png"); background-position: center; background-repeat: repeat; background-size: 560px 560px; content: ""; opacity: 0.13; filter: grayscale(1); mix-blend-mode: multiply; pointer-events: none; }
+        .loading-card { position: relative; z-index: 1; display: grid; justify-items: center; gap: 0.85rem; color: var(--muted); font-size: 0.78rem; font-weight: 700; text-align: center; transition: opacity 450ms ease, transform 450ms ease; }
+        .loading-screen.is-hidden .loading-card { opacity: 0; transform: translateY(-10px) scale(0.96); }
+        .loading-card img { display: block; width: min(62vw, 260px); max-height: 52vh; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(35, 35, 25, 0.12)); animation: loading-float 1.8s ease-in-out infinite; }
+        .loading-card p { margin: 0; }
+        @keyframes loading-float { 0%, 100% { transform: translateY(0) scale(0.98); opacity: 0.88; } 50% { transform: translateY(-8px) scale(1); opacity: 1; } }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+        .skeleton { position: relative; display: block; overflow: hidden; background: #eeeee8; }
+        .skeleton::after { position: absolute; inset: 0; content: ""; background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.65) 50%, transparent 80%); transform: translateX(-100%); animation: skeleton-shimmer 1.6s ease-in-out infinite; }
+        @keyframes skeleton-shimmer { to { transform: translateX(100%); } }
+        .skeleton-card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
+        .skeleton-line { height: 0.8rem; margin-bottom: 0.9rem; border-radius: 5px; }
+        .skeleton-title { width: 65%; height: 1.3rem; }
+        .skeleton-short { width: 45%; }
+        .skeleton-thumbnails { display: flex; gap: 0.45rem; padding-top: 0.4rem; }
+        .skeleton-thumbnails span { width: 58px; height: 46px; border-radius: 8px; }
+        .product-image-button { position: relative; }
+        .media-skeleton { position: absolute; inset: 0; display: none; pointer-events: none; }
+        .is-image-loading .media-skeleton { display: block; }
+        .is-image-loading > img, .image-has-error > img { opacity: 0; }
+        .image-retry { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; padding: 1rem; color: var(--muted); background: #f4f4ef; font-size: 0.8rem; }
+        .image-has-error .image-retry { display: flex; }
+
+        .auth-screen {
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            padding: 1.25rem;
+        }
+        .auth-card, .admin-card, .gallery-card, .empty-card {
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+        .auth-card { width: min(100%, 440px); padding: clamp(1.5rem, 5vw, 2.6rem); }
+        .brand-lockup { display: flex; align-items: center; gap: 0.7rem; font-weight: 900; letter-spacing: -0.04em; }
+        .auth-logo { display: block; width: 132px; height: 34px; }
+        .auth-logo img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left center; }
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            width: 42px;
+            height: 42px;
+            color: var(--ink);
+            background: var(--yellow);
+            border: 1px solid var(--ink);
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 950;
+        }
+        .brand-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        h1, h2, h3, p { margin-top: 0; }
+        h1, h2, h3 { letter-spacing: -0.045em; }
+        .auth-card h1 { margin: 2.1rem 0 0.6rem; font-size: clamp(2.2rem, 8vw, 4rem); font-weight: 600; line-height: 0.92; }
+        .auth-card p { max-width: 32rem; color: var(--muted); line-height: 1.55; }
+
+        .google-button, .primary-button, .secondary-button, .danger-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            font-weight: 850;
+            transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+        }
+        .google-button:active, .primary-button:active, .secondary-button:active, .danger-button:active { transform: translate(3px, 3px); }
+        .google-button {
+            width: 100%;
+            gap: 0.7rem;
+            margin-top: 1.5rem;
+            color: #fff;
+            background: var(--ink);
+            border-color: var(--ink);
+            box-shadow: 0 8px 18px rgba(35, 35, 25, 0.12);
+        }
+        .google-button:hover, .primary-button:hover { transform: translate(-2px, -2px); }
+
+        .app-shell { width: min(100% - 2.5rem, 1000px); margin: 0 auto; padding: 0 0 3.5rem; }
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin: 0 calc((100% - 100vw) / 2);
+            background: rgba(255, 255, 255, 0.92);
+            border-bottom: 1px solid var(--line);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .site-nav {
+            display: flex;
+            width: min(100% - 2.5rem, 860px);
+            min-height: 64px;
+            margin: 0 auto;
+            align-items: center;
+            gap: 0.65rem;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+        .site-nav .logo img { display: block; width: auto; height: 30px; object-fit: contain; }
+        .nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.55rem; min-width: 0; }
+        .nav-user-name { max-width: 190px; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; font-weight: 500; }
+        .account-link {
+            display: inline-flex;
+            min-height: 38px;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.45rem 0.85rem;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(35, 35, 25, 0.04);
+            transition: border-color 160ms ease, color 160ms ease, background 160ms ease, transform 160ms ease;
+        }
+        .account-link:hover { border-color: var(--yellow-hover); background: #fffef1; color: var(--ink); transform: translateY(-1px); }
+        .account-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+
+        .page-intro { max-width: 640px; margin: 0 auto 1.25rem; padding-top: clamp(1.25rem, 3vw, 2.25rem); text-align: center; }
+        .page-intro h1 { margin-bottom: 0.55rem; font-size: clamp(2rem, 5.8vw, 3.2rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1.08; }
+        .page-intro p { margin-bottom: 0; color: var(--muted); }
+        .gallery-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .gallery-heading h2 { margin: 0; font-size: clamp(1.45rem, 3vw, 2rem); }
+        .gallery-count { color: var(--muted); font-size: 0.78rem; font-weight: 700; }
+
+        .empty-card { padding: clamp(2rem, 7vw, 5rem) 1.5rem; text-align: center; }
+        .empty-card h2 { margin-bottom: 0.5rem; font-size: clamp(1.8rem, 5vw, 3rem); }
+        .empty-card p { max-width: 32rem; margin: 0 auto; color: var(--muted); line-height: 1.5; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+        .gallery-card { min-width: 0; overflow: hidden; content-visibility: auto; contain: layout paint; contain-intrinsic-size: 320px; }
+        .product-media { position: relative; display: grid; min-height: 240px; background: #fcfcfa; }
+        .sold-badge { position: absolute; top: 0.65rem; left: 0.65rem; z-index: 3; width: min(42%, 175px); pointer-events: none; transform: rotate(-7deg); mix-blend-mode: multiply; }
+        .sold-badge img { display: block; width: 100%; height: auto; }
+        .product-image-button { display: block; width: 100%; min-height: 240px; padding: 0; overflow: hidden; border: 0; background: transparent; }
+        .product-image-button img { display: block; width: 100%; height: 240px; object-fit: contain; transition: transform 250ms ease; }
+        .product-image-button:hover img { transform: scale(1.025); }
+        .product-placeholder { display: grid; place-items: center; min-height: 240px; padding: 1.5rem; color: var(--muted); text-align: center; }
+        .product-placeholder strong { display: block; margin-bottom: 0.35rem; color: var(--ink); font-size: 1.25rem; }
+        .media-control {
+            position: absolute;
+            top: 50%;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: rgba(255, 218, 0, 0.95);
+            box-shadow: 0 4px 12px rgba(35, 35, 25, 0.12);
+            font-size: 1.15rem;
+            font-weight: 900;
+            transform: translateY(-50%);
+        }
+        .media-control:hover { background: var(--yellow); }
+        .media-control.previous { left: 0.75rem; }
+        .media-control.next { right: 0.75rem; }
+        .media-control:disabled { visibility: hidden; }
+        .zoom-hint { position: absolute; right: 0.8rem; bottom: 0.75rem; padding: 0.3rem 0.55rem; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.9); font-size: 0.68rem; font-weight: 800; pointer-events: none; }
+        .product-body { padding: 0.8rem 0.9rem 0.95rem; }
+        .product-body h3 { margin: 0 0 0.3rem; font-size: 1.15rem; }
+        .product-description { min-height: 1.5em; margin: 0; color: var(--muted); font-size: 0.82rem; line-height: 1.45; white-space: pre-wrap; }
+        .product-price { margin: 0.45rem 0 0; color: var(--ink); font-size: 0.86rem; font-weight: 850; }
+        .product-thumbnails { display: flex; gap: 0.45rem; margin-top: 0.85rem; overflow-x: auto; padding: 0.1rem 0 0.25rem; }
+        .product-thumbnail { flex: 0 0 58px; height: 46px; padding: 0.12rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; }
+        .product-thumbnail.active { border-color: var(--yellow-hover); box-shadow: 0 3px 10px rgba(35, 35, 25, 0.1); }
+        .product-thumbnail img { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .product-footer { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 0.85rem; color: var(--muted); font-size: 0.7rem; font-weight: 750; }
+        .visibility-pill { padding: 0.25rem 0.5rem; border: 1px solid #c9e5cf; border-radius: 999px; color: var(--green); background: var(--green-soft); }
+        .visibility-pill.hidden-state { color: var(--red); border-color: #efc3bf; background: #fff6f5; }
+
+        .admin-card { margin-top: 1.25rem; padding: clamp(1.35rem, 3.5vw, 2rem); }
+        .admin-toolbar, .admin-product-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+        .admin-card h2 { margin-bottom: 0.15rem; font-size: 1.5rem; }
+        .admin-card p { margin-bottom: 1rem; color: var(--muted); font-size: 0.85rem; }
+        .status-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.7rem; border: 1px solid currentColor; border-radius: 999px; color: var(--muted); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+        .status-pill::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+        .admin-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 0.75rem; }
+        .admin-grid .wide { grid-column: 1 / -1; }
+        .field-label { display: grid; gap: 0.35rem; color: var(--muted); font-size: 0.78rem; font-weight: 800; }
+        input, textarea { width: 100%; padding: 0.78rem 0.85rem; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; outline: 0; background: #fff; }
+        input:focus, textarea:focus { border-color: var(--yellow-hover); box-shadow: 0 0 0 3px rgba(255, 218, 0, 0.2); }
+        textarea { min-height: 88px; resize: vertical; }
+        input[type="file"] { padding: 0.45rem; background: var(--paper); }
+        .checkbox-label { display: flex; align-items: center; gap: 0.55rem; min-height: 48px; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--muted); font-size: 0.78rem; font-weight: 800; }
+        .checkbox-label input { width: auto; accent-color: var(--yellow-hover); }
+        .admin-preview { display: grid; place-items: center; min-height: 130px; margin-top: 0.85rem; overflow: hidden; border: 1px dashed var(--line); border-radius: var(--radius-md); background: var(--paper); }
+        .admin-preview-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.55rem; width: 100%; padding: 0.75rem; }
+        .preview-tile { display: grid; gap: 0.25rem; width: 112px; color: var(--muted); font-size: 0.64rem; text-align: center; }
+        .preview-tile img { display: block; width: 112px; height: 82px; border: 1px solid var(--line); border-radius: 7px; object-fit: cover; }
+        .preview-tile span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .replace-image-control { display: grid; gap: 0.2rem; color: var(--ink); font-size: 0.64rem; font-weight: 800; }
+        .replace-image-control input { width: 100%; padding: 0.2rem; font-size: 0.62rem; }
+        .admin-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+        .admin-actions > * { flex: 1 1 190px; }
+        .primary-button { width: 100%; color: var(--ink); background: var(--yellow); border-color: var(--yellow-hover); box-shadow: 0 6px 16px rgba(35, 35, 25, 0.08); }
+        .secondary-button { padding: 0 1rem; color: var(--ink); background: #fff; }
+        .danger-button { padding: 0 1rem; color: var(--red); background: #fff; border-color: #efc3bf; }
+        .primary-button:disabled, .secondary-button:disabled, .danger-button:disabled { cursor: not-allowed; opacity: 0.5; transform: none; box-shadow: none; }
+        .admin-products { display: grid; gap: 0.55rem; margin-top: 1.25rem; }
+        .admin-product-row { display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; padding: 0.75rem; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+        .admin-product-row h3 { margin: 0; font-size: 0.96rem; }
+        .admin-product-row p { margin: 0.15rem 0 0; font-size: 0.72rem; }
+        .admin-product-actions { display: flex; align-items: center; gap: 0.5rem; flex: 0 0 auto; }
+        .admin-product-actions button { min-height: 36px; padding: 0 0.7rem; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); font-size: 0.72rem; font-weight: 800; }
+        .admin-product-actions button:hover { border-color: var(--yellow-hover); background: var(--yellow-soft); }
+        .admin-product-actions button.delete-product { color: var(--red); border-color: #efc3bf; }
+        .admin-product-actions button.delete-product:hover { border-color: var(--red); background: #fff6f5; }
+        .admin-meta { color: var(--muted); font-size: 0.74rem; }
+        .notice { min-height: 1.2rem; margin: 0.75rem 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+        .notice.error { color: var(--red); }
+        .notice.success { color: var(--green); }
+        .portfolio-easter-egg { display: inline-grid; place-items: center; width: 22px; height: 22px; color: var(--muted); border-radius: 50%; text-decoration: none; transition: color 150ms ease, background 150ms ease, transform 150ms ease; }
+        .portfolio-easter-egg:hover, .portfolio-easter-egg:focus-visible { color: var(--ink); background: var(--yellow-soft); outline: 0; transform: rotate(18deg) scale(1.08); }
+        .page-intro .portfolio-easter-egg { display: inline; width: auto; height: auto; margin: 0; color: inherit; border-radius: 0; font-size: inherit; vertical-align: baseline; }
+        .page-intro .portfolio-easter-egg:hover, .page-intro .portfolio-easter-egg:focus-visible { color: var(--yellow-hover); background: transparent; transform: none; }
+
+        .lightbox { position: fixed; z-index: 300; inset: 0; display: grid; place-items: center; padding: 1.25rem; background: rgba(20, 20, 16, 0.88); }
+        .lightbox-dialog { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; width: min(100%, 1000px); height: min(92vh, 860px); padding: 0.8rem; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 18px; background: rgba(255, 255, 255, 0.97); box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35); }
+        .lightbox-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+        .lightbox-toolbar h2 { margin: 0; overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+        .lightbox-controls { display: flex; align-items: center; gap: 0.35rem; }
+        .lightbox-controls button, .lightbox-nav { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); font-weight: 900; }
+        .lightbox-controls button:hover, .lightbox-nav:hover { border-color: var(--yellow-hover); background: var(--yellow-soft); }
+        .lightbox-stage { position: relative; display: grid; place-items: center; min-height: 0; margin: 0.6rem 0; overflow: hidden; border-radius: 12px; background: #f5f5f1; cursor: zoom-in; touch-action: none; user-select: none; }
+        .lightbox-stage.is-zoomed { cursor: grab; }
+        .lightbox-stage.is-panning { cursor: grabbing; }
+        .lightbox-stage img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; user-select: none; will-change: transform; }
+        .lightbox-nav { position: absolute; top: 50%; z-index: 2; border-radius: 50%; background: rgba(255, 218, 0, 0.95); transform: translateY(-50%); }
+        .lightbox-nav.previous { left: 0.8rem; }
+        .lightbox-nav.next { right: 0.8rem; }
+        .lightbox-caption { margin: 0; color: var(--muted); font-size: 0.75rem; text-align: center; }
+
+        @media (min-width: 1100px) {
+            .app-shell { width: min(calc(100% - 4rem), 1180px); padding-bottom: 4.5rem; }
+            .site-nav { width: min(calc(100% - 4rem), 1100px); min-height: 72px; }
+            .site-nav .logo img { height: 34px; }
+            .page-intro { padding-top: 3rem; margin-bottom: 1.75rem; }
+            .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+            .product-media, .product-image-button, .product-placeholder { min-height: 240px; }
+            .product-image-button img { height: 240px; }
+            .product-image-button:hover img { transform: none; }
+            .product-body { padding: 1rem 1.05rem 1.1rem; }
+            .admin-card { margin-top: 1.75rem; padding: 2.25rem; }
+            .lightbox-dialog { width: min(94vw, 1240px); height: min(92vh, 920px); padding: 1rem; }
+        }
+
+        @media (max-width: 760px) {
+            .app-shell { width: min(100% - 1.25rem, 680px); padding-top: 0; }
+            .site-nav { width: min(100% - 2rem, 860px); min-height: 58px; }
+            .nav-actions { margin-left: auto; }
+            .nav-user-name { max-width: min(38vw, 190px); }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .admin-grid .wide { grid-column: auto; }
+            .admin-card { padding: 1rem; }
+            .admin-actions { display: grid; grid-template-columns: 1fr; }
+            .admin-actions > * { width: 100%; }
+            .lightbox-dialog { height: min(88vh, 700px); }
+            .lightbox-controls button:not(#lightbox-close), .lightbox-nav { display: none; }
+            .lightbox-caption { font-size: 0.68rem; }
+        }
+        @media (max-width: 450px) {
+            .brand-lockup { min-width: 42px; }
+            .brand-lockup .brand-name { display: none; }
+            .brand-mark { display: grid; flex: 0 0 38px; width: 38px; height: 38px; font-size: 0.95rem; }
+            .site-nav { width: min(100% - 1.5rem, 860px); padding-right: 0.25rem; padding-left: 0.25rem; }
+            .site-nav .logo img { height: 28px; max-width: 132px; }
+            .nav-actions { gap: 0.35rem; }
+            .nav-user-name { max-width: 80px; font-size: 0.65rem; }
+            .account-link { width: 38px; height: 38px; min-height: 38px; padding: 0; }
+            .account-link span { display: none; }
+            .page-intro { margin-bottom: 1rem; }
+            .page-intro h1 { font-size: clamp(2.15rem, 12vw, 3.2rem); }
+            .page-intro p { font-size: 0.82rem; }
+            .product-media, .product-image-button, .product-placeholder { min-height: 205px; }
+            .product-image-button img { height: 205px; }
+            .admin-product-row { align-items: flex-start; flex-direction: column; }
+            .admin-product-actions { width: 100%; }
+            .admin-product-actions button { flex: 1; }
+            .lightbox { padding: 0.5rem; }
+            .lightbox-dialog { height: 88vh; padding: 0.55rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+            .skeleton::after, .loading-card img { animation: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen" class="loading-screen" role="status" aria-live="polite">
+        <div class="loading-card"><img src="assets/silly-sensei-loading.png" width="1016" height="1547" fetchpriority="high" decoding="async" alt="Silly Sensei"><p>Loading gallery…</p><p id="loading-progress" class="is-hidden"></p><button id="loading-retry" class="secondary-button is-hidden" type="button" onclick="location.reload()">Retry loading</button></div>
+    </div>
+    <noscript><style>#loading-screen, #gallery-loading { display: none !important; }</style></noscript>
+    <div id="app-shell" class="app-shell">
+        <header class="site-header">
+            <nav class="site-nav">
+                <div class="logo"><a href="oodoo.html#home" aria-label="Silly Sensei home"><img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/main/Group%201.png" alt="Manali Strays" width="120" height="30"></a></div>
+                <div class="nav-actions">
+                    <span id="user-badge" class="nav-user-name">Guest</span>
+                    <button class="account-link" id="login-button" type="button" aria-label="Optional admin sign in" title="Optional admin sign in"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 20c.7-3.4 3.2-5.2 7.5-5.2s6.8 1.8 7.5 5.2"></path></svg><span>Admin sign in</span></button>
+                    <a class="account-link" href="oodoo.html#home" aria-label="Open homepage"><svg class="account-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
+                    <button class="account-link is-hidden" id="signout-button" type="button" aria-label="Log out" title="Log out"><svg class="account-icon" viewBox="0 0 512 512" aria-hidden="true"><path d="M192 64h-64c-17.7 0-32 14.3-32 32v320c0 17.7 14.3 32 32 32h64M336 160l96 96-96 96M432 256H176" stroke="currentColor" stroke-width="38" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Sign out</span></button>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="page-intro"><h1>Gallery<a class="portfolio-easter-egg" href="https://idkshetty.github.io" target="_blank" rel="noopener noreferrer" aria-label="Visit the creator portfolio">.</a></h1><p>Economics of this is that the price goes to the artist; anything above it supports Manali Strays simpal ekonomiks.</p></div>
+
+            <section aria-labelledby="gallery-heading">
+                <div class="gallery-heading"><h2 id="gallery-heading">Featured products</h2><span id="gallery-count" class="gallery-count"></span></div>
+                <div id="gallery-loading" role="status" aria-label="Loading products">
+                    <span class="sr-only">Loading products…</span>
+                    <div class="gallery-grid" aria-hidden="true">
+                        <div class="skeleton-card"><div class="product-media skeleton"></div><div class="product-body"><span class="skeleton skeleton-line skeleton-title"></span><span class="skeleton skeleton-line"></span><span class="skeleton skeleton-line skeleton-short"></span><div class="skeleton-thumbnails"><span class="skeleton"></span><span class="skeleton"></span></div></div></div>
+                        <div class="skeleton-card"><div class="product-media skeleton"></div><div class="product-body"><span class="skeleton skeleton-line skeleton-title"></span><span class="skeleton skeleton-line"></span><span class="skeleton skeleton-line skeleton-short"></span><div class="skeleton-thumbnails"><span class="skeleton"></span><span class="skeleton"></span></div></div></div>
+                        <div class="skeleton-card"><div class="product-media skeleton"></div><div class="product-body"><span class="skeleton skeleton-line skeleton-title"></span><span class="skeleton skeleton-line"></span><span class="skeleton skeleton-line skeleton-short"></span><div class="skeleton-thumbnails"><span class="skeleton"></span><span class="skeleton"></span></div></div></div>
+                    </div>
+                </div>
+                <div id="empty-card" class="empty-card is-hidden"><h2>No products yet.</h2><p>Products enabled by the admin will appear here.</p></div>
+                <div id="gallery-grid" class="gallery-grid is-hidden" aria-live="polite"></div>
+                <p id="gallery-notice" class="notice" role="status"></p>
+                <button id="gallery-retry" class="secondary-button is-hidden" type="button" onclick="location.reload()">Retry loading</button>
+                <noscript><p>Enable JavaScript to load the gallery products.</p></noscript>
+            </section>
+
+            <section id="admin-panel" class="admin-card is-hidden">
+                <div class="admin-toolbar"><div><h2>Gallery controls</h2><p>Add products and choose which ones visitors can see.</p></div><span class="status-pill">Admin</span></div>
+                <form id="product-form">
+                    <div class="admin-grid">
+                        <label class="field-label wide" for="product-title">Product title<input id="product-title" type="text" maxlength="120" placeholder="Example: Hand-painted Manali print" required></label>
+                        <label class="field-label wide" for="product-description">Short description<textarea id="product-description" maxlength="500" placeholder="What makes this product special?"></textarea></label>
+                        <label class="field-label" for="product-images">Product images (select multiple)<input id="product-images" type="file" accept="image/*" multiple></label>
+                        <label class="field-label" for="product-image-url">Or image URL<input id="product-image-url" type="url" placeholder="https://…"></label>
+                        <label class="field-label" for="product-base-price">Base price (₹)<input id="product-base-price" type="number" min="0" step="1" inputmode="numeric" placeholder="Optional"></label>
+                        <label class="checkbox-label" for="product-visible"><input id="product-visible" type="checkbox" checked> Show this product to visitors</label>
+                        <label class="checkbox-label" for="product-sold"><input id="product-sold" type="checkbox"> Mark this product as sold</label>
+                    </div>
+                    <div id="admin-preview" class="admin-preview"><span class="admin-meta">Small previews load first; detailed images load when opened. Images over 6 MB are compressed before upload.</span></div>
+                    <div class="admin-actions"><button id="add-product-button" class="primary-button" type="submit">Add product</button><button id="cancel-edit-button" class="secondary-button is-hidden" type="button">Cancel edit</button></div>
+                    <p id="admin-notice" class="notice" role="status"></p>
+                </form>
+                <div class="admin-actions"><button id="optimize-images-button" class="secondary-button is-hidden" type="button">Optimize older images</button></div>
+                <p id="optimize-images-notice" class="notice" role="status"></p>
+                <div class="admin-product-heading"><h3>Manage products</h3><span id="admin-product-count" class="admin-meta"></span></div>
+                <div id="admin-products" class="admin-products"><p class="admin-meta">No products added yet.</p></div>
+            </section>
+        </main>
+
+        <!-- Copyright © 2026 Vishnu Shetty. Built with care for Manali Strays. -->
+    </div>
+
+    <div id="lightbox" class="lightbox is-hidden" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+        <div class="lightbox-dialog">
+            <div class="lightbox-toolbar"><h2 id="lightbox-title">Image preview</h2><div class="lightbox-controls"><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="zoom-reset" type="button" aria-label="Reset zoom">100%</button><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="lightbox-close" type="button" aria-label="Close image preview">×</button></div></div>
+            <div id="lightbox-stage" class="lightbox-stage"><button id="lightbox-previous" class="lightbox-nav previous" type="button" aria-label="Previous image">‹</button><img id="lightbox-image" alt=""><button id="lightbox-next" class="lightbox-nav next" type="button" aria-label="Next image">›</button></div>
+            <p id="lightbox-caption" class="lightbox-caption"></p>
+        </div>
+    </div>
+
+    <script>
+        // Keep a useful fallback even if the application script or CDN is unavailable.
+        window.dismissGallerySplash = () => {
+            document.getElementById("loading-screen").classList.add("is-hidden");
+            document.getElementById("loading-screen").setAttribute("aria-hidden", "true");
+            clearTimeout(window.galleryStartupTimer);
+        };
+        // Slow requests keep the splash visible; offer retry without revealing unfinished images.
+        window.galleryStartupTimer = setTimeout(() => {
+            document.getElementById("loading-progress").textContent = "Images are taking longer to load. You can keep waiting or retry.";
+            document.getElementById("loading-progress").classList.remove("is-hidden");
+            document.getElementById("loading-retry").classList.remove("is-hidden");
+        }, 12000);
+    </script>
+    <script type="module" src="auction.js"></script>
+</body>
+</html>
