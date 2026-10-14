@@ -303,7 +303,7 @@ function renderProductCard(product, prioritizeImage = false) {
     const hiddenLabel = isAdmin
         ? product.visible === false ? '<span class="visibility-pill hidden-state">Hidden from visitors</span>' : '<span class="visibility-pill">Visible</span>'
         : "";
-    const soldBadge = product.sold === true ? '<span class="sold-badge"><img src="assets/sold-stamp.png" loading="lazy" decoding="async" alt="Sold"></span>' : "";
+    const soldBadge = product.sold === true ? '<span class="sold-badge"><img src="https://raw.githubusercontent.com/cleanindiadrive/cleanindiadrive.github.io/refs/heads/main/assets/sold-stamp.png" loading="lazy" decoding="async" alt="Sold"></span>' : "";
     const imageLoading = prioritizeImage ? "eager" : "lazy";
     const imagePriority = prioritizeImage ? "high" : "low";
     const thumbnails = images.length > 1
