@@ -6358,6 +6358,53 @@
 
 <script>
 
+    // Recover legacy plan amounts from this account's linked, confirmed charges.
+    // Work on the response only; do not modify payment history or Firebase records.
+    window.sillysenseResolveAccountAmounts = function (data) {
+        const positive = value => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value) : null;
+        const identity = (record, fallback = "") => String(record.subscriptionId || record.subscription_id || record.parentSubscriptionId || fallback).trim();
+        const recordedAmounts = new Map();
+        for (const source of [data.subscribers, data.subscribers_velcrow]) {
+            for (const [key, record] of Object.entries(source || {})) {
+                if (!record || typeof record !== "object") continue;
+                const amount = positive(record.amount);
+                if (amount !== null) recordedAmounts.set(identity(record, record.id || key), amount);
+            }
+        }
+        const charges = new Map();
+        const visitPayments = source => {
+            for (const record of Object.values(source || {})) {
+                if (!record || typeof record !== "object") continue;
+                if (record.amount === undefined && !record.paymentId && !record.type) {
+                    visitPayments(record);
+                    continue;
+                }
+                const id = identity(record), amount = positive(record.amount);
+                const status = String(record.status || record.paymentStatus || "").toLowerCase();
+                if (!id || amount === null || record.isCancellation || /cancellation|completion/i.test(record.type || "")
+                    || !["paid", "captured", "completed", "success"].includes(status)) continue;
+                const rawDate = record.paidAt || record.createdAt || record.date || record.timestamp || 0;
+                const numeric = Number(rawDate);
+                const timestamp = Number.isFinite(numeric) ? (numeric > 0 && numeric < 100000000000 ? numeric * 1000 : numeric) : Date.parse(rawDate) || 0;
+                if (timestamp > Date.now()) continue;
+                const previous = charges.get(id);
+                if (!previous || timestamp > previous.timestamp) charges.set(id, { amount, timestamp });
+                else if (timestamp === previous.timestamp && amount !== previous.amount) previous.amount = null;
+            }
+        };
+        [data.payments, data.globalPayments, data.testPayments].forEach(visitPayments);
+        const result = { ...data };
+        for (const source of ["subscribers", "subscribers_velcrow"]) {
+            result[source] = Object.fromEntries(Object.entries(data[source] || {}).map(([key, record]) => {
+                if (!record || typeof record !== "object") return [key, record];
+                const id = identity(record, record.id || key);
+                const amount = positive(record.amount) ?? recordedAmounts.get(id) ?? charges.get(id)?.amount ?? null;
+                return [key, { ...record, amount }];
+            }));
+        }
+        return result;
+    };
+
     function showView(viewName) {
         const homeView = document.getElementById("view-home");
         const dashView = document.getElementById("view-dashboard");
@@ -7206,7 +7253,7 @@
                     cache: "no-store",
                 });
                 if (!response.ok) throw new Error(`Account data failed with ${response.status}`);
-                const data = await response.json();
+                const data = window.sillysenseResolveAccountAmounts(await response.json());
                 if (!currentUser || currentUser.uid !== requestUserId) return;
                 sourceData.set("subscribers", data.subscribers || {});
                 sourceData.set("subscribers_velcrow", data.subscribers_velcrow || {});
@@ -8779,7 +8826,7 @@
                     cache: "no-store",
                 });
                 if (!response.ok) throw new Error(`Account data failed with ${response.status}`);
-                const data = await response.json();
+                const data = window.sillysenseResolveAccountAmounts(await response.json());
                 if (!currentUser || currentUser.uid !== requestUserId) return;
                 const userData = data.user || {};
                 const savedName = normalizeProfileName(userData.name || userData.displayName || "");
@@ -9045,7 +9092,7 @@
                 source,
                 path,
                 type: isGift ? "gift-monthly" : "monthly",
-                amount: Number(normalizedRecord.amount) || 100,
+                amount: Number(normalizedRecord.amount) > 0 ? Number(normalizedRecord.amount) : null,
                 status,
                 subscriptionStatus: status,
                 date: normalizedRecord.subscribedAt || normalizedRecord.createdAt || normalizedRecord.lastPaymentAt || Date.now(),
@@ -9266,20 +9313,20 @@
 
             // 1. Initial deduction / request entry:
             // If pending, payment has not been confirmed yet (status: pending, not paid).
-            // If active, paused, or cancelled, ₹100 was deducted (status: paid).
+            // Never invent a default amount when the plan amount is unavailable.
             const hasInitialPayment = group.charges.some((c) => {
                 if (c.isCancellation || c.type === "cancellation" || normalizedStatus(c) === "cancelled" || normalizedStatus(c) === "failed") return false;
                 const cTime = Number(c.date || c.paidAt || c.createdAt || 0);
                 return isConfirmedPayment(c) || Math.abs(cTime - rootTime) < 60000 || /initial|first/i.test(c.note || "");
             });
 
-            if (!hasInitialPayment) {
+            if (!hasInitialPayment && Number(root.amount) > 0) {
                 group.charges.push({
                     id: `${root.id || root.reference}-initial`,
                     subscriptionId: root.id,
                     type: "monthly",
                     reference: cleanReference(root.reference) || (isPending ? `REQ-${String(root.id || "").slice(-4).toUpperCase()}` : "MS-SUB-1001"),
-                    amount: Number(root.amount) || 100,
+                    amount: Number(root.amount),
                     status: isPending ? "pending" : "paid",
                     date: rootTime || Date.now(),
                     paidAt: isPending ? null : (rootTime || Date.now()),
@@ -9354,7 +9401,7 @@
 
     function paymentTypeLabel(record) {
         if (record.isCancellation || record.type === "cancellation") return "Subscription cancellation";
-        if (isSubscriptionRecord(record)) return `Monthly subscription · ${formatAmount(record.amount || 100)}/mo`;
+        if (isSubscriptionRecord(record)) return `Monthly subscription · ${formatAmount(record.amount)}/mo`;
         if (["one-time", "one_time"].includes(record.type)) return "One-time support";
         if (["gift-monthly", "gift-subscription"].includes(record.type)) return `Gift subscription${record.recipientName ? ` · ${record.recipientName}` : ""}`;
         return "Other payment";
@@ -9453,7 +9500,7 @@
             const status = normalizedStatus(subscription);
             const tabKey = `subscription-row-${index}`;
             const date = formatDateOnly(subscription.date || subscription.createdAt);
-            const label = `${formatAmount(subscription.amount || 100)}/mo · ${statusLabel(status)}${date ? ` · ${date}` : ""}`;
+            const label = `${formatAmount(subscription.amount)}/mo · ${statusLabel(status)}${date ? ` · ${date}` : ""}`;
             return `<button type="button" class="subscription-tab${index === 0 ? " is-active" : ""}" role="tab" aria-selected="${index === 0}" data-subscription-tab="${tabKey}">${escapeHtml(label)}</button>`;
         }).join("");
 
@@ -9538,7 +9585,7 @@
                         : `Active · Started ${escapeHtml(formatDateTime(subscription.date || subscription.createdAt))}`;
 
             return `<tr class="subscription-summary-row${isCancelled ? " is-cancelled" : ""}" data-subscription-group="${key}" data-subscription-toggle="${key}" tabindex="0" role="button" aria-expanded="${expanded}">
-              <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</strong><small>${subMetaText}</small></span></td>
+              <td><span class="subscription-row-indicator" aria-hidden="true"></span><span class="subscription-row-copy"><strong>${escapeHtml(`${formatAmount(subscription.amount)} / mo Subscription`)}</strong><small>${subMetaText}</small></span></td>
               <td><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></td>
               <td>${escapeHtml(String(charges.length))}</td>
               <td><strong>${escapeHtml(formatAmount(total))}</strong></td>
@@ -9549,7 +9596,7 @@
               <td colspan="6">
                 <div class="subscription-charges-panel">
                   <div class="card__title card__title--nested">
-                    <span>Payment history · ${escapeHtml(formatAmount(subscription.amount || 100))} / mo${subStatusSuffix}</span>
+                    <span>Payment history · ${escapeHtml(formatAmount(subscription.amount))} / mo${subStatusSuffix}</span>
                     <span class="card__badge">${charges.length} confirmed contribution${charges.length === 1 ? "" : "s"}</span>
                   </div>
                   <div class="subscription-charges-table-wrap">
@@ -9602,7 +9649,7 @@
 
             return `<div class="card uiverse-table-card${isCancelled ? " is-cancelled" : ""}" data-subscription-group="subscription-row-${groups.indexOf(group)}">
           <div class="card__title">
-            <span class="card__title-main">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</span>
+            <span class="card__title-main">${escapeHtml(`${formatAmount(subscription.amount)} / mo Subscription`)}</span>
             <span class="card__badge">${escapeHtml(formatAmount(total))}</span>
           </div>
           <div class="card__data">
@@ -9616,7 +9663,7 @@
               ${canPauseResume || isCancelled ? '<div class="item">Action</div>' : ''}
             </div>
             <div class="card__left">
-              <div class="item">${escapeHtml(`${formatAmount(subscription.amount || 100)} / mo Subscription`)}</div>
+              <div class="item">${escapeHtml(`${formatAmount(subscription.amount)} / mo Subscription`)}</div>
               <div class="item"><span class="status-pill ${paymentStatusClass(status)}">${escapeHtml(statusLabel(status))}</span></div>
               <div class="item">${escapeHtml(planStatusLabel)}</div>
               <div class="item">${charges.length} contribution${charges.length === 1 ? "" : "s"}</div>
@@ -9749,7 +9796,7 @@
                 const rawStatus = normalizedStatus(record);
                 const isCancelled = rawStatus === "cancelled";
                 const displayStatus = isCancelled ? "cancelled" : (rawStatus === "paused" ? "paused" : "active");
-                const amount = formatAmount(record.amount || 100);
+                const amount = formatAmount(record.amount);
                 const dateStr = formatDate(record.date || record.createdAt);
                 const refCode = cleanReference(record.subscriptionId || record.razorpaySubscriptionId || record.reference || record.id || "—");
                 const personTitle = isDonor
@@ -9799,7 +9846,7 @@
                 const rawStatus = normalizedStatus(record);
                 const isCancelled = rawStatus === "cancelled";
                 const displayStatus = isCancelled ? "cancelled" : (rawStatus === "paused" ? "paused" : "active");
-                const amount = formatAmount(record.amount || 100);
+                const amount = formatAmount(record.amount);
                 const dateStr = formatDate(record.date || record.createdAt);
                 const refCode = cleanReference(record.subscriptionId || record.razorpaySubscriptionId || record.reference || record.id || "—");
                 const personTitle = isDonor
@@ -9918,7 +9965,7 @@
                     isGift: true,
                     giftRole: "donor",
                     reference: cleanReference(gift.reference) || "MS-GIFT-1001",
-                    amount: Number(gift.amount) || 100,
+                    amount: Number(gift.amount) > 0 ? Number(gift.amount) : null,
                     status: "paid",
                     date: giftTime,
                     paidAt: giftTime,
@@ -10086,7 +10133,9 @@
         const activeSub = activePersonalSubscriptions[0] || null;
         const payingPersonalSubscriptions = activePersonalSubscriptions.filter((subscription) => normalizedStatus(subscription) === "active");
         const payingMonthlyTotal = payingPersonalSubscriptions.reduce((sum, subscription) => sum + (Number(subscription.amount) || 0), 0);
-        const payingMonthlyLabel = `₹${payingMonthlyTotal.toLocaleString("en-IN")}`;
+        const payingMonthlyLabel = payingPersonalSubscriptions.some(subscription => !(Number(subscription.amount) > 0))
+            ? "Amount unavailable"
+            : `₹${payingMonthlyTotal.toLocaleString("en-IN")}`;
         const activeReceivedGift = raw.find((r) => isGiftRecord(r) && r.giftRole === "receiver" && ["active", "paused"].includes(normalizedStatus(r)));
         if (activeSub) subscriptionCheckoutPending = false;
         cancelledSubscription = findLatestCancelledSubscription(raw);
@@ -10124,10 +10173,10 @@
                 ? `${payingPersonalSubscriptions.length} active subscription${payingPersonalSubscriptions.length === 1 ? "" : "s"}`
                 : "All subscriptions paused");
         } else if (activeReceivedGift) {
-            setText("quick-stat-plan", `${formatAmount(activeReceivedGift.amount || 100)} / mo`);
+            setText("quick-stat-plan", `${formatAmount(activeReceivedGift.amount)} / mo`);
             setText("quick-stat-plan-status", `Gifted by ${activeReceivedGift.donorName || "Supporter"}`);
         } else if (status === "pending") {
-            setText("quick-stat-plan", `${formatAmount(monthlyIntent?.amount || 100)} / mo`);
+            setText("quick-stat-plan", `${formatAmount(monthlyIntent?.amount)} / mo`);
             setText("quick-stat-plan-status", "Payment pending");
         } else if (cancelledSubscription) {
             setText("quick-stat-plan", "None");
@@ -10200,7 +10249,7 @@
             const pausedCount = activePersonalSubscriptions.length - payingPersonalSubscriptions.length;
             subscriptionSummary = `${payingPersonalSubscriptions.length} active monthly subscription${payingPersonalSubscriptions.length === 1 ? "" : "s"} · total ${payingMonthlyLabel}/mo${pausedCount ? ` · ${pausedCount} paused` : ""}. Manage each subscription separately below.`;
         } else if (activeReceivedGift) {
-            subscriptionSummary = `You have an active ${formatAmount(activeReceivedGift.amount || 100)}/mo membership generously gifted by ${activeReceivedGift.donorName || "a kind supporter"}. Thank you for being a vital part of our rescue family!`;
+            subscriptionSummary = `You have an active ${formatAmount(activeReceivedGift.amount)}/mo membership generously gifted by ${activeReceivedGift.donorName || "a kind supporter"}. Thank you for being a vital part of our rescue family!`;
         } else if (cancelledSubscription) {
             const ended = cancelledSubscription.endedAt || cancelledSubscription.cancelledAt || cancelledSubscription.date;
             subscriptionSummary = `Your monthly subscription ended on ${formatDateTime(ended)}. You can start a new monthly subscription anytime.`;
