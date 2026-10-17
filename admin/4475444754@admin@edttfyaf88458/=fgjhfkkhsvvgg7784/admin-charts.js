@@ -205,8 +205,6 @@ function renderOutcomes(model) {
 function renderSubscriptionAmounts(model,formatAmount) {
   const host=el("subscription-amount-chart"), key=el("subscription-amount-key");
   el("subscription-amount-total").textContent=model.active+" active plan"+(model.active===1?"":"s");
-  el("subscription-amount-note").textContent="Share of active subscriptions, including gifts and custom plans. Paused and ended plans are excluded. This current snapshot is independent of the payment date range."
-    +(model.subscriptionAmountsRecovered ? " "+model.subscriptionAmountsRecovered+" missing plan amount"+(model.subscriptionAmountsRecovered===1?" is":"s are")+" based on the latest confirmed payment for that subscription." : "");
   if(!model.active) {
     host.innerHTML='<div class="chart-empty">No active subscriptions yet.</div>';
     key.innerHTML="";
@@ -247,7 +245,6 @@ export function renderDashboardCharts(data,helpers,range) {
   renderVolume(model);
   renderOutcomes(model);
   renderSubscriptionAmounts(model,helpers.formatAmount);
-  el("analytics-footnote").textContent=(model.granularity==="month"?"Selected calendar months through now":"Today and past-day ranges include today through now")+" (IST). Profiles and active plans are all-time/current totals. Cancellation / lifecycle receipts are not payments and are excluded."+ (model.undated?" "+model.undated+" undated payment records excluded from trends.":"");
 }
 
 export function observeDashboardCharts() {
