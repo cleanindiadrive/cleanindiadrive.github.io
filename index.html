@@ -570,6 +570,7 @@
    iOS-Style Segmented Sliding Control for Autopay Tiers
    ============================================================== */
     .cc-ios-tabs {
+        --tab-count: 5;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -586,7 +587,7 @@
     .cc-ios-tabs__control {
         position: relative;
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(var(--tab-count), minmax(0, 1fr));
         align-items: center;
         width: 320px;
         max-width: 100%;
@@ -604,7 +605,7 @@
         position: absolute;
         top: 4px;
         left: 4px;
-        width: calc(25% - 2px);
+        width: calc((100% - 8px) / var(--tab-count));
         height: calc(100% - 8px);
         border-radius: 999px;
         background: #1f1f1a;
@@ -636,23 +637,28 @@
         color: #1f1f1a;
     }
 
-    /* Home tabs translation */
-    #plan-tab-100:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
+    /* Keep the selection thumb aligned with each visible plan. */
+    .cc-ios-tabs__input:nth-of-type(1):checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
         transform: translateX(0%);
     }
 
-    #plan-tab-500:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
+    .cc-ios-tabs__input:nth-of-type(2):checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
         transform: translateX(100%);
     }
 
-    #plan-tab-1000:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
+    .cc-ios-tabs__input:nth-of-type(3):checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
         transform: translateX(200%);
     }
 
-    #plan-tab-1500:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
+    .cc-ios-tabs__input:nth-of-type(4):checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
         transform: translateX(300%);
     }
 
+    .cc-ios-tabs__input:nth-of-type(5):checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
+        transform: translateX(400%);
+    }
+
+    #plan-tab-30:checked~.cc-ios-tabs__control label[for="plan-tab-30"],
     #plan-tab-100:checked~.cc-ios-tabs__control label[for="plan-tab-100"],
     #plan-tab-500:checked~.cc-ios-tabs__control label[for="plan-tab-500"],
     #plan-tab-1000:checked~.cc-ios-tabs__control label[for="plan-tab-1000"],
@@ -660,23 +666,7 @@
         color: #ffffff;
     }
 
-    /* Dashboard tabs translation */
-    #dash-tab-100:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(0%);
-    }
-
-    #dash-tab-500:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(100%);
-    }
-
-    #dash-tab-1000:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(200%);
-    }
-
-    #dash-tab-1500:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(300%);
-    }
-
+    #dash-tab-30:checked~.cc-ios-tabs__control label[for="dash-tab-30"],
     #dash-tab-100:checked~.cc-ios-tabs__control label[for="dash-tab-100"],
     #dash-tab-500:checked~.cc-ios-tabs__control label[for="dash-tab-500"],
     #dash-tab-1000:checked~.cc-ios-tabs__control label[for="dash-tab-1000"],
@@ -684,23 +674,7 @@
         color: #ffffff;
     }
 
-    /* Gift tabs translation */
-    #gift-tab-100:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(0%);
-    }
-
-    #gift-tab-500:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(100%);
-    }
-
-    #gift-tab-1000:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(200%);
-    }
-
-    #gift-tab-1500:checked~.cc-ios-tabs__control .cc-ios-tabs__thumb {
-        transform: translateX(300%);
-    }
-
+    #gift-tab-30:checked~.cc-ios-tabs__control label[for="gift-tab-30"],
     #gift-tab-100:checked~.cc-ios-tabs__control label[for="gift-tab-100"],
     #gift-tab-500:checked~.cc-ios-tabs__control label[for="gift-tab-500"],
     #gift-tab-1000:checked~.cc-ios-tabs__control label[for="gift-tab-1000"],
@@ -3632,7 +3606,7 @@
     }
 
     /* =======================================================
-   AUTOPAY MULTI-TIER PLANS (100, 500, 1000, 1500)
+   AUTOPAY MULTI-TIER PLANS (30, 100, 500, 1000, 1500)
    ======================================================= */
     .hero-plan-chips {
         display: flex;
@@ -5614,6 +5588,7 @@
                         </div>
 
                         <div class="cc-ios-tabs" id="home-autopay-tabs">
+                            <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-30" value="30">
                             <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-100" value="100" checked="">
                             <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-500" value="500">
                             <input class="cc-ios-tabs__input" type="radio" name="home-autopay-tier" id="plan-tab-1000" value="1000">
@@ -5621,6 +5596,7 @@
 
                             <div class="cc-ios-tabs__control">
                                 <div class="cc-ios-tabs__thumb"></div>
+                                <label class="cc-ios-tabs__item" for="plan-tab-30">₹30</label>
                                 <label class="cc-ios-tabs__item" for="plan-tab-100">₹100</label>
                                 <label class="cc-ios-tabs__item" for="plan-tab-500">₹500</label>
                                 <label class="cc-ios-tabs__item" for="plan-tab-1000">₹1,000</label>
@@ -5712,6 +5688,7 @@
                         </div>
 
                         <div class="cc-ios-tabs" id="gift-autopay-tabs">
+                            <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-30" value="30">
                             <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-100" value="100" checked="">
                             <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-500" value="500">
                             <input class="cc-ios-tabs__input" type="radio" name="gift-autopay-tier" id="gift-tab-1000" value="1000">
@@ -5719,6 +5696,7 @@
 
                             <div class="cc-ios-tabs__control">
                                 <div class="cc-ios-tabs__thumb"></div>
+                                <label class="cc-ios-tabs__item" for="gift-tab-30">₹30</label>
                                 <label class="cc-ios-tabs__item" for="gift-tab-100">₹100</label>
                                 <label class="cc-ios-tabs__item" for="gift-tab-500">₹500</label>
                                 <label class="cc-ios-tabs__item" for="gift-tab-1000">₹1,000</label>
@@ -6032,6 +6010,7 @@
                             <div class="dash-plan-picker-wrap" id="dash-plan-picker-wrap">
                                 <div class="dash-plan-picker-label" id="dash-plan-picker-label">Select monthly autopay tier:</div>
                                 <div class="cc-ios-tabs" id="dash-autopay-tabs">
+                                    <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-30" value="30">
                                     <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-100" value="100" checked="">
                                     <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-500" value="500">
                                     <input class="cc-ios-tabs__input" type="radio" name="dash-autopay-tier" id="dash-tab-1000" value="1000">
@@ -6039,6 +6018,7 @@
 
                                     <div class="cc-ios-tabs__control">
                                         <div class="cc-ios-tabs__thumb"></div>
+                                        <label class="cc-ios-tabs__item" for="dash-tab-30">₹30</label>
                                         <label class="cc-ios-tabs__item" for="dash-tab-100">₹100</label>
                                         <label class="cc-ios-tabs__item" for="dash-tab-500">₹500</label>
                                         <label class="cc-ios-tabs__item" for="dash-tab-1000">₹1,000</label>
