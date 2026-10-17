@@ -90,6 +90,14 @@
               <div id="payment-outcomes"></div>
               <div class="outcome-key" id="outcome-key"></div>
             </section>
+            <section class="chart-card subscription-card" aria-labelledby="subscription-amount-title">
+              <div class="chart-heading"><div><span class="chart-overline">Current active plans · all amounts</span><h3 id="subscription-amount-title">Subscriptions by monthly amount</h3></div><span class="subtle-tag" id="subscription-amount-total"></span></div>
+              <div class="subscription-breakdown">
+                <div id="subscription-amount-chart"></div>
+                <ul class="subscription-amount-key" id="subscription-amount-key" aria-label="Subscription counts and percentages by amount"></ul>
+              </div>
+              <p class="chart-caption" id="subscription-amount-note">Share of active subscriptions, including gifts and custom plans. Paused and ended plans are excluded. This current snapshot is independent of the payment date range.</p>
+            </section>
           </div>
           <p class="analytics-footnote" id="analytics-footnote"></p>
           <div class="chart-tooltip" id="chart-tooltip" role="status" hidden></div>

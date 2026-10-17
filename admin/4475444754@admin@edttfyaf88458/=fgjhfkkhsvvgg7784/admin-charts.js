@@ -57,11 +57,38 @@ export function buildDashboardModel(data,helpers,range="6m",now=Date.now()) {
   ];
   const counts=new Map();
   dated.forEach(record=>{ const group=statusGroup(normalizeStatus(record)); counts.set(group,(counts.get(group)||0)+1); });
+  const activeSubscriptions=subscriptions.filter(r=>(helpers.subscriptionStatus||normalizeStatus)(r)==="active");
+  // Legacy subscription roots may omit amount even though their charges have it.
+  // Match the subscription ID, never the supporter: one person can fund many plans.
+  const latestCharges=new Map();
+  for(const payment of payments) {
+    if(!isConfirmed(payment) || !recurring(payment)) continue;
+    const id=String(payment.subscriptionId || payment.subscription_id || "").trim();
+    const amount=Number(payment.amount), timestamp=recordTimestamp(payment)||0;
+    if(!id || !Number.isFinite(amount) || amount<=0 || timestamp>now) continue;
+    const previous=latestCharges.get(id);
+    if(!previous || timestamp>previous.timestamp) latestCharges.set(id,{amount,timestamp});
+    else if(timestamp===previous.timestamp && amount!==previous.amount) previous.amount=null;
+  }
+  let subscriptionAmountsRecovered=0;
+  const amountCounts=new Map();
+  for(const record of activeSubscriptions) {
+    const value=Number(record.amount);
+    let amount=Number.isFinite(value)&&value>0 ? value : null;
+    if(amount===null) {
+      const id=String(record.subscriptionId || record.subscription_id || record.id || "").trim();
+      amount=latestCharges.get(id)?.amount ?? null;
+      if(amount!==null) subscriptionAmountsRecovered++;
+    }
+    amountCounts.set(amount,(amountCounts.get(amount)||0)+1);
+  }
+  const subscriptionAmounts=[...amountCounts].map(([amount,count])=>({amount,count}))
+    .sort((a,b)=>(a.amount??Infinity)-(b.amount??Infinity));
   return {
     buckets, granularity, lifecycleCount:inPeriod.length-dated.length, total:confirmed.reduce((sum,r)=>sum+Math.max(0,Number(r.amount)||0),0),
     confirmedCount:confirmed.length, recordCount:dated.length,
     peopleCount:people.size, verified:[...people.values()].filter(p=>p.profileCompleted).length,
-    active:subscriptions.filter(r=>(helpers.subscriptionStatus||normalizeStatus)(r)==="active").length,
+    active:activeSubscriptions.length, subscriptionAmounts, subscriptionAmountsRecovered,
     paused:subscriptions.filter(r=>(helpers.subscriptionStatus||normalizeStatus)(r)==="paused").length,
     review:payments.filter(r=>statusGroup(normalizeStatus(r))==="pending" || !recordUserId(r)).length,
     undated:payments.filter(r=>!recordTimestamp(r)).length,
@@ -175,6 +202,37 @@ function renderOutcomes(model) {
   el("outcome-key").innerHTML=model.recordCount ? model.statuses.map(s=>'<div><i class="swatch" style="background:'+s.color+'"></i><span>'+s.label+'</span><strong>'+s.count+'</strong></div>').join("") : '<div>No payments in this period.</div>';
 }
 
+function renderSubscriptionAmounts(model,formatAmount) {
+  const host=el("subscription-amount-chart"), key=el("subscription-amount-key");
+  el("subscription-amount-total").textContent=model.active+" active plan"+(model.active===1?"":"s");
+  el("subscription-amount-note").textContent="Share of active subscriptions, including gifts and custom plans. Paused and ended plans are excluded. This current snapshot is independent of the payment date range."
+    +(model.subscriptionAmountsRecovered ? " "+model.subscriptionAmountsRecovered+" missing plan amount"+(model.subscriptionAmountsRecovered===1?" is":"s are")+" based on the latest confirmed payment for that subscription." : "");
+  if(!model.active) {
+    host.innerHTML='<div class="chart-empty">No active subscriptions yet.</div>';
+    key.innerHTML="";
+    return;
+  }
+  const palette=["#6262ae","#efa583","#75afa8","#cd7782","#b29b58","#739cce"];
+  let angle=-Math.PI/2, content="", legend="";
+  const point=a=>[100+88*Math.cos(a),100+88*Math.sin(a)];
+  model.subscriptionAmounts.forEach((tier,index)=>{
+    const color=palette[index] || `hsl(${(index*137.5)%360} 42% 48%)`;
+    const label=tier.amount===null?"Amount not recorded":formatAmount(tier.amount)+" / month";
+    const share=new Intl.NumberFormat("en-IN",{maximumFractionDigits:1}).format(tier.count/model.active*100);
+    const tip=label+"\n"+tier.count+" active subscription"+(tier.count===1?"":"s")+" ("+share+"%)";
+    const next=angle+tier.count/model.active*2*Math.PI, start=point(angle), end=point(next);
+    if(model.subscriptionAmounts.length===1) {
+      content+='<circle'+tooltipAttr(tip)+' cx="100" cy="100" r="88" fill="'+color+'"><title>'+escape(tip)+'</title></circle>';
+    } else {
+      content+='<path'+tooltipAttr(tip)+' d="M 100 100 L '+start.join(" ")+' A 88 88 0 '+(next-angle>Math.PI?1:0)+' 1 '+end.join(" ")+' Z" fill="'+color+'" stroke="white" stroke-width="2"><title>'+escape(tip)+'</title></path>';
+    }
+    angle=next;
+    legend+='<li><i class="swatch" style="background:'+color+'" aria-hidden="true"></i><span>'+escape(label)+'</span><strong>'+tier.count+' <small>('+share+'%)</small></strong></li>';
+  });
+  host.innerHTML=svg(200,200,"Active subscriptions by monthly amount. Slices represent subscription counts; focus a slice for details.",content);
+  key.innerHTML=legend;
+}
+
 export function renderDashboardCharts(data,helpers,range) {
   lastRender={data,helpers,range};
   const model=buildDashboardModel(data,helpers,range);
@@ -188,6 +246,7 @@ export function renderDashboardCharts(data,helpers,range) {
   renderRanking(model,helpers.formatAmount);
   renderVolume(model);
   renderOutcomes(model);
+  renderSubscriptionAmounts(model,helpers.formatAmount);
   el("analytics-footnote").textContent=(model.granularity==="month"?"Selected calendar months through now":"Today and past-day ranges include today through now")+" (IST). Profiles and active plans are all-time/current totals. Cancellation / lifecycle receipts are not payments and are excluded."+ (model.undated?" "+model.undated+" undated payment records excluded from trends.":"");
 }
 
