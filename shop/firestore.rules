@@ -1,0 +1,270 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function admin() {
+      return request.auth != null && (request.auth.token.get('admin', false) == true ||
+        (request.auth.token.get('email_verified', false) == true && request.auth.token.get('email', '').lower() in [
+          'abhishekredddy500@gmail.com', 'vishnudeviprasadshetty@gmail.com', 'supritachat.25@gmail.com'
+        ]));
+    }
+    function category(value) { return value in ['paintings','clay-models','molds','rock-paints']; }
+    function text(value, max) { return value is string && value.size() <= max; }
+    function productValid(p) {
+      return p.keys().hasOnly(['title','description','category','price','comparePrice','stock','sku','material','dimensions','care','visible','featured','archived','images','createdAt','updatedAt']) &&
+        text(p.title,120) && p.title.size() > 0 && text(p.description,3000) && category(p.category) &&
+        p.price is number && p.price > 0 && p.price <= 10000000 &&
+        p.comparePrice is number && (p.comparePrice == 0 || p.comparePrice > p.price) && p.comparePrice <= 10000000 &&
+        p.stock is int && p.stock >= 0 && p.stock <= 100000 &&
+        text(p.sku,80) && text(p.material,150) && text(p.dimensions,150) && text(p.care,500) &&
+        p.visible is bool && p.featured is bool && p.archived is bool &&
+        (!p.archived || p.visible == false) && p.images is list && p.images.size() <= 8 &&
+        p.createdAt is timestamp && p.updatedAt == request.time;
+    }
+    match /products/{id} {
+      allow read: if admin() || resource.data.visible == true;
+      allow create, update: if admin() && productValid(request.resource.data);
+      allow delete: if false; // Archive products instead, preserving request history.
+    }
+    function storeLink(value) {
+      return text(value,500) && (value.matches('^#[a-zA-Z0-9/_-]+$') || value.matches('^https://[^<>" ]+$'));
+    }
+    function reviewImage(images,index) {
+      return images.size()<=index || (text(images[index],2000) && images[index].matches('^https://[^<>" ]+$'));
+    }
+    match /settings/storefront {
+      allow get: if true;
+      allow create, update: if admin() && request.resource.data.keys().hasOnly(['announcementVisible','announcementText','announcementLink','bannerVisible','bannerTitle','bannerText','bannerButton','bannerLink','bannerImage','reviewsVisible','reviewImages']) &&
+        request.resource.data.announcementVisible is bool && request.resource.data.bannerVisible is bool &&
+        text(request.resource.data.announcementText,160) && text(request.resource.data.bannerTitle,100) &&
+        text(request.resource.data.bannerText,400) && text(request.resource.data.bannerButton,50) &&
+        storeLink(request.resource.data.announcementLink) && storeLink(request.resource.data.bannerLink) &&
+        text(request.resource.data.bannerImage,2000) && (request.resource.data.bannerImage.matches('^https://[^<>" ]+$') || request.resource.data.bannerImage.matches('^assets/[a-zA-Z0-9._/-]+$')) &&
+        request.resource.data.reviewsVisible is bool && request.resource.data.reviewImages is list && request.resource.data.reviewImages.size()<=7 &&
+        (!request.resource.data.reviewsVisible || request.resource.data.reviewImages.size()==7) &&
+        reviewImage(request.resource.data.reviewImages,0) && reviewImage(request.resource.data.reviewImages,1) && reviewImage(request.resource.data.reviewImages,2) &&
+        reviewImage(request.resource.data.reviewImages,3) && reviewImage(request.resource.data.reviewImages,4) && reviewImage(request.resource.data.reviewImages,5) && reviewImage(request.resource.data.reviewImages,6);
+    }
+    match /customers/{uid} {
+      function owner() {return request.auth!=null && request.auth.uid==uid;}
+      allow get: if owner();
+      allow create, update: if owner() && request.auth.token.get('firebase',{}).get('sign_in_provider','')!='anonymous' &&
+        request.resource.data.keys().hasOnly(['firstName','lastName','phone','address','apartment','city','state','postalCode','updatedAt']) &&
+        text(request.resource.data.firstName,100) && request.resource.data.firstName.size()>0 &&
+        text(request.resource.data.lastName,100) && request.resource.data.lastName.size()>0 &&
+        text(request.resource.data.phone,16) && text(request.resource.data.address,300) && text(request.resource.data.apartment,150) &&
+        text(request.resource.data.city,100) && text(request.resource.data.state,100) &&
+        text(request.resource.data.postalCode,6) && (request.resource.data.postalCode=='' || request.resource.data.postalCode.matches('^[1-9][0-9]{5}$')) &&
+        request.resource.data.updatedAt==request.time;
+    }
+    function locationValid(p) {
+      return p is map && p.keys().hasOnly(['latitude','longitude','source','accuracy','formattedAddress','confirmed']) &&
+        p.latitude is number && p.latitude >= -90 && p.latitude <= 90 &&
+        p.longitude is number && p.longitude >= -180 && p.longitude <= 180 &&
+        p.source in ['search','pin','device'] && p.confirmed == true &&
+        p.accuracy is number && p.accuracy >= 0 && p.accuracy <= 1000000 && text(p.formattedAddress,1000);
+    }
+    function customerValid(c) {
+      return c.keys().hasOnly(['email','phone','firstName','lastName','address','apartment','city','state','postalCode','country','notes','consent','location']) &&
+        text(c.email,254) && c.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$') &&
+        text(c.phone,16) && c.phone.size() >= 10 &&
+        text(c.firstName,100) && c.firstName.size() > 0 && text(c.lastName,100) && c.lastName.size() > 0 &&
+        text(c.address,300) && c.address.size() > 0 && text(c.apartment,150) &&
+        text(c.city,100) && c.city.size() > 0 && text(c.state,100) && c.state.size() > 0 &&
+        text(c.postalCode,6) && c.postalCode.matches('^[1-9][0-9]{5}$') && c.country == 'India' &&
+        text(c.notes,1000) && c.consent == true && locationValid(c.location);
+    }
+    function itemValid(items, index) {
+      return items.size() <= index || itemFieldsValid(items[index]);
+    }
+    function itemFieldsValid(item) {
+      let quantity = item.quantity;
+      let price = item.unitPrice;
+      return item.keys().hasOnly(['productId','title','category','quantity','unitPrice']) &&
+        item.productId.matches('^[a-zA-Z0-9_-]{1,128}$') && item.title is string && item.title.size() <= 120 &&
+        item.category in ['paintings','clay-models','molds','rock-paints'] &&
+        quantity is int && quantity > 0 && quantity <= 99 &&
+        price is number && price > 0 && price <= 10000000;
+    }
+    function requestValid(d) {
+      let items = d.items;
+      return d.keys().hasOnly(['uid','customer','items','estimatedSubtotal','currency','status','paymentStatus','createdAt']) &&
+        d.uid == request.auth.uid && d.createdAt == request.time && d.currency == 'INR' &&
+        d.status == 'details_received' && d.paymentStatus == 'not_started' &&
+        d.estimatedSubtotal is number && d.estimatedSubtotal > 0 && d.estimatedSubtotal <= 19800000000 &&
+        customerValid(d.customer) && items is list && items.size() > 0 && items.size() <= 5 &&
+        itemValid(items,0) && itemValid(items,1) && itemValid(items,2) && itemValid(items,3) &&
+        itemValid(items,4);
+    }
+    match /checkoutRequests/{id} {
+      allow create: if request.auth != null && requestValid(request.resource.data);
+      allow get: if request.auth != null && (admin() || resource.data.uid == request.auth.uid);
+      allow list: if request.auth != null && (admin() || resource.data.uid == request.auth.uid);
+      allow update: if admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','updatedAt']) &&
+        request.resource.data.status in ['details_received','reviewed','contacted','closed'] && request.resource.data.updatedAt == request.time;
+      allow delete: if admin();
+      match /labels/print {
+        function labelValid(t) {
+          return t.keys().hasOnly(['heading','recipient','address','apartment','city','state','postalCode','phone','country','handling','qrHeading','message']) &&
+            text(t.heading,60) && text(t.recipient,200) && t.recipient.size()>0 && text(t.address,300) && t.address.size()>0 &&
+            text(t.apartment,150) && text(t.city,100) && t.city.size()>0 && text(t.state,100) && t.state.size()>0 &&
+            text(t.postalCode,6) && t.postalCode.matches('^[1-9][0-9]{5}$') && text(t.phone,16) && t.phone.size()>=10 &&
+            text(t.country,60) && text(t.handling,100) && text(t.qrHeading,60) && text(t.message,180);
+        }
+        allow get: if admin();
+        allow create, update: if admin() && exists(/databases/$(database)/documents/checkoutRequests/$(id)) &&
+          request.resource.data.keys().hasOnly(['text','updatedAt']) && labelValid(request.resource.data.text) && request.resource.data.updatedAt==request.time;
+      }
+      match /customizations/{productId} {
+        function imagePathValid(images,index) {
+          return images.size() <= index || (images[index] is string && images[index].size() <= 500 &&
+            images[index].matches('^references/' + request.auth.uid + '/' + id + '/' + productId + '/[a-zA-Z0-9_-]+[.]jpg$'));
+        }
+        function customizationValid() {
+          let d = request.resource.data;
+          let parent = getAfter(/databases/$(database)/documents/checkoutRequests/$(id));
+          return parent.data.uid == request.auth.uid && parent.data.createdAt == request.time &&
+            productInRequest(parent.data.items,productId) &&
+            productId.matches('^[a-zA-Z0-9_-]{1,128}$') && id.matches('^[a-zA-Z0-9_-]{1,128}$') &&
+            d.keys().hasOnly(['uid','productId','note','images']) && d.uid == request.auth.uid && d.productId == productId &&
+            text(d.note,1000) && d.images is list && d.images.size() <= 3 &&
+            imagePathValid(d.images,0) && imagePathValid(d.images,1) && imagePathValid(d.images,2);
+        }
+        function productInRequest(items,pid) {
+          return items[0].productId == pid || (items.size()>1 && items[1].productId == pid) ||
+            (items.size()>2 && items[2].productId == pid) || (items.size()>3 && items[3].productId == pid) ||
+            (items.size()>4 && items[4].productId == pid);
+        }
+        allow create: if request.auth != null && customizationValid();
+        allow read: if request.auth != null && (admin() || resource.data.uid == request.auth.uid);
+      }
+    }
+    // BEGIN STOREFRONT CONTENT
+    function contentImage(v) {return v.matches('^https://[^<>" ]+$') || v.matches('^assets/[a-zA-Z0-9._/-]+$');}
+    function contentLink(v) {return storeLink(v) || v.matches('^mailto:[^<>" ]+@[^<>" ]+$') || v.matches('^tel:[+0-9 -]+$');}
+    match /storeContent/{section} {allow read: if true;}
+    match /storeContent/brand {
+      function valid(d) {return d.keys().hasOnly(['name','pageTitle','logo','mascot']) &&
+        text(d.name,120) &&
+        text(d.pageTitle,120) &&
+        text(d.logo,2000) && contentImage(d.logo) &&
+        text(d.mascot,2000) && contentImage(d.mascot);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/navigation {
+      function valid(d) {return d.keys().hasOnly(['home','shop','collections','story','account']) &&
+        text(d.home,120) &&
+        text(d.shop,120) &&
+        text(d.collections,120) &&
+        text(d.story,120) &&
+        text(d.account,120);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/home {
+      function valid(d) {return d.keys().hasOnly(['eyebrow','heading','ctaTitle','ctaButton','ctaLink','featureLabel','featureTitle','shopTitle','shopDescription','checkoutTitle','checkoutDescription','relatedTitle','searchPlaceholder','cartTitle']) &&
+        text(d.eyebrow,120) &&
+        text(d.heading,120) &&
+        text(d.ctaTitle,120) &&
+        text(d.ctaButton,120) &&
+        text(d.ctaLink,500) && contentLink(d.ctaLink) &&
+        text(d.featureLabel,120) &&
+        text(d.featureTitle,120) &&
+        text(d.shopTitle,120) &&
+        text(d.shopDescription,400) &&
+        text(d.checkoutTitle,120) &&
+        text(d.checkoutDescription,400) &&
+        text(d.relatedTitle,120) &&
+        text(d.searchPlaceholder,120) &&
+        text(d.cartTitle,120);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/collections {
+      function valid(d) {return d.keys().hasOnly(['paintingsName','paintingsDescription','paintingsImage','clayName','clayDescription','clayImage','moldsName','moldsDescription','moldsImage','rocksName','rocksDescription','rocksImage']) &&
+        text(d.paintingsName,120) &&
+        text(d.paintingsDescription,400) &&
+        text(d.paintingsImage,2000) && contentImage(d.paintingsImage) &&
+        text(d.clayName,120) &&
+        text(d.clayDescription,400) &&
+        text(d.clayImage,2000) && contentImage(d.clayImage) &&
+        text(d.moldsName,120) &&
+        text(d.moldsDescription,400) &&
+        text(d.moldsImage,2000) && contentImage(d.moldsImage) &&
+        text(d.rocksName,120) &&
+        text(d.rocksDescription,400) &&
+        text(d.rocksImage,2000) && contentImage(d.rocksImage);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/story {
+      function valid(d) {return d.keys().hasOnly(['pageTitle','eyebrow','heading','text1','text2','caption','button','destination']) &&
+        text(d.pageTitle,120) &&
+        text(d.eyebrow,120) &&
+        text(d.heading,120) &&
+        text(d.text1,6000) &&
+        text(d.text2,6000) &&
+        text(d.caption,120) &&
+        text(d.button,120) &&
+        text(d.destination,500) && contentLink(d.destination);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/services {
+      function valid(d) {return d.keys().hasOnly(['title1','text1','title2','text2','title3','text3']) &&
+        text(d.title1,120) &&
+        text(d.text1,120) &&
+        text(d.title2,120) &&
+        text(d.text2,120) &&
+        text(d.title3,120) &&
+        text(d.text3,120);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/footer {
+      function valid(d) {return d.keys().hasOnly(['description','heading1','heading2','copyright','locale','privacyLabel','termsLabel','link1Label','link1Url','link2Label','link2Url','link3Label','link3Url','link4Label','link4Url','link5Label','link5Url','link6Label','link6Url','link7Label','link7Url','link8Label','link8Url']) &&
+        text(d.description,500) &&
+        text(d.heading1,120) &&
+        text(d.heading2,120) &&
+        text(d.copyright,300) &&
+        text(d.locale,120) &&
+        text(d.privacyLabel,120) &&
+        text(d.termsLabel,120) &&
+        text(d.link1Label,120) &&
+        text(d.link1Url,500) && contentLink(d.link1Url) &&
+        text(d.link2Label,120) &&
+        text(d.link2Url,500) && contentLink(d.link2Url) &&
+        text(d.link3Label,120) &&
+        text(d.link3Url,500) && contentLink(d.link3Url) &&
+        text(d.link4Label,120) &&
+        text(d.link4Url,500) && contentLink(d.link4Url) &&
+        text(d.link5Label,120) &&
+        text(d.link5Url,500) && contentLink(d.link5Url) &&
+        text(d.link6Label,120) &&
+        text(d.link6Url,500) && contentLink(d.link6Url) &&
+        text(d.link7Label,120) &&
+        text(d.link7Url,500) && contentLink(d.link7Url) &&
+        text(d.link8Label,120) &&
+        text(d.link8Url,500) && contentLink(d.link8Url);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/pages {
+      function valid(d) {return d.keys().hasOnly(['contactTitle','contactBody','shippingTitle','shippingBody','privacyTitle','privacyBody','termsTitle','termsBody']) &&
+        text(d.contactTitle,120) &&
+        text(d.contactBody,6000) &&
+        text(d.shippingTitle,120) &&
+        text(d.shippingBody,6000) &&
+        text(d.privacyTitle,120) &&
+        text(d.privacyBody,6000) &&
+        text(d.termsTitle,120) &&
+        text(d.termsBody,6000);}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    match /storeContent/sections {
+      function valid(d) {return d.keys().hasOnly(['collections','callout','featured','services','story','footer']) &&
+        d.collections is bool &&
+        d.callout is bool &&
+        d.featured is bool &&
+        d.services is bool &&
+        d.story is bool &&
+        d.footer is bool;}
+      allow create, update: if admin() && valid(request.resource.data);
+    }
+    // END STOREFRONT CONTENT
+    match /{document=**} { allow read, write: if false; }
+  }
+}
