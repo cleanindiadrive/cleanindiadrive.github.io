@@ -25,6 +25,17 @@ test('storefront publishing is atomic, admin-only and schema constrained',async(
  await assertFails(setDoc(doc(db,'storeContent','unknown'),{}));
 });
 const product=()=>({title:'Test painting',description:'Sample',category:'paintings',price:1800,comparePrice:0,stock:2,sku:'TEST',material:'Canvas',dimensions:'20 cm',care:'Keep dry',visible:true,featured:true,archived:false,images:[],createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+const inlineImage='data:image/png;base64,'+'AAAA'.repeat(24994);
+test('Base64 images fit all supported public documents and reject active or oversized data',async()=>{
+  const db=env.authenticatedContext('image-admin',{admin:true}).firestore();
+  await assertSucceeds(setDoc(doc(db,'products','eight-encoded-images'),{...product(),images:Array(8).fill(inlineImage)}));
+  await assertSucceeds(setDoc(doc(db,'storeContent','brand'),{...DEFAULT_CONTENT.brand,logo:inlineImage,mascot:inlineImage}));
+  await assertSucceeds(setDoc(doc(db,'storeContent','collections'),{...DEFAULT_CONTENT.collections,paintingsImage:inlineImage,clayImage:inlineImage,moldsImage:inlineImage,rocksImage:inlineImage}));
+  for(const bad of ['data:image/svg+xml;base64,PHN2Zy8+','data:text/html;base64,PGgxPg==',inlineImage+'AAAA','data:image/png;base64,']){
+    await assertFails(setDoc(doc(db,'products','bad-encoded-image'),{...product(),images:[bad]}));
+    await assertFails(setDoc(doc(db,'storeContent','brand'),{...DEFAULT_CONTENT.brand,logo:bad}));
+  }
+});
 const request=uid=>({uid,customer:{email:'preview@example.com',phone:'9876543210',firstName:'Demo',lastName:'Customer',address:'12 Example Lane',apartment:'',city:'Bengaluru',state:'Karnataka',postalCode:'560001',country:'India',notes:'Fictional test',consent:true,location:{latitude:12.9716,longitude:77.5946,source:'pin',accuracy:0,formattedAddress:'Bengaluru',confirmed:true}},items:[{productId:'test-art',title:'Test painting',category:'paintings',quantity:1,unitPrice:1800}],estimatedSubtotal:1800,currency:'INR',status:'details_received',paymentStatus:'not_started',createdAt:serverTimestamp()});
 test('only verified administrators can publish valid products',async()=>{
   const admin=env.authenticatedContext('admin',{email:'vishnudeviprasadshetty@gmail.com',email_verified:true}).firestore();
@@ -95,6 +106,7 @@ test('banner settings are publicly readable but only admins can edit visibility 
   await assertFails(setDoc(doc(admin,'settings','storefront'),{...settings,bannerLink:'javascript:alert(1)'}));
   await assertFails(setDoc(doc(admin,'settings','storefront'),{...settings,reviewsVisible:true,reviewImages:['https://example.com/review.jpg']}));
   await assertSucceeds(setDoc(doc(admin,'settings','storefront'),{...settings,reviewsVisible:true,reviewImages:Array(7).fill('https://example.com/review.jpg')}));
+  await assertSucceeds(setDoc(doc(admin,'settings','storefront'),{...settings,bannerImage:inlineImage}));
 });
 test('customer dashboard only lists requests belonging to the signed-in customer',async()=>{
   const db=env.authenticatedContext('buyer').firestore();
@@ -147,4 +159,14 @@ test('a full five-product checkout can include three private references per prod
     images:Array.from({length:3},(_,i)=>`references/buyer/full-custom/${item.productId}/image-${i}.jpg`)
   });
   await assertSucceeds(batch.commit());
+});
+test('Base64 reference images remain private and fit a full checkout batch',async()=>{
+  const db=env.authenticatedContext('buyer').firestore(),payload=request('buyer');
+  payload.items=Array.from({length:5},(_,i)=>({...payload.items[0],productId:`inline-${i}`}));payload.estimatedSubtotal=9000;
+  const batch=writeBatch(db);batch.set(doc(db,'checkoutRequests','inline-private'),payload);
+  for(const item of payload.items)batch.set(doc(db,'checkoutRequests','inline-private','customizations',item.productId),{uid:'buyer',productId:item.productId,note:'Private image',images:Array(3).fill(inlineImage)});
+  await assertSucceeds(batch.commit());
+  await assertSucceeds(getDoc(doc(db,'checkoutRequests','inline-private','customizations','inline-0')));
+  await assertFails(getDoc(doc(env.authenticatedContext('other').firestore(),'checkoutRequests','inline-private','customizations','inline-0')));
+  await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(),'checkoutRequests','inline-private','customizations','inline-0')));
 });

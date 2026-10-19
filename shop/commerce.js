@@ -1,4 +1,5 @@
 import {validLocation} from './location-utils.js';
+import {validImageSource} from './image-data.js';
 export const MAX_CART_ITEMS = 5;
 export const CATEGORIES = [
   { id: 'paintings', name: 'Paintings', description: 'Little windows to a world of colour.', image: 'assets/paintings.svg' },
@@ -10,9 +11,7 @@ export const categoryOf = id => CATEGORIES.find(c => c.id === id);
 export const money = value => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(value || 0);
 export const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function safeImage(value, fallback = 'assets/paintings.svg') {
-  if (typeof value !== 'string') return fallback;
-  if (/^https:\/\//i.test(value) || /^assets\/[a-z0-9._/-]+$/i.test(value)) return value;
-  return fallback;
+  return validImageSource(value)?value:fallback;
 }
 export function normalizeProduct(raw) {
   return { ...raw, title: String(raw.title || 'Untitled'), category: categoryOf(raw.category) ? raw.category : 'paintings',

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node scripts/serve.mjs",
-    "test": "node --test tests/commerce.test.mjs tests/location.test.mjs tests/account-label.test.mjs tests/content.test.mjs",
+    "test": "node --test tests/commerce.test.mjs tests/location.test.mjs tests/account-label.test.mjs tests/content.test.mjs tests/images.test.mjs",
     "check": "node scripts/check.mjs"
   },
   "devDependencies": {

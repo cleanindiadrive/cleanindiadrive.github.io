@@ -1,8 +1,9 @@
 import {escapeHTML as e,safeImage} from './commerce.js';
+import {MAX_INLINE_IMAGE_LENGTH} from './image-data.js';
 const field=(label,value,kind='text',max=120)=>({label,value,kind,max});
 const body=(label,value)=>field(label,value,'textarea',6000);
 const link=(label,value)=>field(label,value,'link',500);
-const picture=(label,value)=>field(label,value,'image',2000);
+const picture=(label,value)=>field(label,value,'image',MAX_INLINE_IMAGE_LENGTH);
 const toggle=(label,value=true)=>field(label,value,'checkbox');
 export const CONTENT_SCHEMA={
   brand:{label:'Branding',fields:{name:field('Store name','Silly Sensei'),pageTitle:field('Browser tab title','Silly Sensei · Handmade art & little things'),logo:picture('Store logo','assets/brand-logo.png'),mascot:picture('Studio mascot','assets/silly-sensei-loading.png')}},
@@ -34,7 +35,7 @@ export function validateContent(content){
     if(f.kind==='checkbox'){if(typeof v!=='boolean')return `${f.label}: choose a visibility option.`;continue;}
     if(typeof v!=='string'||v.length>f.max)return `${f.label}: use up to ${f.max} characters.`;
     if(f.kind==='link'&&!safeContentLink(v))return `${f.label}: use a store route, HTTPS URL, email or phone link.`;
-    if(f.kind==='image'&&safeImage(v,'')!==v)return `${f.label}: use an HTTPS image URL or an assets/ path.`;
+    if(f.kind==='image'&&(!v||safeImage(v,'')!==v))return `${f.label}: choose an image, an HTTPS image URL or an assets/ path.`;
   }
   return '';
 }

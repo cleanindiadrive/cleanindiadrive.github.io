@@ -2,6 +2,7 @@ import {firebaseConfig, ADMIN_EMAILS} from './firebase-config.js';
 import {MAX_CART_ITEMS,normalizeProduct, cartLines, subtotal,validateCustomer} from './commerce.js';
 import {normalizeSettings} from './store-settings.js';
 import {normalizeContent,validateContent} from './store-content.js';
+import {encodeImage,isInlineImage,validImageSource} from './image-data.js';
 
 let sdkPromise, sdk;
 const privateImages = new Map();
@@ -62,6 +63,7 @@ export async function observeProducts(admin,onData,onError) {
   return f.onSnapshot(source, snap => onData(snap.docs.map(d => normalizeProduct({...d.data(),id:d.id}))), onError);
 }
 export async function saveProduct(product,id) {
+  if(!Array.isArray(product.images)||product.images.length>8||product.images.some(image=>!validImageSource(image)))throw new Error('Use up to 8 valid product images.');
   const {f,db} = await backend();
   const reference = id ? f.doc(db,'products',id) : f.doc(f.collection(db,'products'));
   const payload = {...product,updatedAt:f.serverTimestamp()};
@@ -71,25 +73,8 @@ export async function saveProduct(product,id) {
 export async function archiveProduct(id) {
   const {f,db} = await backend(); await f.updateDoc(f.doc(db,'products',id),{visible:false,archived:true,updatedAt:f.serverTimestamp()});
 }
-export async function uploadImage(file,productId) {
-  const blob=await imageBlob(file);
-  const {s,storage} = await backend();
-  const reference = s.ref(storage,`products/${productId}/${crypto.randomUUID()}.jpg`);
-  await s.uploadBytes(reference,blob,{contentType:'image/jpeg'});
-  return s.getDownloadURL(reference);
-}
-async function imageBlob(file) {
-  if (!['image/jpeg','image/png','image/webp'].includes(file.type)) throw new Error('Use JPG, PNG or WebP images.');
-  if (file.size > 6 * 1024 * 1024) throw new Error('Each image must be smaller than 6 MB.');
-  const bitmap = await createImageBitmap(file);
-  const canvas = document.createElement('canvas');
-  const scale = Math.min(1,1600 / Math.max(bitmap.width,bitmap.height));
-  canvas.width = Math.round(bitmap.width * scale); canvas.height = Math.round(bitmap.height * scale);
-  const context = canvas.getContext('2d'); context.fillStyle = '#fff';context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
-  const blob = await new Promise(resolve => canvas.toBlob(resolve,'image/jpeg',.87));
-  if (!blob) throw new Error('This image could not be processed.');
-  return blob;
-}
+// Keep the existing editor API; new files are encoded locally and saved with their document.
+export async function uploadImage(file) {return encodeImage(file);}
 export async function saveCheckout(id,customer,cart,displayedProducts,customizations=[]) {
   const invalid=validateCustomer(customer);if(invalid)throw new Error(invalid);
   const {a,auth,f,db} = await backend();
@@ -119,12 +104,7 @@ async function prepareCustomizations(requestId,uid,customizations) {
     if(entry.files.length>3||entry.note.length>1000)throw new Error('Use up to 3 reference images and 1,000 characters per product.');
     const images=[];
     for(const item of entry.files){
-      const path=`references/${uid}/${requestId}/${entry.productId}/${item.id}.jpg`;
-      if(!privateImages.has(path)){
-        const blob=await imageBlob(item.file);
-        {const {s,storage}=await backend();await s.uploadBytes(s.ref(storage,path),blob,{contentType:'image/jpeg'});privateImages.set(path,null);}
-      }
-      images.push(path);
+      images.push(await encodeImage(item.file));
     }
     result.push({uid,productId:entry.productId,note:entry.note.trim(),images});
   }
@@ -134,6 +114,12 @@ export async function loadCustomizations(id) {
   const {f,db}=await backend();const snap=await f.getDocs(f.collection(db,'checkoutRequests',id,'customizations'));return snap.docs.map(d=>d.data());
 }
 export async function referenceImageURL(path) {
+  if(isInlineImage(path)){
+    const {auth}=await backend();if(!auth.currentUser)throw new Error('Sign in again to view this reference.');
+    if(privateImages.get(path))return privateImages.get(path);
+    const [header,data]=path.split(','),bytes=Uint8Array.from(atob(data),c=>c.charCodeAt(0));
+    const url=URL.createObjectURL(new Blob([bytes],{type:header.slice(5,header.indexOf(';'))}));privateImages.set(path,url);return url;
+  }
   if(privateImages.get(path))return privateImages.get(path);
   const {s,storage,auth}=await backend();const owner=auth.currentUser?.uid;
   const blob=await s.getBlob(s.ref(storage,path),6*1024*1024);

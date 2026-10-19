@@ -8,7 +8,7 @@ const block=Object.entries(CONTENT_SCHEMA).map(([section,group])=>{
 let rules=await readFile('firestore.rules','utf8');
 const start='    // BEGIN STOREFRONT CONTENT',end='    // END STOREFRONT CONTENT';
 const generated=`${start}
-    function contentImage(v) {return v.matches('^https://[^<>" ]+$') || v.matches('^assets/[a-zA-Z0-9._/-]+$');}
+    function contentImage(v) {return storedImage(v);}
     function contentLink(v) {return storeLink(v) || v.matches('^mailto:[^<>" ]+@[^<>" ]+$') || v.matches('^tel:[+0-9 -]+$');}
     match /storeContent/{section} {allow read: if true;}
 ${block}
