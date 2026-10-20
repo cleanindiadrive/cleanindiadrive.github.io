@@ -8649,6 +8649,11 @@
     window.addEventListener("focus", refreshVisiblePublicSummary);
     window.addEventListener("online", refreshVisiblePublicSummary);
     window.addEventListener("pageshow", refreshVisiblePublicSummary);
+    window.addEventListener("sillysense-profile-updated", async () => {
+        // If an older read is still running, refresh once more after it finishes.
+        await publicSummaryRequest;
+        void loadPublicSummary();
+    });
     window.addEventListener("sillysense-payment-state", () => {
         if (!window.sillysensePaymentBusy?.()) refreshVisiblePublicSummary();
     });
@@ -8892,6 +8897,7 @@
         });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.error || "Could not update profile");
+        window.dispatchEvent(new Event("sillysense-profile-updated"));
         return result.user || null;
     }
     let selectedDashboardPlanAmount = 100;
