@@ -5,15 +5,19 @@ import {normalizeSettings} from './store-settings.js';
 import {normalizeContent,validateContent} from './store-content.js';
 import {encodeImage,isInlineImage} from './image-data.js';
 
-let sdkPromise, sdk,realtimePromise;
+let sdkPromise, sdk,realtimePromise,publicConfigPromise;
 const productListeners=new Set();
 let adminProducts=[];
 export async function backend(){
  if(!sdkPromise)sdkPromise=Promise.all([import('https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js')]).then(([appAPI,a])=>{const app=appAPI.getApps().length?appAPI.getApp():appAPI.initializeApp(firebaseConfig);sdk={app,auth:a.getAuth(app),a};return sdk;}).catch(error=>{sdkPromise=null;throw error;});return sdkPromise;
 }
+async function loadPublicConfig(){
+ if(!publicConfigPromise)publicConfigPromise=(async()=>{const response=await fetch(backendURL()+'/config',{signal:AbortSignal.timeout(15000)});if(!response.ok)throw new Error('The backend configuration is unavailable.');const config=await response.json();if(config.projectId!==firebaseConfig.projectId)throw new Error('Frontend and backend Firebase projects do not match.');return config;})().catch(error=>{publicConfigPromise=null;throw error;});return publicConfigPromise;
+}
+export async function paymentPreviewEnabled(){try{return (await loadPublicConfig()).paymentPreviewEnabled===true;}catch{return false;}}
 async function realtimeBackend(){
  if(!realtimePromise)realtimePromise=(async()=>{const {app}=await backend();const r=await import('https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js');let url=firebaseConfig.databaseURL;
- if(!url){const response=await fetch(backendURL()+'/config',{signal:AbortSignal.timeout(15000)});if(!response.ok)throw new Error('The backend database configuration is unavailable.');const config=await response.json();if(config.projectId!==firebaseConfig.projectId)throw new Error('Frontend and backend Firebase projects do not match.');url=config.databaseURL;}
+ if(!url){const config=await loadPublicConfig();url=config.databaseURL;}
  if(!url)throw new Error('Set FIREBASE_DB_URL on the backend.');return {r,db:r.getDatabase(app,url)};})().catch(error=>{realtimePromise=null;throw error;});return realtimePromise;
 }
 function cachedPublic(path,onData){const key='silly-public-v2:'+path;try{const cache=JSON.parse(localStorage.getItem(key));if(cache&&Date.now()-cache.time<86400000)onData(cache.value);}catch{}return value=>{try{localStorage.setItem(key,JSON.stringify({time:Date.now(),value}));}catch{}onData(value);};}
