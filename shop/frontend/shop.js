@@ -4,6 +4,7 @@ import {ORDER_STATUSES,availableStatuses,canTransition,statusHelp} from './order
 import {openQuoteEditor} from './quote-editor.js';
 import './image-loading.js';
 import {pageSkeleton,skeletonMarkup} from './skeletons.js';
+import {deferPageRender} from './page-loading.js';
 import {mountSalesDashboard} from './sales-dashboard.js';
 import {payRequest} from './payments.js';
 import {mountReviewEditor,collectReviews} from './review-editor.js';
@@ -173,6 +174,7 @@ function applyCheckoutProfile(profile=accountState.profile){
   if(checkoutStep===3)renderCheckoutReview();
 }
 function renderCheckout(){
+  if(deferPageRender(render))return;
   if(user&&!user.isAnonymous){
     const defaults=checkoutProfileDefaults();
     for(const key of ['email','firstName','lastName','phone','address','apartment','city','state','postalCode'])if(checkoutDraft[key]===undefined&&!checkoutTouched.has(key)&&defaults[key])checkoutDraft[key]=defaults[key];
@@ -337,6 +339,7 @@ async function submitCheckout(event){
   }
 }
 function renderAccount(){
+  if(deferPageRender(render))return;
   $('main').innerHTML=accountMarkup(user,isAdmin,{...accountState,tab:route().id,states,authLoading,authError});mountLogout();
   if(user&&!user.isAnonymous&&!accountState.loaded&&!accountState.loading)fetchCustomerAccount();
 }
@@ -414,6 +417,8 @@ function renderAdmin(){
   $('main').innerHTML=`<div class="wide-container admin-layout"><aside class="admin-sidebar"><p class="eyebrow">The studio / Admin</p><nav class="admin-nav" aria-label="Studio navigation">${[['sales','Sales & revenue'],['products','Products'],['collections','Collections'],['requests','Orders & requests'],['content','Storefront editor'],['settings','Banners & reviews'],['labels','Label template'],['contact','Contact page'],['shipping','Shipping policy'],['refunds','Cancellation & returns'],['privacy','Privacy policy'],['terms','Terms of service']].map(([id,label])=>`<button class="admin-tab ${adminTab===id?'active':''}" data-action="admin-tab" data-tab="${id}">${label}</button>`).join('')}</nav><div class="admin-account-actions"><a class="admin-tab" href="#home">View store ↗</a>${logoutMarkup()}<p class="small muted">${e(user?.displayName || 'Administrator')}</p></div></aside><section class="admin-main" id="admin-content"></section></div>`;renderAdminContent();mountLogout();
 }
 function renderAdminContent(){
+  if(deferPageRender(render))return;
+  if(!$('admin-content')){render();return;}
   if(adminTab==='sales'){mountSalesDashboard($('admin-content'),{load:store.loadSales});
   }else if(adminTab==='labels'){mountLabelTemplate($('admin-content'),{load:store.loadLabel,save:store.saveLabel});
   }else if(adminTab==='products'){
@@ -484,6 +489,7 @@ function render(){
   deliveryMap?.destroy();deliveryMap=null;stopReviews();
   const {page}=route();if(page!=='checkout'&&lastRenderedPage==='checkout')checkoutStep=1;lastRenderedPage=page;document.body.dataset.page=page;document.querySelectorAll('.desktop-nav>a').forEach(a=>a.toggleAttribute('aria-current',a.hash===`#${page}`));document.querySelectorAll('.desktop-nav>a[aria-current]').forEach(a=>a.setAttribute('aria-current','page'));
   document.title=`${page==='home'?'Art store':page==='admin'?'Studio admin':page==='checkout'?'Checkout':page==='account'?'Your account':'Art store'} · Silly Sensei`;
+  if(deferPageRender(render))return;
   if(['about','info'].includes(page)&&!contentReady&&!contentError){$('main').innerHTML=pageSkeleton(page);return;}
   if(page==='home')renderHome();else if(['shop','collection','search'].includes(page))renderShop();else if(page==='product')renderProduct();else if(page==='checkout')renderCheckout();else if(page==='admin')renderAdmin();else if(page==='account')renderAccount();else if(page==='about')$('main').innerHTML=`<div class="container"><div class="page-head">${breadcrumbs('Our story')}<h1>About Silly Sensei</h1></div>${story()}</div>`;else if(page==='info')renderInfo();else renderNotFound();
   applyStoreContent(siteContent,page);decorateCartButtons();stopReviews=mountReviews();mountLogout();
