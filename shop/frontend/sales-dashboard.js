@@ -1,5 +1,6 @@
 import {salesCSV,downloadFile} from './downloads.js';
 import {money,escapeHTML as e} from './commerce.js';
+import {skeletonMarkup} from './skeletons.js';
 const time=v=>v?.seconds?v.seconds*1000:typeof v==='number'?v:Date.parse(v);
 const day=t=>new Date(t+19800000).toISOString().slice(0,10);
 export function summarizeSales(rows,{from='',to='',mode='live'}={}){
@@ -11,7 +12,7 @@ export function summarizeSales(rows,{from='',to='',mode='live'}={}){
   return {gross,refunded,net:gross-refunded,count:filtered.length,average:filtered.length?Math.round(gross/filtered.length):0,daily:[...daily].sort(([a],[b])=>a.localeCompare(b)),products:[...products.values()].sort((a,b)=>b.quantity-a.quantity),rows:filtered};
 }
 export async function mountSalesDashboard(root,{load}){
-  root.innerHTML='<h1>Sales & revenue</h1><p role="status">Loading verified payment records…</p>';
+  root.innerHTML=skeletonMarkup('sales','Loading verified payment records…');
   try{const rows=await load();if(!root.isConnected)return;const today=day(Date.now()),start=day(Date.now()-29*86400000);
     root.innerHTML=`<div class="admin-title"><div><p class="eyebrow">The business side</p><h1>Sales & revenue</h1><p>Verified Razorpay payments and recorded offline payments.</p></div></div><form class="sales-toolbar"><label class="field">From<input name="from" type="date" value="${start}"></label><label class="field">To<input name="to" type="date" value="${today}"></label><label class="field">Payment type<select name="mode"><option value="live">Live payments</option><option value="test">Test payments</option><option value="manual">Offline/manual</option></select></label><button class="button outline small" type="button" data-sales-export>Export sales CSV</button><button class="button outline small" type="button" data-sales-refresh>Refresh</button></form><div id="sales-results"></div>`;
     const form=root.querySelector('form'),output=root.querySelector('#sales-results');form.onsubmit=event=>event.preventDefault();

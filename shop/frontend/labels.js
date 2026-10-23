@@ -1,4 +1,5 @@
 import {escapeHTML as e} from './commerce.js';
+import {skeletonMarkup} from './skeletons.js';
 import {validLocation,locationLink} from './location-utils.js';
 import {loadScript} from './browser-library.js';
 import {TEMPLATE_FIELDS,DEFAULT_LABEL_TEMPLATE,normalizeTemplate,labelForRequest} from './label-data.js';
@@ -23,7 +24,7 @@ export async function openLabel(request,{load}) {
   window.addEventListener('afterprint',()=>document.body.classList.remove('printing-label'),{once:true});dialog.showModal();
 }
 export async function mountLabelTemplate(root,{load,save}) {
-  root.innerHTML='<h1>Label template</h1><p role="status">Loading your shared label settings…</p>';
+  root.innerHTML=skeletonMarkup('editor','Loading your shared label settings…');
   const request={id:'sample-label',customer:{firstName:'Sample',lastName:'Recipient',address:'12 Example Street',apartment:'Apartment 4B',city:'Bengaluru',state:'Karnataka',postalCode:'560001',phone:'9000000000',location:{latitude:12.9716,longitude:77.5946,source:'pin',confirmed:true,accuracy:0,formattedAddress:'Bengaluru, Karnataka'}},items:[{quantity:1}]};
   try{
     const [value,qr]=await Promise.all([load(),makeQR(request.customer)]);if(!root.isConnected)return;
