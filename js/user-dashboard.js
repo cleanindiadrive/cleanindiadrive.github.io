@@ -2,7 +2,7 @@ import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.
 import { onValue, push, ref, remove, set, update } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 import { auth, database, isDevelopmentMode } from "./firebase-client.js";
 
-const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com").replace(/\/+$/, "");
+const BACKEND_URL = (window.BACKEND_API_URL || "https://sillysensei-payment-backend.idkshetty26.workers.dev").replace(/\/+$/, "");
 let currentUserPhone = "";
 const get = (id) => document.getElementById(id);
 

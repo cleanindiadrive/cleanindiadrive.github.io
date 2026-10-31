@@ -6308,7 +6308,17 @@
     const subscriberSources = ["subscribers", "subscribers_velcrow", "users", "payments", "testPayments"];
     let currentUser = null;
     let currentUserPhone = "";
-    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com").replace(/\/+$/, "");
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillysensei-payment-backend.idkshetty26.workers.dev").replace(/\/+$/, "");
+
+    async function getBackendAuthHeaders() {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Please sign in before using payment services.");
+        const token = await user.getIdToken();
+        return {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    }
     let currentSubscription = null;
     let currentUserPaymentRecords = [];
     let monthlyRequestPending = false;
@@ -7203,7 +7213,7 @@
                     if (subId.startsWith("sub_")) {
                         await fetch(`${BACKEND_URL}/resume-subscription`, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: await getBackendAuthHeaders(),
                             body: JSON.stringify({ subscription_id: subId }),
                         });
                     }
@@ -7331,7 +7341,7 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount: selectedMonthlyAmount,
                         user_id: currentUser ? currentUser.uid : "",
@@ -7428,7 +7438,7 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/create-one-time-payment`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount,
                         name: currentUser?.displayName || "",
@@ -7461,7 +7471,7 @@
                         try {
                             const verifyRes = await fetch(`${BACKEND_URL}/verify-one-time-payment`, {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: await getBackendAuthHeaders(),
                                 body: JSON.stringify({
                                     razorpay_order_id: response.razorpay_order_id,
                                     razorpay_payment_id: response.razorpay_payment_id,
@@ -7553,7 +7563,7 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/create-gift-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount: selectedGiftAmount,
                         recipient_name: recipient.name,
@@ -7924,7 +7934,17 @@
 
 
 
-    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com").replace(/\/+$/, "");
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillysensei-payment-backend.idkshetty26.workers.dev").replace(/\/+$/, "");
+
+    async function getBackendAuthHeaders() {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Please sign in before using payment services.");
+        const token = await user.getIdToken();
+        return {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    }
     let currentUserPhone = "";
     const get = (id) => document.getElementById(id);
 
@@ -9594,7 +9614,7 @@
 
             const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: await getBackendAuthHeaders(),
                 body: JSON.stringify({
                     amount: effectiveAmount,
                     user_id: currentUser.uid,
@@ -9819,7 +9839,7 @@
             if (subId.startsWith("sub_")) {
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({ subscription_id: subId }),
                 });
                 if (!res.ok) {
@@ -9958,7 +9978,7 @@
                     if (subId.startsWith("sub_")) {
                         const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: await getBackendAuthHeaders(),
                             body: JSON.stringify({ subscription_id: subId }),
                         });
                         if (!res.ok) {
@@ -10105,7 +10125,7 @@
                     const endpoint = isPausing ? "pause-subscription" : "resume-subscription";
                     const res = await fetch(`${BACKEND_URL}/${endpoint}`, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: await getBackendAuthHeaders(),
                         body: JSON.stringify({ subscription_id: subId }),
                     });
                     if (!res.ok) {
@@ -10432,7 +10452,7 @@
             if (subId.startsWith("sub_")) {
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({ subscription_id: subId, is_gift: true }),
                 });
                 if (!res.ok) {

@@ -142,7 +142,7 @@
     };
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com/").replace(/\/+$/, "");
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillysensei-payment-backend.idkshetty26.workers.dev").replace(/\/+$/, "");
     const $ = (id) => document.getElementById(id);
     const state = { users:{}, payments:{}, testPayments:{}, subscribers:{}, subscribersVelcrow:{} };
     let selectedUserKey = "";

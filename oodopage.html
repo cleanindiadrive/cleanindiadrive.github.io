@@ -6754,7 +6754,17 @@ details:not([open]) > :not(summary) {
     const subscriberSources = ["subscribers", "subscribers_velcrow", "users", "payments", "testPayments"];
     let currentUser = null;
     let currentUserPhone = "";
-    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com").replace(/\/+$/, "");
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillysensei-payment-backend.idkshetty26.workers.dev").replace(/\/+$/, "");
+
+    async function getBackendAuthHeaders() {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Please sign in before using payment services.");
+        const token = await user.getIdToken();
+        return {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    }
     let currentSubscription = null;
     let currentUserPaymentRecords = [];
     let monthlyRequestPending = false;
@@ -7649,7 +7659,7 @@ details:not([open]) > :not(summary) {
                     if (subId.startsWith("sub_")) {
                         await fetch(`${BACKEND_URL}/resume-subscription`, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: await getBackendAuthHeaders(),
                             body: JSON.stringify({ subscription_id: subId }),
                         });
                     }
@@ -7777,7 +7787,7 @@ details:not([open]) > :not(summary) {
             try {
                 const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount: selectedMonthlyAmount,
                         user_id: currentUser ? currentUser.uid : "",
@@ -7870,7 +7880,7 @@ details:not([open]) > :not(summary) {
             try {
                 const res = await fetch(`${BACKEND_URL}/create-one-time-payment`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount,
                         name: currentUser?.displayName || "",
@@ -7967,7 +7977,7 @@ details:not([open]) > :not(summary) {
             try {
                 const res = await fetch(`${BACKEND_URL}/create-gift-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({
                         amount: selectedGiftAmount,
                         recipient_name: recipient.name,
@@ -8358,7 +8368,17 @@ details:not([open]) > :not(summary) {
 
 
 
-    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillypayement.onrender.com").replace(/\/+$/, "");
+    const BACKEND_URL = (window.BACKEND_API_URL || "https://sillysensei-payment-backend.idkshetty26.workers.dev").replace(/\/+$/, "");
+
+    async function getBackendAuthHeaders() {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Please sign in before using payment services.");
+        const token = await user.getIdToken();
+        return {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+    }
     let currentUserPhone = "";
     const get = (id) => document.getElementById(id);
 
@@ -10041,7 +10061,7 @@ details:not([open]) > :not(summary) {
 
             const res = await fetch(`${BACKEND_URL}/create-subscription`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: await getBackendAuthHeaders(),
                 body: JSON.stringify({
                     amount: effectiveAmount,
                     user_id: currentUser.uid,
@@ -10266,7 +10286,7 @@ details:not([open]) > :not(summary) {
             if (subId.startsWith("sub_")) {
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({ subscription_id: subId }),
                 });
                 if (!res.ok) {
@@ -10405,7 +10425,7 @@ details:not([open]) > :not(summary) {
                     if (subId.startsWith("sub_")) {
                         const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: await getBackendAuthHeaders(),
                             body: JSON.stringify({ subscription_id: subId }),
                         });
                         if (!res.ok) {
@@ -10552,7 +10572,7 @@ details:not([open]) > :not(summary) {
                     const endpoint = isPausing ? "pause-subscription" : "resume-subscription";
                     const res = await fetch(`${BACKEND_URL}/${endpoint}`, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: await getBackendAuthHeaders(),
                         body: JSON.stringify({ subscription_id: subId }),
                     });
                     if (!res.ok) {
@@ -10879,7 +10899,7 @@ details:not([open]) > :not(summary) {
             if (subId.startsWith("sub_")) {
                 const res = await fetch(`${BACKEND_URL}/cancel-subscription`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: await getBackendAuthHeaders(),
                     body: JSON.stringify({ subscription_id: subId, is_gift: true }),
                 });
                 if (!res.ok) {
